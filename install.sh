@@ -44,7 +44,10 @@ detect_platform() {
     esac
 
     # Detect Termux (Android) — overrides os="linux"
-    if [ -n "$TERMUX_VERSION" ] || [ -n "$PREFIX" ] && [ -d "/data/data/com.termux" ]; then
+    # Termux sets $TERMUX_VERSION and $PREFIX=/data/data/com.termux/files/usr
+    if [ -n "$TERMUX_VERSION" ]; then
+        os="termux"
+    elif [ -n "$PREFIX" ] && case "$PREFIX" in /data/data/com.termux*) true;; *) false;; esac; then
         os="termux"
     fi
 
