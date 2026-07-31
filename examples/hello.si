@@ -1,64 +1,82 @@
-# Hello World in Sino
-echo "Hello, World!"
+# Sino v2.0 — Hello World
+# New syntax with { } braces, no var keyword, fn, const
 
-# Variables
-var x = 10
-var y = 20
-echo "x = ", x, " y = ", y
-echo "Sum = ", x + y
+echo("Hello, World!")
+
+# Variables (type inferred)
+name = "Sino"
+age = 20
+price = 99.99
+active = true
+
+echo(name, " is ", age, " years old")
 
 # Constants
-fix PI = 3.14159
-echo "PI = ", PI
+const PI = 3.14159
+echo("PI = ", PI)
 
-# If statement
-if x < y:
-    echo "x is less than y"
-end
+# If / Else
+if age >= 18 {
+    echo("Adult")
+} else {
+    echo("Minor")
+}
 
 # While loop
-var i = 0
-while i < 5:
-    echo "i = ", i
-    i = i + 1
-end
+i = 0
+while i < 5 {
+    echo("i = ", i)
+    i += 1
+}
 
-# For loop
-for var j = 0; j < 3; j = j + 1:
-    echo "j = ", j
-end
+# For loop (C-style)
+for j = 0; j < 3; j += 1 {
+    echo("j = ", j)
+}
 
-# Function
-func add(a, b):
+# For-in loop
+fruits = ["apple", "banana", "cherry"]
+for fruit in fruits {
+    echo(fruit)
+}
+
+# Functions
+fn add(a, b) {
     return a + b
-end
+}
 
-echo "3 + 4 = ", add(3, 4)
+echo("3 + 4 = ", add(3, 4))
 
 # Recursive function
-func factorial(n):
-    if n <= 1:
+fn factorial(n) {
+    if n <= 1 {
         return 1
-    end
+    }
     return n * factorial(n - 1)
-end
+}
 
-echo "5! = ", factorial(5)
+echo("5! = ", factorial(5))
 
-# Arrays
-var arr = [1, 2, 3, 4, 5]
-echo "Array length: ", len(arr)
-echo "Second element: ", arr[1]
+# Match
+x = 2
+match x {
+    1 => echo("One")
+    2 => echo("Two")
+    3 => echo("Three")
+    _ => echo("Other")
+}
 
-push(arr, 6)
-echo "After push: ", len(arr)
+# Multi-line comment
+/* This is a
+   multi-line comment */
+echo("After comment")
 
 # Fibonacci
-func fibonacci(n):
-    if n <= 1:
+fn fibonacci(n) {
+    if n <= 1 {
         return n
-    end
+    }
     return fibonacci(n - 1) + fibonacci(n - 2)
-end
+}
 
-echo "Fibonacci(10) = ", fibonacci(10)
+echo("Fibonacci(10) = ", fibonacci(10))
