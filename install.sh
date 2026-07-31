@@ -154,10 +154,12 @@ download_binary() {
     local version="$2"
     local tmp_file
 
-    tmp_file="/tmp/${asset_name}"
+    # Use TMPDIR if set (Termux sets this to $PREFIX/tmp), fallback to /tmp
+    local tmp_dir="${TMPDIR:-/tmp}"
+    tmp_file="${tmp_dir}/${asset_name}"
     local download_url="https://github.com/${REPO}/releases/download/${version}/${asset_name}"
 
-    info "Downloading $asset_name ($version)..."
+    info "Downloading $asset_name ($version) to $tmp_file ..."
     if ! curl -fSL --progress-bar -o "$tmp_file" "$download_url"; then
         error "Download failed. URL: $download_url"
         exit 1
