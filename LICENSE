@@ -1,0 +1,116 @@
+PROPRIETARY LICENSE
+
+Copyright (c) 2026 crossberry-in (https://github.com/crossberry-in)
+All rights reserved.
+
+1. DEFINITIONS
+
+   "Software" refers to the Sino programming language interpreter binary,
+   its source code, and any accompanying documentation.
+
+   "Source Code" refers to the human-readable C source files of the Sino
+   interpreter, including but not limited to files under the src/ and
+   include/ directories of the private source repository.
+
+   "Binary" refers to the compiled, executable form of the Software,
+   distributed via the public releases at
+   https://github.com/crossberry-in/sino-lang-docs/releases.
+
+   "Licensee" refers to any individual or entity that downloads, installs,
+   or uses the Software.
+
+2. SOURCE CODE AVAILABILITY
+
+   The Source Code of the Software is CLOSED-SOURCE and PROPRIETARY.
+   The Source Code is maintained in a private repository and is NOT
+   distributed to the public. Licensees receive only the Binary form
+   of the Software.
+
+3. GRANT OF LICENSE
+
+   Subject to the terms and conditions of this License, the licensor
+   hereby grants to the Licensee a non-exclusive, non-transferable,
+   non-sublicensable, worldwide, royalty-free license to:
+
+   a) Download, install, and use the Binary of the Software for any
+      lawful purpose, including personal, educational, and commercial use.
+
+   b) Write, distribute, and publicly share Sino scripts (source files
+      with the .si extension) that are executed by the Software.
+
+   c) Distribute verbatim copies of the unmodified Binary to third parties,
+      provided that this License is included with such copies.
+
+4. RESTRICTIONS
+
+   The Licensee shall NOT:
+
+   a) Reverse engineer, decompile, disassemble, or otherwise attempt to
+      derive the Source Code from the Binary, except to the extent that
+      such activity is expressly permitted by applicable law.
+
+   b) Modify, adapt, translate, or create derivative works based on the
+      Software, in whole or in part, in source or binary form.
+
+   c) Redistribute, sell, rent, lease, or sublicense the Software, in
+      whole or in part, for a fee, without prior written permission from
+      the licensor.
+
+   d) Remove or alter any copyright, trademark, or other proprietary
+      notices on or in the Software.
+
+   e) Use the Software in any manner that violates applicable laws or
+      regulations.
+
+5. OWNERSHIP
+
+   The Software is licensed, not sold. The licensor retains all right,
+   title, and interest in and to the Software, including all intellectual
+   property rights therein. This License does not grant the Licensee any
+   rights to the Source Code.
+
+6. DISCLAIMER OF WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+   IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+   OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE,
+   ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+   OR OTHER DEALINGS IN THE SOFTWARE.
+
+7. LIMITATION OF LIABILITY
+
+   IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL,
+   SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED
+   TO LOSS OF PROFITS, DATA, OR USE, ARISING OUT OF OR IN CONNECTION WITH
+   THIS LICENSE OR THE SOFTWARE, HOWEVER CAUSED AND UNDER ANY THEORY OF
+   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+   NEGLIGENCE), EVEN IF THE LICENSOR HAS BEEN ADVISED OF THE POSSIBILITY
+   OF SUCH DAMAGES.
+
+8. TERMINATION
+
+   This License is effective until terminated. The Licensee may terminate
+   this License at any time by ceasing all use of the Software and
+   destroying all copies in their possession. The licensor may terminate
+   this License immediately if the Licensee breaches any of its terms.
+   Upon termination, the Licensee must cease all use of the Software and
+   destroy all copies in their possession.
+
+9. GOVERNING LAW
+
+   This License shall be governed by and construed in accordance with the
+   laws of the jurisdiction in which the licensor resides, without regard
+   to its conflict of law provisions.
+
+10. ENTIRE AGREEMENT
+
+    This License constitutes the entire agreement between the licensor and
+    the Licensee with respect to the Software and supersedes all prior or
+    contemporaneous understandings regarding such subject matter.
+
+---
+
+For inquiries regarding licensing, source code access, or commercial use,
+please visit: https://github.com/crossberry-in/sino-lang-docs/issues

@@ -1,0 +1,23 @@
+# Power operator in Sino
+
+echo "Power examples:"
+echo "2 ** 10 = ", 2 ** 10
+echo "3 ** 3 = ", 3 ** 3
+echo "5 ** 2 = ", 5 ** 2
+echo "2 ** 0 = ", 2 ** 0
+
+# Math functions
+echo ""
+echo "Math functions:"
+echo "sqrt(16) = ", sqrt(16)
+echo "abs(-5) = ", abs(-5)
+echo "floor(3.7) = ", floor(3.7)
+echo "ceil(3.2) = ", ceil(3.2)
+
+# Type conversion
+echo ""
+echo "Type conversion:"
+var num_str = "42"
+echo "int(\"42\") = ", int(num_str)
+echo "string(42) = ", string(42)
+echo "float(42) = ", float(42)

@@ -1,0 +1,70 @@
+# Classes in Sino
+
+class Person:
+    func init(name, age):
+        self.name = name
+        self.age = age
+    end
+
+    func hello():
+        echo "Hello, my name is ", self.name
+    end
+
+    func get_age():
+        return self.age
+    end
+
+    func set_age(new_age):
+        self.age = new_age
+    end
+end
+
+# Create instances
+var john = Person("John", 25)
+var jane = Person("Jane", 30)
+
+john.hello()
+jane.hello()
+
+echo "John's age: ", john.get_age()
+
+john.set_age(26)
+echo "John's age after birthday: ", john.get_age()
+
+# Stack class
+class Stack:
+    func init():
+        self.items = []
+    end
+
+    func push(item):
+        push(self.items, item)
+    end
+
+    func pop():
+        return pop(self.items)
+    end
+
+    func peek():
+        return self.items[len(self.items) - 1]
+    end
+
+    func is_empty():
+        return len(self.items) == 0
+    end
+
+    func size():
+        return len(self.items)
+    end
+end
+
+var stack = Stack()
+stack.push(10)
+stack.push(20)
+stack.push(30)
+
+echo "Stack size: ", stack.size()
+echo "Top: ", stack.peek()
+echo "Popped: ", stack.pop()
+echo "Popped: ", stack.pop()
+echo "Stack size: ", stack.size()

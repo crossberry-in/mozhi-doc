@@ -1,0 +1,12 @@
+# Factorial in Sino
+
+func factorial(n):
+    if n <= 1:
+        return 1
+    end
+    return n * factorial(n - 1)
+end
+
+for var i = 0; i < 15; i = i + 1:
+    echo i, "! = ", factorial(i)
+end

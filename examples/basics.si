@@ -1,0 +1,94 @@
+# Basic examples in Sino
+
+# Variables and types
+var num = 42
+var pi = 3.14159
+var str = "Hello, Sino!"
+var flag = true
+var nothing = null
+
+echo "Integer: ", num
+echo "Float: ", pi
+echo "String: ", str
+echo "Boolean: ", flag
+echo "Null: ", nothing
+
+# Arithmetic
+echo ""
+echo "Arithmetic:"
+echo "10 + 5 = ", 10 + 5
+echo "10 - 5 = ", 10 - 5
+echo "10 * 5 = ", 10 * 5
+echo "10 / 5 = ", 10 / 5
+echo "10 % 3 = ", 10 % 3
+echo "2 ** 10 = ", 2 ** 10
+
+# Comparison
+echo ""
+echo "Comparison:"
+echo "5 > 3: ", 5 > 3
+echo "5 < 3: ", 5 < 3
+echo "5 == 5: ", 5 == 5
+echo "5 != 5: ", 5 != 5
+
+# Logical
+echo ""
+echo "Logical:"
+echo "true and false: ", true and false
+echo "true or false: ", true or false
+echo "not true: ", not true
+
+# Strings
+echo ""
+echo "Strings:"
+var greeting = "Hello" + ", " + "World!"
+echo greeting
+echo "Length: ", len(greeting)
+
+# Arrays
+echo ""
+echo "Arrays:"
+var arr = [10, 20, 30, 40, 50]
+echo "Array: ", arr
+echo "Length: ", len(arr)
+echo "First: ", arr[0]
+echo "Last: ", arr[4]
+
+push(arr, 60)
+echo "After push: ", arr
+
+var last = pop(arr)
+echo "Popped: ", last
+echo "After pop: ", arr
+
+# Functions
+echo ""
+echo "Functions:"
+func square(x):
+    return x * x
+end
+
+echo "square(5) = ", square(5)
+echo "square(10) = ", square(10)
+
+# Closures
+func make_adder(n):
+    func adder(x):
+        return x + n
+    end
+    return adder
+end
+
+var add5 = make_adder(5)
+var add10 = make_adder(10)
+
+echo "add5(3) = ", add5(3)
+echo "add10(3) = ", add10(3)
+
+# For-in loop
+echo ""
+echo "For-in loop:"
+var fruits = ["apple", "banana", "cherry"]
+for var fruit in fruits:
+    echo fruit
+end

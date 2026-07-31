@@ -1,0 +1,13 @@
+# Fibonacci sequence in Sino
+
+func fibonacci(n):
+    if n <= 1:
+        return n
+    end
+    return fibonacci(n - 1) + fibonacci(n - 2)
+end
+
+echo "Fibonacci sequence:"
+for var i = 0; i < 20; i = i + 1:
+    echo "F(", i, ") = ", fibonacci(i)
+end

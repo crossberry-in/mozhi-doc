@@ -1,0 +1,64 @@
+# Hello World in Sino
+echo "Hello, World!"
+
+# Variables
+var x = 10
+var y = 20
+echo "x = ", x, " y = ", y
+echo "Sum = ", x + y
+
+# Constants
+fix PI = 3.14159
+echo "PI = ", PI
+
+# If statement
+if x < y:
+    echo "x is less than y"
+end
+
+# While loop
+var i = 0
+while i < 5:
+    echo "i = ", i
+    i = i + 1
+end
+
+# For loop
+for var j = 0; j < 3; j = j + 1:
+    echo "j = ", j
+end
+
+# Function
+func add(a, b):
+    return a + b
+end
+
+echo "3 + 4 = ", add(3, 4)
+
+# Recursive function
+func factorial(n):
+    if n <= 1:
+        return 1
+    end
+    return n * factorial(n - 1)
+end
+
+echo "5! = ", factorial(5)
+
+# Arrays
+var arr = [1, 2, 3, 4, 5]
+echo "Array length: ", len(arr)
+echo "Second element: ", arr[1]
+
+push(arr, 6)
+echo "After push: ", len(arr)
+
+# Fibonacci
+func fibonacci(n):
+    if n <= 1:
+        return n
+    end
+    return fibonacci(n - 1) + fibonacci(n - 2)
+end
+
+echo "Fibonacci(10) = ", fibonacci(10)

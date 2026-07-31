@@ -1,0 +1,9 @@
+sino-linux-x86_64
+sino-linux-arm64
+*.tar.gz
+*.zip
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/

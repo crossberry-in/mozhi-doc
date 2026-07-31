@@ -1,0 +1,28 @@
+# Match statement in Sino
+
+var x = 2
+
+match x:
+    case 1:
+        echo "One"
+    case 2:
+        echo "Two"
+    case 3:
+        echo "Three"
+    default:
+        echo "Unknown"
+end
+
+# Match with strings
+var fruit = "apple"
+
+match fruit:
+    case "apple":
+        echo "It's an apple"
+    case "banana":
+        echo "It's a banana"
+    case "cherry":
+        echo "It's a cherry"
+    default:
+        echo "Unknown fruit"
+end
