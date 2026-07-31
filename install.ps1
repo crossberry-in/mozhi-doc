@@ -10,7 +10,8 @@
 # This script:
 #   1. Detects the architecture (x86_64 only on Windows)
 #   2. Downloads the latest sino-windows-x86_64.exe binary
-#   3. Installs it to $env:USERPROFILE\.sino\bin\sino.exe
+#   3. Installs it to $env:USERPROFILE\.sino\bin\sino-interpreter.exe
+#      (Named 'sino-interpreter' to avoid conflict with the sino-pkg dispatcher)
 #   4. Adds $env:USERPROFILE\.sino\bin to the user PATH
 #   5. Verifies the installation
 #
@@ -19,7 +20,7 @@ $ErrorActionPreference = "Stop"
 
 $Repo = "crossberry-in/sino-lang-docs"
 $InstallDir = "$env:USERPROFILE\.sino\bin"
-$BinaryName = "sino.exe"
+$BinaryName = "sino-interpreter.exe"
 $AssetName = "sino-windows-x86_64.exe"
 
 function Write-Info    { param([string]$Msg) Write-Host "[info]  $Msg" -ForegroundColor Cyan }
@@ -100,18 +101,27 @@ if ($PathEnv -notlike "*$InstallDir*") {
 # --- Verify -------------------------------------------------------------
 
 Write-Info "Verifying installation..."
-& $FinalPath --version
+# The interpreter doesn't support --version; run a tiny script instead
+$TestScript = [System.IO.Path]::GetTempFileName() + ".si"
+'echo "Sino interpreter OK"' | Set-Content -Path $TestScript
+& $FinalPath $TestScript
+Remove-Item $TestScript -ErrorAction SilentlyContinue
 if ($LASTEXITCODE -eq 0) {
-    Write-OK "Sino is installed and working!"
+    Write-OK "Sino interpreter is installed and working!"
 } else {
-    Write-Warn "Sino was installed but verification failed."
-    Write-Warn "Open a new PowerShell window and run: sino --version"
+    Write-Warn "Sino interpreter was installed but verification failed."
 }
 
 Write-Host ""
 Write-OK "Done! For docs, visit: https://github.com/crossberry-in/sino-lang-docs"
 Write-Host ""
-Write-Info "Run the REPL:        sino"
-Write-Info "Run a script:        sino my_script.si"
+Write-Info "The interpreter is installed as 'sino-interpreter'."
+Write-Info "Install the sino-pkg dispatcher ('sino') from:"
+Write-Info "  https://github.com/crossberry-in/sino-pkg"
 Write-Host ""
-Write-Warn "Note: Open a NEW PowerShell window for 'sino' to be on your PATH."
+Write-Info "Then use the unified 'sino' command:"
+Write-Info "  sino                    # start REPL"
+Write-Info "  sino my_script.si       # run a script"
+Write-Info "  sino build              # build a project"
+Write-Host ""
+Write-Warn "Note: Open a NEW PowerShell window for PATH changes to take effect."

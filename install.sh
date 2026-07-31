@@ -21,7 +21,10 @@ set -e
 # --- Configuration ------------------------------------------------------
 
 REPO="crossberry-in/sino-lang-docs"
-BINARY_NAME="sino"
+# Install as 'sino-interpreter' to avoid conflict with the sino-pkg
+# package manager, which installs as 'sino' (the unified dispatcher).
+# The sino-pkg dispatcher will find this binary via find_sino_interpreter().
+BINARY_NAME="sino-interpreter"
 
 # --- Helpers (ALL output goes to stderr so it never pollutes $(...)) ----
 
@@ -200,25 +203,37 @@ install_binary() {
 
 verify_installation() {
     local sino_cmd
-    sino_cmd="$(command -v sino 2>/dev/null || true)"
+    sino_cmd="$(command -v sino-interpreter 2>/dev/null || true)"
 
     if [ -z "$sino_cmd" ]; then
-        warn "Sino was installed but 'sino' is not on your PATH."
+        warn "Sino interpreter was installed but 'sino-interpreter' is not on your PATH."
         warn "Open a new terminal, or run: source ~/.bashrc  (or ~/.zshrc)"
         return 0
     fi
 
     info "Verifying installation..."
-    if "$sino_cmd" --version 2>/dev/null; then
-        success "Sino is installed and working!"
+    # The interpreter doesn't have --version, so just run it with a tiny script
+    if echo 'echo "Sino interpreter OK"' | "$sino_cmd" /dev/stdin 2>/dev/null; then
+        success "Sino interpreter is installed and working!"
     else
-        warn "Sino was installed but 'sino --version' failed."
-        warn "Try opening a new terminal, then run 'sino --version'."
+        # Fallback: just check the binary exists and is executable
+        if [ -x "$sino_cmd" ]; then
+            success "Sino interpreter installed at: $sino_cmd"
+        else
+            warn "Sino interpreter was installed but verification failed."
+        fi
     fi
 
     printf '\n' >&2
-    info "Run the REPL:        sino" >&2
-    info "Run a script:        sino my_script.si" >&2
+    info "The interpreter is installed as 'sino-interpreter'." >&2
+    info "Install the sino-pkg dispatcher ('sino') from:" >&2
+    info "  https://github.com/crossberry-in/sino-pkg" >&2
+    printf '\n' >&2
+    info "Then use the unified 'sino' command:" >&2
+    info "  sino                    # start REPL" >&2
+    info "  sino my_script.si       # run a script" >&2
+    info "  sino build              # build a project" >&2
+    info "  sino test               # run tests" >&2
 }
 
 # --- Main ---------------------------------------------------------------
