@@ -1,7 +1,15 @@
-sino-linux-x86_64
-sino-linux-arm64
+# Binary release assets — distributed via GitHub Releases, not committed
+sino-linux-*
+sino-alpine-*
+sino-macos-*
+sino-windows-*
+
+# Compressed archives
 *.tar.gz
 *.zip
+*.tgz
+
+# OS / IDE
 .DS_Store
 *.swp
 *.swo

@@ -5,7 +5,7 @@
 **A simple, Python-like scripting language implemented in C with a tree-walking interpreter.**
 
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
-[![Platform: Linux x86_64](https://img.shields.io/badge/Platform-Linux%20x86__64-blue.svg)](#installation)
+[![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Termux-blue.svg)](#supported-platforms)
 [![Version: v1.0.0](https://img.shields.io/badge/Version-v1.0.0-green.svg)](https://github.com/crossberry-in/sino-lang-docs/releases)
 
 </div>
@@ -33,21 +33,21 @@
 
 ## Quick Start
 
-### 1. Download
+### 1. Install
 
-Download the latest binary release from the [Releases page](https://github.com/crossberry-in/sino-lang-docs/releases).
-
-### 2. Install
+**Linux / macOS / WSL / Termux** (auto-detects platform and architecture):
 
 ```bash
-# Make the binary executable
-chmod +x sino-linux-x86_64
-
-# Move it to a directory in your PATH (e.g., /usr/local/bin)
-sudo mv sino-linux-x86_64 /usr/local/bin/sino
+curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
 ```
 
-### 3. Verify
+**Windows** (PowerShell):
+
+```powershell
+irm https://github.com/crossberry-in/sino-lang-docs/raw/main/install.ps1 | iex
+```
+
+### 2. Verify
 
 ```bash
 sino --version
@@ -57,7 +57,7 @@ sino
 
 You should see the Sino REPL prompt.
 
-### 4. Hello, World!
+### 3. Hello, World!
 
 Create a file `hello.si`:
 
@@ -89,20 +89,32 @@ Hello, World!
 - **Control Flow** — `if/elseif/else`, `while`, `for`, `for-in`, `match`
 - **Built-ins** — `echo`, `input`, `len`, `typeof`, `int`, `float`, `string`, `sqrt`, `abs`, `floor`, `ceil`, and more
 - **String Interpolation** — Embed expressions inside strings
-- **Lightweight** — Single static binary, no runtime dependencies beyond `libc` and `libm`
+- **Lightweight** — Single static binary, no runtime dependencies (musl/static builds) or just `libc`+`libm` (glibc builds)
+- **Cross-Platform** — Runs on Linux (glibc and musl/Alpine), macOS (Intel and Apple Silicon), Windows (10/11 x86_64), and Termux on Android
 
 ---
 
 ## Supported Platforms
 
-| Platform | Architecture | Status | Download |
-|----------|--------------|--------|----------|
-| Linux | x86_64 (64-bit) | ✅ Supported | `sino-linux-x86_64` |
-| Linux | ARM64 (aarch64) | ⚠️ Community | Build from source |
-| macOS | Intel / Apple Silicon | ⚠️ Community | Build from source |
-| Windows | x86_64 | ⚠️ Use WSL | Run via Windows Subsystem for Linux |
+The installer auto-detects your OS, architecture, and libc, then downloads the correct binary.
 
-> **Building from source:** Source code is private. If you need a build for an unsupported platform, please [open an issue](https://github.com/crossberry-in/sino-lang-docs/issues) to request a binary.
+| Platform | Architecture | Libc | Asset name | Status |
+|----------|--------------|------|------------|--------|
+| Linux (Ubuntu, Debian, Fedora, Arch) | x86_64 | glibc | `sino-linux-x86_64` | ✅ Supported |
+| Linux (Raspberry Pi 4/5, ARM servers) | ARM64 (aarch64) | glibc | `sino-linux-arm64` | ✅ Supported |
+| Alpine Linux | x86_64 | musl (static) | `sino-alpine-x86_64` | ✅ Supported |
+| Alpine Linux | ARM64 (aarch64) | musl (static) | `sino-alpine-arm64` | ✅ Supported |
+| Termux on Android | ARM64 (aarch64) | bionic (static musl) | `sino-alpine-arm64` | ✅ Supported |
+| Termux on Android | x86_64 | bionic (static musl) | `sino-alpine-x86_64` | ✅ Supported |
+| macOS (Intel) | x86_64 | Darwin | `sino-macos-x86_64` | ✅ Supported |
+| macOS (Apple Silicon M1/M2/M3/M4) | ARM64 | Darwin | `sino-macos-arm64` | ✅ Supported |
+| Windows 10/11 | x86_64 | MSVCRT | `sino-windows-x86_64.exe` | ✅ Supported |
+
+> **Note for Termux users:** Sino uses static musl binaries which run natively in Termux — no `proot` needed. Just run the install command above.
+>
+> **Note for Windows users:** You can run Sino natively (via `sino.exe` in PowerShell/CMD) or via WSL (using the Linux x86_64 build). Both work.
+>
+> **Building from source:** Source code is private. If you need a build for an unsupported platform (e.g., FreeBSD, OpenBSD, Linux 32-bit), please [open an issue](https://github.com/crossberry-in/sino-lang-docs/issues) to request a binary.
 
 ---
 

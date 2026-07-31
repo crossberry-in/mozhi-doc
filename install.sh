@@ -1,59 +1,132 @@
 #!/usr/bin/env bash
 #
-# Sino — One-line installer
+# Sino — Universal installer
+#
+# Supported platforms:
+#   - Linux x86_64 (Ubuntu, Debian, Fedora, Arch, etc.)  → sino-linux-x86_64
+#   - Linux ARM64 (Raspberry Pi 4/5, ARM servers)        → sino-linux-arm64
+#   - Alpine Linux x86_64 (musl libc)                    → sino-alpine-x86_64
+#   - Alpine Linux ARM64 (musl libc)                     → sino-alpine-arm64
+#   - Termux on Android ARM64                            → sino-alpine-arm64 (static)
+#   - Termux on Android x86_64                           → sino-alpine-x86_64 (static)
+#   - macOS Intel                                         → sino-macos-x86_64
+#   - macOS Apple Silicon (M1/M2/M3/M4)                  → sino-macos-arm64
+#   - Windows x86_64 (via Git Bash / WSL)                → sino-windows-x86_64.exe
 #
 # Usage:
 #   curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
-#
-# This script:
-#   1. Detects the OS and architecture
-#   2. Downloads the correct Sino binary from the latest release
-#   3. Installs it to /usr/local/bin/sino (or ~/.local/bin/sino as fallback)
-#   4. Verifies the installation
 #
 set -e
 
 # --- Configuration ------------------------------------------------------
 
 REPO="crossberry-in/sino-lang-docs"
-INSTALL_DIR="/usr/local/bin"
-FALLBACK_DIR="$HOME/.local/bin"
 BINARY_NAME="sino"
 
-# --- Helpers ------------------------------------------------------------
+# --- Helpers (ALL output goes to stderr so it never pollutes $(...)) ----
 
-info()  { printf "\033[1;34m[info]\033[0m  %s\n"  "$*"; }
-warn()  { printf "\033[1;33m[warn]\033[0m  %s\n"  "$*" >&2; }
-error() { printf "\033[1;31m[error]\033[0m %s\n" "$*" >&2; }
-success(){ printf "\033[1;32m[ok]\033[0m    %s\n"  "$*"; }
+info()    { printf "\033[1;34m[info]\033[0m  %s\n"  "$*" >&2; }
+warn()    { printf "\033[1;33m[warn]\033[0m  %s\n"  "$*" >&2; }
+error()   { printf "\033[1;31m[error]\033[0m %s\n" "$*" >&2; }
+success() { printf "\033[1;32m[ok]\033[0m    %s\n"  "$*" >&2; }
 
-# --- Detect OS and architecture -----------------------------------------
+# --- Detect platform ----------------------------------------------------
 
 detect_platform() {
-    local os arch
+    local os arch libc
 
-    os="$(uname -s 2>/dev/null || echo unknown)"
-    arch="$(uname -m 2>/dev/null || echo unknown)"
-
-    case "$os" in
+    # Detect OS
+    case "$(uname -s 2>/dev/null || echo unknown)" in
         Linux*)  os="linux"  ;;
         Darwin*) os="macos"  ;;
-        *)       error "Unsupported OS: $os"; exit 1 ;;
+        MINGW*|MSYS*|CYGWIN*) os="windows" ;;
+        *) error "Unsupported OS: $(uname -s)"; exit 1 ;;
     esac
 
-    case "$arch" in
-        x86_64|amd64)  arch="x86_64"  ;;
-        aarch64|arm64) arch="arm64"   ;;
-        *)             error "Unsupported architecture: $arch"; exit 1 ;;
-    esac
-
-    if [ "$os" = "macos" ]; then
-        warn "Sino is built for Linux. On macOS, you must run the binary via Docker or a Linux VM."
-        warn "Continuing with the Linux x86_64 binary — it will NOT run natively on macOS."
-        arch="x86_64"
+    # Detect Termux (Android) — overrides os="linux"
+    if [ -n "$TERMUX_VERSION" ] || [ -n "$PREFIX" ] && [ -d "/data/data/com.termux" ]; then
+        os="termux"
     fi
 
-    echo "${os}-${arch}"
+    # Detect architecture
+    case "$(uname -m 2>/dev/null || echo unknown)" in
+        x86_64|amd64)   arch="x86_64" ;;
+        aarch64|arm64)  arch="arm64"  ;;
+        *) error "Unsupported architecture: $(uname -m)"; exit 1 ;;
+    esac
+
+    # Detect libc on Linux
+    libc="gnu"
+    if [ "$os" = "linux" ]; then
+        if ldd --version 2>&1 | grep -qi musl; then
+            libc="musl"
+        fi
+    fi
+
+    echo "${os}-${arch}-${libc}"
+}
+
+# --- Map platform to asset name -----------------------------------------
+
+asset_for_platform() {
+    local platform="$1"
+    local os arch libc
+
+    os="${platform%%-*}"               # linux | termux | macos | windows
+    local rest="${platform#*-}"        # arch-libc
+    arch="${rest%%-*}"                 # x86_64 | arm64
+    libc="${rest#*-}"                  # gnu | musl
+
+    case "$os" in
+        linux)
+            if [ "$libc" = "musl" ]; then
+                echo "sino-alpine-${arch}"
+            else
+                echo "sino-linux-${arch}"
+            fi
+            ;;
+        termux)
+            # Termux uses Android's bionic libc — only static musl binaries work
+            echo "sino-alpine-${arch}"
+            ;;
+        macos)
+            echo "sino-macos-${arch}"
+            ;;
+        windows)
+            echo "sino-windows-${arch}.exe"
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+# --- Determine install location -----------------------------------------
+
+install_dir_for() {
+    local os="$1"
+    case "$os" in
+        termux)
+            # Termux: user-owned directory, no sudo needed
+            echo "$PREFIX/bin"
+            ;;
+        macos)
+            if [ "$2" = "arm64" ] && [ -d "/opt/homebrew/bin" ]; then
+                echo "/opt/homebrew/bin"
+            elif [ -w "/usr/local/bin" ] || sudo -n true 2>/dev/null; then
+                echo "/usr/local/bin"
+            else
+                echo "$HOME/.local/bin"
+            fi
+            ;;
+        linux|windows|*)
+            if [ -w "/usr/local/bin" ] || sudo -n true 2>/dev/null; then
+                echo "/usr/local/bin"
+            else
+                echo "$HOME/.local/bin"
+            fi
+            ;;
+    esac
 }
 
 # --- Get the latest release version -------------------------------------
@@ -68,115 +141,117 @@ get_latest_version() {
         error "Failed to determine the latest Sino release version."
         exit 1
     fi
-
     echo "$version"
 }
 
 # --- Download binary ----------------------------------------------------
 
 download_binary() {
-    local platform="$1"
+    local asset_name="$1"
     local version="$2"
-    local asset_name
+    local tmp_file
 
-    case "$platform" in
-        linux-x86_64) asset_name="sino-linux-x86_64" ;;
-        linux-arm64)  asset_name="sino-linux-arm64"  ;;
-        *)            error "No binary asset available for platform: $platform"; exit 1 ;;
-    esac
-
+    tmp_file="/tmp/${asset_name}"
     local download_url="https://github.com/${REPO}/releases/download/${version}/${asset_name}"
-    local tmp_file="/tmp/${asset_name}"
 
-    info "Downloading Sino $version for $platform..."
-    if ! curl -fSL -o "$tmp_file" "$download_url"; then
-        error "Download failed. Check your internet connection and try again."
+    info "Downloading $asset_name ($version)..."
+    if ! curl -fSL --progress-bar -o "$tmp_file" "$download_url"; then
+        error "Download failed. URL: $download_url"
         exit 1
     fi
-
     chmod +x "$tmp_file"
-    echo "$tmp_file"
+    # Print tmp_file to STDOUT (this is the only thing captured by $())
+    printf '%s' "$tmp_file"
 }
 
 # --- Install binary -----------------------------------------------------
 
 install_binary() {
     local tmp_file="$1"
-    local target_path
+    local install_dir="$2"
+    local final_path
+    local need_sudo=0
 
-    if [ -w "$INSTALL_DIR" ] || sudo -n true 2>/dev/null; then
-        target_path="$INSTALL_DIR/$BINARY_NAME"
-        if [ -w "$INSTALL_DIR" ]; then
-            mv "$tmp_file" "$target_path"
-        else
-            sudo mv "$tmp_file" "$target_path"
-        fi
-        success "Installed to $target_path"
-    else
-        warn "Cannot write to $INSTALL_DIR (need sudo). Installing to $FALLBACK_DIR instead."
-        mkdir -p "$FALLBACK_DIR"
-        target_path="$FALLBACK_DIR/$BINARY_NAME"
-        mv "$tmp_file" "$target_path"
-        success "Installed to $target_path"
+    final_path="$install_dir/$BINARY_NAME"
+    mkdir -p "$install_dir" 2>/dev/null || need_sudo=1
 
-        case ":$PATH:" in
-            *":$FALLBACK_DIR:"*) ;;
-            *)
-                warn "$FALLBACK_DIR is not on your PATH."
-                warn "Add the following line to your ~/.bashrc or ~/.zshrc:"
-                printf '\n    export PATH="%s:$PATH"\n\n' "$FALLBACK_DIR"
-                ;;
-        esac
+    if [ ! -w "$install_dir" ]; then
+        need_sudo=1
     fi
+
+    if [ "$need_sudo" = "1" ]; then
+        info "Installing to $final_path (sudo required)..."
+        sudo cp "$tmp_file" "$final_path"
+        sudo chmod +x "$final_path"
+    else
+        info "Installing to $final_path..."
+        cp "$tmp_file" "$final_path"
+        chmod +x "$final_path"
+    fi
+    rm -f "$tmp_file"
 }
 
 # --- Verify installation ------------------------------------------------
 
 verify_installation() {
     local sino_cmd
-    sino_cmd="$(command -v sino || true)"
+    sino_cmd="$(command -v sino 2>/dev/null || true)"
 
     if [ -z "$sino_cmd" ]; then
-        warn "Sino installed but 'sino' is not on your PATH."
-        warn "Open a new terminal or run: source ~/.bashrc"
+        warn "Sino was installed but 'sino' is not on your PATH."
+        warn "Open a new terminal, or run: source ~/.bashrc  (or ~/.zshrc)"
         return 0
     fi
 
     info "Verifying installation..."
     if "$sino_cmd" --version 2>/dev/null; then
         success "Sino is installed and working!"
-        printf '\n'
-        info "Run the REPL with:    sino"
-        info "Run a script with:    sino my_script.si"
     else
         warn "Sino was installed but 'sino --version' failed."
         warn "Try opening a new terminal, then run 'sino --version'."
     fi
+
+    printf '\n' >&2
+    info "Run the REPL:        sino" >&2
+    info "Run a script:        sino my_script.si" >&2
 }
 
 # --- Main ---------------------------------------------------------------
 
 main() {
-    printf '\n'
-    printf '  \033[1;36m===================================\033[0m\n'
-    printf '  \033[1;36m   Sino Language Installer\033[0m\n'
-    printf '  \033[1;36m===================================\033[0m\n'
-    printf '\n'
+    printf '\n' >&2
+    printf '  \033[1;36m===================================\033[0m\n' >&2
+    printf '  \033[1;36m   Sino Language Installer\033[0m\n'     >&2
+    printf '  \033[1;36m===================================\033[0m\n' >&2
+    printf '\n' >&2
 
-    local platform version tmp_file
+    local platform version asset_name install_dir tmp_file
+    local os arch
+
     platform="$(detect_platform)"
     version="$(get_latest_version)"
+    asset_name="$(asset_for_platform "$platform")"
+
+    os="${platform%%-*}"
+    arch="$(echo "$platform" | cut -d- -f2)"
 
     info "Detected platform: $platform"
+    info "Target asset:      $asset_name"
     info "Latest version:    $version"
+    printf '\n' >&2
 
-    tmp_file="$(download_binary "$platform" "$version")"
-    install_binary "$tmp_file"
+    # Download (output to STDOUT, captured in tmp_file)
+    tmp_file="$(download_binary "$asset_name" "$version")"
+
+    install_dir="$(install_dir_for "$os" "$arch")"
+    install_binary "$tmp_file" "$install_dir"
+
+    printf '\n' >&2
     verify_installation
 
-    printf '\n'
-    success "Done! For docs, visit: https://github.com/crossberry-in/sino-lang-docs\n"
-    printf '\n'
+    printf '\n' >&2
+    success "Done! Docs: https://github.com/crossberry-in/sino-lang-docs" >&2
+    printf '\n' >&2
 }
 
 main "$@"

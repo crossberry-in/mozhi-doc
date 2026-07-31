@@ -34,14 +34,51 @@ Sino is implemented in **C99**. The interpreter is a tree-walking interpreter th
 
 ### What platforms does Sino support?
 
-| Platform | Architecture | Status |
-|----------|--------------|--------|
-| Linux | x86_64 (64-bit) | ✅ Officially supported |
-| Linux | ARM64 (aarch64) | ⚠️ Community-supported |
-| macOS | Intel / Apple Silicon | ⚠️ Run via Docker or VM |
-| Windows | x86_64 | ⚠️ Run via WSL |
+Sino runs natively on 7 platform/architecture combinations:
+
+| Platform | Architecture | Build type |
+|----------|--------------|------------|
+| Linux (Ubuntu, Debian, Fedora, Arch, etc.) | x86_64 | Dynamic (glibc) |
+| Linux (Raspberry Pi 4/5, ARM servers) | ARM64 (aarch64) | Dynamic (glibc) |
+| Alpine Linux | x86_64 | **Static** (musl) |
+| Alpine Linux | ARM64 | **Static** (musl) |
+| Termux on Android | ARM64 | **Static** (musl) |
+| Termux on Android | x86_64 | **Static** (musl) |
+| macOS (Intel) | x86_64 | Dynamic (Darwin) |
+| macOS (Apple Silicon M1/M2/M3/M4) | ARM64 | Dynamic (Darwin) |
+| Windows 10/11 | x86_64 | **Static** (MSVCRT) |
 
 See [Supported Platforms](README.md#supported-platforms) for details.
+
+### Does Sino run on Termux (Android)?
+
+Yes! Sino uses statically-linked musl binaries for Termux, which run natively on Android's Linux kernel — no `proot` or `proot-distro` needed. Just run:
+
+```bash
+curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
+```
+
+The installer will detect Termux and download `sino-alpine-arm64` (for ARM phones) or `sino-alpine-x86_64` (for x86 emulators).
+
+### Does Sino run on Alpine Linux?
+
+Yes. The installer detects Alpine's `musl` libc and downloads `sino-alpine-x86_64` or `sino-alpine-arm64`, both statically linked. No additional dependencies are needed.
+
+### Does Sino run on Windows?
+
+Yes, two ways:
+
+1. **Natively** — Download `sino-windows-x86_64.exe` and run it from PowerShell/CMD. Or use the PowerShell installer:
+   ```powershell
+   irm https://github.com/crossberry-in/sino-lang-docs/raw/main/install.ps1 | iex
+   ```
+2. **Via WSL** — Install WSL (Ubuntu) and run the Linux installer inside your WSL terminal.
+
+### Does Sino run on macOS?
+
+Yes. Both Intel Macs and Apple Silicon (M1/M2/M3/M4) are supported. The installer auto-detects your architecture and downloads `sino-macos-x86_64` (Intel) or `sino-macos-arm64` (Apple Silicon).
+
+> **macOS Gatekeeper note:** The first time you run `sino`, you may see a security prompt. Right-click the binary in Finder → **Open** → confirm, or run `xattr -d com.apple.quarantine /path/to/sino`.
 
 ### How fast is Sino?
 

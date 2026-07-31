@@ -18,6 +18,17 @@ _No unreleased changes yet._
 ### Added
 
 - **Initial public release** of the Sino programming language.
+- **Cross-platform binaries** for 7 target platforms (built with `zig cc` as a cross-compiler):
+  - `sino-linux-x86_64` — Linux x86_64 (glibc, dynamically linked)
+  - `sino-linux-arm64` — Linux ARM64/aarch64 (glibc, dynamically linked)
+  - `sino-alpine-x86_64` — Alpine Linux x86_64 (musl, statically linked)
+  - `sino-alpine-arm64` — Alpine Linux ARM64 (musl, statically linked)
+  - `sino-windows-x86_64.exe` — Windows 10/11 x86_64 (statically linked)
+  - `sino-macos-x86_64` — macOS Intel (Darwin)
+  - `sino-macos-arm64` — macOS Apple Silicon M1/M2/M3/M4 (Darwin)
+- **Termux (Android) support** — works natively via the static musl build (`sino-alpine-arm64` for Android phones, `sino-alpine-x86_64` for x86 emulators). No `proot` or `proot-distro` needed.
+- **Universal `install.sh` installer** for Linux / macOS / WSL / Termux — auto-detects OS, architecture, and libc, then downloads the correct binary.
+- **`install.ps1` PowerShell installer** for native Windows 10/11 — installs to `%USERPROFILE%\.sino\bin\` and adds it to the user `PATH`.
 - **Lexer** supporting identifiers, integers, floats, strings, booleans, `null`, keywords, operators, and comments.
 - **Parser** producing an Abstract Syntax Tree (AST) for the entire language.
 - **Tree-walking interpreter** evaluating the AST directly.
@@ -90,8 +101,8 @@ _No unreleased changes yet._
 - **No exception handling** (runtime errors halt execution).
 - **No class inheritance**.
 - **No string interpolation** in the current form (use `string()` and `+`).
-- **Linux x86_64 is the only officially supported platform**. macOS, Windows, and other Linux architectures are community-supported.
 - **Reserved but unimplemented keywords**: `async`, `await`, `this`, `new`, `use`.
+- **Supported platforms**: Linux x86_64 (glibc), Linux ARM64 (glibc), Alpine Linux x86_64 (musl, static), Alpine Linux ARM64 (musl, static), Termux on Android ARM64/x86_64 (via static musl build), macOS Intel (x86_64), macOS Apple Silicon (ARM64), Windows 10/11 x86_64. macOS/Windows native builds work without WSL/Docker. Other platforms (FreeBSD, OpenBSD, Linux 32-bit, Windows ARM64) are not yet supported.
 
 ---
 
