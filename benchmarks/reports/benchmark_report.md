@@ -1,8 +1,8 @@
-# Sino Performance Benchmark Report
+# Mozhi Performance Benchmark Report
 
 **Benchmark Version:** 3.0.0  
 **Date:** 2026-08-01 12:23:35  
-**Sino Version:** Sino v1.0 (C Implementation)  
+**Mozhi Version:** Mozhi v1.0 (C Implementation)  
 **Build Hash:** 817cc1b5c13547a5  
 **Git Commit:** c16a659  
 **Build Mode:** Release (-O3 -march=native)  

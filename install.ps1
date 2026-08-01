@@ -1,27 +1,27 @@
-# Sino — Windows installer (PowerShell)
+# Mozhi — Windows installer (PowerShell)
 #
 # Usage (in PowerShell or Windows Terminal):
-#   irm https://github.com/crossberry-in/sino-doc/raw/main/install.ps1 | iex
+#   irm https://github.com/crossberry-in/mozhi-doc/raw/main/install.ps1 | iex
 #
 # Or download and run:
-#   iwr -OutFile install.ps1 https://github.com/crossberry-in/sino-doc/raw/main/install.ps1
+#   iwr -OutFile install.ps1 https://github.com/crossberry-in/mozhi-doc/raw/main/install.ps1
 #   .\install.ps1
 #
 # This script:
 #   1. Detects the architecture (x86_64 only on Windows)
-#   2. Downloads the latest sino-windows-x86_64.exe binary
-#   3. Installs it to $env:USERPROFILE\.sino\bin\sino-interpreter.exe
-#      (Named 'sino-interpreter' to avoid conflict with the sino-pkg dispatcher)
-#   4. Adds $env:USERPROFILE\.sino\bin to the user PATH
+#   2. Downloads the latest mozhi-windows-x86_64.exe binary
+#   3. Installs it to $env:USERPROFILE\.mozhi\bin\mozhi-interpreter.exe
+#      (Named 'mozhi-interpreter' to avoid conflict with the mozhi-pkg dispatcher)
+#   4. Adds $env:USERPROFILE\.mozhi\bin to the user PATH
 #   5. Verifies the installation
 #
 
 $ErrorActionPreference = "Stop"
 
-$Repo = "crossberry-in/sino-doc"
-$InstallDir = "$env:USERPROFILE\.sino\bin"
-$BinaryName = "sino-interpreter.exe"
-$AssetName = "sino-windows-x86_64.exe"
+$Repo = "crossberry-in/mozhi-doc"
+$InstallDir = "$env:USERPROFILE\.mozhi\bin"
+$BinaryName = "mozhi-interpreter.exe"
+$AssetName = "mozhi-windows-x86_64.exe"
 
 function Write-Info    { param([string]$Msg) Write-Host "[info]  $Msg" -ForegroundColor Cyan }
 function Write-OK      { param([string]$Msg) Write-Host "[ok]    $Msg" -ForegroundColor Green }
@@ -30,7 +30,7 @@ function Write-Err     { param([string]$Msg) Write-Host "[error] $Msg" -Foregrou
 
 Write-Host ""
 Write-Host "  ===================================" -ForegroundColor Cyan
-Write-Host "   Sino Language Installer (Windows)" -ForegroundColor Cyan
+Write-Host "   Mozhi Language Installer (Windows)" -ForegroundColor Cyan
 Write-Host "  ===================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -39,8 +39,8 @@ Write-Host ""
 $arch = $env:PROCESSOR_ARCHITECTURE
 if ($arch -eq "AMD64") { $arch = "x86_64" }
 elseif ($arch -eq "ARM64") {
-    Write-Err "ARM64 Windows is not yet supported by Sino. Please open an issue:"
-    Write-Err "  https://github.com/crossberry-in/sino-doc/issues"
+    Write-Err "ARM64 Windows is not yet supported by Mozhi. Please open an issue:"
+    Write-Err "  https://github.com/crossberry-in/mozhi-doc/issues"
     exit 1
 }
 else {
@@ -56,7 +56,7 @@ Write-Info "Target asset:      $AssetName"
 Write-Info "Fetching latest release version..."
 $ReleaseApiUrl = "https://api.github.com/repos/$Repo/releases/latest"
 try {
-    $release = Invoke-RestMethod -Uri $ReleaseApiUrl -Headers @{ "User-Agent" = "sino-installer" }
+    $release = Invoke-RestMethod -Uri $ReleaseApiUrl -Headers @{ "User-Agent" = "mozhi-installer" }
 } catch {
     Write-Err "Failed to fetch release info: $_"
     exit 1
@@ -103,25 +103,25 @@ if ($PathEnv -notlike "*$InstallDir*") {
 Write-Info "Verifying installation..."
 # The interpreter doesn't support --version; run a tiny script instead
 $TestScript = [System.IO.Path]::GetTempFileName() + ".si"
-'echo "Sino interpreter OK"' | Set-Content -Path $TestScript
+'echo "Mozhi interpreter OK"' | Set-Content -Path $TestScript
 & $FinalPath $TestScript
 Remove-Item $TestScript -ErrorAction SilentlyContinue
 if ($LASTEXITCODE -eq 0) {
-    Write-OK "Sino interpreter is installed and working!"
+    Write-OK "Mozhi interpreter is installed and working!"
 } else {
-    Write-Warn "Sino interpreter was installed but verification failed."
+    Write-Warn "Mozhi interpreter was installed but verification failed."
 }
 
 Write-Host ""
-Write-OK "Done! For docs, visit: https://github.com/crossberry-in/sino-doc"
+Write-OK "Done! For docs, visit: https://github.com/crossberry-in/mozhi-doc"
 Write-Host ""
-Write-Info "The interpreter is installed as 'sino-interpreter'."
-Write-Info "Install the sino-pkg dispatcher ('sino') from:"
-Write-Info "  https://github.com/crossberry-in/sino-pkg"
+Write-Info "The interpreter is installed as 'mozhi-interpreter'."
+Write-Info "Install the mozhi-pkg dispatcher ('mozhi') from:"
+Write-Info "  https://github.com/crossberry-in/mozhi-pkg"
 Write-Host ""
-Write-Info "Then use the unified 'sino' command:"
-Write-Info "  sino                    # start REPL"
-Write-Info "  sino my_script.si       # run a script"
-Write-Info "  sino build              # build a project"
+Write-Info "Then use the unified 'mozhi' command:"
+Write-Info "  mozhi                    # start REPL"
+Write-Info "  mozhi my_script.si       # run a script"
+Write-Info "  mozhi build              # build a project"
 Write-Host ""
 Write-Warn "Note: Open a NEW PowerShell window for PATH changes to take effect."

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Performance Benchmarks — Sino Programming Language</title>
-    <meta name="description" content="Animated performance comparison: Sino vs C vs Python on fibonacci and loop benchmarks.">
+    <title>Performance Benchmarks — Mozhi Programming Language</title>
+    <meta name="description" content="Animated performance comparison: Mozhi vs C vs Python on fibonacci and loop benchmarks.">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -91,7 +91,7 @@
 
         .stat-card.c-lang .stat-value { color: #3AAFA9; }
         .stat-card.python .stat-value { color: #E6A23C; }
-        .stat-card.sino .stat-value { color: #4C6EF5; }
+        .stat-card.mozhi .stat-value { color: #4C6EF5; }
 
         /* Chart container */
         .chart-container {
@@ -181,7 +181,7 @@
 
         .race-bar.c-lang { background: linear-gradient(90deg, #3AAFA9, #2DD4BF); }
         .race-bar.python { background: linear-gradient(90deg, #E6A23C, #FBBF24); }
-        .race-bar.sino { background: linear-gradient(90deg, #4C6EF5, #818CF8); }
+        .race-bar.mozhi { background: linear-gradient(90deg, #4C6EF5, #818CF8); }
 
         .race-time {
             width: 80px;
@@ -310,7 +310,7 @@
             <div class="sidebar-header">
                 <a href="index.html" class="sidebar-logo">
                     <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
-                    Sino
+                    Mozhi
                 </a>
                 <div class="sidebar-version">v2.0</div>
             </div>
@@ -333,8 +333,8 @@
                 </div>
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">External</div>
-                    <a href="https://github.com/crossberry-in/sino-doc" target="_blank">GitHub &#8599;</a>
-                    <a href="https://github.com/crossberry-in/sino-doc/releases" target="_blank">Download &#8599;</a>
+                    <a href="https://github.com/crossberry-in/mozhi-doc" target="_blank">GitHub &#8599;</a>
+                    <a href="https://github.com/crossberry-in/mozhi-doc/releases" target="_blank">Download &#8599;</a>
                 </div>
             </nav>
         </aside>
@@ -343,7 +343,7 @@
             <!-- Hero -->
             <div class="bench-hero">
                 <h1>Performance Benchmarks</h1>
-                <div class="subtitle">Sino vs C vs Python</div>
+                <div class="subtitle">Mozhi vs C vs Python</div>
                 <div class="meta">Measured on x86_64 Linux &middot; August 2026 &middot; 3-run average</div>
             </div>
 
@@ -357,9 +357,9 @@
                     <div class="stat-value"><span class="counter" data-target="938" data-suffix="ms">0</span></div>
                     <div class="stat-label">Python 3 &middot; Loop Sum</div>
                 </div>
-                <div class="stat-card sino">
+                <div class="stat-card mozhi">
                     <div class="stat-value"><span class="counter" data-target="5196" data-suffix="ms">0</span></div>
-                    <div class="stat-label">Sino &middot; Loop Sum</div>
+                    <div class="stat-label">Mozhi &middot; Loop Sum</div>
                 </div>
             </div>
 
@@ -411,9 +411,9 @@
                             <div class="race-time">1,284ms</div>
                         </div>
                         <div class="race-lane">
-                            <div class="race-label" style="color: #4C6EF5;">Sino</div>
+                            <div class="race-label" style="color: #4C6EF5;">Mozhi</div>
                             <div class="race-bar-container">
-                                <div class="race-bar sino" data-width="100">23,031ms</div>
+                                <div class="race-bar mozhi" data-width="100">23,031ms</div>
                             </div>
                             <div class="race-time">23,031ms</div>
                         </div>
@@ -444,9 +444,9 @@
                             <div class="race-time">938ms</div>
                         </div>
                         <div class="race-lane">
-                            <div class="race-label" style="color: #4C6EF5;">Sino</div>
+                            <div class="race-label" style="color: #4C6EF5;">Mozhi</div>
                             <div class="race-bar-container">
-                                <div class="race-bar sino" data-width="100">5,196ms</div>
+                                <div class="race-bar mozhi" data-width="100">5,196ms</div>
                             </div>
                             <div class="race-time">5,196ms</div>
                         </div>
@@ -459,7 +459,7 @@
                 <div class="static-chart">
                     <h2>Static Benchmark Chart (PNG)</h2>
                     <p style="color: var(--text-muted);">Generated with matplotlib at 200 DPI. Suitable for embedding in documents.</p>
-                    <img src="benchmark-results.png" alt="Sino vs C vs Python benchmark results" loading="lazy">
+                    <img src="benchmark-results.png" alt="Mozhi vs C vs Python benchmark results" loading="lazy">
                 </div>
             </div>
 
@@ -473,8 +473,8 @@
                                 <th>Benchmark</th>
                                 <th>C (gcc -O2)</th>
                                 <th>Python 3</th>
-                                <th>Sino (interpreter)</th>
-                                <th>Sino vs C</th>
+                                <th>Mozhi (interpreter)</th>
+                                <th>Mozhi vs C</th>
                                 <th>Winner</th>
                             </tr>
                         </thead>
@@ -514,7 +514,7 @@
                         <p><strong>Python 3</strong> is 65&ndash;938&times; slower than C. CPython is a bytecode interpreter with no JIT in standard mode.</p>
                     </div>
                     <div class="note">
-                        <p><strong>Sino (tree-walking interpreter)</strong> is 1,042&ndash;5,196&times; slower than C. Sino currently walks the AST directly without compiling to bytecode or native code.</p>
+                        <p><strong>Mozhi (tree-walking interpreter)</strong> is 1,042&ndash;5,196&times; slower than C. Mozhi currently walks the AST directly without compiling to bytecode or native code.</p>
                     </div>
 
                     <h3>Roadmap: Performance Improvements</h3>
@@ -537,7 +537,7 @@
                 <li><strong>Platform:</strong> x86_64 Linux, gcc 14.2.0, Python 3.12.13</li>
                 <li><strong>C compilation:</strong> <code>gcc -O2 fib.c -o fib_c</code></li>
                 <li><strong>Python:</strong> <code>python3 fib.py</code> (CPython, no JIT)</li>
-                <li><strong>Sino:</strong> <code>sino fib.si</code> (tree-walking interpreter v2.0)</li>
+                <li><strong>Mozhi:</strong> <code>mozhi fib.si</code> (tree-walking interpreter v2.0)</li>
                 <li><strong>Measurement:</strong> 3 runs, average taken. Wall-clock time via <code>date +%s%N</code></li>
                 <li><strong>Correctness:</strong> All implementations produce identical results: Fib(30)=832040, Fib(35)=9227465, Sum=49999995000000</li>
             </ul>
@@ -545,7 +545,7 @@
             <h2>Benchmark Code</h2>
             <p>All three implementations use identical algorithms:</p>
 
-            <h3>Sino (fib.si)</h3>
+            <h3>Mozhi (fib.si)</h3>
             <pre><code>fn fibonacci(n) {
     if n &lt;= 1 {
         return n
@@ -577,7 +577,7 @@ print(f"Fib(30) = {fibonacci(30)}")</code></pre>
 
             <div class="footer">
                 <p>Copyright &copy; 2026 crossberry-in.</p>
-                <p><a href="https://github.com/crossberry-in/sino-doc">View on GitHub</a></p>
+                <p><a href="https://github.com/crossberry-in/mozhi-doc">View on GitHub</a></p>
             </div>
         </main>
     </div>
@@ -662,7 +662,7 @@ print(f"Fib(30) = {fibonacci(30)}")</code></pre>
                             borderWidth: 2,
                         },
                         {
-                            label: 'Sino (interpreter)',
+                            label: 'Mozhi (interpreter)',
                             data: [2085, 23031, 5196],
                             backgroundColor: 'rgba(76, 110, 245, 0.8)',
                             borderColor: '#4C6EF5',
@@ -729,7 +729,7 @@ print(f"Fib(30) = {fibonacci(30)}")</code></pre>
                             borderWidth: 2,
                         },
                         {
-                            label: 'Sino',
+                            label: 'Mozhi',
                             data: [1042, 1645, 5196],
                             backgroundColor: 'rgba(76, 110, 245, 0.8)',
                             borderColor: '#4C6EF5',

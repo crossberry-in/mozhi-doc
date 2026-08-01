@@ -1,30 +1,30 @@
 #!/usr/bin/env bash
 #
-# Sino — Universal installer
+# Mozhi — Universal installer
 #
 # Supported platforms:
-#   - Linux x86_64 (Ubuntu, Debian, Fedora, Arch, etc.)  → sino-linux-x86_64
-#   - Linux ARM64 (Raspberry Pi 4/5, ARM servers)        → sino-linux-arm64
-#   - Alpine Linux x86_64 (musl libc)                    → sino-alpine-x86_64
-#   - Alpine Linux ARM64 (musl libc)                     → sino-alpine-arm64
-#   - Termux on Android ARM64                            → sino-alpine-arm64 (static)
-#   - Termux on Android x86_64                           → sino-alpine-x86_64 (static)
-#   - macOS Intel                                         → sino-macos-x86_64
-#   - macOS Apple Silicon (M1/M2/M3/M4)                  → sino-macos-arm64
-#   - Windows x86_64 (via Git Bash / WSL)                → sino-windows-x86_64.exe
+#   - Linux x86_64 (Ubuntu, Debian, Fedora, Arch, etc.)  → mozhi-linux-x86_64
+#   - Linux ARM64 (Raspberry Pi 4/5, ARM servers)        → mozhi-linux-arm64
+#   - Alpine Linux x86_64 (musl libc)                    → mozhi-alpine-x86_64
+#   - Alpine Linux ARM64 (musl libc)                     → mozhi-alpine-arm64
+#   - Termux on Android ARM64                            → mozhi-alpine-arm64 (static)
+#   - Termux on Android x86_64                           → mozhi-alpine-x86_64 (static)
+#   - macOS Intel                                         → mozhi-macos-x86_64
+#   - macOS Apple Silicon (M1/M2/M3/M4)                  → mozhi-macos-arm64
+#   - Windows x86_64 (via Git Bash / WSL)                → mozhi-windows-x86_64.exe
 #
 # Usage:
-#   curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
+#   curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash
 #
 set -e
 
 # --- Configuration ------------------------------------------------------
 
-REPO="crossberry-in/sino-doc"
-# Install as 'sino-interpreter' to avoid conflict with the sino-pkg
-# package manager, which installs as 'sino' (the unified dispatcher).
-# The sino-pkg dispatcher will find this binary via find_sino_interpreter().
-BINARY_NAME="sino-interpreter"
+REPO="crossberry-in/mozhi-doc"
+# Install as 'mozhi-interpreter' to avoid conflict with the mozhi-pkg
+# package manager, which installs as 'mozhi' (the unified dispatcher).
+# The mozhi-pkg dispatcher will find this binary via find_mozhi_interpreter().
+BINARY_NAME="mozhi-interpreter"
 
 # --- Helpers (ALL output goes to stderr so it never pollutes $(...)) ----
 
@@ -86,20 +86,20 @@ asset_for_platform() {
     case "$os" in
         linux)
             if [ "$libc" = "musl" ]; then
-                echo "sino-alpine-${arch}"
+                echo "mozhi-alpine-${arch}"
             else
-                echo "sino-linux-${arch}"
+                echo "mozhi-linux-${arch}"
             fi
             ;;
         termux)
             # Termux uses Android's bionic libc — only static musl binaries work
-            echo "sino-alpine-${arch}"
+            echo "mozhi-alpine-${arch}"
             ;;
         macos)
-            echo "sino-macos-${arch}"
+            echo "mozhi-macos-${arch}"
             ;;
         windows)
-            echo "sino-windows-${arch}.exe"
+            echo "mozhi-windows-${arch}.exe"
             ;;
         *)
             return 1
@@ -144,7 +144,7 @@ get_latest_version() {
         | sed -E 's/.*"tag_name":\s*"([^"]+)".*/\1/')"
 
     if [ -z "$version" ]; then
-        error "Failed to determine the latest Sino release version."
+        error "Failed to determine the latest Mozhi release version."
         exit 1
     fi
     echo "$version"
@@ -202,38 +202,38 @@ install_binary() {
 # --- Verify installation ------------------------------------------------
 
 verify_installation() {
-    local sino_cmd
-    sino_cmd="$(command -v sino-interpreter 2>/dev/null || true)"
+    local mozhi_cmd
+    mozhi_cmd="$(command -v mozhi-interpreter 2>/dev/null || true)"
 
-    if [ -z "$sino_cmd" ]; then
-        warn "Sino interpreter was installed but 'sino-interpreter' is not on your PATH."
+    if [ -z "$mozhi_cmd" ]; then
+        warn "Mozhi interpreter was installed but 'mozhi-interpreter' is not on your PATH."
         warn "Open a new terminal, or run: source ~/.bashrc  (or ~/.zshrc)"
         return 0
     fi
 
     info "Verifying installation..."
     # The interpreter doesn't have --version, so just run it with a tiny script
-    if echo 'echo "Sino interpreter OK"' | "$sino_cmd" /dev/stdin 2>/dev/null; then
-        success "Sino interpreter is installed and working!"
+    if echo 'echo "Mozhi interpreter OK"' | "$mozhi_cmd" /dev/stdin 2>/dev/null; then
+        success "Mozhi interpreter is installed and working!"
     else
         # Fallback: just check the binary exists and is executable
-        if [ -x "$sino_cmd" ]; then
-            success "Sino interpreter installed at: $sino_cmd"
+        if [ -x "$mozhi_cmd" ]; then
+            success "Mozhi interpreter installed at: $mozhi_cmd"
         else
-            warn "Sino interpreter was installed but verification failed."
+            warn "Mozhi interpreter was installed but verification failed."
         fi
     fi
 
     printf '\n' >&2
-    info "The interpreter is installed as 'sino-interpreter'." >&2
-    info "Install the sino-pkg dispatcher ('sino') from:" >&2
-    info "  https://github.com/crossberry-in/sino-pkg" >&2
+    info "The interpreter is installed as 'mozhi-interpreter'." >&2
+    info "Install the mozhi-pkg dispatcher ('mozhi') from:" >&2
+    info "  https://github.com/crossberry-in/mozhi-pkg" >&2
     printf '\n' >&2
-    info "Then use the unified 'sino' command:" >&2
-    info "  sino                    # start REPL" >&2
-    info "  sino my_script.si       # run a script" >&2
-    info "  sino build              # build a project" >&2
-    info "  sino test               # run tests" >&2
+    info "Then use the unified 'mozhi' command:" >&2
+    info "  mozhi                    # start REPL" >&2
+    info "  mozhi my_script.si       # run a script" >&2
+    info "  mozhi build              # build a project" >&2
+    info "  mozhi test               # run tests" >&2
 }
 
 # --- Main ---------------------------------------------------------------
@@ -241,7 +241,7 @@ verify_installation() {
 main() {
     printf '\n' >&2
     printf '  \033[1;36m===================================\033[0m\n' >&2
-    printf '  \033[1;36m   Sino Language Installer\033[0m\n'     >&2
+    printf '  \033[1;36m   Mozhi Language Installer\033[0m\n'     >&2
     printf '  \033[1;36m===================================\033[0m\n' >&2
     printf '\n' >&2
 
@@ -270,7 +270,7 @@ main() {
     verify_installation
 
     printf '\n' >&2
-    success "Done! Docs: https://github.com/crossberry-in/sino-doc" >&2
+    success "Done! Docs: https://github.com/crossberry-in/mozhi-doc" >&2
     printf '\n' >&2
 }
 

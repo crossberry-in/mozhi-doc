@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the Sino programming language will be documented in this file.
+All notable changes to the Mozhi programming language will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -17,18 +17,18 @@ _No unreleased changes yet._
 
 ### Added
 
-- **Initial public release** of the Sino programming language.
+- **Initial public release** of the Mozhi programming language.
 - **Cross-platform binaries** for 7 target platforms (built with `zig cc` as a cross-compiler):
-  - `sino-linux-x86_64` — Linux x86_64 (glibc, dynamically linked)
-  - `sino-linux-arm64` — Linux ARM64/aarch64 (glibc, dynamically linked)
-  - `sino-alpine-x86_64` — Alpine Linux x86_64 (musl, statically linked)
-  - `sino-alpine-arm64` — Alpine Linux ARM64 (musl, statically linked)
-  - `sino-windows-x86_64.exe` — Windows 10/11 x86_64 (statically linked)
-  - `sino-macos-x86_64` — macOS Intel (Darwin)
-  - `sino-macos-arm64` — macOS Apple Silicon M1/M2/M3/M4 (Darwin)
-- **Termux (Android) support** — works natively via the static musl build (`sino-alpine-arm64` for Android phones, `sino-alpine-x86_64` for x86 emulators). No `proot` or `proot-distro` needed.
+  - `mozhi-linux-x86_64` — Linux x86_64 (glibc, dynamically linked)
+  - `mozhi-linux-arm64` — Linux ARM64/aarch64 (glibc, dynamically linked)
+  - `mozhi-alpine-x86_64` — Alpine Linux x86_64 (musl, statically linked)
+  - `mozhi-alpine-arm64` — Alpine Linux ARM64 (musl, statically linked)
+  - `mozhi-windows-x86_64.exe` — Windows 10/11 x86_64 (statically linked)
+  - `mozhi-macos-x86_64` — macOS Intel (Darwin)
+  - `mozhi-macos-arm64` — macOS Apple Silicon M1/M2/M3/M4 (Darwin)
+- **Termux (Android) support** — works natively via the static musl build (`mozhi-alpine-arm64` for Android phones, `mozhi-alpine-x86_64` for x86 emulators). No `proot` or `proot-distro` needed.
 - **Universal `install.sh` installer** for Linux / macOS / WSL / Termux — auto-detects OS, architecture, and libc, then downloads the correct binary.
-- **`install.ps1` PowerShell installer** for native Windows 10/11 — installs to `%USERPROFILE%\.sino\bin\` and adds it to the user `PATH`.
+- **`install.ps1` PowerShell installer** for native Windows 10/11 — installs to `%USERPROFILE%\.mozhi\bin\` and adds it to the user `PATH`.
 - **Lexer** supporting identifiers, integers, floats, strings, booleans, `null`, keywords, operators, and comments.
 - **Parser** producing an Abstract Syntax Tree (AST) for the entire language.
 - **Tree-walking interpreter** evaluating the AST directly.
@@ -80,7 +80,7 @@ _No unreleased changes yet._
   - Math: `sqrt(x)`, `abs(x)`, `floor(x)`, `ceil(x)`
 - **Comments**: Single-line comments with `#`.
 - **REPL**: Interactive Read-Eval-Print Loop.
-- **File Execution**: Run Sino scripts from `.si` files.
+- **File Execution**: Run Mozhi scripts from `.si` files.
 - **Makefile**: Standard build system with `make`, `make clean`, `make run`, `make repl`, `make file` targets.
 
 ### Documentation
@@ -126,4 +126,4 @@ _No unreleased changes yet._
 ---
 
 For the full release history and binary downloads, visit the
-[Releases page](https://github.com/crossberry-in/sino-doc/releases).
+[Releases page](https://github.com/crossberry-in/mozhi-doc/releases).

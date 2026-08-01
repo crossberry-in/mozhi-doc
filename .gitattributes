@@ -1,0 +1,8 @@
+# Mozhi Language Detection
+# Temporary: until GitHub Linguist adds Mozhi, use Ruby as stand-in
+*.mz linguist-language=Ruby
+*.mz linguist-detectable=true
+*.md linguist-detectable=true
+*.toml linguist-detectable=true
+*.json linguist-generated
+*.lock linguist-generated

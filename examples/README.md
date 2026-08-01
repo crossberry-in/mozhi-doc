@@ -1,6 +1,6 @@
-# Sino — Examples
+# Mozhi — Examples
 
-This directory contains sample Sino programs (`.si` files) to help you learn the language.
+This directory contains sample Mozhi programs (`.si` files) to help you learn the language.
 
 ---
 
@@ -21,24 +21,24 @@ This directory contains sample Sino programs (`.si` files) to help you learn the
 
 ## Running the Examples
 
-After installing Sino (see the [Installation Guide](../INSTALL.md)), run any example with:
+After installing Mozhi (see the [Installation Guide](../INSTALL.md)), run any example with:
 
 ```bash
-sino hello.si
-sino fibonacci.si
+mozhi hello.si
+mozhi fibonacci.si
 ```
 
 ---
 
 ## Hello World
 
-The simplest Sino program:
+The simplest Mozhi program:
 
-```sino
+```mozhi
 echo "Hello, World!"
 ```
 
-Save as `hello.si` and run with `sino hello.si`.
+Save as `hello.si` and run with `mozhi hello.si`.
 
 ---
 

@@ -1,6 +1,6 @@
-# Sino — Installation Guide
+# Mozhi — Installation Guide
 
-Sino runs on **Linux**, **macOS**, **Windows**, and **Termux** (Android). The installer auto-detects your platform and architecture, so in most cases you can install with a single command.
+Mozhi runs on **Linux**, **macOS**, **Windows**, and **Termux** (Android). The installer auto-detects your platform and architecture, so in most cases you can install with a single command.
 
 ---
 
@@ -28,7 +28,7 @@ Sino runs on **Linux**, **macOS**, **Windows**, and **Termux** (Android). The in
 ### Linux / macOS / WSL / Termux
 
 ```bash
-curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash
 ```
 
 The installer:
@@ -41,17 +41,17 @@ The installer:
 ### Windows (PowerShell)
 
 ```powershell
-irm https://github.com/crossberry-in/sino-doc/raw/main/install.ps1 | iex
+irm https://github.com/crossberry-in/mozhi-doc/raw/main/install.ps1 | iex
 ```
 
 The PowerShell installer:
 
-1. Downloads `sino-windows-x86_64.exe` from the latest release
-2. Installs it to `%USERPROFILE%\.sino\bin\sino.exe`
-3. Adds `%USERPROFILE%\.sino\bin` to your user `PATH`
+1. Downloads `mozhi-windows-x86_64.exe` from the latest release
+2. Installs it to `%USERPROFILE%\.mozhi\bin\mozhi.exe`
+3. Adds `%USERPROFILE%\.mozhi\bin` to your user `PATH`
 4. Verifies the installation
 
-> Open a **new** PowerShell window after installation for `sino` to be on your `PATH`.
+> Open a **new** PowerShell window after installation for `mozhi` to be on your `PATH`.
 
 ---
 
@@ -73,15 +73,15 @@ The glibc Linux builds dynamically link against `libc` and `libm` (already prese
 
 | Platform | Architecture | Libc | Asset name | Build type |
 |----------|--------------|------|------------|-----------|
-| Linux (Ubuntu, Debian, Fedora, Arch) | x86_64 | glibc | `sino-linux-x86_64` | Dynamic |
-| Linux (Raspberry Pi 4/5, ARM servers) | ARM64 (aarch64) | glibc | `sino-linux-arm64` | Dynamic |
-| Alpine Linux | x86_64 | musl | `sino-alpine-x86_64` | **Static** |
-| Alpine Linux | ARM64 | musl | `sino-alpine-arm64` | **Static** |
-| Termux on Android | ARM64 | bionic | `sino-alpine-arm64` | **Static** |
-| Termux on Android | x86_64 | bionic | `sino-alpine-x86_64` | **Static** |
-| macOS (Intel) | x86_64 | Darwin | `sino-macos-x86_64` | Dynamic |
-| macOS (Apple Silicon M1/M2/M3/M4) | ARM64 | Darwin | `sino-macos-arm64` | Dynamic |
-| Windows 10/11 | x86_64 | MSVCRT | `sino-windows-x86_64.exe` | Static |
+| Linux (Ubuntu, Debian, Fedora, Arch) | x86_64 | glibc | `mozhi-linux-x86_64` | Dynamic |
+| Linux (Raspberry Pi 4/5, ARM servers) | ARM64 (aarch64) | glibc | `mozhi-linux-arm64` | Dynamic |
+| Alpine Linux | x86_64 | musl | `mozhi-alpine-x86_64` | **Static** |
+| Alpine Linux | ARM64 | musl | `mozhi-alpine-arm64` | **Static** |
+| Termux on Android | ARM64 | bionic | `mozhi-alpine-arm64` | **Static** |
+| Termux on Android | x86_64 | bionic | `mozhi-alpine-x86_64` | **Static** |
+| macOS (Intel) | x86_64 | Darwin | `mozhi-macos-x86_64` | Dynamic |
+| macOS (Apple Silicon M1/M2/M3/M4) | ARM64 | Darwin | `mozhi-macos-arm64` | Dynamic |
+| Windows 10/11 | x86_64 | MSVCRT | `mozhi-windows-x86_64.exe` | Static |
 
 > Termux uses the static musl build because Android's bionic libc is not API-compatible with glibc or musl. Static musl binaries run natively on the Linux kernel that Android uses — no `proot` needed.
 
@@ -93,7 +93,7 @@ The glibc Linux builds dynamically link against `libc` and `libm` (already prese
 
 ```bash
 # One-line install
-curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash
 ```
 
 If `curl` is not installed:
@@ -112,25 +112,25 @@ sudo pacman -S --needed curl
 After install, verify:
 
 ```bash
-sino --version
+mozhi --version
 ```
 
 ### Alpine Linux
 
-Alpine uses `musl` libc by default. The installer detects this and downloads the static musl binary (`sino-alpine-*`).
+Alpine uses `musl` libc by default. The installer detects this and downloads the static musl binary (`mozhi-alpine-*`).
 
 ```bash
 # Install curl if not present
 apk add --no-cache curl
 
-# Install Sino
-curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
+# Install Mozhi
+curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash
 ```
 
 Verify:
 
 ```bash
-sino --version
+mozhi --version
 ```
 
 ### Termux (Android)
@@ -141,16 +141,16 @@ Termux runs on Android, which uses Bionic libc. The installer detects Termux and
 # Make sure curl is installed
 pkg install -y curl
 
-# Install Sino
-curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
+# Install Mozhi
+curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash
 ```
 
-Sino will be installed to `$PREFIX/bin/sino` (typically `/data/data/com.termux/files/usr/bin/sino`), which is already on your Termux `PATH`. No `sudo` is needed — you own that directory.
+Mozhi will be installed to `$PREFIX/bin/mozhi` (typically `/data/data/com.termux/files/usr/bin/mozhi`), which is already on your Termux `PATH`. No `sudo` is needed — you own that directory.
 
 Verify:
 
 ```bash
-sino --version
+mozhi --version
 ```
 
 ### macOS (Intel and Apple Silicon)
@@ -160,25 +160,25 @@ sino --version
 brew install curl
 
 # Or use the system curl (preinstalled on macOS)
-curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash
 ```
 
 The installer:
 
 - On **Apple Silicon** (M1/M2/M3/M4), installs to `/opt/homebrew/bin` if it exists, otherwise `/usr/local/bin`, otherwise `~/.local/bin`
 - On **Intel** Macs, installs to `/usr/local/bin`, otherwise `~/.local/bin`
-- Downloads `sino-macos-arm64` for Apple Silicon or `sino-macos-x86_64` for Intel
+- Downloads `mozhi-macos-arm64` for Apple Silicon or `mozhi-macos-x86_64` for Intel
 
 Verify:
 
 ```bash
-sino --version
+mozhi --version
 ```
 
-> **Note on macOS Gatekeeper:** The first time you run `sino`, macOS may show a security prompt saying "Sino cannot be opened because the developer cannot be verified." Right-click the binary in Finder and select **Open** to whitelist it, or run:
+> **Note on macOS Gatekeeper:** The first time you run `mozhi`, macOS may show a security prompt saying "Mozhi cannot be opened because the developer cannot be verified." Right-click the binary in Finder and select **Open** to whitelist it, or run:
 >
 > ```bash
-> xattr -d com.apple.quarantine /path/to/sino
+> xattr -d com.apple.quarantine /path/to/mozhi
 > ```
 
 ### Windows 10/11
@@ -188,19 +188,19 @@ sino --version
 Open **PowerShell** (Windows 10 1809+ or Windows 11) and run:
 
 ```powershell
-irm https://github.com/crossberry-in/sino-doc/raw/main/install.ps1 | iex
+irm https://github.com/crossberry-in/mozhi-doc/raw/main/install.ps1 | iex
 ```
 
 The installer:
 
-1. Downloads `sino-windows-x86_64.exe`
-2. Installs it to `%USERPROFILE%\.sino\bin\sino.exe`
-3. Adds `%USERPROFILE%\.sino\bin` to your user `PATH`
+1. Downloads `mozhi-windows-x86_64.exe`
+2. Installs it to `%USERPROFILE%\.mozhi\bin\mozhi.exe`
+3. Adds `%USERPROFILE%\.mozhi\bin` to your user `PATH`
 
 Open a **new** PowerShell window after install, then verify:
 
 ```powershell
-sino --version
+mozhi --version
 ```
 
 #### Option B: Windows Subsystem for Linux (WSL)
@@ -215,7 +215,7 @@ wsl --install -d Ubuntu
 Then in the Ubuntu terminal:
 
 ```bash
-curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash
 ```
 
 ### Windows Subsystem for Linux (WSL)
@@ -226,35 +226,35 @@ Follow the [Linux (Ubuntu / Debian / Fedora / Arch)](#linux-ubuntu--debian--fedo
 
 ## Manual Installation
 
-If the installer doesn't work for you, you can install Sino manually.
+If the installer doesn't work for you, you can install Mozhi manually.
 
 ### Step 1 — Download the binary
 
-Go to the [Releases page](https://github.com/crossberry-in/sino-doc/releases) and download the correct binary for your platform:
+Go to the [Releases page](https://github.com/crossberry-in/mozhi-doc/releases) and download the correct binary for your platform:
 
 | Your platform | Download this asset |
 |---------------|---------------------|
-| Ubuntu / Debian / Fedora / Arch (x86_64) | `sino-linux-x86_64` |
-| Raspberry Pi 4/5, ARM servers | `sino-linux-arm64` |
-| Alpine Linux (x86_64) | `sino-alpine-x86_64` |
-| Alpine Linux (ARM64) | `sino-alpine-arm64` |
-| Termux on Android (arm64) | `sino-alpine-arm64` |
-| Termux on Android (x86_64) | `sino-alpine-x86_64` |
-| macOS Intel | `sino-macos-x86_64` |
-| macOS Apple Silicon | `sino-macos-arm64` |
-| Windows 10/11 x86_64 | `sino-windows-x86_64.exe` |
+| Ubuntu / Debian / Fedora / Arch (x86_64) | `mozhi-linux-x86_64` |
+| Raspberry Pi 4/5, ARM servers | `mozhi-linux-arm64` |
+| Alpine Linux (x86_64) | `mozhi-alpine-x86_64` |
+| Alpine Linux (ARM64) | `mozhi-alpine-arm64` |
+| Termux on Android (arm64) | `mozhi-alpine-arm64` |
+| Termux on Android (x86_64) | `mozhi-alpine-x86_64` |
+| macOS Intel | `mozhi-macos-x86_64` |
+| macOS Apple Silicon | `mozhi-macos-arm64` |
+| Windows 10/11 x86_64 | `mozhi-windows-x86_64.exe` |
 
 Or download from the command line:
 
 ```bash
 # Example: Linux x86_64
-curl -L -o sino https://github.com/crossberry-in/sino-doc/releases/download/v1.0.0/sino-linux-x86_64
+curl -L -o mozhi https://github.com/crossberry-in/mozhi-doc/releases/download/v1.0.0/mozhi-linux-x86_64
 ```
 
 ### Step 2 — Make it executable (Linux / macOS / Termux only)
 
 ```bash
-chmod +x sino
+chmod +x mozhi
 ```
 
 (On Windows, skip this step.)
@@ -263,11 +263,11 @@ chmod +x sino
 
 ```bash
 # System-wide (Linux/macOS, requires sudo)
-sudo mv sino /usr/local/bin/sino
+sudo mv mozhi /usr/local/bin/mozhi
 
 # User-local (no sudo)
 mkdir -p ~/.local/bin
-mv sino ~/.local/bin/sino
+mv mozhi ~/.local/bin/mozhi
 # Make sure ~/.local/bin is on your PATH (add to ~/.bashrc or ~/.zshrc)
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
@@ -276,78 +276,78 @@ source ~/.bashrc
 For Termux, no `sudo` is needed:
 
 ```bash
-mv sino $PREFIX/bin/sino
+mv mozhi $PREFIX/bin/mozhi
 ```
 
-For Windows, move `sino-windows-x86_64.exe` to `%USERPROFILE%\.sino\bin\sino.exe` and add that directory to your `PATH`:
+For Windows, move `mozhi-windows-x86_64.exe` to `%USERPROFILE%\.mozhi\bin\mozhi.exe` and add that directory to your `PATH`:
 
 ```powershell
-mkdir "$env:USERPROFILE\.sino\bin"
-move sino-windows-x86_64.exe "$env:USERPROFILE\.sino\bin\sino.exe"
-$env:Path += ";$env:USERPROFILE\.sino\bin"
+mkdir "$env:USERPROFILE\.mozhi\bin"
+move mozhi-windows-x86_64.exe "$env:USERPROFILE\.mozhi\bin\mozhi.exe"
+$env:Path += ";$env:USERPROFILE\.mozhi\bin"
 # Make permanent:
-[Environment]::SetEnvironmentVariable("Path", $env:Path + ";$env:USERPROFILE\.sino\bin", "User")
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";$env:USERPROFILE\.mozhi\bin", "User")
 ```
 
 ### Step 4 — Verify
 
 ```bash
-sino --version
+mozhi --version
 ```
 
 ---
 
 ## Upgrading
 
-To upgrade Sino to a newer version, simply re-run the install command. The new binary will overwrite the old one.
+To upgrade Mozhi to a newer version, simply re-run the install command. The new binary will overwrite the old one.
 
 To check your current version:
 
 ```bash
-sino --version
+mozhi --version
 ```
 
 ---
 
 ## Uninstalling
 
-To remove Sino from your system:
+To remove Mozhi from your system:
 
 ```bash
 # Linux / macOS (system-wide)
-sudo rm /usr/local/bin/sino
+sudo rm /usr/local/bin/mozhi
 
 # Linux / macOS (user-local)
-rm ~/.local/bin/sino
+rm ~/.local/bin/mozhi
 
 # Termux
-rm $PREFIX/bin/sino
+rm $PREFIX/bin/mozhi
 ```
 
 On Windows:
 
 ```powershell
-Remove-Item "$env:USERPROFILE\.sino\bin\sino.exe" -Force
+Remove-Item "$env:USERPROFILE\.mozhi\bin\mozhi.exe" -Force
 # Optionally remove the directory:
-Remove-Item "$env:USERPROFILE\.sino" -Recurse -Force
+Remove-Item "$env:USERPROFILE\.mozhi" -Recurse -Force
 ```
 
-That's it — Sino stores no configuration files or caches outside the binary itself.
+That's it — Mozhi stores no configuration files or caches outside the binary itself.
 
 ---
 
 ## Troubleshooting
 
-### `bash: sino: command not found`
+### `bash: mozhi: command not found`
 
 The binary is not on your `PATH`. Verify with:
 
 ```bash
-which sino
+which mozhi
 echo $PATH
 ```
 
-If `which sino` returns nothing, the binary is not in any directory listed in `$PATH`. Move it (see [Step 3](#step-3--move-it-to-a-directory-on-your-path)) or add its directory to `PATH`.
+If `which mozhi` returns nothing, the binary is not in any directory listed in `$PATH`. Move it (see [Step 3](#step-3--move-it-to-a-directory-on-your-path)) or add its directory to `PATH`.
 
 ### `cannot execute binary file: Exec format error`
 
@@ -357,15 +357,15 @@ You downloaded a binary for the wrong architecture. Check your architecture:
 uname -m
 ```
 
-- `x86_64` → use `sino-linux-x86_64`, `sino-alpine-x86_64`, `sino-macos-x86_64`, or `sino-windows-x86_64.exe`
-- `aarch64` or `arm64` → use `sino-linux-arm64`, `sino-alpine-arm64`, or `sino-macos-arm64`
+- `x86_64` → use `mozhi-linux-x86_64`, `mozhi-alpine-x86_64`, `mozhi-macos-x86_64`, or `mozhi-windows-x86_64.exe`
+- `aarch64` or `arm64` → use `mozhi-linux-arm64`, `mozhi-alpine-arm64`, or `mozhi-macos-arm64`
 
 ### `Permission denied`
 
 The binary is not marked executable. Run:
 
 ```bash
-chmod +x /path/to/sino
+chmod +x /path/to/mozhi
 ```
 
 ### `error while loading shared libraries: libm.so.6` (Linux glibc only)
@@ -382,54 +382,54 @@ On Fedora/RHEL:
 sudo dnf install -y glibc
 ```
 
-If you're on Alpine Linux or Termux, you should be using the static musl build (`sino-alpine-*`) instead of the glibc build.
+If you're on Alpine Linux or Termux, you should be using the static musl build (`mozhi-alpine-*`) instead of the glibc build.
 
 ### `mv: cannot stat '...': No such file or directory` during install
 
 This was a bug in early versions of `install.sh` where `info` messages polluted the `tmp_file` variable. The bug is fixed in the current version — please re-download and re-run the install command.
 
-### `sino --version` returns nothing or fails on macOS
+### `mozhi --version` returns nothing or fails on macOS
 
 macOS Gatekeeper may be blocking the binary. Run:
 
 ```bash
-xattr -d com.apple.quarantine /usr/local/bin/sino
+xattr -d com.apple.quarantine /usr/local/bin/mozhi
 # or wherever you installed it
 ```
 
 Or right-click the binary in Finder, select **Open**, and confirm the security prompt.
 
-### `sino` works but the install script printed errors
+### `mozhi` works but the install script printed errors
 
-The install script is defensive — even if some checks print warnings, the binary may have installed successfully. Run `sino --version` to verify. If it works, you're good.
+The install script is defensive — even if some checks print warnings, the binary may have installed successfully. Run `mozhi --version` to verify. If it works, you're good.
 
-### Termux: `No such file or directory` when running `sino`
+### Termux: `No such file or directory` when running `mozhi`
 
-This usually means you accidentally downloaded the glibc binary (which won't run on Android's bionic). Re-run the installer — it should download `sino-alpine-arm64` (static musl), which works on Termux natively.
+This usually means you accidentally downloaded the glibc binary (which won't run on Android's bionic). Re-run the installer — it should download `mozhi-alpine-arm64` (static musl), which works on Termux natively.
 
 ---
 
 ## Verify the Installation
 
-After installation, run the following smoke test to make sure Sino works:
+After installation, run the following smoke test to make sure Mozhi works:
 
 ```bash
-echo 'echo "Sino is working!"' > /tmp/test.si
-sino /tmp/test.si
+echo 'echo "Mozhi is working!"' > /tmp/test.si
+mozhi /tmp/test.si
 ```
 
 Expected output:
 
 ```
-Sino is working!
+Mozhi is working!
 ```
 
-If you see this output, you're ready to start coding in Sino! Head over to the [Usage Guide](USAGE.md) to learn more.
+If you see this output, you're ready to start coding in Mozhi! Head over to the [Usage Guide](USAGE.md) to learn more.
 
 ---
 
 ## Need Help?
 
-- 🐛 **Bug reports:** [Open an issue](https://github.com/crossberry-in/sino-doc/issues)
-- 💬 **Questions:** [GitHub Discussions](https://github.com/crossberry-in/sino-doc/discussions)
+- 🐛 **Bug reports:** [Open an issue](https://github.com/crossberry-in/mozhi-doc/issues)
+- 💬 **Questions:** [GitHub Discussions](https://github.com/crossberry-in/mozhi-doc/discussions)
 - 📖 **Documentation:** [Usage Guide](USAGE.md) | [Language Reference](LANGUAGE_REFERENCE.md)

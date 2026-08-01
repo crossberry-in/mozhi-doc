@@ -1,8 +1,8 @@
-# Sino Programming Language — Development Roadmap
+# Mozhi Programming Language — Development Roadmap
 
 **Version:** 2.0 | **Last Updated:** 2026-08-01
 
-This document defines the complete development roadmap for the Sino programming language, organized into 12 phases plus long-term goals. Each phase is prioritized by dependency order — earlier phases provide foundations for later ones.
+This document defines the complete development roadmap for the Mozhi programming language, organized into 12 phases plus long-term goals. Each phase is prioritized by dependency order — earlier phases provide foundations for later ones.
 
 ---
 
@@ -127,14 +127,14 @@ A complete collections library is essential for productive programming.
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| `sino install` | ✅ Done | Install dependencies from sino.toml |
-| `sino update` | ✅ Done | Update dependencies |
-| `sino remove` | ✅ Done | Remove dependencies |
-| `sino search` | ✅ Done | Search packages |
-| `sino publish` | Partial | Stub — needs public registry |
-| Dependency Lock File | ✅ Done | sino.lock with resolved versions |
+| `mozhi install` | ✅ Done | Install dependencies from mozhi.toml |
+| `mozhi update` | ✅ Done | Update dependencies |
+| `mozhi remove` | ✅ Done | Remove dependencies |
+| `mozhi search` | ✅ Done | Search packages |
+| `mozhi publish` | Partial | Stub — needs public registry |
+| Dependency Lock File | ✅ Done | mozhi.lock with resolved versions |
 | Version Resolution | ✅ Done | Semantic versioning with ^, ~, >=, <, * |
-| Offline Cache | ✅ Done | ~/.sino/cache/ for offline builds |
+| Offline Cache | ✅ Done | ~/.mozhi/cache/ for offline builds |
 | Mirrors | Planned | Mirror servers for faster downloads |
 | Private Registry | Planned | Self-hosted registry for private packages |
 
@@ -173,7 +173,7 @@ A complete collections library is essential for productive programming.
 | Garbage Collector | Planned | Mark-sweep GC with generational optimization |
 | JIT Compiler | Planned | Just-in-time compilation for hot paths |
 | Native Code Generator | Planned | LLVM backend for native executables |
-| Dynamic Loader | Planned | Load .silib packages at runtime |
+| Dynamic Loader | Planned | Load .mzl packages at runtime |
 | Plugin System | Planned | Dynamically loadable modules with stable ABI |
 
 ---
@@ -189,12 +189,12 @@ A complete collections library is essential for productive programming.
 | Hover Help | Planned | Show type and documentation on hover |
 | Go to Definition | Planned | Jump to symbol definition |
 | Rename Symbol | Planned | Project-wide symbol renaming |
-| Formatter (`sino fmt`) | ✅ Done | Basic code formatting (indentation, whitespace) |
-| Linter (`sino lint`) | ✅ Done | Basic linting (unused variables) |
+| Formatter (`mozhi fmt`) | ✅ Done | Basic code formatting (indentation, whitespace) |
+| Linter (`mozhi lint`) | ✅ Done | Basic linting (unused variables) |
 | Debugger | Planned | Source-level debugger with breakpoints |
 | Profiler | Planned | CPU and memory profiler with flame graphs |
 | Coverage Tool | Planned | Code coverage reporting |
-| Documentation Generator | ✅ Done | `sino doc` generates API documentation |
+| Documentation Generator | ✅ Done | `mozhi doc` generates API documentation |
 
 ---
 
@@ -204,7 +204,7 @@ A complete collections library is essential for productive programming.
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| Unit Testing | ✅ Done | `sino test` runs test files in tests/ |
+| Unit Testing | ✅ Done | `mozhi test` runs test files in tests/ |
 | Integration Testing | Planned | Multi-module integration tests |
 | Benchmark Framework | ✅ Done | Full benchmark framework with 26 tests, statistics, history |
 | Mock Library | Planned | Mock functions and types for testing |
@@ -254,13 +254,13 @@ These are ambitious goals that extend beyond the 12-phase roadmap.
 
 | Goal | Description |
 |------|-------------|
-| **Self-hosting Compiler** | Rewrite the Sino compiler in Sino itself |
-| **Native IDE** | Full-featured IDE built specifically for Sino development |
+| **Self-hosting Compiler** | Rewrite the Mozhi compiler in Mozhi itself |
+| **Native IDE** | Full-featured IDE built specifically for Mozhi development |
 | **Official GUI Toolkit** | Cross-platform GUI library (desktop + mobile) |
 | **Database Driver Framework** | Unified interface for SQL/NoSQL databases |
 | **Embedded Runtime** | Lightweight runtime for embedded systems (RTOS, microcontrollers) |
 | **Plugin Ecosystem** | VS Code extension, IntelliJ plugin, Vim plugin |
-| **Official Package Registry** | Hosted package registry at registry.sino-lang.org |
+| **Official Package Registry** | Hosted package registry at registry.mozhi.org |
 | **Continuous Benchmark Dashboard** | Automated benchmark CI with web dashboard |
 | **Language Server Ecosystem** | LSP for all major editors |
 | **Stable ABI** | Binary compatibility for compiled libraries across versions |

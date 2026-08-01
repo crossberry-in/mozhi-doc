@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Sino Performance Benchmark Framework v2.0
+Mozhi Performance Benchmark Framework v2.0
 ==========================================
-Professional, reproducible benchmark system for the Sino Programming Language.
+Professional, reproducible benchmark system for the Mozhi Programming Language.
 
 v2.0 improvements:
 - PASS/FAIL with threshold + reason
@@ -18,7 +18,7 @@ v2.0 improvements:
 - Expanded environment (cache, freq, NUMA, page size, disk, fs, locale, tz)
 - More charts (histogram, box plot, timeline, memory/CPU graphs)
 - Final analysis (strengths, weaknesses, suggestions, issues, roadmap)
-- Fixed Sino version detection
+- Fixed Mozhi version detection
 """
 
 import os
@@ -41,7 +41,7 @@ from datetime import datetime
 VERSION = "3.0.0"
 MIN_RUNS = 30
 WARMUP_RUNS = 5
-SINO_INTERPRETER = os.environ.get("SINO_INTERPRETER", "sino-interpreter")
+MOZHI_INTERPRETER = os.environ.get("MOZHI_INTERPRETER", "mozhi-interpreter")
 BENCH_DIR = Path(__file__).parent / "si"
 REPORT_DIR = Path(__file__).parent / "reports"
 HISTORY_DIR = Path(__file__).parent / "history"
@@ -162,49 +162,49 @@ def detect_environment():
     env["locale"] = os.environ.get("LANG", "unknown")
     env["timezone"] = time.tzname[0] if time.tzname else "unknown"
 
-    # Sino interpreter version (improved detection)
-    sino_path = None
+    # Mozhi interpreter version (improved detection)
+    mozhi_path = None
     try:
         import shutil
-        sino_path = shutil.which(SINO_INTERPRETER) or SINO_INTERPRETER
-        env["sino_path"] = sino_path
-        env["sino_binary_size_bytes"] = os.path.getsize(sino_path)
-        env["sino_binary_size_kb"] = round(os.path.getsize(sino_path) / 1024, 1)
+        mozhi_path = shutil.which(MOZHI_INTERPRETER) or MOZHI_INTERPRETER
+        env["mozhi_path"] = mozhi_path
+        env["mozhi_binary_size_bytes"] = os.path.getsize(mozhi_path)
+        env["mozhi_binary_size_kb"] = round(os.path.getsize(mozhi_path) / 1024, 1)
 
         # Calculate interpreter hash
-        with open(sino_path, "rb") as f:
+        with open(mozhi_path, "rb") as f:
             env["interpreter_hash"] = hashlib.sha256(f.read()).hexdigest()[:16]
     except:
-        env["sino_path"] = SINO_INTERPRETER
+        env["mozhi_path"] = MOZHI_INTERPRETER
         env["interpreter_hash"] = "unknown"
 
-    # Sino version — run a test program that echoes version info
+    # Mozhi version — run a test program that echoes version info
     try:
-        # The Sino interpreter prints "Sino v1.0 (C Implementation)" on REPL startup
+        # The Mozhi interpreter prints "Mozhi v1.0 (C Implementation)" on REPL startup
         # Try running with --version or just echo a test
         result = subprocess.run(
-            [SINO_INTERPRETER, "--version"],
+            [MOZHI_INTERPRETER, "--version"],
             capture_output=True, text=True, timeout=5
         )
         version_output = result.stdout.strip()
         if version_output:
-            env["sino_version"] = version_output
+            env["mozhi_version"] = version_output
         else:
             # Try getting version from the REPL banner
             result = subprocess.run(
-                [SINO_INTERPRETER],
+                [MOZHI_INTERPRETER],
                 input="exit\n",
                 capture_output=True, text=True, timeout=5
             )
             for line in result.stdout.split("\n"):
-                if "Sino" in line and "v" in line:
-                    env["sino_version"] = line.strip()
+                if "Mozhi" in line and "v" in line:
+                    env["mozhi_version"] = line.strip()
                     break
             else:
                 # Hardcode based on known version
-                env["sino_version"] = "Sino v2.0 (C++/ASM/Rust Implementation)"
+                env["mozhi_version"] = "Mozhi v2.0 (C++/ASM/Rust Implementation)"
     except:
-        env["sino_version"] = "Sino v2.0 (C++/ASM/Rust Implementation)"
+        env["mozhi_version"] = "Mozhi v2.0 (C++/ASM/Rust Implementation)"
 
     # Build mode
     env["build_mode"] = "Release (-O3 -march=native)"
@@ -225,10 +225,10 @@ def detect_environment():
 
     # Build hash (hash of all source files)
     try:
-        sino_src_dir = Path(sino_path).parent.parent / "src" if sino_path else None
-        if sino_src_dir and sino_src_dir.exists():
+        mozhi_src_dir = Path(mozhi_path).parent.parent / "src" if mozhi_path else None
+        if mozhi_src_dir and mozhi_src_dir.exists():
             h = hashlib.sha256()
-            for f in sorted(sino_src_dir.glob("*.c")):
+            for f in sorted(mozhi_src_dir.glob("*.c")):
                 h.update(f.read_bytes())
             env["build_hash"] = h.hexdigest()[:16]
         else:
@@ -245,7 +245,7 @@ def detect_environment():
     env["environment_hash"] = hashlib.sha256(env_str.encode()).hexdigest()[:12]
 
     # Configuration hash — hash of benchmark configuration
-    config_str = f"{MIN_RUNS}-{WARMUP_RUNS}-{SINO_INTERPRETER}-{json.dumps(THRESHOLDS, sort_keys=True)}"
+    config_str = f"{MIN_RUNS}-{WARMUP_RUNS}-{MOZHI_INTERPRETER}-{json.dumps(THRESHOLDS, sort_keys=True)}"
     env["configuration_hash"] = hashlib.sha256(config_str.encode()).hexdigest()[:12]
 
     return env
@@ -376,13 +376,13 @@ def measure_memory_cpu():
 def run_benchmark(bench_id, name, category, description, si_code, expected_output=None, iterations=1, runs=MIN_RUNS):
     """Run a single benchmark with full metrics."""
     # Write the .si file
-    si_file = BENCH_DIR / f"bench_{name}.si"
+    si_file = BENCH_DIR / f"bench_{name}.mz"
     si_file.write_text(si_code)
 
     # Warmup runs
     for _ in range(WARMUP_RUNS):
         try:
-            subprocess.run([SINO_INTERPRETER, str(si_file)],
+            subprocess.run([MOZHI_INTERPRETER, str(si_file)],
                           capture_output=True, timeout=30)
         except:
             pass
@@ -400,7 +400,7 @@ def run_benchmark(bench_id, name, category, description, si_code, expected_outpu
         start = time.perf_counter()
         try:
             result = subprocess.run(
-                [SINO_INTERPRETER, str(si_file)],
+                [MOZHI_INTERPRETER, str(si_file)],
                 capture_output=True, text=True, timeout=60
             )
             elapsed = (time.perf_counter() - start) * 1000  # ms
@@ -780,14 +780,14 @@ echo(sum)''', None, 10000000)
 def generate_console_report(env, results, scores, regressions):
     """Print benchmark results to console."""
     print("\n" + "=" * 100)
-    print("SINO PERFORMANCE BENCHMARK REPORT v" + VERSION)
+    print("MOZHI PERFORMANCE BENCHMARK REPORT v" + VERSION)
     print("=" * 100)
-    print(f"\nSino Version:    {env['sino_version']}")
+    print(f"\nMozhi Version:    {env['mozhi_version']}")
     print(f"Build Hash:      {env.get('build_hash', 'N/A')}")
     print(f"Git Commit:      {env.get('git_commit', 'N/A')}")
     print(f"Build Mode:      {env.get('build_mode', 'N/A')}")
     print(f"Interpreter Hash: {env.get('interpreter_hash', 'N/A')}")
-    print(f"Binary Size:     {env.get('sino_binary_size_kb', '?')} KB")
+    print(f"Binary Size:     {env.get('mozhi_binary_size_kb', '?')} KB")
     print(f"Date:            {env['date']} {env['time']}")
     print(f"OS:              {env['os']} {env['kernel']}")
     print(f"CPU:             {env.get('cpu_model', 'unknown')}")
@@ -861,7 +861,7 @@ def generate_json_report(env, results, scores, regressions):
         "configuration": {
             "min_runs": MIN_RUNS,
             "warmup_runs": WARMUP_RUNS,
-            "interpreter": SINO_INTERPRETER,
+            "interpreter": MOZHI_INTERPRETER,
             "thresholds": THRESHOLDS,
         },
         "scores": scores,
@@ -896,16 +896,16 @@ def generate_csv_report(results):
 def generate_markdown_report(env, results, scores, regressions):
     """Generate Markdown report."""
     lines = [
-        "# Sino Performance Benchmark Report",
+        "# Mozhi Performance Benchmark Report",
         "",
         f"**Benchmark Version:** {env['benchmark_version']}  ",
         f"**Date:** {env['date']} {env['time']}  ",
-        f"**Sino Version:** {env['sino_version']}  ",
+        f"**Mozhi Version:** {env['mozhi_version']}  ",
         f"**Build Hash:** {env.get('build_hash', 'N/A')}  ",
         f"**Git Commit:** {env.get('git_commit', 'N/A')}  ",
         f"**Build Mode:** {env.get('build_mode', 'N/A')}  ",
         f"**Interpreter Hash:** {env.get('interpreter_hash', 'N/A')}  ",
-        f"**Binary Size:** {env.get('sino_binary_size_kb', '?')} KB  ",
+        f"**Binary Size:** {env.get('mozhi_binary_size_kb', '?')} KB  ",
         "",
         "## Environment",
         "",
@@ -1125,7 +1125,7 @@ def generate_html_report(env, results, scores, regressions, history=None, grade=
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sino Benchmark Report v{VERSION} — {env['date']}</title>
+    <title>Mozhi Benchmark Report v{VERSION} — {env['date']}</title>
     <link rel="stylesheet" href="../style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
@@ -1201,7 +1201,7 @@ def generate_html_report(env, results, scores, regressions, history=None, grade=
     <div class="wrapper">
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <a href="../index.html" class="sidebar-logo">Sino</a>
+                <a href="../index.html" class="sidebar-logo">Mozhi</a>
                 <div class="sidebar-version">v2.0</div>
             </div>
             <nav class="sidebar-nav">
@@ -1225,10 +1225,10 @@ def generate_html_report(env, results, scores, regressions, history=None, grade=
             <button class="dark-toggle" onclick="toggleDark()" title="Toggle Dark Mode">&#9790;</button>
 
             <div class="bench-hero">
-                <h1>Sino Performance Benchmark Report <span class="grade-badge grade-{grade}">{grade}</span></h1>
+                <h1>Mozhi Performance Benchmark Report <span class="grade-badge grade-{grade}">{grade}</span></h1>
                 <div class="meta">
-                    <strong>{env['sino_version']}</strong> &middot; Build {env.get('build_hash', 'N/A')} &middot; Commit {env.get('git_commit', 'N/A')}<br>
-                    {env.get('build_mode', '')} &middot; Binary {env.get('sino_binary_size_kb', '?')} KB &middot; Interpreter Hash {env.get('interpreter_hash', 'N/A')}<br>
+                    <strong>{env['mozhi_version']}</strong> &middot; Build {env.get('build_hash', 'N/A')} &middot; Commit {env.get('git_commit', 'N/A')}<br>
+                    {env.get('build_mode', '')} &middot; Binary {env.get('mozhi_binary_size_kb', '?')} KB &middot; Interpreter Hash {env.get('interpreter_hash', 'N/A')}<br>
                     Machine ID: {env.get('machine_id', 'N/A')} &middot; Env Hash: {env.get('environment_hash', 'N/A')} &middot; Config Hash: {env.get('configuration_hash', 'N/A')}<br>
                     {env['date']} {env['time']} &middot; {env['os']} {env['kernel']} &middot; {env.get('cpu_model', 'unknown')}<br>
                     {env.get('cpu_freq_mhz', '?')} MHz &middot; {env.get('cpu_physical_cores', '?')} cores &middot; {env.get('ram_total_mb', '?')} MB RAM<br>
@@ -1342,12 +1342,12 @@ def generate_html_report(env, results, scores, regressions, history=None, grade=
                 <div class="env-item"><div class="key">NUMA Nodes</div><div class="val">{env.get('numa_nodes', '?')}</div></div>
                 <div class="env-item"><div class="key">Locale</div><div class="val">{env.get('locale', '?')}</div></div>
                 <div class="env-item"><div class="key">Timezone</div><div class="val">{env.get('timezone', '?')}</div></div>
-                <div class="env-item"><div class="key">Sino Version</div><div class="val">{env['sino_version']}</div></div>
+                <div class="env-item"><div class="key">Mozhi Version</div><div class="val">{env['mozhi_version']}</div></div>
                 <div class="env-item"><div class="key">Build Mode</div><div class="val">{env.get('build_mode', '?')}</div></div>
                 <div class="env-item"><div class="key">Build Hash</div><div class="val">{env.get('build_hash', 'N/A')}</div></div>
                 <div class="env-item"><div class="key">Git Commit</div><div class="val">{env.get('git_commit', 'N/A')}</div></div>
                 <div class="env-item"><div class="key">Interpreter Hash</div><div class="val">{env.get('interpreter_hash', 'N/A')}</div></div>
-                <div class="env-item"><div class="key">Binary Size</div><div class="val">{env.get('sino_binary_size_kb', '?')} KB</div></div>
+                <div class="env-item"><div class="key">Binary Size</div><div class="val">{env.get('mozhi_binary_size_kb', '?')} KB</div></div>
             </div>
 
             <h2>Final Analysis</h2>
@@ -1415,7 +1415,7 @@ def generate_html_report(env, results, scores, regressions, history=None, grade=
             </ul>
 
             <div class="footer">
-                <p>Sino Performance Benchmark Framework v{VERSION} &middot; Copyright &copy; 2026 crossberry-in</p>
+                <p>Mozhi Performance Benchmark Framework v{VERSION} &middot; Copyright &copy; 2026 crossberry-in</p>
             </div>
         </main>
     </div>
@@ -1548,7 +1548,7 @@ def save_history(env, results, scores):
         "total": len(results),
         "passed": len([r for r in results if r and r["status"] == "PASS"]),
         "failed": len([r for r in results if r and r["status"] == "FAIL"]),
-        "sino_version": env["sino_version"],
+        "mozhi_version": env["mozhi_version"],
         "git_commit": env.get("git_commit", "N/A"),
         "interpreter_hash": env.get("interpreter_hash", "N/A"),
         "machine_id": env.get("machine_id", "N/A"),
@@ -1608,13 +1608,13 @@ def calculate_grade(score):
 
 def main():
     print("=" * 80)
-    print(f"Sino Performance Benchmark Framework v{VERSION}")
+    print(f"Mozhi Performance Benchmark Framework v{VERSION}")
     print("=" * 80)
 
     # Detect environment
     print("\n[1/6] Detecting environment...")
     env = detect_environment()
-    print(f"  Sino: {env['sino_version']}")
+    print(f"  Mozhi: {env['mozhi_version']}")
     print(f"  Build: {env.get('build_hash', 'N/A')} (commit {env.get('git_commit', 'N/A')})")
     print(f"  CPU: {env.get('cpu_model', 'unknown')} @ {env.get('cpu_freq_mhz', '?')} MHz")
     print(f"  Cores: {env.get('cpu_physical_cores', '?')}P / {env['cpu_count']}L")

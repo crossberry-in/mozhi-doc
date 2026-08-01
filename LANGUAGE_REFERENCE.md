@@ -1,6 +1,6 @@
-# Sino — Language Reference
+# Mozhi — Language Reference
 
-This is the complete reference for the Sino programming language.
+This is the complete reference for the Mozhi programming language.
 
 ---
 
@@ -27,7 +27,7 @@ This is the complete reference for the Sino programming language.
 ### REPL
 
 ```bash
-./sino
+./mozhi
 >> var x = 10
 >> echo x
 10
@@ -37,12 +37,12 @@ This is the complete reference for the Sino programming language.
 ### Run a File
 
 ```bash
-./sino examples/hello.si
+./mozhi examples/hello.si
 ```
 
 ### Build from Source (Maintainers Only)
 
-> The Sino source code is closed-source. If you have access to the private repo:
+> The Mozhi source code is closed-source. If you have access to the private repo:
 
 ```bash
 make
@@ -65,7 +65,7 @@ make
 
 ### Type Checking
 
-```sino
+```mozhi
 typeof(42)              # "int"
 typeof(3.14)            # "float"
 typeof("hello")         # "string"
@@ -81,22 +81,22 @@ typeof(func() end)      # "function"
 
 ### `var` (Mutable)
 
-```sino
-var name = "Sino"
+```mozhi
+var name = "Mozhi"
 var count = 0
 count = count + 1       # OK
 ```
 
 ### `fix` (Immutable Constant)
 
-```sino
+```mozhi
 fix PI = 3.14159
 # PI = 3.0             # Error: cannot reassign
 ```
 
 ### Variable Scope
 
-```sino
+```mozhi
 var x = 10
 if true:
     var y = 20          # y is local to this block
@@ -123,7 +123,7 @@ end
 
 ### String Operations
 
-```sino
+```mozhi
 "Hello" + ", " + "World!"   # "Hello, World!"
 ```
 
@@ -164,7 +164,7 @@ end
 
 ### `if` / `elseif` / `else`
 
-```sino
+```mozhi
 var x = 10
 
 if x > 5:
@@ -178,7 +178,7 @@ end
 
 ### `while`
 
-```sino
+```mozhi
 var i = 0
 while i < 5:
     echo i
@@ -188,7 +188,7 @@ end
 
 ### `for`
 
-```sino
+```mozhi
 for var i = 0; i < 10; i = i + 1:
     echo i
 end
@@ -196,7 +196,7 @@ end
 
 ### `for...in`
 
-```sino
+```mozhi
 var fruits = ["apple", "banana", "cherry"]
 for var fruit in fruits:
     echo fruit
@@ -205,7 +205,7 @@ end
 
 ### `match` (Switch)
 
-```sino
+```mozhi
 var x = 2
 
 match x:
@@ -222,7 +222,7 @@ end
 
 ### `break` and `continue`
 
-```sino
+```mozhi
 for var i = 0; i < 100; i = i + 1:
     if i == 5:
         break              # Exit loop
@@ -240,7 +240,7 @@ end
 
 ### Basic Function (`func`)
 
-```sino
+```mozhi
 func add(a, b):
     return a + b
 end
@@ -250,7 +250,7 @@ echo add(3, 4)              # 7
 
 ### Anonymous Function (`fn`)
 
-```sino
+```mozhi
 var square = fn(x):
     return x * x
 end
@@ -260,7 +260,7 @@ echo square(5)              # 25
 
 ### Closures
 
-```sino
+```mozhi
 func make_counter():
     var count = 0
     return {
@@ -281,7 +281,7 @@ echo counter.get_count()    # 2
 
 ### Higher-Order Functions
 
-```sino
+```mozhi
 func apply(f, x):
     return f(x)
 end
@@ -292,7 +292,7 @@ echo apply(double, 5)       # 10
 
 ### Recursive Functions
 
-```sino
+```mozhi
 func factorial(n):
     if n <= 1:
         return 1
@@ -309,7 +309,7 @@ echo factorial(5)           # 120
 
 ### Basic Class
 
-```sino
+```mozhi
 class Person:
     func init(name, age):
         self.name = name
@@ -328,7 +328,7 @@ end
 
 ### Creating Instances
 
-```sino
+```mozhi
 var john = Person("John", 25)
 john.hello()                # "Hello, my name is John"
 echo john.get_age()         # 25
@@ -336,7 +336,7 @@ echo john.get_age()         # 25
 
 ### Methods
 
-```sino
+```mozhi
 class Counter:
     func init():
         self.count = 0
@@ -363,7 +363,7 @@ echo c.get_count()          # 2
 
 ### Creating Arrays
 
-```sino
+```mozhi
 var empty = []
 var numbers = [1, 2, 3, 4, 5]
 var mixed = [1, "hello", true, null]
@@ -371,7 +371,7 @@ var mixed = [1, "hello", true, null]
 
 ### Accessing Elements
 
-```sino
+```mozhi
 var arr = [10, 20, 30]
 echo arr[0]                 # 10
 echo arr[2]                 # 30
@@ -379,7 +379,7 @@ echo arr[2]                 # 30
 
 ### Modifying Arrays
 
-```sino
+```mozhi
 var arr = [1, 2, 3]
 push(arr, 4)                # arr is now [1, 2, 3, 4]
 var last = pop(arr)         # last is 4, arr is [1, 2, 3]
@@ -387,7 +387,7 @@ var last = pop(arr)         # last is 4, arr is [1, 2, 3]
 
 ### Iterating Arrays
 
-```sino
+```mozhi
 var fruits = ["apple", "banana", "cherry"]
 for var fruit in fruits:
     echo fruit
@@ -418,7 +418,7 @@ end
 
 ### `echo` Examples
 
-```sino
+```mozhi
 echo "Hello"                    # Hello
 echo "x = ", 10                 # x = 10
 echo 1, 2, 3                    # 1 2 3
@@ -428,7 +428,7 @@ echo null                       # null
 
 ### `input` Examples
 
-```sino
+```mozhi
 var name = input("Enter your name: ")
 echo "Hello, " + name
 
@@ -439,7 +439,7 @@ var age = int(input("Enter your age: "))
 
 ## Comments
 
-```sino
+```mozhi
 # This is a single-line comment
 var x = 10  # Comment after code
 
@@ -453,7 +453,7 @@ var x = 10  # Comment after code
 
 ## Error Handling
 
-Sino returns runtime errors for:
+Mozhi returns runtime errors for:
 
 - Undefined variables
 - Type mismatches
@@ -462,7 +462,7 @@ Sino returns runtime errors for:
 - Calling non-functions
 - Too many/few arguments
 
-```sino
+```mozhi
 echo x              # Error: Undefined variable
 5 + "hello"         # Error: Cannot perform arithmetic on non-numbers
 [1,2][5]            # Error: Index out of bounds
@@ -475,13 +475,13 @@ echo x              # Error: Undefined variable
 
 ### Hello World
 
-```sino
+```mozhi
 echo "Hello, World!"
 ```
 
 ### Fibonacci
 
-```sino
+```mozhi
 func fibonacci(n):
     if n <= 1:
         return n
@@ -496,7 +496,7 @@ end
 
 ### Bubble Sort
 
-```sino
+```mozhi
 func bubble_sort(arr):
     var n = len(arr)
     for var i = 0; i < n - 1; i = i + 1:
@@ -517,7 +517,7 @@ echo bubble_sort(data)
 
 ### Simple Class
 
-```sino
+```mozhi
 class Person:
     func init(name, age):
         self.name = name
@@ -537,13 +537,13 @@ echo john.to_string()
 
 ## File Extension
 
-Sino source files use the **`.si`** extension.
+Mozhi source files use the **`.si`** extension.
 
 ---
 
 ## Quick Reference Card
 
-```sino
+```mozhi
 # Variables
 var x = 10
 fix PI = 3.14

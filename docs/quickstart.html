@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quick Start — Sino Programming Language</title>
-    <meta name="description" content="Get started with Sino in 5 minutes — write your first program.">
+    <title>Quick Start — Mozhi Programming Language</title>
+    <meta name="description" content="Get started with Mozhi in 5 minutes — write your first program.">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
 </head>
 <body>
     <div class="topbar">
         <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
-        <span class="topbar-title">Sino</span>
+        <span class="topbar-title">Mozhi</span>
     </div>
 
     <div class="wrapper">
@@ -19,7 +19,7 @@
             <div class="sidebar-header">
                 <a href="index.html" class="sidebar-logo">
                     <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
-                    Sino
+                    Mozhi
                 </a>
                 <div class="sidebar-version">v2.0</div>
             </div>
@@ -47,28 +47,28 @@
                 </div>
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">External</div>
-                    <a href="https://github.com/crossberry-in/sino-doc" target="_blank">GitHub &#8599;</a>
-                    <a href="https://github.com/crossberry-in/sino-pkg" target="_blank">Package Manager &#8599;</a>
+                    <a href="https://github.com/crossberry-in/mozhi-doc" target="_blank">GitHub &#8599;</a>
+                    <a href="https://github.com/crossberry-in/mozhi-pkg" target="_blank">Package Manager &#8599;</a>
                 </div>
             </nav>
         </aside>
 
         <main class="main">
             <h1>Quick Start</h1>
-            <p>Get started with Sino in 5 minutes. This guide assumes you've already <a href="install.html">installed</a> the Sino toolchain.</p>
+            <p>Get started with Mozhi in 5 minutes. This guide assumes you've already <a href="install.html">installed</a> the Mozhi toolchain.</p>
 
             <h2>Your First Program</h2>
             <p>Create a file called <code>hello.si</code>:</p>
-            <pre><code class="code-sino"><span class="comment"># hello.si</span>
+            <pre><code class="code-mozhi"><span class="comment"># hello.si</span>
 <span class="function">echo</span>(<span class="string">"Hello, World!"</span>)</code></pre>
 
             <p>Run it:</p>
-            <pre><code>$ sino hello.si
+            <pre><code>$ mozhi hello.si
 Hello, World!</code></pre>
 
             <h2>Variables and Types</h2>
-            <pre><code class="code-sino"><span class="comment"># Variables are declared by assignment</span>
-name = <span class="string">"Sino"</span>
+            <pre><code class="code-mozhi"><span class="comment"># Variables are declared by assignment</span>
+name = <span class="string">"Mozhi"</span>
 age = <span class="number">20</span>
 price = <span class="number">99.99</span>
 active = <span class="keyword">true</span>
@@ -83,7 +83,7 @@ label: string = <span class="string">"default"</span>
 <span class="function">echo</span>(name, <span class="string">" is "</span>, age, <span class="string">" years old"</span>)</code></pre>
 
             <h2>Functions</h2>
-            <pre><code class="code-sino"><span class="comment"># Named function</span>
+            <pre><code class="code-mozhi"><span class="comment"># Named function</span>
 <span class="keyword">fn</span> <span class="function">add</span>(a, b) {
     <span class="keyword">return</span> a <span class="operator">+</span> b
 }
@@ -101,7 +101,7 @@ double = <span class="keyword">fn</span>(x) { <span class="keyword">return</span
 <span class="function">echo</span>(<span class="function">double</span>(<span class="number">5</span>))        <span class="comment"># 10</span></code></pre>
 
             <h2>Control Flow</h2>
-            <pre><code class="code-sino"><span class="comment"># If / else</span>
+            <pre><code class="code-mozhi"><span class="comment"># If / else</span>
 <span class="keyword">if</span> age &gt;= <span class="number">18</span> {
     <span class="function">echo</span>(<span class="string">"Adult"</span>)
 } <span class="keyword">else</span> {
@@ -136,7 +136,7 @@ x = <span class="number">2</span>
 }</code></pre>
 
             <h2>Structs and Traits</h2>
-            <pre><code class="code-sino"><span class="comment"># Define a struct</span>
+            <pre><code class="code-mozhi"><span class="comment"># Define a struct</span>
 <span class="keyword">struct</span> User {
     name: string
     age: int
@@ -159,7 +159,7 @@ user = User { name: <span class="string">"Alice"</span>, age: <span class="numbe
 user.<span class="function">greet</span>()  <span class="comment"># Hi, I'm Alice</span></code></pre>
 
             <h2>Arrays and Strings</h2>
-            <pre><code class="code-sino"><span class="comment"># Arrays</span>
+            <pre><code class="code-mozhi"><span class="comment"># Arrays</span>
 nums = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
 <span class="function">echo</span>(<span class="function">len</span>(nums))     <span class="comment"># 5</span>
 <span class="function">echo</span>(nums[<span class="number">0</span>])        <span class="comment"># 1</span>
@@ -167,12 +167,12 @@ nums.<span class="function">push</span>(<span class="number">6</span>)         <
 last = nums.<span class="function">pop</span>()      <span class="comment"># remove and return last</span>
 
 <span class="comment"># Strings</span>
-name = <span class="string">"Sino"</span>
+name = <span class="string">"Mozhi"</span>
 greeting = <span class="string">"Hello, "</span> <span class="operator">+</span> name
 <span class="function">echo</span>(<span class="function">len</span>(name))      <span class="comment"># 4</span></code></pre>
 
             <h2>Error Handling</h2>
-            <pre><code class="code-sino"><span class="keyword">fn</span> <span class="function">divide</span>(a, b) {
+            <pre><code class="code-mozhi"><span class="keyword">fn</span> <span class="function">divide</span>(a, b) {
     <span class="keyword">if</span> b == <span class="number">0</span> {
         <span class="keyword">throw</span> Error { message: <span class="string">"Division by zero"</span> }
     }
@@ -187,8 +187,8 @@ greeting = <span class="string">"Hello, "</span> <span class="operator">+</span>
 
             <h2>REPL</h2>
             <p>Start the interactive REPL:</p>
-            <pre><code>$ sino
-Sino REPL
+            <pre><code>$ mozhi
+Mozhi REPL
 Version 2.0
 
 &gt; x = 10
@@ -202,14 +202,14 @@ Version 2.0
             <h2>Next Steps</h2>
             <ul>
                 <li>Read the full <a href="spec.html">Language Specification</a></li>
-                <li>Explore <a href="https://github.com/crossberry-in/sino-doc/tree/main/examples">example programs</a></li>
+                <li>Explore <a href="https://github.com/crossberry-in/mozhi-doc/tree/main/examples">example programs</a></li>
                 <li>Learn about the <a href="spec.html#15-package-manager">Package Manager</a></li>
-                <li>Join the community on <a href="https://github.com/crossberry-in/sino-doc/issues">GitHub Issues</a></li>
+                <li>Join the community on <a href="https://github.com/crossberry-in/mozhi-doc/issues">GitHub Issues</a></li>
             </ul>
 
             <div class="footer">
                 <p>Copyright &copy; 2026 crossberry-in.</p>
-                <p><a href="https://github.com/crossberry-in/sino-doc">View on GitHub</a></p>
+                <p><a href="https://github.com/crossberry-in/mozhi-doc">View on GitHub</a></p>
             </div>
         </main>
     </div>

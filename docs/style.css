@@ -1,5 +1,5 @@
-/* Sino Language Documentation - Modern Stylesheet */
-/* Designed for GitHub Pages - crossberry-in.github.io/sino-lang-docs/ */
+/* Mozhi Language Documentation - Modern Stylesheet */
+/* Designed for GitHub Pages - crossberry-in.github.io/mozhi-lang-docs/ */
 
 :root {
   --primary: #2563EB;
@@ -346,12 +346,12 @@ pre code {
 }
 
 /* Syntax highlighting (basic) */
-.code-sino .keyword { color: #C678DD; font-weight: 600; }
-.code-sino .string { color: #98C379; }
-.code-sino .number { color: #D19A66; }
-.code-sino .comment { color: #7F848E; font-style: italic; }
-.code-sino .function { color: #61AFEF; }
-.code-sino .operator { color: #56B6C2; }
+.code-mozhi .keyword { color: #C678DD; font-weight: 600; }
+.code-mozhi .string { color: #98C379; }
+.code-mozhi .number { color: #D19A66; }
+.code-mozhi .comment { color: #7F848E; font-style: italic; }
+.code-mozhi .function { color: #61AFEF; }
+.code-mozhi .operator { color: #56B6C2; }
 
 /* ===== Tables ===== */
 

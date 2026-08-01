@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Installation — Sino Programming Language</title>
-    <meta name="description" content="Install the Sino programming language on Linux, macOS, Windows, and Termux.">
+    <title>Installation — Mozhi Programming Language</title>
+    <meta name="description" content="Install the Mozhi programming language on Linux, macOS, Windows, and Termux.">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
 </head>
 <body>
     <div class="topbar">
         <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
-        <span class="topbar-title">Sino</span>
+        <span class="topbar-title">Mozhi</span>
     </div>
 
     <div class="wrapper">
@@ -19,7 +19,7 @@
             <div class="sidebar-header">
                 <a href="index.html" class="sidebar-logo">
                     <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
-                    Sino
+                    Mozhi
                 </a>
                 <div class="sidebar-version">v2.0</div>
             </div>
@@ -47,40 +47,40 @@
                 </div>
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">External</div>
-                    <a href="https://github.com/crossberry-in/sino-doc" target="_blank">GitHub &#8599;</a>
-                    <a href="https://github.com/crossberry-in/sino-pkg" target="_blank">Package Manager &#8599;</a>
-                    <a href="https://github.com/crossberry-in/sino-doc/releases" target="_blank">Download &#8599;</a>
+                    <a href="https://github.com/crossberry-in/mozhi-doc" target="_blank">GitHub &#8599;</a>
+                    <a href="https://github.com/crossberry-in/mozhi-pkg" target="_blank">Package Manager &#8599;</a>
+                    <a href="https://github.com/crossberry-in/mozhi-doc/releases" target="_blank">Download &#8599;</a>
                 </div>
             </nav>
         </aside>
 
         <main class="main">
             <h1>Installation</h1>
-            <p>Sino runs on Linux, macOS, Windows, and Termux (Android). The installer auto-detects your platform and architecture, so in most cases you can install with a single command.</p>
+            <p>Mozhi runs on Linux, macOS, Windows, and Termux (Android). The installer auto-detects your platform and architecture, so in most cases you can install with a single command.</p>
 
             <h2>Quick Install</h2>
 
-            <h3>Step 1: Install the Sino interpreter</h3>
-            <p>The interpreter is the binary that runs <code>.si</code> files. It's installed as <code>sino-interpreter</code>.</p>
+            <h3>Step 1: Install the Mozhi interpreter</h3>
+            <p>The interpreter is the binary that runs <code>.si</code> files. It's installed as <code>mozhi-interpreter</code>.</p>
 
             <p><strong>Linux / macOS / WSL / Termux:</strong></p>
-            <pre><code>curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash</code></pre>
+            <pre><code>curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash</code></pre>
 
             <p><strong>Windows (PowerShell):</strong></p>
-            <pre><code>irm https://github.com/crossberry-in/sino-doc/raw/main/install.ps1 | iex</code></pre>
+            <pre><code>irm https://github.com/crossberry-in/mozhi-doc/raw/main/install.ps1 | iex</code></pre>
 
-            <h3>Step 2: Install the sino-pkg dispatcher</h3>
-            <p>The <code>sino</code> command is the unified dispatcher that routes file execution to the interpreter and subcommands to the package manager.</p>
+            <h3>Step 2: Install the mozhi-pkg dispatcher</h3>
+            <p>The <code>mozhi</code> command is the unified dispatcher that routes file execution to the interpreter and subcommands to the package manager.</p>
 
             <p><strong>Linux / macOS / WSL / Termux:</strong></p>
-            <pre><code>curl -fsSL https://github.com/crossberry-in/sino-pkg/raw/main/install.sh | bash</code></pre>
+            <pre><code>curl -fsSL https://github.com/crossberry-in/mozhi-pkg/raw/main/install.sh | bash</code></pre>
 
             <p><strong>Windows (PowerShell):</strong></p>
-            <pre><code>irm https://github.com/crossberry-in/sino-pkg/raw/main/install.ps1 | iex</code></pre>
+            <pre><code>irm https://github.com/crossberry-in/mozhi-pkg/raw/main/install.ps1 | iex</code></pre>
 
             <h3>Step 3: Verify</h3>
-            <pre><code>sino version      # Should show the Sino Compiler banner
-sino doctor       # Should show all green checks</code></pre>
+            <pre><code>mozhi version      # Should show the Mozhi Compiler banner
+mozhi doctor       # Should show all green checks</code></pre>
 
             <h2>Supported Platforms</h2>
             <table>
@@ -88,21 +88,21 @@ sino doctor       # Should show all green checks</code></pre>
                     <tr><th>Platform</th><th>Architecture</th><th>Binary Name</th><th>Status</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>Linux (Ubuntu, Debian, Fedora, Arch)</td><td>x86_64</td><td><code>sino-linux-x86_64</code></td><td>&#10003; Supported</td></tr>
-                    <tr><td>Linux (Raspberry Pi, ARM servers)</td><td>ARM64 (aarch64)</td><td><code>sino-linux-arm64</code></td><td>&#10003; Supported</td></tr>
-                    <tr><td>Alpine Linux</td><td>x86_64</td><td><code>sino-alpine-x86_64</code></td><td>&#10003; Supported (static)</td></tr>
-                    <tr><td>Alpine Linux</td><td>ARM64</td><td><code>sino-alpine-arm64</code></td><td>&#10003; Supported (static)</td></tr>
-                    <tr><td>Termux (Android)</td><td>ARM64</td><td><code>sino-alpine-arm64</code></td><td>&#10003; Supported (static)</td></tr>
-                    <tr><td>macOS (Intel)</td><td>x86_64</td><td><code>sino-macos-x86_64</code></td><td>&#10003; Supported</td></tr>
-                    <tr><td>macOS (Apple Silicon M1/M2/M3/M4)</td><td>ARM64</td><td><code>sino-macos-arm64</code></td><td>&#10003; Supported</td></tr>
-                    <tr><td>Windows 10/11</td><td>x86_64</td><td><code>sino-windows-x86_64.exe</code></td><td>&#10003; Supported</td></tr>
+                    <tr><td>Linux (Ubuntu, Debian, Fedora, Arch)</td><td>x86_64</td><td><code>mozhi-linux-x86_64</code></td><td>&#10003; Supported</td></tr>
+                    <tr><td>Linux (Raspberry Pi, ARM servers)</td><td>ARM64 (aarch64)</td><td><code>mozhi-linux-arm64</code></td><td>&#10003; Supported</td></tr>
+                    <tr><td>Alpine Linux</td><td>x86_64</td><td><code>mozhi-alpine-x86_64</code></td><td>&#10003; Supported (static)</td></tr>
+                    <tr><td>Alpine Linux</td><td>ARM64</td><td><code>mozhi-alpine-arm64</code></td><td>&#10003; Supported (static)</td></tr>
+                    <tr><td>Termux (Android)</td><td>ARM64</td><td><code>mozhi-alpine-arm64</code></td><td>&#10003; Supported (static)</td></tr>
+                    <tr><td>macOS (Intel)</td><td>x86_64</td><td><code>mozhi-macos-x86_64</code></td><td>&#10003; Supported</td></tr>
+                    <tr><td>macOS (Apple Silicon M1/M2/M3/M4)</td><td>ARM64</td><td><code>mozhi-macos-arm64</code></td><td>&#10003; Supported</td></tr>
+                    <tr><td>Windows 10/11</td><td>x86_64</td><td><code>mozhi-windows-x86_64.exe</code></td><td>&#10003; Supported</td></tr>
                 </tbody>
             </table>
 
             <h2>Requirements</h2>
             <ul>
                 <li><strong>Interpreter:</strong> No dependencies (static or system libc + libm)</li>
-                <li><strong>Dispatcher (sino):</strong> Python 3.8+</li>
+                <li><strong>Dispatcher (mozhi):</strong> Python 3.8+</li>
                 <li><strong>For C/C++/ASM FFI:</strong> <code>gcc</code> or <code>clang</code></li>
                 <li><strong>For Rust FFI:</strong> <code>rustc</code></li>
                 <li><strong>For GitHub dependencies:</strong> <code>git</code></li>
@@ -111,27 +111,27 @@ sino doctor       # Should show all green checks</code></pre>
             <h2>Manual Installation</h2>
             <p>If the installer doesn't work, you can install manually:</p>
             <pre><code># Download the interpreter binary
-curl -fsSL -o /usr/local/bin/sino-interpreter \\
-  https://github.com/crossberry-in/sino-doc/releases/download/v1.0.0/sino-linux-arm64
+curl -fsSL -o /usr/local/bin/mozhi-interpreter \\
+  https://github.com/crossberry-in/mozhi-doc/releases/download/v1.0.0/mozhi-linux-arm64
 
 # Download the dispatcher
-curl -fsSL -o /usr/local/bin/sino \\
-  https://github.com/crossberry-in/sino-pkg/releases/download/v1.2.0/sino
+curl -fsSL -o /usr/local/bin/mozhi \\
+  https://github.com/crossberry-in/mozhi-pkg/releases/download/v1.2.0/mozhi
 
 # Download the UI module
-mkdir -p /usr/local/lib/sino
-curl -fsSL -o /usr/local/lib/sino/sino_ui.py \\
-  https://github.com/crossberry-in/sino-pkg/releases/download/v1.2.0/sino_ui.py
+mkdir -p /usr/local/lib/mozhi
+curl -fsSL -o /usr/local/lib/mozhi/mozhi_ui.py \\
+  https://github.com/crossberry-in/mozhi-pkg/releases/download/v1.2.0/mozhi_ui.py
 
 # Make executable
-chmod +x /usr/local/bin/sino /usr/local/bin/sino-interpreter
+chmod +x /usr/local/bin/mozhi /usr/local/bin/mozhi-interpreter
 
 # Verify
-sino version</code></pre>
+mozhi version</code></pre>
 
             <div class="footer">
                 <p>Copyright &copy; 2026 crossberry-in.</p>
-                <p><a href="https://github.com/crossberry-in/sino-doc">View on GitHub</a></p>
+                <p><a href="https://github.com/crossberry-in/mozhi-doc">View on GitHub</a></p>
             </div>
         </main>
     </div>

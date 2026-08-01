@@ -1,6 +1,6 @@
-# Sino — Usage Guide
+# Mozhi — Usage Guide
 
-This guide explains how to use the Sino interpreter, including the REPL, running scripts, working with files, and using built-in features.
+This guide explains how to use the Mozhi interpreter, including the REPL, running scripts, working with files, and using built-in features.
 
 ---
 
@@ -8,7 +8,7 @@ This guide explains how to use the Sino interpreter, including the REPL, running
 
 - [Starting the Interpreter](#starting-the-interpreter)
 - [Using the REPL](#using-the-repl)
-- [Running a Sino File](#running-a-sino-file)
+- [Running a Mozhi File](#running-a-mozhi-file)
 - [File Extension](#file-extension)
 - [Command-Line Arguments](#command-line-arguments)
 - [Basic Examples](#basic-examples)
@@ -24,28 +24,28 @@ This guide explains how to use the Sino interpreter, including the REPL, running
 
 ## Starting the Interpreter
 
-The `sino` command can be used in two modes:
+The `mozhi` command can be used in two modes:
 
 1. **REPL mode** — Interactive Read-Eval-Print Loop. Type code line-by-line and see results immediately.
-2. **File mode** — Run a Sino script file.
+2. **File mode** — Run a Mozhi script file.
 
-To check if Sino is installed:
+To check if Mozhi is installed:
 
 ```bash
-sino --version
+mozhi --version
 ```
 
 ---
 
 ## Using the REPL
 
-Launch the REPL by running `sino` with no arguments:
+Launch the REPL by running `mozhi` with no arguments:
 
 ```bash
-sino
+mozhi
 ```
 
-You will see the Sino prompt:
+You will see the Mozhi prompt:
 
 ```
 >> 
@@ -61,9 +61,9 @@ You will see the Sino prompt:
 >> echo x + y
 30
 >> var name = input("Your name: ")
-Your name: Sino
+Your name: Mozhi
 >> echo "Hello, " + name
-Hello, Sino
+Hello, Mozhi
 >> exit
 ```
 
@@ -78,7 +78,7 @@ Hello, Sino
 
 ### Multi-line Statements in the REPL
 
-Sino supports multi-line blocks in the REPL. After typing a block opener (`if`, `while`, `for`, `func`, `class`), press Enter and continue on the next line. The block continues until you type `end`.
+Mozhi supports multi-line blocks in the REPL. After typing a block opener (`if`, `while`, `for`, `func`, `class`), press Enter and continue on the next line. The block continues until you type `end`.
 
 ```
 >> func factorial(n):
@@ -93,24 +93,24 @@ Sino supports multi-line blocks in the REPL. After typing a block opener (`if`, 
 
 ---
 
-## Running a Sino File
+## Running a Mozhi File
 
-To run a Sino script, pass the file path as an argument:
+To run a Mozhi script, pass the file path as an argument:
 
 ```bash
-sino path/to/script.si
+mozhi path/to/script.si
 ```
 
 ### Example
 
 Create a file `hello.si`:
 
-```sino
-# Hello World in Sino
+```mozhi
+# Hello World in Mozhi
 echo "Hello, World!"
 
 # Variables
-var name = "Sino"
+var name = "Mozhi"
 echo "Welcome to ", name
 
 # Arithmetic
@@ -124,14 +124,14 @@ echo "Power: ", a ** b
 Run it:
 
 ```bash
-sino hello.si
+mozhi hello.si
 ```
 
 Output:
 
 ```
 Hello, World!
-Welcome to Sino
+Welcome to Mozhi
 Sum: 13
 Product: 30
 Power: 1000
@@ -141,11 +141,11 @@ Power: 1000
 
 ## File Extension
 
-Sino source files use the **`.si`** extension.
+Mozhi source files use the **`.si`** extension.
 
 | Extension | Description |
 |-----------|-------------|
-| `.si` | Sino source file |
+| `.si` | Mozhi source file |
 
 Example filenames:
 
@@ -157,29 +157,29 @@ Example filenames:
 
 ## Command-Line Arguments
 
-The Sino interpreter accepts the following command-line arguments:
+The Mozhi interpreter accepts the following command-line arguments:
 
 | Argument | Description |
 |----------|-------------|
 | (none) | Start the interactive REPL |
-| `<file>` | Run the specified Sino file |
-| `--version`, `-v` | Print the Sino version and exit |
+| `<file>` | Run the specified Mozhi file |
+| `--version`, `-v` | Print the Mozhi version and exit |
 | `--help`, `-h` | Print help and exit |
 
 ### Examples
 
 ```bash
 # Start REPL
-sino
+mozhi
 
 # Run a file
-sino my_script.si
+mozhi my_script.si
 
 # Print version
-sino --version
+mozhi --version
 
 # Print help
-sino --help
+mozhi --help
 ```
 
 ---
@@ -188,13 +188,13 @@ sino --help
 
 ### Hello World
 
-```sino
+```mozhi
 echo "Hello, World!"
 ```
 
 ### Variables and Arithmetic
 
-```sino
+```mozhi
 var x = 10
 var y = 20
 echo "x + y =", x + y
@@ -203,7 +203,7 @@ echo "x * y =", x * y
 
 ### Conditionals
 
-```sino
+```mozhi
 var age = 18
 
 if age >= 18:
@@ -217,7 +217,7 @@ end
 
 ### Loops
 
-```sino
+```mozhi
 # While loop
 var i = 0
 while i < 5:
@@ -241,12 +241,12 @@ end
 
 ## Working with Variables
 
-Sino supports two variable declarations:
+Mozhi supports two variable declarations:
 
 ### `var` — Mutable Variables
 
-```sino
-var name = "Sino"
+```mozhi
+var name = "Mozhi"
 var count = 0
 
 count = count + 1     # OK - var can be reassigned
@@ -255,7 +255,7 @@ echo count            # 1
 
 ### `fix` — Immutable Constants
 
-```sino
+```mozhi
 fix PI = 3.14159
 fix GREETING = "Hello"
 
@@ -267,7 +267,7 @@ echo PI              # 3.14159
 
 Variables declared inside a block (e.g., inside `if`, `while`, `for`) are local to that block.
 
-```sino
+```mozhi
 var x = 10
 if true:
     var y = 20
@@ -283,7 +283,7 @@ end
 
 ### Named Functions (`func`)
 
-```sino
+```mozhi
 func add(a, b):
     return a + b
 end
@@ -293,7 +293,7 @@ echo add(3, 4)       # 7
 
 ### Anonymous Functions (`fn`)
 
-```sino
+```mozhi
 var square = fn(x):
     return x * x
 end
@@ -305,7 +305,7 @@ echo square(5)       # 25
 
 Functions capture variables from their enclosing scope:
 
-```sino
+```mozhi
 func make_counter():
     var count = 0
     return fn():
@@ -322,7 +322,7 @@ echo c()             # 3
 
 ### Recursion
 
-```sino
+```mozhi
 func factorial(n):
     if n <= 1:
         return 1
@@ -335,7 +335,7 @@ echo factorial(5)    # 120
 
 ### Higher-Order Functions
 
-```sino
+```mozhi
 func apply(f, x):
     return f(x)
 end
@@ -348,7 +348,7 @@ echo apply(double, 5)   # 10
 
 ## Working with Classes
 
-```sino
+```mozhi
 class Person:
     func init(name, age):
         self.name = name
@@ -373,7 +373,7 @@ echo john.get_age()          # 25
 
 ## Working with Arrays
 
-```sino
+```mozhi
 # Creating arrays
 var empty = []
 var numbers = [1, 2, 3, 4, 5]
@@ -426,14 +426,14 @@ For a complete list, see the [Language Reference](LANGUAGE_REFERENCE.md).
 
 ### 1. Use `fix` for constants
 
-```sino
+```mozhi
 fix PI = 3.14159
 fix MAX_RETRIES = 5
 ```
 
 ### 2. Name variables clearly
 
-```sino
+```mozhi
 # Good
 var user_age = 25
 var is_logged_in = true
@@ -445,7 +445,7 @@ var b = true
 
 ### 3. Use functions to organize code
 
-```sino
+```mozhi
 func calculate_area(width, height):
     return width * height
 end
@@ -455,7 +455,7 @@ echo calculate_area(5, 3)
 
 ### 4. Add comments to explain non-obvious logic
 
-```sino
+```mozhi
 # Calculate the nth Fibonacci number using recursion
 func fibonacci(n):
     if n <= 1:
@@ -467,7 +467,7 @@ end
 
 ### 5. Use `match` for multi-branch logic
 
-```sino
+```mozhi
 var status = 200
 
 match status:
@@ -532,13 +532,13 @@ You called a function with the wrong number of arguments. Check the function def
 ## Next Steps
 
 - Read the [Language Reference](LANGUAGE_REFERENCE.md) for the complete syntax.
-- Browse the [Examples](examples/) to see real Sino programs.
+- Browse the [Examples](examples/) to see real Mozhi programs.
 - Try the [Quick Reference Card](LANGUAGE_REFERENCE.md#quick-reference-card) for a one-page cheat sheet.
 
 ---
 
 ## Need Help?
 
-- 🐛 **Bug reports:** [Open an issue](https://github.com/crossberry-in/sino-doc/issues)
-- 💬 **Questions:** [GitHub Discussions](https://github.com/crossberry-in/sino-doc/discussions)
+- 🐛 **Bug reports:** [Open an issue](https://github.com/crossberry-in/mozhi-doc/issues)
+- 💬 **Questions:** [GitHub Discussions](https://github.com/crossberry-in/mozhi-doc/discussions)
 - 📖 **Full docs:** [Language Reference](LANGUAGE_REFERENCE.md)
