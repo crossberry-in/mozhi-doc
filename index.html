@@ -1,1 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sino Programming Language — Documentation</title>
+    <meta name="description" content="Official documentation for the Sino programming language — a fast, safe, modern statically-typed language.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
+</head>
+<body>
+    <div class="topbar">
+        <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
+        <span class="topbar-title">Sino</span>
+    </div>
 
+    <div class="wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
+                    Sino
+                </a>
+                <div class="sidebar-version">v2.0</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Getting Started</div>
+                    <a href="index.html" class="active">Overview</a>
+                    <a href="install.html">Installation</a>
+                    <a href="quickstart.html">Quick Start</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Language</div>
+                    <a href="spec.html">Specification</a>
+                    <a href="spec.html#2-lexical-structure">Lexical Structure</a>
+                    <a href="spec.html#3-grammar-ebnf">Grammar (EBNF)</a>
+                    <a href="spec.html#4-type-system">Type System</a>
+                    <a href="spec.html#6-functions">Functions</a>
+                    <a href="spec.html#7-control-flow">Control Flow</a>
+                    <a href="spec.html#8-composite-types">Struct &amp; Enum</a>
+                    <a href="spec.html#9-pattern-matching">Pattern Matching</a>
+                    <a href="spec.html#10-error-handling">Error Handling</a>
+                    <a href="spec.html#11-module-system">Modules</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Standard Library</div>
+                    <a href="spec.html#12-standard-library">std.core</a>
+                    <a href="spec.html#12-2-std-io">std.io</a>
+                    <a href="spec.html#12-4-std-math">std.math</a>
+                    <a href="spec.html#12-5-std-string">std.string</a>
+                    <a href="spec.html#12-7-std-json">std.json</a>
+                    <a href="spec.html#12-8-std-http">std.http</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Tooling</div>
+                    <a href="spec.html#14-compiler-and-interpreter">Compiler</a>
+                    <a href="spec.html#15-package-manager">Package Manager</a>
+                    <a href="spec.html#13-foreign-function-interface">FFI</a>
+                    <a href="spec.html#16-diagnostics">Diagnostics</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Reference</div>
+                    <a href="spec.html#appendix-a-error-code-reference">Error Codes</a>
+                    <a href="spec.html#appendix-b-reserved-keywords">Keywords</a>
+                    <a href="spec.html#appendix-c-operator-precedence">Precedence</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">External</div>
+                    <a href="https://github.com/crossberry-in/sino-lang-docs" target="_blank">GitHub Docs ↗</a>
+                    <a href="https://github.com/crossberry-in/sino-pkg" target="_blank">Package Manager ↗</a>
+                    <a href="https://github.com/crossberry-in/sino-lang-docs/releases" target="_blank">Download ↗</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <div class="hero">
+                <h1>Sino</h1>
+                <div class="subtitle">Programming Language</div>
+                <div class="version">Version 2.0</div>
+                <p class="tagline">Fast &bull; Safe &bull; Modern</p>
+                <div class="hero-cta">
+                    <a href="spec.html" class="btn btn-primary">Read the Specification</a>
+                    <a href="install.html" class="btn btn-secondary">Install</a>
+                </div>
+            </div>
+
+            <p>Sino is a statically-typed programming language designed for building fast, safe, and maintainable software. This is the official documentation site, hosted on GitHub Pages.</p>
+
+            <h2>Key Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Static Typing</h3>
+                    <p>Compile-time type safety with automatic type inference. Catch errors before your code runs.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Native Performance</h3>
+                    <p>Compiled to native machine code. Runs at full speed on Linux, macOS, Windows, and Android.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Memory Safe</h3>
+                    <p>Automatic garbage collection and ownership tracking prevent memory errors.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>FFI Support</h3>
+                    <p>Call functions written in C, C++, Assembly, and Rust through a stable ABI.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Modern Syntax</h3>
+                    <p>Clean, consistent syntax with braces, pattern matching, and trait-based polymorphism.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Package Manager</h3>
+                    <p>Built-in package manager with semantic versioning, lock files, and GitHub integration.</p>
+                </div>
+            </div>
+
+            <h2>Quick Example</h2>
+            <pre><code class="code-sino"><span class="comment"># Hello World in Sino</span>
+<span class="function">echo</span>(<span class="string">"Hello, World!"</span>)
+
+<span class="comment"># Variables with type inference</span>
+name = <span class="string">"Sino"</span>
+age = <span class="number">20</span>
+
+<span class="comment"># Functions</span>
+<span class="keyword">fn</span> <span class="function">add</span>(a, b) {
+    <span class="keyword">return</span> a <span class="operator">+</span> b
+}
+
+<span class="comment"># Pattern matching</span>
+<span class="keyword">match</span> age {
+    <span class="number">18</span> =&gt; <span class="function">echo</span>(<span class="string">"Just became an adult"</span>)
+    n <span class="keyword">if</span> n &gt; <span class="number">18</span> =&gt; <span class="function">echo</span>(<span class="string">"Adult"</span>)
+    _ =&gt; <span class="function">echo</span>(<span class="string">"Minor"</span>)
+}
+
+<span class="comment"># Structs and traits</span>
+<span class="keyword">struct</span> User {
+    name: string
+    age: int
+}
+
+<span class="keyword">trait</span> Greetable {
+    <span class="keyword">fn</span> <span class="function">greet</span>()
+}
+
+<span class="keyword">impl</span> Greetable <span class="keyword">for</span> User {
+    <span class="keyword">fn</span> <span class="function">greet</span>() {
+        <span class="function">echo</span>(<span class="string">"Hi, I'm "</span>, name)
+    }
+}
+
+user = User { name: <span class="string">"Alice"</span>, age: <span class="number">30</span> }
+user.<span class="function">greet</span>()</code></pre>
+
+            <h2>Documentation</h2>
+            <p>The complete Sino language specification is available in two formats:</p>
+            <ul>
+                <li><a href="spec.html"><strong>HTML Specification</strong></a> — Full interactive documentation with navigation</li>
+                <li><a href="spec.md"><strong>Markdown Specification</strong></a> — The same content in Markdown format</li>
+            </ul>
+
+            <h2>Get Started</h2>
+            <ol>
+                <li><a href="install.html">Install</a> the Sino toolchain</li>
+                <li>Read the <a href="quickstart.html">Quick Start</a> guide</li>
+                <li>Study the <a href="spec.html">Language Specification</a></li>
+                <li>Explore the <a href="https://github.com/crossberry-in/sino-lang-docs/tree/main/examples">examples</a></li>
+            </ol>
+
+            <h2>Resources</h2>
+            <ul>
+                <li><a href="https://github.com/crossberry-in/sino-lang-docs">Source code &amp; documentation repository</a></li>
+                <li><a href="https://github.com/crossberry-in/sino-pkg">Package manager (sino-pkg)</a></li>
+                <li><a href="https://github.com/crossberry-in/sino-lang-docs/releases">Download releases</a></li>
+                <li><a href="https://github.com/crossberry-in/sino-lang-docs/issues">Report issues</a></li>
+            </ul>
+
+            <div class="footer">
+                <p>Copyright &copy; 2026 crossberry-in. Sino is released under a proprietary license.</p>
+                <p><a href="https://github.com/crossberry-in/sino-lang-docs">View on GitHub</a></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Close sidebar on mobile when clicking a link
+        document.querySelectorAll('.sidebar-nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    document.getElementById('sidebar').classList.remove('open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
