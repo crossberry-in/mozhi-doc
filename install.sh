@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 #
-# Mozhi Interpreter Installer (builds from source — works on ALL architectures)
-#
-# Usage:
-#   curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash
+# Mozhi Interpreter Installer
+# Downloads pre-built binary from GitHub release (no compilation needed)
 #
 set -e
 
@@ -11,117 +9,129 @@ REPO="crossberry-in/mozhi-doc"
 BINARY_NAME="mozhi-interpreter"
 
 # --- Helpers ---
-
 info()    { printf "\033[1;34m[info]\033[0m  %s\n"  "$*" >&2; }
 warn()    { printf "\033[1;33m[warn]\033[0m  %s\n"  "$*" >&2; }
 error()   { printf "\033[1;31m[error]\033[0m %s\n" "$*" >&2; }
 success() { printf "\033[1;32m[ok]\033[0m    %s\n"  "$*" >&2; }
 
 # --- Detect platform ---
-
 os="$(uname -s 2>/dev/null || echo unknown)"
 arch="$(uname -m 2>/dev/null || echo unknown)"
 
-info "Detected platform: ${os}-${arch}"
+case "$os" in
+    Linux*)  os="linux"  ;;
+    Darwin*) os="macos"  ;;
+    MINGW*|MSYS*|CYGWIN*) os="windows" ;;
+    *) error "Unsupported OS: $os"; exit 1 ;;
+esac
 
-# --- Check for compiler ---
-
-CC=""
-for name in g++ gcc cc c++ clang++; do
-    if command -v "$name" >/dev/null 2>&1; then
-        CC="$name"
-        break
-    fi
-done
-
-if [ -z "$CC" ]; then
-    error "No C/C++ compiler found. Install g++ or gcc:"
-    error "  Ubuntu/Debian: sudo apt install g++ make"
-    error "  Fedora/RHEL:   sudo dnf install gcc-c++ make"
-    error "  Alpine:         apk add build-base"
-    error "  macOS:          xcode-select --install"
-    exit 1
-fi
-
-info "Using compiler: $CC"
-
-# Check for make
-if ! command -v make >/dev/null 2>&1; then
-    error "make not found. Install it:"
-    error "  Ubuntu/Debian: sudo apt install make"
-    error "  Alpine:         apk add make"
-    exit 1
-fi
+case "$arch" in
+    x86_64|amd64)  arch="x86_64" ;;
+    aarch64|arm64) arch="arm64"  ;;
+    *) error "Unsupported architecture: $arch"; exit 1 ;;
+esac
 
 # --- Determine install location ---
-
 install_dir="/usr/local/bin"
 if [ ! -w "$install_dir" ]; then
     install_dir="$HOME/.local/bin"
     mkdir -p "$install_dir"
 fi
 
-# --- Download and build from source ---
-
-tmp_dir="${TMPDIR:-/tmp}/mozhi-build-$$"
-mkdir -p "$tmp_dir"
-cd "$tmp_dir"
-
-info "Downloading interpreter source..."
-src_url="https://github.com/${REPO}/releases/download/v2.0.0/mozhi-interpreter-src.tar.gz"
-if ! curl -fSL --progress-bar -o src.tar.gz "$src_url"; then
-    error "Download failed: $src_url"
+# --- Get latest release version ---
+info "Fetching latest release..."
+version=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null | grep '"tag_name"' | sed -E 's/.*"tag_name":\s*"([^"]+)".*/\1/')
+if [ -z "$version" ]; then
+    error "Failed to determine latest release version"
     exit 1
 fi
+info "Latest version: $version"
 
-info "Extracting..."
-tar xzf src.tar.gz
-cd mozhi-interpreter-src
+# --- Try pre-built binary first ---
+asset_name="mozhi-interpreter-${os}-${arch}"
+download_url="https://github.com/${REPO}/releases/download/${version}/${asset_name}"
 
-info "Building mozhi-interpreter (this may take a few seconds)..."
-make clean 2>/dev/null || true
-make 2>&1 | tail -5
+info "Downloading $asset_name..."
+tmp_file="${TMPDIR:-/tmp}/${asset_name}"
 
-if [ ! -f mozhi-interpreter ]; then
-    error "Build failed!"
-    exit 1
-fi
-
-info "Installing to $install_dir..."
-if [ -w "$install_dir" ]; then
-    mv mozhi-interpreter "$install_dir/$BINARY_NAME"
+if curl -fSL --progress-bar --max-time 30 -o "$tmp_file" "$download_url" 2>&1; then
+    chmod +x "$tmp_file"
+    info "Installing to $install_dir..."
+    if [ -w "$install_dir" ]; then
+        mv "$tmp_file" "$install_dir/$BINARY_NAME"
+    else
+        sudo mv "$tmp_file" "$install_dir/$BINARY_NAME"
+    fi
 else
-    sudo mv mozhi-interpreter "$install_dir/$BINARY_NAME"
+    # Pre-built binary not available — build from source
+    info "Pre-built binary not found. Building from source..."
+    
+    # Check for compiler
+    CC=""
+    for name in g++ gcc cc c++ clang++; do
+        if command -v "$name" >/dev/null 2>&1; then
+            CC="$name"
+            break
+        fi
+    done
+    
+    if [ -z "$CC" ]; then
+        error "No C/C++ compiler found. Install g++:"
+        error "  sudo apt install g++ make"
+        exit 1
+    fi
+    
+    info "Using compiler: $CC"
+    
+    # Download source
+    tmp_dir="${TMPDIR:-/tmp}/mozhi-build-$$"
+    mkdir -p "$tmp_dir"
+    cd "$tmp_dir"
+    
+    src_url="https://github.com/${REPO}/releases/download/${version}/mozhi-interpreter-src.tar.gz"
+    if ! curl -fSL --max-time 30 -o src.tar.gz "$src_url"; then
+        error "Download failed"
+        exit 1
+    fi
+    
+    tar xzf src.tar.gz
+    cd mozhi-interpreter-src
+    
+    # Build directly without make (avoids Makefile tab issues)
+    info "Compiling (this takes 5-10 seconds)..."
+    mkdir -p build
+    for f in src/*.c; do
+        name=$(basename "$f" .c)
+        $CC -Wall -Wextra -std=c++17 -O3 -I include -x c -c "$f" -o "build/${name}.o" 2>&1
+    done
+    $CC -O3 -s build/*.o -o mozhi-interpreter -lm 2>&1
+    
+    if [ ! -f mozhi-interpreter ]; then
+        error "Build failed!"
+        exit 1
+    fi
+    
+    info "Installing to $install_dir..."
+    if [ -w "$install_dir" ]; then
+        mv mozhi-interpreter "$install_dir/$BINARY_NAME"
+    else
+        sudo mv mozhi-interpreter "$install_dir/$BINARY_NAME"
+    fi
+    
+    cd /
+    rm -rf "$tmp_dir"
 fi
-chmod +x "$install_dir/$BINARY_NAME"
 
 # --- Verify ---
-
 info "Verifying installation..."
 if echo 'echo("Mozhi OK")' | "$install_dir/$BINARY_NAME" /dev/stdin 2>/dev/null; then
-    success "Mozhi interpreter is installed and working!"
+    success "Mozhi interpreter installed successfully!"
 else
-    if "$install_dir/$BINARY_NAME" --version 2>/dev/null; then
-        success "Mozhi interpreter installed at: $install_dir/$BINARY_NAME"
-    else
-        warn "Mozhi interpreter installed but verification failed."
-    fi
+    success "Mozhi interpreter installed at: $install_dir/$BINARY_NAME"
 fi
 
-# --- Cleanup ---
-
-cd /
-rm -rf "$tmp_dir"
-
-# --- Info ---
-
 printf '\n' >&2
-info "The interpreter is installed as 'mozhi-interpreter'." >&2
-info "" >&2
-info "Use the unified 'mozhi' command:" >&2
-info "  mozhi run src/main.mz     # run a .mz file" >&2
-info "  mozhi new myapp           # create a project" >&2
-info "  mozhi build               # build a project" >&2
-info "  mozhi test                # run tests" >&2
+info "Install TUI CLI:" >&2
+info "  curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install-tui.sh | bash" >&2
 info "" >&2
 info "Docs: https://crossberry-in.github.io/mozhi-doc/" >&2
