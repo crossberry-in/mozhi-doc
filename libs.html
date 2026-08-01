@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mozhi Libraries — Package Registry</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #58a6ff;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: .5rem;
+            font-size: 2.2rem;
+        }
+        h2 { color: #7ee787; margin-top: 2.5rem; }
+        h3 { color: #58a6ff; margin-top: 2rem; }
+        p { color: #c9d1d9; }
+        code {
+            background: #161b22;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #f0883e;
+            font-family: 'SF Mono', Menlo, monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background: #161b22;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        pre code { background: transparent; padding: 0; color: inherit; }
+        a { color: #58a6ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .pkg {
+            background: #161b22;
+            padding: 1.75rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border: 1px solid #30363d;
+            transition: border-color .2s;
+        }
+        .pkg:hover { border-color: #58a6ff; }
+        .pkg h3 { margin-top: 0; color: #58a6ff; font-size: 1.4rem; }
+        .badge {
+            display: inline-block;
+            background: #1f6feb;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 14px;
+            font-size: 0.75rem;
+            margin-left: 10px;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+        .badge.category {
+            background: #238636;
+        }
+        .badge.fns {
+            background: #6e7681;
+        }
+        .pkg-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem 1.5rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+        .pkg-meta b { color: #c9d1d9; }
+        .fn-list {
+            margin-top: 0.75rem;
+            color: #8b949e;
+            font-size: 0.85rem;
+            font-family: 'SF Mono', Menlo, monospace;
+            line-height: 1.7;
+        }
+        .nav-bar {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #30363d;
+            margin-bottom: 2rem;
+        }
+        .nav-bar a {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            font-size: 0.9rem;
+        }
+        .nav-bar a:hover { background: #21262d; }
+        .hero {
+            text-align: center;
+            padding: 2rem 0;
+        }
+        .hero p { color: #8b949e; max-width: 600px; margin: 0.5rem auto; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .stat {
+            background: #161b22;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            text-align: center;
+        }
+        .stat .num { display: block; font-size: 1.8rem; color: #58a6ff; font-weight: 700; }
+        .stat .label { color: #8b949e; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <a href="index.html">← Home</a>
+        <a href="libs.html">Libraries</a>
+        <a href="spec.html">Spec</a>
+        <a href="install.html">Install</a>
+        <a href="roadmap.html">Roadmap</a>
+        <a href="mozhi-registry.json" target="_blank">registry.json</a>
+    </div>
+
+    <div class="hero">
+        <h1>📚 Mozhi Libraries</h1>
+        <p>Install community libraries with <code>mozhi add &lt;name&gt;</code> and import them in your <code>.mz</code> programs.</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat"><span class="num">5</span><span class="label">Packages</span></div>
+        <div class="stat"><span class="num">112</span><span class="label">Functions</span></div>
+        <div class="stat"><span class="num">2</span><span class="label">Constants</span></div>
+        <div class="stat"><span class="num">1.0.0</span><span class="label">Version</span></div>
+    </div>
+
+    <h2>Quick Start</h2>
+    <pre><code># Install the CLI
+curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash
+
+# Install a library
+mozhi add mozhi-http
+mozhi add mozhi-html
+
+# Write a program
+cat &gt; server.mz &lt;&lt; 'EOF'
+import http from "mozhi-http"
+import html from "mozhi-html"
+
+fn handler(method, path) {
+    body = html.html_page("Hello", html.html_h1("It works!"))
+    return http.http_ok_html(body)
+}
+
+server = http.http_start(8080)
+http.http_serve_loop(server, handler)
+EOF
+
+# Run it
+mozhi run server.mz</code></pre>
+
+    <h2>Available Packages</h2>
+    <div id="packages">
+        <p style="color:#8b949e">Loading registry...</p>
+    </div>
+
+    <h2>CLI Commands</h2>
+    <pre><code>mozhi add &lt;package&gt;     # Install a package
+mozhi add --all         # Install all packages
+mozhi add --list        # List installed packages
+mozhi update            # Refresh cache + reinstall installed
+mozhi update --all      # Refresh + install everything
+mozhi update --registry # Only refresh the cache</code></pre>
+
+    <h2>Import Syntax</h2>
+    <p>The <b>first non-comment, non-blank lines</b> of a <code>.mz</code> file may declare imports:</p>
+    <pre><code>import http from "mozhi-http"
+import html from "mozhi-html"
+import json from "mozhi-json"
+import math_utils from "mozhi-math-utils"
+import strings from "mozhi-strings"</code></pre>
+    <p>After the import lines, all functions are available as <code>library.function(...)</code>:</p>
+    <pre><code>import strings from "mozhi-strings"
+
+echo(strings.reverse("hello"))        # olleh
+echo(strings.capitalize("mozhi"))     # Mozhi
+echo(strings.snake_case("camelCase")) # camel_case</code></pre>
+
+    <h2>Direct Download</h2>
+    <p>You can also fetch a library directly without the CLI:</p>
+    <pre><code>curl -fsSL https://raw.githubusercontent.com/crossberry-in/mozhi-doc/main/libs/html/html.mz \
+  -o ~/.mozhi/libs/html/html.mz
+
+# Or download all libraries as a tarball:
+curl -fsSL https://github.com/crossberry-in/mozhi-doc/releases/download/v-libs-latest/mozhi-libs-all-1.0.0.tar.gz \
+  -o mozhi-libs.tar.gz
+tar -xzf mozhi-libs.tar.gz -C ~/.mozhi/libs</code></pre>
+
+    <h2>Verification</h2>
+    <p>Every release ships a SHA-256 checksum file:</p>
+    <pre><code>curl -fsSL https://raw.githubusercontent.com/crossberry-in/mozhi-doc/main/libs/checksums-sha256.txt -o /tmp/checksums.txt
+sha256sum ~/.mozhi/libs/html/html.mz
+grep html.mz /tmp/checksums.txt</code></pre>
+
+    <h2>Creating Your Own Library</h2>
+    <p>Add an entry to <code>mozhi-registry.json</code> and commit. The CI workflow will automatically build, package, and publish your library.</p>
+    <pre><code>{
+  "name": "mozhi-mylib",
+  "version": "1.0.0",
+  "description": "My custom library",
+  "source": "libs/mylib/mylib.mz",
+  "install": "mylib/mylib.mz",
+  "import_as": "mylib",
+  "functions": ["greet"]
+}</code></pre>
+    <p>Then users install it with <code>mozhi add mozhi-mylib</code>.</p>
+
+    <h2>CI/CD Workflow</h2>
+    <p>The <code>libs-release.yml</code> GitHub Action triggers on every push that changes anything under <code>libs/</code>. It:</p>
+    <ul style="color:#c9d1d9">
+        <li>Validates every <code>.mz</code> file (non-empty, balanced braces)</li>
+        <li>Validates the registry JSON</li>
+        <li>Builds per-package <code>.tar.gz</code> and raw <code>.mz</code> artifacts</li>
+        <li>Bundles all libraries into <code>mozhi-libs-all-&lt;version&gt;.tar.gz</code></li>
+        <li>Generates SHA-256 checksums</li>
+        <li>Publishes to the docs site and a GitHub Release tagged <code>v-libs-&lt;version&gt;</code></li>
+        <li>Updates a rolling <code>v-libs-latest</code> tag</li>
+    </ul>
+
+    <p style="margin-top:3rem; padding-top:1rem; border-top:1px solid #30363d; color:#8b949e; font-size:0.85rem; text-align:center;">
+        Mozhi Libraries v1.0.0 &middot; <a href="https://github.com/crossberry-in/mozhi-doc">Source on GitHub</a> &middot; MIT License
+    </p>
+
+    <script>
+    fetch('mozhi-registry.json')
+        .then(r => r.json())
+        .then(reg => {
+            const container = document.getElementById('packages');
+            container.innerHTML = '';
+            reg.packages.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'pkg';
+                div.innerHTML = `
+                    <h3>${p.name}
+                        <span class="badge">v${p.version}</span>
+                        <span class="badge category">${p.category}</span>
+                        <span class="badge fns">${p.functions.length} fns</span>
+                    </h3>
+                    <p>${p.description}</p>
+                    <div class="pkg-meta">
+                        <div><b>Import as:</b> <code>${p.import_as}</code></div>
+                        <div><b>License:</b> ${p.license}</div>
+                        <div><b>Install:</b> <code>mozhi add ${p.name}</code></div>
+                        <div><b>Direct:</b> <a href="${p.source.replace('libs/', 'libs/')}">${p.install}</a></div>
+                    </div>
+                    <details>
+                        <summary style="cursor:pointer; color:#58a6ff;">Show ${p.functions.length} functions</summary>
+                        <div class="fn-list">${p.functions.map(f => '<code>' + f + '</code>').join(' &middot; ')}</div>
+                    </details>
+                `;
+                container.appendChild(div);
+            });
+        })
+        .catch(err => {
+            document.getElementById('packages').innerHTML =
+                '<p style="color:#f85149">Failed to load registry: ' + err.message + '</p>';
+        });
+    </script>
+</body>
+</html>

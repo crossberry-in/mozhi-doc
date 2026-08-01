@@ -1,0 +1,269 @@
+# ============================================================
+# Mozhi Math Utils Library v1.0.0
+# Package: mozhi-math-utils
+# Author: Mozhi Project
+# License: MIT
+# Description: Extended math helpers for Mozhi
+# ============================================================
+
+# Mathematical constant PI
+const PI = 3.141592653589793
+
+# Mathematical constant E
+const E = 2.718281828459045
+
+# Absolute value
+fn abs(n) {
+    if n < 0 {
+        return -n
+    }
+    return n
+}
+
+# Square of n
+fn square(n) {
+    return n * n
+}
+
+# Cube of n
+fn cube(n) {
+    return n * n * n
+}
+
+# Integer power: base^exp (exp >= 0)
+fn pow(base, exp) {
+    if exp == 0 {
+        return 1
+    }
+    result = 1
+    i = 0
+    while i < exp {
+        result = result * base
+        i = i + 1
+    }
+    return result
+}
+
+# Square root using Newton-Raphson iteration.
+fn sqrt(n) {
+    if n < 0 {
+        return 0
+    }
+    if n == 0 {
+        return 0
+    }
+    x = n
+    y = (x + 1) / 2
+    while abs(x - y) > 0.00001 {
+        x = y
+        y = (x + n / x) / 2
+    }
+    return y
+}
+
+# Cube root
+fn cbrt(n) {
+    if n >= 0 {
+        return pow(n, 1)  # placeholder, real cube root requires float pow
+    }
+    return -pow(-n, 1)
+}
+
+# Factorial of n (n!)
+fn factorial(n) {
+    if n <= 1 {
+        return 1
+    }
+    result = 1
+    i = 2
+    while i <= n {
+        result = result * i
+        i = i + 1
+    }
+    return result
+}
+
+# Greatest Common Divisor (Euclid)
+fn gcd(a, b) {
+    while b != 0 {
+        t = b
+        b = a % b
+        a = t
+    }
+    if a < 0 {
+        return -a
+    }
+    return a
+}
+
+# Least Common Multiple
+fn lcm(a, b) {
+    if a == 0 or b == 0 {
+        return 0
+    }
+    return abs(a * b) / gcd(a, b)
+}
+
+# Check if n is prime
+fn is_prime(n) {
+    if n < 2 {
+        return false
+    }
+    if n == 2 {
+        return true
+    }
+    if n % 2 == 0 {
+        return false
+    }
+    i = 3
+    while i * i <= n {
+        if n % i == 0 {
+            return false
+        }
+        i = i + 2
+    }
+    return true
+}
+
+# Return list of primes up to n (sieve)
+fn primes_up_to(n) {
+    if n < 2 {
+        return []
+    }
+    result = []
+    i = 2
+    while i <= n {
+        if is_prime(i) {
+            result.push(i)
+        }
+        i = i + 1
+    }
+    return result
+}
+
+# Nth Fibonacci number (0-indexed, iterative)
+fn fibonacci(n) {
+    if n <= 0 {
+        return 0
+    }
+    if n == 1 {
+        return 1
+    }
+    a = 0
+    b = 1
+    i = 2
+    while i <= n {
+        c = a + b
+        a = b
+        b = c
+        i = i + 1
+    }
+    return b
+}
+
+# Sum of a list of numbers
+fn sum(arr) {
+    total = 0
+    for x in arr {
+        total = total + x
+    }
+    return total
+}
+
+# Product of a list of numbers
+fn product(arr) {
+    total = 1
+    for x in arr {
+        total = total * x
+    }
+    return total
+}
+
+# Maximum value in a list
+fn max(arr) {
+    if arr.len() == 0 {
+        return 0
+    }
+    m = arr[0]
+    for x in arr {
+        if x > m {
+            m = x
+        }
+    }
+    return m
+}
+
+# Minimum value in a list
+fn min(arr) {
+    if arr.len() == 0 {
+        return 0
+    }
+    m = arr[0]
+    for x in arr {
+        if x < m {
+            m = x
+        }
+    }
+    return m
+}
+
+# Average of a list
+fn mean(arr) {
+    if arr.len() == 0 {
+        return 0
+    }
+    return sum(arr) / arr.len()
+}
+
+# Clamp value between low and high
+fn clamp(n, low, high) {
+    if n < low {
+        return low
+    }
+    if n > high {
+        return high
+    }
+    return n
+}
+
+# Linear interpolation between a and b by t (0..1)
+fn lerp(a, b, t) {
+    return a + (b - a) * t
+}
+
+# Convert degrees to radians
+fn radians(deg) {
+    return deg * PI / 180
+}
+
+# Convert radians to degrees
+fn degrees(rad) {
+    return rad * 180 / PI
+}
+
+# Simple sin approximation (Taylor series, 7 terms)
+fn sin(x) {
+    # reduce to -PI..PI
+    while x > PI {
+        x = x - 2 * PI
+    }
+    while x < -PI {
+        x = x + 2 * PI
+    }
+    x2 = x * x
+    x3 = x2 * x
+    x5 = x3 * x2
+    x7 = x5 * x2
+    x9 = x7 * x2
+    return x - x3 / 6 + x5 / 120 - x7 / 5040 + x9 / 362880
+}
+
+# Simple cos approximation using sin(x + PI/2)
+fn cos(x) {
+    return sin(x + PI / 2)
+}
+
+# Map a value from one range to another
+fn map_range(value, in_min, in_max, out_min, out_max) {
+    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+}

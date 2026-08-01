@@ -1,0 +1,155 @@
+# ============================================================
+# Mozhi JSON Library v1.0.0
+# Package: mozhi-json
+# Author: Mozhi Project
+# License: MIT
+# Description: JSON encoder/decoder helpers for Mozhi
+# ============================================================
+
+# Escape a string for safe inclusion in JSON output.
+fn json_escape(s) {
+    s = s.replace("\\", "\\\\")
+    s = s.replace("\"", "\\\"")
+    s = s.replace("\n", "\\n")
+    s = s.replace("\r", "\\r")
+    s = s.replace("\t", "\\t")
+    return s
+}
+
+# Encode a string as a JSON string value.
+fn json_string(s) {
+    return "\"" + json_escape(s) + "\""
+}
+
+# Encode a number as a JSON number value.
+fn json_number(n) {
+    return string(n)
+}
+
+# Encode a boolean as a JSON boolean value.
+fn json_bool(b) {
+    if b {
+        return "true"
+    }
+    return "false"
+}
+
+# Encode null.
+fn json_null() {
+    return "null"
+}
+
+# Encode a list of values as a JSON array.
+fn json_array(items) {
+    parts = []
+    for item in items {
+        parts.push(json_string(item))
+    }
+    return "[" + parts.join(", ") + "]"
+}
+
+# Encode a key/value pair as "key": value.
+fn json_kv(key, value) {
+    return json_string(key) + ": " + json_string(value)
+}
+
+# Encode an array of [key, value] pairs as a JSON object.
+fn json_object(pairs) {
+    parts = []
+    for pair in pairs {
+        parts.push(json_kv(pair[0], pair[1]))
+    }
+    return "{" + parts.join(", ") + "}"
+}
+
+# Pretty-print indentation helper.
+fn json_indent(depth) {
+    out = ""
+    i = 0
+    while i < depth {
+        out = out + "  "
+        i = i + 1
+    }
+    return out
+}
+
+# Encode a list of values as a pretty-printed JSON array.
+fn json_array_pretty(items, depth) {
+    if items.len() == 0 {
+        return "[]"
+    }
+    out = "[\n"
+    i = 0
+    for item in items {
+        out = out + json_indent(depth + 1) + json_string(item)
+        if i < items.len() - 1 {
+            out = out + ","
+        }
+        out = out + "\n"
+        i = i + 1
+    }
+    out = out + json_indent(depth) + "]"
+    return out
+}
+
+# Encode an array of [key, value] pairs as a pretty JSON object.
+fn json_object_pretty(pairs, depth) {
+    if pairs.len() == 0 {
+        return "{}"
+    }
+    out = "{\n"
+    i = 0
+    for pair in pairs {
+        out = out + json_indent(depth + 1) + json_kv(pair[0], pair[1])
+        if i < pairs.len() - 1 {
+            out = out + ","
+        }
+        out = out + "\n"
+        i = i + 1
+    }
+    out = out + json_indent(depth) + "}"
+    return out
+}
+
+# Very small decoder: extract the string value for a given top-level key.
+# Example: json_get(s, "name") on {"name": "Mozhi"} returns Mozhi.
+fn json_get(s, key) {
+    needle = "\"" + key + "\":"
+    pos = s.index(needle)
+    if pos < 0 {
+        needle = "\"" + key + "\" :"
+        pos = s.index(needle)
+        if pos < 0 {
+            return ""
+        }
+    }
+    rest = s.slice(pos + needle.len())
+    rest = rest.trim()
+    if rest[0] == "\"" {
+        end = rest.slice(1).index("\"")
+        if end < 0 {
+            return ""
+        }
+        return rest.slice(1, end + 1)
+    }
+    # numeric or boolean value
+    end = 0
+    chars = rest.split("")
+    for ch in chars {
+        if ch == "," or ch == "}" or ch == "\n" {
+            break
+        }
+        end = end + 1
+    }
+    return rest.slice(0, end).trim()
+}
+
+# Check whether a JSON string represents a boolean true.
+fn json_is_true(s) {
+    return s.trim() == "true"
+}
+
+# Check whether a JSON string represents null.
+fn json_is_null(s) {
+    return s.trim() == "null"
+}

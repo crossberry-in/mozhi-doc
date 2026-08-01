@@ -1,0 +1,109 @@
+# ============================================================
+# Mozhi Library Showcase
+# Demonstrates every library in a single program
+# ============================================================
+
+import html from "mozhi-html"
+import json from "mozhi-json"
+import math_utils from "mozhi-math-utils"
+import strings from "mozhi-strings"
+
+fn demo_strings() {
+    echo("=== Strings Library ===")
+    echo("  repeat('ab', 3)         = " + strings.repeat("ab", 3))
+    echo("  reverse('hello')        = " + strings.reverse("hello"))
+    echo("  capitalize('mozhi')     = " + strings.capitalize("mozhi"))
+    echo("  title_case('hello world') = " + strings.title_case("hello world"))
+    echo("  snake_case('camelCase') = " + strings.snake_case("camelCase"))
+    echo("  camel_case('snake_case') = " + strings.camel_case("snake_case"))
+    echo("  count('banana', 'an')   = " + string(strings.count("banana", "an")))
+    echo("  starts_with('hello', 'he') = " + string(strings.starts_with("hello", "he")))
+    echo("  truncate('Hello World', 5, '...') = " + strings.truncate("Hello World", 5, "..."))
+    echo("  slugify('Hello, World!') = " + strings.slugify("Hello, World!"))
+    echo("  zero_pad(42, 5)         = " + strings.zero_pad(42, 5))
+    echo("")
+}
+
+fn demo_math() {
+    echo("=== Math Utils Library ===")
+    echo("  PI = " + string(math_utils.PI))
+    echo("  E  = " + string(math_utils.E))
+    echo("  abs(-42)        = " + string(math_utils.abs(-42)))
+    echo("  square(7)       = " + string(math_utils.square(7)))
+    echo("  cube(3)         = " + string(math_utils.cube(3)))
+    echo("  pow(2, 10)      = " + string(math_utils.pow(2, 10)))
+    echo("  sqrt(144)       = " + string(math_utils.sqrt(144)))
+    echo("  factorial(10)   = " + string(math_utils.factorial(10)))
+    echo("  gcd(48, 36)     = " + string(math_utils.gcd(48, 36)))
+    echo("  lcm(4, 6)       = " + string(math_utils.lcm(4, 6)))
+    echo("  is_prime(97)    = " + string(math_utils.is_prime(97)))
+    echo("  fibonacci(20)   = " + string(math_utils.fibonacci(20)))
+    echo("  primes_up_to(30) = " + string(math_utils.primes_up_to(30)))
+    echo("  sum([1,2,3,4,5]) = " + string(math_utils.sum([1, 2, 3, 4, 5])))
+    echo("  mean([10,20,30]) = " + string(math_utils.mean([10, 20, 30])))
+    echo("  radians(180)    = " + string(math_utils.radians(180)))
+    echo("  degrees(3.14159) = " + string(math_utils.degrees(3.14159)))
+    echo("  clamp(15, 0, 10) = " + string(math_utils.clamp(15, 0, 10)))
+    echo("  lerp(0, 100, 0.5) = " + string(math_utils.lerp(0, 100, 0.5)))
+    echo("")
+}
+
+fn demo_json() {
+    echo("=== JSON Library ===")
+    obj = json.json_object([
+        ["name", "Mozhi"],
+        ["version", "2.0.0"],
+        ["author", "Z.ai"]
+    ])
+    echo("  json_object(...) = " + obj)
+
+    pretty = json.json_object_pretty([
+        ["name", "Mozhi"],
+        ["version", "2.0.0"]
+    ], 0)
+    echo("  pretty:")
+    echo(pretty)
+
+    arr = json.json_array(["a", "b", "c"])
+    echo("  json_array(...) = " + arr)
+
+    sample = '{"name": "Mozhi", "version": "2.0.0"}'
+    echo("  json_get('" + sample + "', 'name') = " + json.json_get(sample, "name"))
+    echo("  json_get('" + sample + "', 'version') = " + json.json_get(sample, "version"))
+    echo("")
+}
+
+fn demo_html() {
+    echo("=== HTML Library ===")
+    echo("  html_doctype() = " + html.html_doctype())
+    echo("  html_h1('Hi')  = " + html.html_h1("Hi"))
+    echo("  html_p('text') = " + html.html_p("text"))
+    echo("  html_a('url', 'click') = " + html.html_a("https://mozhi.dev", "click"))
+    echo("  html_div('cls', 'content') = " + html.html_div("container", "Hello"))
+    echo("  html_ul(['a','b']) = " + html.html_ul(["a", "b"]))
+
+    page = html.html_page("Demo",
+        html.html_h1("Mozhi HTML Library") +
+        html.html_p("Generated entirely from Mozhi code.")
+    )
+    echo("  html_page(...) = ")
+    echo(page)
+    echo("")
+}
+
+fn main() {
+    echo("")
+    echo("===========================================")
+    echo("  Mozhi Library Showcase")
+    echo("===========================================")
+    echo("")
+    demo_strings()
+    demo_math()
+    demo_json()
+    demo_html()
+    echo("===========================================")
+    echo("  Showcase complete.")
+    echo("===========================================")
+}
+
+main()

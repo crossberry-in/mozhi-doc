@@ -1,0 +1,205 @@
+# ============================================================
+# Mozhi HTML Library v1.0.0
+# Package: mozhi-html
+# Author: Mozhi Project
+# License: MIT
+# Description: HTML element generation utilities for Mozhi
+# ============================================================
+
+fn html_doctype() {
+    return "<!DOCTYPE html>"
+}
+
+fn html_tag(tag, content) {
+    return "<" + tag + ">" + content + "</" + tag + ">"
+}
+
+fn html_attr_tag(tag, attrs, content) {
+    return "<" + tag + " " + attrs + ">" + content + "</" + tag + ">"
+}
+
+fn html_self_closing(tag, attrs) {
+    if attrs == "" {
+        return "<" + tag + ">"
+    }
+    return "<" + tag + " " + attrs + ">"
+}
+
+fn html_head(title) {
+    return "<head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>" + title + "</title></head>"
+}
+
+fn html_body(content) {
+    return "<body>" + content + "</body>"
+}
+
+fn html_page(title, body) {
+    page = html_doctype() + "\n"
+    page = page + "<html lang=\"en\">\n"
+    page = page + html_head(title) + "\n"
+    page = page + html_body(body) + "\n"
+    page = page + "</html>"
+    return page
+}
+
+fn html_div(class_name, content) {
+    if class_name == "" {
+        return html_tag("div", content)
+    }
+    return html_attr_tag("div", "class=\"" + class_name + "\"", content)
+}
+
+fn html_span(class_name, content) {
+    if class_name == "" {
+        return html_tag("span", content)
+    }
+    return html_attr_tag("span", "class=\"" + class_name + "\"", content)
+}
+
+fn html_h1(text) {
+    return html_tag("h1", text)
+}
+
+fn html_h2(text) {
+    return html_tag("h2", text)
+}
+
+fn html_h3(text) {
+    return html_tag("h3", text)
+}
+
+fn html_h4(text) {
+    return html_tag("h4", text)
+}
+
+fn html_h5(text) {
+    return html_tag("h5", text)
+}
+
+fn html_h6(text) {
+    return html_tag("h6", text)
+}
+
+fn html_p(text) {
+    return html_tag("p", text)
+}
+
+fn html_a(href, text) {
+    return html_attr_tag("a", "href=\"" + href + "\"", text)
+}
+
+fn html_img(src, alt) {
+    return html_self_closing("img", "src=\"" + src + "\" alt=\"" + alt + "\"")
+}
+
+fn html_ul(items) {
+    html = "<ul>"
+    for item in items {
+        html = html + "<li>" + item + "</li>"
+    }
+    html = html + "</ul>"
+    return html
+}
+
+fn html_ol(items) {
+    html = "<ol>"
+    for item in items {
+        html = html + "<li>" + item + "</li>"
+    }
+    html = html + "</ol>"
+    return html
+}
+
+fn html_table(headers, rows) {
+    html = "<table border=\"1\" cellpadding=\"5\">\n<tr>"
+    for h in headers {
+        html = html + "<th>" + h + "</th>"
+    }
+    html = html + "</tr>\n"
+    for row in rows {
+        html = html + "<tr>"
+        for cell in row {
+            html = html + "<td>" + string(cell) + "</td>"
+        }
+        html = html + "</tr>\n"
+    }
+    html = html + "</table>"
+    return html
+}
+
+fn html_form(action, method, inputs) {
+    html = "<form action=\"" + action + "\" method=\"" + method + "\">"
+    for input in inputs {
+        html = html + input
+    }
+    html = html + "</form>"
+    return html
+}
+
+fn html_input(type, name, value) {
+    return html_self_closing("input", "type=\"" + type + "\" name=\"" + name + "\" value=\"" + value + "\"")
+}
+
+fn html_button(type, text) {
+    return html_attr_tag("button", "type=\"" + type + "\"", text)
+}
+
+fn html_label(for_id, text) {
+    return html_attr_tag("label", "for=\"" + for_id + "\"", text)
+}
+
+fn html_style(css) {
+    return "<style>\n" + css + "\n</style>"
+}
+
+fn html_script(js) {
+    return "<script>\n" + js + "\n</script>"
+}
+
+fn html_script_src(src) {
+    return html_self_closing("script", "src=\"" + src + "\"")
+}
+
+fn html_meta(name, content) {
+    return html_self_closing("meta", "name=\"" + name + "\" content=\"" + content + "\"")
+}
+
+fn html_link(rel, href) {
+    return html_self_closing("link", "rel=\"" + rel + "\" href=\"" + href + "\"")
+}
+
+fn html_br() {
+    return "<br>"
+}
+
+fn html_hr() {
+    return "<hr>"
+}
+
+fn html_nav(content) {
+    return html_tag("nav", content)
+}
+
+fn html_header(content) {
+    return html_tag("header", content)
+}
+
+fn html_footer(content) {
+    return html_tag("footer", content)
+}
+
+fn html_section(content) {
+    return html_tag("section", content)
+}
+
+fn html_article(content) {
+    return html_tag("article", content)
+}
+
+fn html_code(code) {
+    return html_tag("code", code)
+}
+
+fn html_pre(code) {
+    return html_tag("pre", code)
+}

@@ -1,0 +1,102 @@
+{
+  "registry": "mozhi",
+  "version": "1.0.0",
+  "updated": "2026-08-02",
+  "packages": [
+    {
+      "name": "mozhi-html",
+      "version": "1.0.0",
+      "description": "HTML element generation utilities for Mozhi",
+      "author": "Mozhi Project",
+      "license": "MIT",
+      "category": "web",
+      "keywords": ["html", "web", "template", "markup"],
+      "source": "libs/html/html.mz",
+      "install": "html/html.mz",
+      "import_as": "html",
+      "functions": [
+        "html_doctype", "html_tag", "html_attr_tag", "html_self_closing",
+        "html_head", "html_body", "html_page", "html_div", "html_span",
+        "html_h1", "html_h2", "html_h3", "html_h4", "html_h5", "html_h6",
+        "html_p", "html_a", "html_img", "html_ul", "html_ol", "html_table",
+        "html_form", "html_input", "html_button", "html_label",
+        "html_style", "html_script", "html_script_src", "html_meta", "html_link",
+        "html_br", "html_hr", "html_nav", "html_header", "html_footer",
+        "html_section", "html_article", "html_code", "html_pre"
+      ]
+    },
+    {
+      "name": "mozhi-http",
+      "version": "1.0.0",
+      "description": "HTTP server utilities built on Mozhi networking builtins",
+      "author": "Mozhi Project",
+      "license": "MIT",
+      "category": "web",
+      "keywords": ["http", "server", "network", "web"],
+      "source": "libs/http_server/http_server.mz",
+      "install": "http_server/http_server.mz",
+      "import_as": "http",
+      "functions": [
+        "http_start", "http_response", "http_ok_html", "http_ok_text",
+        "http_ok_json", "http_404", "http_500", "http_parse_path",
+        "http_parse_method", "http_query_param", "http_header",
+        "http_serve_once", "http_serve_loop", "http_router", "http_error_json"
+      ]
+    },
+    {
+      "name": "mozhi-json",
+      "version": "1.0.0",
+      "description": "JSON encoder/decoder helpers for Mozhi",
+      "author": "Mozhi Project",
+      "license": "MIT",
+      "category": "data",
+      "keywords": ["json", "encode", "decode", "serialize"],
+      "source": "libs/json/json.mz",
+      "install": "json/json.mz",
+      "import_as": "json",
+      "functions": [
+        "json_escape", "json_string", "json_number", "json_bool", "json_null",
+        "json_array", "json_kv", "json_object", "json_indent",
+        "json_array_pretty", "json_object_pretty", "json_get",
+        "json_is_true", "json_is_null"
+      ]
+    },
+    {
+      "name": "mozhi-math-utils",
+      "version": "1.0.0",
+      "description": "Extended math helpers for Mozhi",
+      "author": "Mozhi Project",
+      "license": "MIT",
+      "category": "math",
+      "keywords": ["math", "arithmetic", "geometry", "statistics"],
+      "source": "libs/math_utils/math_utils.mz",
+      "install": "math_utils/math_utils.mz",
+      "import_as": "math_utils",
+      "constants": ["PI", "E"],
+      "functions": [
+        "abs", "square", "cube", "pow", "sqrt", "cbrt", "factorial",
+        "gcd", "lcm", "is_prime", "primes_up_to", "fibonacci",
+        "sum", "product", "max", "min", "mean", "clamp", "lerp",
+        "radians", "degrees", "sin", "cos", "map_range"
+      ]
+    },
+    {
+      "name": "mozhi-strings",
+      "version": "1.0.0",
+      "description": "Extended string manipulation utilities for Mozhi",
+      "author": "Mozhi Project",
+      "license": "MIT",
+      "category": "text",
+      "keywords": ["string", "text", "manipulation"],
+      "source": "libs/strings/strings.mz",
+      "install": "strings/strings.mz",
+      "import_as": "strings",
+      "functions": [
+        "repeat", "reverse", "pad_left", "pad_right", "pad_center",
+        "capitalize", "title_case", "snake_case", "camel_case", "count",
+        "starts_with", "ends_with", "truncate", "trim", "strip",
+        "join", "split", "replace", "zero_pad", "slugify", "wrap_lines"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+# ============================================================
+# Mozhi Web Server Example
+# Demonstrates using mozhi-http and mozhi-html libraries together
+# ============================================================
+
+# --- Import library packages (first non-comment lines) ---
+import http from "mozhi-http"
+import html from "mozhi-html"
+import strings from "mozhi-strings"
+
+# --- Build the home page ---
+fn render_home() {
+    title = "Mozhi Web Server"
+    hero = html.html_div("hero",
+        html.html_h1("Welcome to Mozhi") +
+        html.html_p("A modern programming language built from scratch.")
+    )
+    features = [
+        "Tree-walking interpreter in C",
+        "Cross-platform binaries via Zig",
+        "Beautiful TUI in Go",
+        "Library package system with imports",
+        "GitHub Actions CI/CD"
+    ]
+    list = html.html_ul(features)
+    body = hero + html.html_div("features", html.html_h2("Features") + list)
+
+    footer = html.html_footer(
+        html.html_p("Built with " + html.html_a("https://github.com/crossberry-in/mozhi", "Mozhi") + " v2.0")
+    )
+
+    css = "
+        body { font-family: -apple-system, sans-serif; max-width: 720px; margin: 0 auto; padding: 2rem; background: #0d1117; color: #c9d1d9; }
+        h1, h2 { color: #58a6ff; }
+        a { color: #58a6ff; }
+        .hero { text-align: center; padding: 2rem 0; border-bottom: 1px solid #30363d; margin-bottom: 2rem; }
+        ul { line-height: 1.8; }
+        footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #30363d; color: #8b949e; font-size: 0.9rem; }
+    "
+
+    page = html.html_page(title,
+        html.html_style(css) + body + footer
+    )
+    return page
+}
+
+# --- Build the about page ---
+fn render_about() {
+    body = html.html_h1("About Mozhi") +
+           html.html_p("Mozhi is a complete programming language ecosystem built from scratch — interpreter, TUI, package manager, VS Code extension, and documentation.") +
+           html.html_p("This page is being served by the Mozhi interpreter itself, using the mozhi-http and mozhi-html libraries.")
+    return html.html_page("About - Mozhi", body)
+}
+
+# --- Build the API JSON response ---
+fn render_api_info() {
+    # Hand-built JSON since the JSON library is also available
+    response = "{"
+    response = response + "\"name\": \"Mozhi\", "
+    response = response + "\"version\": \"2.0.0\", "
+    response = response + "\"endpoints\": [\"/\", \"/about\", \"/api\", \"/echo\"]"
+    response = response + "}"
+    return http.http_ok_json(response)
+}
+
+# --- Echo endpoint: returns the query string back as JSON ---
+fn render_echo(path) {
+    # path may look like /echo?msg=hello
+    msg = http.http_query_param(path, "msg")
+    if msg == "" {
+        msg = "(no msg parameter)"
+    }
+    body = "{\"echo\": \"" + msg + "\"}"
+    return http.http_ok_json(body)
+}
+
+# --- HTTP request handler ---
+fn handler(method, path) {
+    echo("[" + method + "] " + path)
+
+    # Strip query string for routing
+    route = path
+    if path.contains("?") {
+        route = path.split("?")[0]
+    }
+
+    if route == "/" {
+        return http.http_ok_html(render_home())
+    }
+
+    if route == "/about" {
+        return http.http_ok_html(render_about())
+    }
+
+    if route == "/api" {
+        return render_api_info()
+    }
+
+    if strings.starts_with(route, "/echo") {
+        return render_echo(path)
+    }
+
+    # 404
+    body = html.html_page("404",
+        html.html_div("error",
+            html.html_h1("404") +
+            html.html_p("The page " + path + " was not found.") +
+            html.html_a("/", "← Back to home")
+        )
+    )
+    return http.http_404(body)
+}
+
+# --- Main ---
+fn main() {
+    port = 8080
+    echo("============================================")
+    echo("  Mozhi Web Server")
+    echo("  Listening on http://localhost:" + string(port))
+    echo("  Press Ctrl+C to stop")
+    echo("============================================")
+    echo("")
+
+    server = http.http_start(port)
+    if server < 0 {
+        echo("Failed to start server on port " + string(port))
+        return
+    }
+
+    echo("Routes:")
+    echo("  GET /        - Home page")
+    echo("  GET /about   - About page")
+    echo("  GET /api     - JSON API")
+    echo("  GET /echo?msg=hello - Echo endpoint")
+    echo("")
+
+    http.http_serve_loop(server, handler)
+}
+
+main()

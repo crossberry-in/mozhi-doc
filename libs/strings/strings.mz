@@ -1,0 +1,230 @@
+# ============================================================
+# Mozhi Strings Library v1.0.0
+# Package: mozhi-strings
+# Author: Mozhi Project
+# License: MIT
+# Description: Extended string manipulation utilities for Mozhi
+# ============================================================
+
+# Repeat a string n times
+fn repeat(s, n) {
+    out = ""
+    i = 0
+    while i < n {
+        out = out + s
+        i = i + 1
+    }
+    return out
+}
+
+# Reverse a string
+fn reverse(s) {
+    out = ""
+    i = s.len() - 1
+    while i >= 0 {
+        out = out + s[i]
+        i = i - 1
+    }
+    return out
+}
+
+# Pad a string on the left with the given character to reach total length
+fn pad_left(s, total, ch) {
+    while s.len() < total {
+        s = ch + s
+    }
+    return s
+}
+
+# Pad a string on the right
+fn pad_right(s, total, ch) {
+    while s.len() < total {
+        s = s + ch
+    }
+    return s
+}
+
+# Pad both sides, centering the string
+fn pad_center(s, total, ch) {
+    while s.len() < total {
+        s = ch + s
+        if s.len() < total {
+            s = s + ch
+        }
+    }
+    return s
+}
+
+# Capitalize the first character
+fn capitalize(s) {
+    if s.len() == 0 {
+        return s
+    }
+    first = s[0]
+    rest = ""
+    if s.len() > 1 {
+        rest = s.slice(1)
+    }
+    return first.upper() + rest.lower()
+}
+
+# Capitalize each word in a string
+fn title_case(s) {
+    parts = s.split(" ")
+    out = []
+    for part in parts {
+        out.push(capitalize(part))
+    }
+    return out.join(" ")
+}
+
+# Convert camelCase to snake_case
+fn snake_case(s) {
+    out = ""
+    i = 0
+    while i < s.len() {
+        c = s[i]
+        if c.upper() == c and c.lower() != c {
+            if i > 0 {
+                out = out + "_"
+            }
+            out = out + c.lower()
+        } else {
+            out = out + c
+        }
+        i = i + 1
+    }
+    return out
+}
+
+# Convert snake_case to camelCase
+fn camel_case(s) {
+    parts = s.split("_")
+    if parts.len() == 0 {
+        return s
+    }
+    out = parts[0]
+    i = 1
+    while i < parts.len() {
+        out = out + capitalize(parts[i])
+        i = i + 1
+    }
+    return out
+}
+
+# Count occurrences of a substring
+fn count(haystack, needle) {
+    if needle == "" {
+        return 0
+    }
+    n = 0
+    i = 0
+    while i <= haystack.len() - needle.len() {
+        if haystack.slice(i, i + needle.len()) == needle {
+            n = n + 1
+            i = i + needle.len()
+        } else {
+            i = i + 1
+        }
+    }
+    return n
+}
+
+# Check whether haystack starts with needle
+fn starts_with(s, prefix) {
+    if s.len() < prefix.len() {
+        return false
+    }
+    return s.slice(0, prefix.len()) == prefix
+}
+
+# Check whether haystack ends with needle
+fn ends_with(s, suffix) {
+    if s.len() < suffix.len() {
+        return false
+    }
+    return s.slice(s.len() - suffix.len()) == suffix
+}
+
+# Truncate a string to max_len, adding suffix if cut
+fn truncate(s, max_len, suffix) {
+    if s.len() <= max_len {
+        return s
+    }
+    return s.slice(0, max_len) + suffix
+}
+
+# Remove all whitespace from both ends (alias for built-in trim)
+fn trim(s) {
+    return s.trim()
+}
+
+# Strip a specific character from both ends
+fn strip(s, ch) {
+    while s.len() > 0 and s[0] == ch {
+        s = s.slice(1)
+    }
+    while s.len() > 0 and s[s.len() - 1] == ch {
+        s = s.slice(0, s.len() - 1)
+    }
+    return s
+}
+
+# Join an array of strings with a separator
+fn join(arr, sep) {
+    return arr.join(sep)
+}
+
+# Split a string by separator (alias for built-in split)
+fn split(s, sep) {
+    return s.split(sep)
+}
+
+# Replace all occurrences of old with new (alias for built-in replace)
+fn replace(s, old, new) {
+    return s.replace(old, new)
+}
+
+# Format a number with leading zeros to reach total width
+fn zero_pad(n, width) {
+    s = string(n)
+    while s.len() < width {
+        s = "0" + s
+    }
+    return s
+}
+
+# Generate a slug from a string (lowercase, hyphens, no special chars)
+fn slugify(s) {
+    s = s.lower().trim()
+    s = s.replace(" ", "-")
+    s = s.replace("_", "-")
+    s = s.replace(",", "")
+    s = s.replace(".", "")
+    s = s.replace("!", "")
+    s = s.replace("?", "")
+    s = s.replace("'", "")
+    s = s.replace("\"", "")
+    return s
+}
+
+# Wrap text at a given width, returning an array of lines
+fn wrap_lines(text, width) {
+    words = text.split(" ")
+    lines = []
+    current = ""
+    for word in words {
+        if current == "" {
+            current = word
+        } else if (current + " " + word).len() <= width {
+            current = current + " " + word
+        } else {
+            lines.push(current)
+            current = word
+        }
+    }
+    if current != "" {
+        lines.push(current)
+    }
+    return lines
+}

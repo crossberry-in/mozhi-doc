@@ -1,0 +1,153 @@
+# ============================================================
+# Mozhi HTTP Server Library v1.0.0
+# Package: mozhi-http
+# Author: Mozhi Project
+# License: MIT
+# Description: HTTP server utilities built on Mozhi networking builtins
+# ============================================================
+
+# Start a simple HTTP server on the given port.
+# Returns the server socket handle.
+fn http_start(port) {
+    return server_listen("0.0.0.0", port)
+}
+
+# Build an HTTP response string from status, content-type and body.
+fn http_response(status, content_type, body) {
+    return "HTTP/1.1 " + status + "\r\n" +
+           "Content-Type: " + content_type + "\r\n" +
+           "Content-Length: " + string(body.len()) + "\r\n" +
+           "Connection: close\r\n" +
+           "\r\n" + body
+}
+
+# Build a 200 OK HTML response.
+fn http_ok_html(body) {
+    return http_response("200 OK", "text/html; charset=UTF-8", body)
+}
+
+# Build a 200 OK plain text response.
+fn http_ok_text(body) {
+    return http_response("200 OK", "text/plain; charset=UTF-8", body)
+}
+
+# Build a 200 OK JSON response.
+fn http_ok_json(body) {
+    return http_response("200 OK", "application/json; charset=UTF-8", body)
+}
+
+# Build a 404 Not Found response.
+fn http_404(body) {
+    if body == "" {
+        body = "<h1>404 Not Found</h1>"
+    }
+    return http_response("404 Not Found", "text/html; charset=UTF-8", body)
+}
+
+# Build a 500 Internal Server Error response.
+fn http_500(body) {
+    if body == "" {
+        body = "<h1>500 Internal Server Error</h1>"
+    }
+    return http_response("500 Internal Server Error", "text/html; charset=UTF-8", body)
+}
+
+# Extract the request path from a raw HTTP request string.
+fn http_parse_path(request) {
+    lines = request.split("\r\n")
+    first = lines[0]
+    parts = first.split(" ")
+    if parts.len() >= 2 {
+        return parts[1]
+    }
+    return "/"
+}
+
+# Extract the HTTP method from a raw HTTP request string.
+fn http_parse_method(request) {
+    lines = request.split("\r\n")
+    first = lines[0]
+    parts = first.split(" ")
+    if parts.len() >= 1 {
+        return parts[0]
+    }
+    return "GET"
+}
+
+# Extract a query parameter value from a path that may contain ?key=value&...
+fn http_query_param(path, key) {
+    if not path.contains("?") {
+        return ""
+    }
+    q = path.split("?")
+    if q.len() < 2 {
+        return ""
+    }
+    query = q[1]
+    pairs = query.split("&")
+    for pair in pairs {
+        kv = pair.split("=")
+        if kv.len() == 2 {
+            if kv[0] == key {
+                return kv[1]
+            }
+        }
+    }
+    return ""
+}
+
+# Extract a header value by name from a raw HTTP request.
+fn http_header(request, name) {
+    lines = request.split("\r\n")
+    for line in lines {
+        if line.contains(": ") {
+            kv = line.split(": ")
+            if kv[0].lower() == name.lower() {
+                return kv[1]
+            }
+        }
+    }
+    return ""
+}
+
+# Accept and handle one request, given a handler function.
+# The handler receives (method, path) and must return a full HTTP response string.
+fn http_serve_once(server, handler) {
+    client = server_accept(server)
+    if client < 0 {
+        return ""
+    }
+    raw = socket_recv(client, 4096)
+    if raw == "" {
+        socket_close(client)
+        return ""
+    }
+    method = http_parse_method(raw)
+    path = http_parse_path(raw)
+    response = handler(method, path)
+    socket_send(client, response)
+    socket_close(client)
+    return response
+}
+
+# Run an infinite loop serving requests with the given handler.
+fn http_serve_loop(server, handler) {
+    while true {
+        http_serve_once(server, handler)
+    }
+}
+
+# A simple static-file-style router. Routes is a map of path -> response body (HTML).
+fn http_router(method, path, routes) {
+    for route in routes {
+        if route[0] == path {
+            return http_ok_html(route[1])
+        }
+    }
+    return http_404("")
+}
+
+# Build a JSON-style error envelope.
+fn http_error_json(code, message) {
+    return "{\"error\": {\"code\": " + string(code) + ", \"message\": \"" + message + "\"}}"
+}
