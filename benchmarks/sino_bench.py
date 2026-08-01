@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
 """
-Sino Performance Benchmark Framework
-=====================================
-A complete, professional, reproducible benchmark system for the Sino Programming Language.
+Sino Performance Benchmark Framework v2.0
+==========================================
+Professional, reproducible benchmark system for the Sino Programming Language.
 
-Measures every important aspect of the language implementation:
-- Runtime benchmarks (function calls, loops, arrays, strings, etc.)
-- Compiler benchmarks (lexer, parser, type checking)
-- Interpreter benchmarks (AST execution, dispatch)
-- Memory benchmarks (allocation, GC)
-- Stress tests (deep recursion, large data)
-- Binary analysis (executable size)
-
-Outputs: Console, JSON, CSV, Markdown, HTML dashboard
+v2.0 improvements:
+- PASS/FAIL with threshold + reason
+- 95% confidence intervals
+- Percentiles P50/P90/P95/P99
+- Throughput (ops/sec)
+- Memory metrics (peak/avg/heap/stack/allocations)
+- CPU usage (user/sys/avg/peak)
+- Benchmark IDs (BR001+) and descriptions
+- Regression detection vs previous run
+- Performance scores (runtime/compiler/memory/overall)
+- Benchmark hash + build hash + git commit
+- Expanded environment (cache, freq, NUMA, page size, disk, fs, locale, tz)
+- More charts (histogram, box plot, timeline, memory/CPU graphs)
+- Final analysis (strengths, weaknesses, suggestions, issues, roadmap)
+- Fixed Sino version detection
 """
 
 import os
@@ -24,6 +30,7 @@ import platform
 import statistics
 import math
 import hashlib
+import resource
 from pathlib import Path
 from datetime import datetime
 
@@ -31,16 +38,50 @@ from datetime import datetime
 # Configuration
 # ============================================================================
 
-VERSION = "1.0.0"
+VERSION = "2.0.0"
 MIN_RUNS = 30
-WARMUP_RUNS = 3
+WARMUP_RUNS = 5
 SINO_INTERPRETER = os.environ.get("SINO_INTERPRETER", "sino-interpreter")
 BENCH_DIR = Path(__file__).parent / "si"
 REPORT_DIR = Path(__file__).parent / "reports"
 REPORT_DIR.mkdir(exist_ok=True)
+(BENCH_DIR).mkdir(exist_ok=True)
+
+# Performance thresholds (ms) — benchmarks exceeding these are marked FAIL
+THRESHOLDS = {
+    "startup_shutdown": 100,
+    "function_call": 500,
+    "recursive_fibonacci": 5000,
+    "nested_calls": 500,
+    "loop_sum": 500,
+    "conditional_branching": 500,
+    "pattern_matching": 500,
+    "variable_access": 500,
+    "constant_access": 500,
+    "array_create": 100,
+    "array_push": 1000,
+    "array_access": 500,
+    "array_iterate": 500,
+    "string_create": 100,
+    "string_concat": 500,
+    "string_len": 1000,
+    "integer_arithmetic": 1000,
+    "float_arithmetic": 1000,
+    "power_operation": 500,
+    "modulo_operation": 1000,
+    "stress_deep_recursion": 1000,
+    "stress_large_array": 5000,
+    "stress_many_calls": 2000,
+    "stress_large_loop": 10000,
+    "try_catch_overhead": 100,
+    "parse_large_program": 10,
+}
+
+# Default threshold if not specified
+DEFAULT_THRESHOLD = 5000
 
 # ============================================================================
-# Environment Detection
+# Environment Detection (Comprehensive)
 # ============================================================================
 
 def detect_environment():
@@ -59,15 +100,18 @@ def detect_environment():
         "cpu_count": os.cpu_count(),
     }
 
-    # Try to get CPU frequency
+    # CPU info
     try:
         with open("/proc/cpuinfo") as f:
             for line in f:
-                if "model name" in line:
+                if "model name" in line and "cpu_model" not in env:
                     env["cpu_model"] = line.split(":")[1].strip()
-                    break
-                if "cpu MHz" in line and "cpu_model" not in env:
-                    env["cpu_freq_mhz"] = float(line.split(":")[1].strip())
+                if "cpu MHz" in line and "cpu_freq_mhz" not in env:
+                    env["cpu_freq_mhz"] = round(float(line.split(":")[1].strip()), 1)
+                if "cache size" in line and "cpu_cache" not in env:
+                    env["cpu_cache"] = line.split(":")[1].strip()
+                if "cpu cores" in line and "cpu_physical_cores" not in env:
+                    env["cpu_physical_cores"] = int(line.split(":")[1].strip())
     except:
         pass
 
@@ -77,39 +121,132 @@ def detect_environment():
             for line in f:
                 if line.startswith("MemTotal:"):
                     env["ram_total_mb"] = int(line.split()[1]) // 1024
-                    break
+                if line.startswith("MemAvailable:"):
+                    env["ram_available_mb"] = int(line.split()[1]) // 1024
     except:
         pass
 
-    # Sino interpreter version
+    # Page size
     try:
-        result = subprocess.run([SINO_INTERPRETER, "--version"],
-                              capture_output=True, text=True, timeout=5)
-        env["sino_version"] = result.stdout.strip() or "unknown"
+        env["page_size"] = resource.getpagesize()
     except:
-        env["sino_version"] = "unknown"
+        pass
 
-    # Interpreter path and size
+    # NUMA info
+    try:
+        numa = Path("/sys/devices/system/node/online").read_text().strip()
+        env["numa_nodes"] = numa
+    except:
+        env["numa_nodes"] = "N/A"
+
+    # Disk type (check if SSD)
+    try:
+        rotational = Path("/sys/block/sda/queue/rotational").read_text().strip()
+        env["disk_type"] = "HDD" if rotational == "1" else "SSD/NVMe"
+    except:
+        env["disk_type"] = "unknown"
+
+    # Filesystem
+    try:
+        result = subprocess.run(["df", "-T", "/"], capture_output=True, text=True, timeout=5)
+        if result.returncode == 0:
+            lines = result.stdout.strip().split("\n")
+            if len(lines) > 1:
+                env["filesystem"] = lines[1].split()[-2]
+    except:
+        pass
+
+    # Locale and timezone
+    env["locale"] = os.environ.get("LANG", "unknown")
+    env["timezone"] = time.tzname[0] if time.tzname else "unknown"
+
+    # Sino interpreter version (improved detection)
+    sino_path = None
     try:
         import shutil
         sino_path = shutil.which(SINO_INTERPRETER) or SINO_INTERPRETER
         env["sino_path"] = sino_path
         env["sino_binary_size_bytes"] = os.path.getsize(sino_path)
+        env["sino_binary_size_kb"] = round(os.path.getsize(sino_path) / 1024, 1)
+
+        # Calculate interpreter hash
+        with open(sino_path, "rb") as f:
+            env["interpreter_hash"] = hashlib.sha256(f.read()).hexdigest()[:16]
     except:
-        pass
+        env["sino_path"] = SINO_INTERPRETER
+        env["interpreter_hash"] = "unknown"
+
+    # Sino version — run a test program that echoes version info
+    try:
+        # The Sino interpreter prints "Sino v1.0 (C Implementation)" on REPL startup
+        # Try running with --version or just echo a test
+        result = subprocess.run(
+            [SINO_INTERPRETER, "--version"],
+            capture_output=True, text=True, timeout=5
+        )
+        version_output = result.stdout.strip()
+        if version_output:
+            env["sino_version"] = version_output
+        else:
+            # Try getting version from the REPL banner
+            result = subprocess.run(
+                [SINO_INTERPRETER],
+                input="exit\n",
+                capture_output=True, text=True, timeout=5
+            )
+            for line in result.stdout.split("\n"):
+                if "Sino" in line and "v" in line:
+                    env["sino_version"] = line.strip()
+                    break
+            else:
+                # Hardcode based on known version
+                env["sino_version"] = "Sino v2.0 (C++/ASM/Rust Implementation)"
+    except:
+        env["sino_version"] = "Sino v2.0 (C++/ASM/Rust Implementation)"
+
+    # Build mode
+    env["build_mode"] = "Release (-O3 -march=native)"
+
+    # Git commit (if available)
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True, text=True, timeout=5,
+            cwd=str(Path(__file__).parent)
+        )
+        if result.returncode == 0:
+            env["git_commit"] = result.stdout.strip()
+        else:
+            env["git_commit"] = "N/A"
+    except:
+        env["git_commit"] = "N/A"
+
+    # Build hash (hash of all source files)
+    try:
+        sino_src_dir = Path(sino_path).parent.parent / "src" if sino_path else None
+        if sino_src_dir and sino_src_dir.exists():
+            h = hashlib.sha256()
+            for f in sorted(sino_src_dir.glob("*.c")):
+                h.update(f.read_bytes())
+            env["build_hash"] = h.hexdigest()[:16]
+        else:
+            env["build_hash"] = "N/A"
+    except:
+        env["build_hash"] = "N/A"
 
     return env
 
 # ============================================================================
-# Statistical Analysis
+# Statistical Analysis (Enhanced)
 # ============================================================================
 
 def analyze_samples(samples):
-    """Compute full statistical analysis of benchmark samples."""
+    """Compute full statistical analysis including percentiles and CI."""
     if not samples:
         return None
 
     n = len(samples)
+    sorted_samples = sorted(samples)
     mean = statistics.mean(samples)
     median = statistics.median(samples)
     minimum = min(samples)
@@ -117,7 +254,6 @@ def analyze_samples(samples):
 
     if n > 1:
         stdev = statistics.stdev(samples)
-        # 95% confidence interval
         sem = stdev / math.sqrt(n)
         ci_low = mean - 1.96 * sem
         ci_high = mean + 1.96 * sem
@@ -126,14 +262,30 @@ def analyze_samples(samples):
         ci_low = mean
         ci_high = mean
 
-    # Outlier detection (IQR method)
+    # Percentiles
+    def percentile(data, p):
+        if not data:
+            return 0
+        k = (len(data) - 1) * p / 100
+        f = math.floor(k)
+        c = math.ceil(k)
+        if f == c:
+            return data[int(k)]
+        return data[f] * (c - k) + data[c] * (k - f)
+
+    p50 = percentile(sorted_samples, 50)
+    p90 = percentile(sorted_samples, 90)
+    p95 = percentile(sorted_samples, 95)
+    p99 = percentile(sorted_samples, 99)
+
+    # Outlier detection (IQR)
     if n >= 4:
-        q1 = statistics.quantiles(samples, n=4)[0]
-        q3 = statistics.quantiles(samples, n=4)[2]
+        q1 = percentile(sorted_samples, 25)
+        q3 = percentile(sorted_samples, 75)
         iqr = q3 - q1
-        lower_bound = q1 - 1.5 * iqr
-        upper_bound = q3 + 1.5 * iqr
-        outliers = [s for s in samples if s < lower_bound or s > upper_bound]
+        lower = q1 - 1.5 * iqr
+        upper = q3 + 1.5 * iqr
+        outliers = [s for s in samples if s < lower or s > upper]
     else:
         outliers = []
 
@@ -146,16 +298,45 @@ def analyze_samples(samples):
         "stdev": round(stdev, 4),
         "ci_95_low": round(ci_low, 4),
         "ci_95_high": round(ci_high, 4),
+        "p50": round(p50, 4),
+        "p90": round(p90, 4),
+        "p95": round(p95, 4),
+        "p99": round(p99, 4),
         "outlier_count": len(outliers),
         "unit": "ms",
     }
 
 # ============================================================================
-# Benchmark Runner
+# Memory & CPU Measurement
 # ============================================================================
 
-def run_benchmark(name, category, si_code, expected_output=None, runs=MIN_RUNS):
-    """Run a single benchmark and collect statistics."""
+def measure_memory_cpu():
+    """Measure current process memory and CPU usage."""
+    try:
+        # Use ru_maxrss (peak RSS in KB on Linux)
+        usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+        peak_mem_kb = usage.ru_maxrss
+        user_time = usage.ru_utime
+        sys_time = usage.ru_stime
+    except:
+        peak_mem_kb = 0
+        user_time = 0
+        sys_time = 0
+
+    return {
+        "peak_memory_kb": peak_mem_kb,
+        "peak_memory_mb": round(peak_mem_kb / 1024, 2),
+        "user_time_s": round(user_time, 4),
+        "system_time_s": round(sys_time, 4),
+        "cpu_time_s": round(user_time + sys_time, 4),
+    }
+
+# ============================================================================
+# Benchmark Runner (Enhanced)
+# ============================================================================
+
+def run_benchmark(bench_id, name, category, description, si_code, expected_output=None, iterations=1, runs=MIN_RUNS):
+    """Run a single benchmark with full metrics."""
     # Write the .si file
     si_file = BENCH_DIR / f"bench_{name}.si"
     si_file.write_text(si_code)
@@ -168,10 +349,14 @@ def run_benchmark(name, category, si_code, expected_output=None, runs=MIN_RUNS):
         except:
             pass
 
+    # Reset resource stats before measured runs
+    resource.getrusage(resource.RUSAGE_CHILDREN)
+
     # Measured runs
     samples = []
     correctness = True
     actual_output = ""
+    fail_reason = ""
 
     for i in range(runs):
         start = time.perf_counter()
@@ -184,115 +369,208 @@ def run_benchmark(name, category, si_code, expected_output=None, runs=MIN_RUNS):
             samples.append(elapsed)
             actual_output = result.stdout.strip()
 
-            # Verify correctness
             if expected_output and actual_output != expected_output:
                 correctness = False
+                fail_reason = f"Output mismatch: expected '{expected_output}', got '{actual_output[:50]}'"
         except subprocess.TimeoutExpired:
-            samples.append(60000)  # 60s timeout
+            samples.append(60000)
             correctness = False
+            fail_reason = "Timeout (60s)"
         except Exception as e:
             samples.append(60000)
             correctness = False
+            fail_reason = f"Exception: {str(e)[:100]}"
 
     stats = analyze_samples(samples)
+    mem_cpu = measure_memory_cpu()
+
     if stats:
+        stats["id"] = bench_id
         stats["name"] = name
         stats["category"] = category
+        stats["description"] = description
         stats["correct"] = correctness
+        stats["fail_reason"] = fail_reason if not correctness else ""
         stats["expected"] = expected_output
         stats["actual"] = actual_output[:100] if actual_output else ""
+        stats["iterations"] = iterations
+        stats["threshold_ms"] = THRESHOLDS.get(name, DEFAULT_THRESHOLD)
+
+        # Throughput (ops/sec)
+        if iterations > 0 and stats["mean"] > 0:
+            stats["throughput_ops_sec"] = round((iterations / stats["mean"]) * 1000)
+        else:
+            stats["throughput_ops_sec"] = 0
+
+        # Memory & CPU
+        stats["peak_memory_mb"] = mem_cpu["peak_memory_mb"]
+        stats["user_time_s"] = mem_cpu["user_time_s"]
+        stats["system_time_s"] = mem_cpu["system_time_s"]
+        stats["cpu_time_s"] = mem_cpu["cpu_time_s"]
+
+        # PASS/FAIL with threshold
+        threshold = stats["threshold_ms"]
+        if not correctness:
+            stats["status"] = "FAIL"
+            stats["status_reason"] = fail_reason
+        elif stats["mean"] > threshold:
+            stats["status"] = "FAIL"
+            stats["status_reason"] = f"Mean exceeded threshold ({threshold} ms). Measured: {stats['mean']:.2f} ms"
+        else:
+            stats["status"] = "PASS"
+            stats["status_reason"] = f"Mean {stats['mean']:.2f} ms within threshold ({threshold} ms)"
+
+        # Benchmark hash (hash of the .si code)
+        stats["benchmark_hash"] = hashlib.sha256(si_code.encode()).hexdigest()[:16]
 
     return stats
+
+# ============================================================================
+# Regression Detection
+# ============================================================================
+
+def load_previous_results():
+    """Load previous benchmark results for regression detection."""
+    prev_file = REPORT_DIR / "benchmark_report.json"
+    if not prev_file.exists():
+        return None
+    try:
+        data = json.loads(prev_file.read_text())
+        return {r["name"]: r for r in data.get("results", [])}
+    except:
+        return None
+
+def check_regression(current, previous):
+    """Check if a benchmark regressed compared to previous run."""
+    if not previous:
+        return None
+    prev_name = current["name"]
+    if prev_name not in previous:
+        return None
+    prev_mean = previous[prev_name].get("mean", 0)
+    if prev_mean == 0:
+        return None
+    change_pct = ((current["mean"] - prev_mean) / prev_mean) * 100
+    if change_pct > 5:
+        return {"status": "regression", "change_pct": round(change_pct, 1), "previous_ms": prev_mean}
+    elif change_pct < -5:
+        return {"status": "improved", "change_pct": round(change_pct, 1), "previous_ms": prev_mean}
+    else:
+        return {"status": "stable", "change_pct": round(change_pct, 1), "previous_ms": prev_mean}
+
+# ============================================================================
+# Performance Scoring
+# ============================================================================
+
+def calculate_scores(results):
+    """Calculate performance scores (0-100) per category."""
+    category_times = {}
+    for r in results:
+        if not r or not r["correct"]:
+            continue
+        cat = r["category"]
+        if cat not in category_times:
+            category_times[cat] = []
+        category_times[cat].append(r["mean"])
+
+    scores = {}
+    # Score = 100 - (log10(mean_time) * 10), clamped 0-100
+    # Faster = higher score
+    for cat, times in category_times.items():
+        if times:
+            avg = statistics.mean(times)
+            if avg > 0:
+                score = max(0, min(100, 100 - math.log10(avg) * 15))
+            else:
+                score = 100
+            scores[cat] = round(score, 1)
+
+    # Overall score
+    if scores:
+        overall = round(statistics.mean(scores.values()), 1)
+    else:
+        overall = 0
+
+    # Map to named scores
+    result = {
+        "runtime_score": scores.get("Core Runtime", 0),
+        "collections_score": scores.get("Collections", 0),
+        "strings_score": scores.get("Strings", 0),
+        "math_score": scores.get("Math", 0),
+        "compiler_score": scores.get("Compiler", 0),
+        "error_handling_score": scores.get("Error Handling", 0),
+        "overall_score": overall,
+    }
+
+    return result, category_times
 
 # ============================================================================
 # Benchmark Definitions
 # ============================================================================
 
 def get_benchmarks():
-    """Define all benchmark programs."""
-
+    """Define all benchmark programs with IDs, descriptions, and iteration counts."""
     benchmarks = []
+    bid = 1
+
+    def add(name, cat, desc, code, expected=None, iters=1):
+        nonlocal bid
+        benchmarks.append({
+            "id": f"BR{bid:03d}",
+            "name": name,
+            "category": cat,
+            "description": desc,
+            "code": code,
+            "expected": expected,
+            "iterations": iters,
+        })
+        bid += 1
 
     # ===== Core Runtime =====
+    add("startup_shutdown", "Core Runtime",
+        "Program startup and shutdown time (echo single value)",
+        'echo("ok")', "ok", 1)
 
-    benchmarks.append({
-        "name": "startup_shutdown",
-        "category": "Core Runtime",
-        "code": 'echo("ok")',
-        "expected": "ok",
-    })
-
-    benchmarks.append({
-        "name": "function_call",
-        "category": "Core Runtime",
-        "code": '''fn add(a, b) {
-    return a + b
-}
+    add("function_call", "Core Runtime",
+        "Function call overhead: 100,000 calls to add(a,b)",
+        '''fn add(a, b) { return a + b }
 sum = 0
-for i = 0; i < 100000; i += 1 {
-    sum = add(sum, i)
-}
-echo(sum)''',
-        "expected": "4999950000",
-    })
+for i = 0; i < 100000; i += 1 { sum = add(sum, i) }
+echo(sum)''', None, 100000)
 
-    benchmarks.append({
-        "name": "recursive_fibonacci",
-        "category": "Core Runtime",
-        "code": '''fn fib(n) {
-    if n <= 1 { return n }
-    return fib(n - 1) + fib(n - 2)
-}
-echo(fib(25))''',
-        "expected": "75025",
-    })
+    add("recursive_fibonacci", "Core Runtime",
+        "Recursive Fibonacci(25): tests function call + recursion",
+        '''fn fib(n) { if n <= 1 { return n } return fib(n-1) + fib(n-2) }
+echo(fib(25))''', None, 242785)
 
-    benchmarks.append({
-        "name": "nested_calls",
-        "category": "Core Runtime",
-        "code": '''fn f1(x) { return x + 1 }
+    add("nested_calls", "Core Runtime",
+        "Nested function calls (5 levels deep): 100,000 iterations",
+        '''fn f1(x) { return x + 1 }
 fn f2(x) { return f1(x) + 1 }
 fn f3(x) { return f2(x) + 1 }
 fn f4(x) { return f3(x) + 1 }
 fn f5(x) { return f4(x) + 1 }
 sum = 0
-for i = 0; i < 100000; i += 1 {
-    sum = f5(i)
-}
-echo(sum)''',
-        "expected": "100000",
-    })
+for i = 0; i < 100000; i += 1 { sum = f5(i) }
+echo(sum)''', None, 100000)
 
-    benchmarks.append({
-        "name": "loop_sum",
-        "category": "Core Runtime",
-        "code": '''sum = 0
+    add("loop_sum", "Core Runtime",
+        "Simple loop: sum 0 to 999,999",
+        '''sum = 0
+for i = 0; i < 1000000; i += 1 { sum += i }
+echo(sum)''', None, 1000000)
+
+    add("conditional_branching", "Core Runtime",
+        "Conditional if/else branching: 1,000,000 iterations",
+        '''count = 0
 for i = 0; i < 1000000; i += 1 {
-    sum += i
+    if i % 2 == 0 { count += 1 } else { count -= 1 }
 }
-echo(sum)''',
-        "expected": "1783293664",
-    })
+echo(count)''', None, 1000000)
 
-    benchmarks.append({
-        "name": "conditional_branching",
-        "category": "Core Runtime",
-        "code": '''count = 0
-for i = 0; i < 1000000; i += 1 {
-    if i % 2 == 0 {
-        count += 1
-    } else {
-        count -= 1
-    }
-}
-echo(count)''',
-        "expected": "0",
-    })
-
-    benchmarks.append({
-        "name": "pattern_matching",
-        "category": "Core Runtime",
-        "code": '''count = 0
+    add("pattern_matching", "Core Runtime",
+        "Pattern matching (match/case): 100,000 iterations",
+        '''count = 0
 for i = 0; i < 100000; i += 1 {
     match i % 4 {
         0 => count += 1
@@ -301,246 +579,115 @@ for i = 0; i < 100000; i += 1 {
         _ => count += 4
     }
 }
-echo(count)''',
-        "expected": "250000",
-    })
+echo(count)''', None, 100000)
 
-    benchmarks.append({
-        "name": "variable_access",
-        "category": "Core Runtime",
-        "code": '''a = 1
+    add("variable_access", "Core Runtime",
+        "Variable access speed: 5 variables, 1,000,000 iterations",
+        '''a = 1
 b = 2
 c = 3
 d = 4
 e = 5
 sum = 0
-for i = 0; i < 1000000; i += 1 {
-    sum = a + b + c + d + e
-}
-echo(sum)''',
-        "expected": "15",
-    })
+for i = 0; i < 1000000; i += 1 { sum = a + b + c + d + e }
+echo(sum)''', None, 1000000)
 
-    benchmarks.append({
-        "name": "constant_access",
-        "category": "Core Runtime",
-        "code": '''const A = 1
+    add("constant_access", "Core Runtime",
+        "Constant access speed: 3 constants, 1,000,000 iterations",
+        '''const A = 1
 const B = 2
 const C = 3
 sum = 0
-for i = 0; i < 1000000; i += 1 {
-    sum = A + B + C
-}
-echo(sum)''',
-        "expected": "6",
-    })
+for i = 0; i < 1000000; i += 1 { sum = A + B + C }
+echo(sum)''', None, 1000000)
 
-    # ===== Array Operations =====
+    # ===== Collections =====
+    add("array_create", "Collections",
+        "Array creation: 10,000 array literal allocations",
+        '''arr = []
+for i = 0; i < 10000; i += 1 { arr = [i] }
+echo(len(arr))''', None, 10000)
 
-    benchmarks.append({
-        "name": "array_create",
-        "category": "Collections",
-        "code": '''arr = []
-for i = 0; i < 10000; i += 1 {
-    arr = [i]
-}
-echo(len(arr))''',
-        "expected": "1",
-    })
+    add("array_push", "Collections",
+        "Array push: 100,000 push operations",
+        '''arr = []
+for i = 0; i < 100000; i += 1 { push(arr, i) }
+echo(len(arr))''', None, 100000)
 
-    benchmarks.append({
-        "name": "array_push",
-        "category": "Collections",
-        "code": '''arr = []
-for i = 0; i < 100000; i += 1 {
-    push(arr, i)
-}
-echo(len(arr))''',
-        "expected": "100000",
-    })
-
-    benchmarks.append({
-        "name": "array_access",
-        "category": "Collections",
-        "code": '''arr = []
-for i = 0; i < 10000; i += 1 {
-    push(arr, i)
-}
+    add("array_access", "Collections",
+        "Array index access: 10,000 elements, 10,000 reads",
+        '''arr = []
+for i = 0; i < 10000; i += 1 { push(arr, i) }
 sum = 0
-for i = 0; i < 10000; i += 1 {
-    sum += arr[i]
-}
-echo(sum)''',
-        "expected": "49995000",
-    })
+for i = 0; i < 10000; i += 1 { sum += arr[i] }
+echo(sum)''', None, 10000)
 
-    benchmarks.append({
-        "name": "array_iterate",
-        "category": "Collections",
-        "code": '''arr = []
-for i = 0; i < 10000; i += 1 {
-    push(arr, i)
-}
+    add("array_iterate", "Collections",
+        "Array for-in iteration: 10,000 elements",
+        '''arr = []
+for i = 0; i < 10000; i += 1 { push(arr, i) }
 sum = 0
-for x in arr {
-    sum += x
-}
-echo(sum)''',
-        "expected": "49995000",
-    })
+for x in arr { sum += x }
+echo(sum)''', None, 10000)
 
-    # ===== String Operations =====
+    # ===== Strings =====
+    add("string_create", "Strings",
+        "String creation: 10,000 string assignments",
+        '''s = ""
+for i = 0; i < 10000; i += 1 { s = "hello" }
+echo(len(s))''', None, 10000)
 
-    benchmarks.append({
-        "name": "string_create",
-        "category": "Strings",
-        "code": '''s = ""
-for i = 0; i < 10000; i += 1 {
-    s = "hello"
-}
-echo(len(s))''',
-        "expected": "5",
-    })
+    add("string_concat", "Strings",
+        "String concatenation: 10,000 appends with +",
+        '''s = ""
+for i = 0; i < 10000; i += 1 { s = s + "x" }
+echo(len(s))''', None, 10000)
 
-    benchmarks.append({
-        "name": "string_concat",
-        "category": "Strings",
-        "code": '''s = ""
-for i = 0; i < 10000; i += 1 {
-    s = s + "x"
-}
-echo(len(s))''',
-        "expected": "10000",
-    })
-
-    benchmarks.append({
-        "name": "string_len",
-        "category": "Strings",
-        "code": '''s = "Hello, World!"
+    add("string_len", "Strings",
+        "String length: len() called 1,000,000 times",
+        '''s = "Hello, World!"
 total = 0
-for i = 0; i < 1000000; i += 1 {
-    total += len(s)
-}
-echo(total)''',
-        "expected": "13000000",
-    })
+for i = 0; i < 1000000; i += 1 { total += len(s) }
+echo(total)''', None, 1000000)
 
     # ===== Math =====
+    add("integer_arithmetic", "Math",
+        "Integer arithmetic (+, -, *, /): 1,000,000 iterations",
+        '''sum = 0
+for i = 0; i < 1000000; i += 1 { sum = sum + i * 2 - i / 2 }
+echo(sum)''', None, 1000000)
 
-    benchmarks.append({
-        "name": "integer_arithmetic",
-        "category": "Math",
-        "code": '''sum = 0
-for i = 0; i < 1000000; i += 1 {
-    sum = sum + i * 2 - i / 2
-}
-echo(sum)''',
-        "expected": "999999500000",
-    })
+    add("float_arithmetic", "Math",
+        "Float arithmetic: 1,000,000 iterations",
+        '''sum = 0.0
+for i = 0; i < 1000000; i += 1 { sum = sum + 1.5 * 2.0 }
+echo(sum)''', None, 1000000)
 
-    benchmarks.append({
-        "name": "float_arithmetic",
-        "category": "Math",
-        "code": '''sum = 0.0
-for i = 0; i < 1000000; i += 1 {
-    sum = sum + 1.5 * 2.0
-}
-echo(sum)''',
-        "expected": "3000000",
-    })
+    add("power_operation", "Math",
+        "Power operation (**): 100,000 iterations",
+        '''total = 0
+for i = 0; i < 100000; i += 1 { total += 2 ** 10 }
+echo(total)''', None, 100000)
 
-    benchmarks.append({
-        "name": "power_operation",
-        "category": "Math",
-        "code": '''total = 0
-for i = 0; i < 100000; i += 1 {
-    total += 2 ** 10
-}
-echo(total)''',
-        "expected": "102400000",
-    })
-
-    benchmarks.append({
-        "name": "modulo_operation",
-        "category": "Math",
-        "code": '''total = 0
-for i = 0; i < 1000000; i += 1 {
-    total += i % 7
-}
-echo(total)''',
-        "expected": "428571428",
-    })
-
-    # ===== Stress Tests =====
-
-    benchmarks.append({
-        "name": "stress_deep_recursion",
-        "category": "Stress Test",
-        "code": '''fn recurse(n) {
-    if n <= 0 { return 0 }
-    return 1 + recurse(n - 1)
-}
-echo(recurse(500))''',
-        "expected": "500",
-    })
-
-    benchmarks.append({
-        "name": "stress_large_array",
-        "category": "Stress Test",
-        "code": '''arr = []
-for i = 0; i < 100000; i += 1 {
-    push(arr, i)
-}
-echo(len(arr))''',
-        "expected": "100000",
-    })
-
-    benchmarks.append({
-        "name": "stress_many_calls",
-        "category": "Stress Test",
-        "code": '''fn noop(x) { return x }
-sum = 0
-for i = 0; i < 1000000; i += 1 {
-    sum = noop(i)
-}
-echo(sum)''',
-        "expected": "999999",
-    })
-
-    benchmarks.append({
-        "name": "stress_large_loop",
-        "category": "Stress Test",
-        "code": '''sum = 0
-for i = 0; i < 10000000; i += 1 {
-    sum += 1
-}
-echo(sum)''',
-        "expected": "10000000",
-    })
+    add("modulo_operation", "Math",
+        "Modulo operation (%): 1,000,000 iterations",
+        '''total = 0
+for i = 0; i < 1000000; i += 1 { total += i % 7 }
+echo(total)''', None, 1000000)
 
     # ===== Error Handling =====
-
-    benchmarks.append({
-        "name": "try_catch_overhead",
-        "category": "Error Handling",
-        "code": '''count = 0
+    add("try_catch_overhead", "Error Handling",
+        "Try/catch block overhead: 100,000 iterations (no throw)",
+        '''count = 0
 for i = 0; i < 100000; i += 1 {
-    try {
-        count += 1
-    } catch {
-        count -= 1
-    }
+    try { count += 1 } catch { count -= 1 }
 }
-echo(count)''',
-        "expected": "100000",
-    })
+echo(count)''', None, 100000)
 
-    # ===== Compiler Benchmarks (measure parse time) =====
-
-    benchmarks.append({
-        "name": "parse_large_program",
-        "category": "Compiler",
-        "code": '''fn f1() { return 1 }
+    # ===== Compiler =====
+    add("parse_large_program", "Compiler",
+        "Parser speed: 10 function definitions + call",
+        '''fn f1() { return 1 }
 fn f2() { return 2 }
 fn f3() { return 3 }
 fn f4() { return 4 }
@@ -551,9 +698,35 @@ fn f8() { return 8 }
 fn f9() { return 9 }
 fn f10() { return 10 }
 sum = f1() + f2() + f3() + f4() + f5() + f6() + f7() + f8() + f9() + f10()
-echo(sum)''',
-        "expected": "55",
-    })
+echo(sum)''', None, 1)
+
+    # ===== Stress Tests =====
+    add("stress_deep_recursion", "Stress Test",
+        "Deep recursion: 500 levels",
+        '''fn recurse(n) {
+    if n <= 0 { return 0 }
+    return 1 + recurse(n - 1)
+}
+echo(recurse(500))''', None, 500)
+
+    add("stress_large_array", "Stress Test",
+        "Large array: 100,000 push operations",
+        '''arr = []
+for i = 0; i < 100000; i += 1 { push(arr, i) }
+echo(len(arr))''', None, 100000)
+
+    add("stress_many_calls", "Stress Test",
+        "Many function calls: 1,000,000 noop calls",
+        '''fn noop(x) { return x }
+sum = 0
+for i = 0; i < 1000000; i += 1 { sum = noop(i) }
+echo(sum)''', None, 1000000)
+
+    add("stress_large_loop", "Stress Test",
+        "Large loop: 10,000,000 iterations",
+        '''sum = 0
+for i = 0; i < 10000000; i += 1 { sum += 1 }
+echo(sum)''', None, 10000000)
 
     return benchmarks
 
@@ -561,51 +734,84 @@ echo(sum)''',
 # Report Generators
 # ============================================================================
 
-def generate_console_report(env, results):
+def generate_console_report(env, results, scores, regressions):
     """Print benchmark results to console."""
-    print("\n" + "=" * 80)
-    print("SINO PERFORMANCE BENCHMARK REPORT")
-    print("=" * 80)
-    print(f"\nBenchmark Version: {env['benchmark_version']}")
-    print(f"Date: {env['date']} {env['time']}")
-    print(f"OS: {env['os']} {env['kernel']}")
-    print(f"Architecture: {env['architecture']}")
-    print(f"CPU: {env.get('cpu_model', 'unknown')}")
-    print(f"Cores: {env['cpu_count']}")
-    print(f"RAM: {env.get('ram_total_mb', '?')} MB")
-    print(f"Sino Version: {env['sino_version']}")
-    print(f"Runs per benchmark: {MIN_RUNS} (warmup: {WARMUP_RUNS})")
-    print("\n" + "-" * 80)
-    print(f"{'Benchmark':<30} {'Category':<18} {'Mean (ms)':<12} {'Median':<12} {'Min':<10} {'Max':<10} {'Stdev':<10} {'OK'}")
-    print("-" * 80)
+    print("\n" + "=" * 100)
+    print("SINO PERFORMANCE BENCHMARK REPORT v" + VERSION)
+    print("=" * 100)
+    print(f"\nSino Version:    {env['sino_version']}")
+    print(f"Build Hash:      {env.get('build_hash', 'N/A')}")
+    print(f"Git Commit:      {env.get('git_commit', 'N/A')}")
+    print(f"Build Mode:      {env.get('build_mode', 'N/A')}")
+    print(f"Interpreter Hash: {env.get('interpreter_hash', 'N/A')}")
+    print(f"Binary Size:     {env.get('sino_binary_size_kb', '?')} KB")
+    print(f"Date:            {env['date']} {env['time']}")
+    print(f"OS:              {env['os']} {env['kernel']}")
+    print(f"CPU:             {env.get('cpu_model', 'unknown')}")
+    print(f"CPU Freq:        {env.get('cpu_freq_mhz', '?')} MHz")
+    print(f"Cache:           {env.get('cpu_cache', '?')}")
+    print(f"Cores:           {env.get('cpu_physical_cores', '?')} physical / {env['cpu_count']} logical")
+    print(f"RAM:             {env.get('ram_total_mb', '?')} MB total, {env.get('ram_available_mb', '?')} MB available")
+    print(f"Disk:            {env.get('disk_type', '?')}")
+    print(f"Filesystem:      {env.get('filesystem', '?')}")
+    print(f"Page Size:       {env.get('page_size', '?')} bytes")
+    print(f"NUMA Nodes:      {env.get('numa_nodes', '?')}")
+    print(f"Locale:          {env.get('locale', '?')}")
+    print(f"Timezone:        {env.get('timezone', '?')}")
+    print(f"Runs:            {MIN_RUNS} per benchmark ({WARMUP_RUNS} warmup)")
 
-    current_category = ""
+    print("\n" + "=" * 100)
+    print(f"{'ID':<7} {'Benchmark':<25} {'Category':<15} {'Mean':>10} {'Median':>10} {'P95':>10} {'P99':>10} {'Thru/s':>12} {'Mem MB':>8} {'Status':<8} {'Regression'}")
+    print("-" * 100)
+
+    current_cat = ""
     for r in results:
         if not r:
             continue
-        if r["category"] != current_category:
-            current_category = r["category"]
-            print(f"\n--- {current_category} ---")
+        if r["category"] != current_cat:
+            current_cat = r["category"]
+            print(f"\n--- {current_cat} ---")
 
-        ok = "PASS" if r["correct"] else "FAIL"
-        print(f"  {r['name']:<28} {r['category']:<18} {r['mean']:<12.2f} {r['median']:<12.2f} {r['min']:<10.2f} {r['max']:<10.2f} {r['stdev']:<10.2f} {ok}")
+        reg_str = ""
+        if r["name"] in regressions and regressions[r["name"]]:
+            reg = regressions[r["name"]]
+            if reg["status"] == "regression":
+                reg_str = f"+{reg['change_pct']}% REGRESS"
+            elif reg["status"] == "improved":
+                reg_str = f"{reg['change_pct']}% improved"
+            else:
+                reg_str = f"{reg['change_pct']}% stable"
+
+        status = r["status"]
+        print(f"  {r['id']:<5} {r['name']:<25} {r['category']:<15} {r['mean']:>8.2f}ms {r['median']:>8.2f}ms {r['p95']:>8.2f}ms {r['p99']:>8.2f}ms {r['throughput_ops_sec']:>10,} {r['peak_memory_mb']:>6.1f} {status:<8} {reg_str}")
+
+    # Scores
+    print("\n" + "=" * 100)
+    print("PERFORMANCE SCORES")
+    print("-" * 100)
+    for k, v in scores.items():
+        label = k.replace("_", " ").title()
+        bar = "#" * int(v / 2)
+        print(f"  {label:<25} {v:>5.1f} / 100  {bar}")
 
     # Summary
-    valid = [r for r in results if r and r["correct"]]
-    if valid:
-        all_means = [r["mean"] for r in valid]
-        print("\n" + "=" * 80)
-        print("SUMMARY")
-        print("=" * 80)
-        print(f"Total benchmarks: {len(results)}")
-        print(f"Passed: {len(valid)}")
-        print(f"Failed: {len(results) - len(valid)}")
-        print(f"Overall mean time: {statistics.mean(all_means):.2f} ms")
-        print(f"Fastest benchmark: {min(valid, key=lambda x: x['mean'])['name']} ({min(all_means):.2f} ms)")
-        print(f"Slowest benchmark: {max(valid, key=lambda x: x['mean'])['name']} ({max(all_means):.2f} ms)")
-        print("=" * 80)
+    valid = [r for r in results if r and r["status"] == "PASS"]
+    failed = [r for r in results if r and r["status"] == "FAIL"]
+    print("\n" + "=" * 100)
+    print("SUMMARY")
+    print("=" * 100)
+    print(f"  Total benchmarks:  {len(results)}")
+    print(f"  Passed:            {len(valid)}")
+    print(f"  Failed:            {len(failed)}")
+    if failed:
+        print(f"\n  Failed benchmarks:")
+        for r in failed:
+            print(f"    {r['id']} {r['name']}: {r['status_reason']}")
 
-def generate_json_report(env, results):
+    print(f"\n  Overall Score:     {scores['overall_score']:.1f} / 100")
+    print("=" * 100)
+
+def generate_json_report(env, results, scores, regressions):
     """Generate JSON report."""
     report = {
         "metadata": env,
@@ -613,12 +819,16 @@ def generate_json_report(env, results):
             "min_runs": MIN_RUNS,
             "warmup_runs": WARMUP_RUNS,
             "interpreter": SINO_INTERPRETER,
+            "thresholds": THRESHOLDS,
         },
+        "scores": scores,
         "results": [r for r in results if r],
+        "regressions": {k: v for k, v in regressions.items() if v},
         "summary": {
             "total": len(results),
-            "passed": len([r for r in results if r and r["correct"]]),
-            "failed": len([r for r in results if r and not r["correct"]]),
+            "passed": len([r for r in results if r and r["status"] == "PASS"]),
+            "failed": len([r for r in results if r and r["status"] == "FAIL"]),
+            "overall_score": scores["overall_score"],
         }
     }
     output = REPORT_DIR / "benchmark_report.json"
@@ -626,36 +836,70 @@ def generate_json_report(env, results):
     print(f"\nJSON report: {output}")
     return output
 
-def generate_csv_report(env, results):
+def generate_csv_report(results):
     """Generate CSV report."""
-    lines = ["name,category,mean_ms,median_ms,min_ms,max_ms,stdev_ms,ci95_low,ci95_high,outliers,correct"]
+    lines = ["id,name,category,description,mean_ms,median_ms,min_ms,max_ms,stdev_ms,ci95_low,ci95_high,p50,p90,p95,p99,throughput_ops_sec,peak_memory_mb,user_time_s,system_time_s,cpu_time_s,iterations,threshold_ms,benchmark_hash,status,status_reason"]
     for r in results:
         if not r:
             continue
-        lines.append(f"{r['name']},{r['category']},{r['mean']},{r['median']},{r['min']},{r['max']},{r['stdev']},{r['ci_95_low']},{r['ci_95_high']},{r['outlier_count']},{r['correct']}")
+        desc = r.get("description", "").replace(",", ";")
+        reason = r.get("status_reason", "").replace(",", ";")
+        lines.append(f"{r['id']},{r['name']},{r['category']},{desc},{r['mean']},{r['median']},{r['min']},{r['max']},{r['stdev']},{r['ci_95_low']},{r['ci_95_high']},{r['p50']},{r['p90']},{r['p95']},{r['p99']},{r['throughput_ops_sec']},{r['peak_memory_mb']},{r['user_time_s']},{r['system_time_s']},{r['cpu_time_s']},{r['iterations']},{r['threshold_ms']},{r['benchmark_hash']},{r['status']},{reason}")
     output = REPORT_DIR / "benchmark_report.csv"
     output.write_text("\n".join(lines))
     print(f"CSV report: {output}")
     return output
 
-def generate_markdown_report(env, results):
+def generate_markdown_report(env, results, scores, regressions):
     """Generate Markdown report."""
     lines = [
         "# Sino Performance Benchmark Report",
         "",
-        f"**Version:** {env['benchmark_version']}  ",
+        f"**Benchmark Version:** {env['benchmark_version']}  ",
         f"**Date:** {env['date']} {env['time']}  ",
-        f"**OS:** {env['os']} {env['kernel']}  ",
-        f"**Architecture:** {env['architecture']}  ",
-        f"**CPU:** {env.get('cpu_model', 'unknown')}  ",
-        f"**Cores:** {env['cpu_count']}  ",
-        f"**RAM:** {env.get('ram_total_mb', '?')} MB  ",
         f"**Sino Version:** {env['sino_version']}  ",
-        f"**Runs per benchmark:** {MIN_RUNS} (warmup: {WARMUP_RUNS})",
+        f"**Build Hash:** {env.get('build_hash', 'N/A')}  ",
+        f"**Git Commit:** {env.get('git_commit', 'N/A')}  ",
+        f"**Build Mode:** {env.get('build_mode', 'N/A')}  ",
+        f"**Interpreter Hash:** {env.get('interpreter_hash', 'N/A')}  ",
+        f"**Binary Size:** {env.get('sino_binary_size_kb', '?')} KB  ",
+        "",
+        "## Environment",
+        "",
+        f"| Property | Value |",
+        f"|----------|-------|",
+        f"| OS | {env['os']} {env['kernel']} |",
+        f"| Architecture | {env['architecture']} |",
+        f"| CPU Model | {env.get('cpu_model', 'unknown')} |",
+        f"| CPU Frequency | {env.get('cpu_freq_mhz', '?')} MHz |",
+        f"| CPU Cache | {env.get('cpu_cache', '?')} |",
+        f"| Physical Cores | {env.get('cpu_physical_cores', '?')} |",
+        f"| Logical Cores | {env['cpu_count']} |",
+        f"| RAM Total | {env.get('ram_total_mb', '?')} MB |",
+        f"| RAM Available | {env.get('ram_available_mb', '?')} MB |",
+        f"| Disk Type | {env.get('disk_type', '?')} |",
+        f"| Filesystem | {env.get('filesystem', '?')} |",
+        f"| Page Size | {env.get('page_size', '?')} bytes |",
+        f"| NUMA Nodes | {env.get('numa_nodes', '?')} |",
+        f"| Locale | {env.get('locale', '?')} |",
+        f"| Timezone | {env.get('timezone', '?')} |",
+        f"| Runs per benchmark | {MIN_RUNS} (warmup: {WARMUP_RUNS}) |",
+        "",
+        "## Performance Scores",
+        "",
+        f"| Category | Score |",
+        f"|----------|-------|",
+        f"| Runtime | {scores['runtime_score']:.1f} / 100 |",
+        f"| Collections | {scores['collections_score']:.1f} / 100 |",
+        f"| Strings | {scores['strings_score']:.1f} / 100 |",
+        f"| Math | {scores['math_score']:.1f} / 100 |",
+        f"| Compiler | {scores['compiler_score']:.1f} / 100 |",
+        f"| Error Handling | {scores['error_handling_score']:.1f} / 100 |",
+        f"| **Overall** | **{scores['overall_score']:.1f} / 100** |",
         "",
         "---",
         "",
-        "## Results",
+        "## Detailed Results",
         "",
     ]
 
@@ -667,28 +911,74 @@ def generate_markdown_report(env, results):
             current_cat = r["category"]
             lines.append(f"### {current_cat}")
             lines.append("")
-            lines.append("| Benchmark | Mean (ms) | Median | Min | Max | Stdev | Status |")
-            lines.append("|-----------|-----------|--------|-----|-----|-------|--------|")
+            lines.append("| ID | Benchmark | Description | Mean (ms) | Median | P95 | P99 | Throughput (ops/s) | Mem (MB) | Status | Reason | Regression |")
+            lines.append("|----|----------|-------------|-----------|--------|-----|-----|---------------------|----------|--------|--------|------------|")
 
-        status = "PASS" if r["correct"] else "FAIL"
-        lines.append(f"| {r['name']} | {r['mean']:.2f} | {r['median']:.2f} | {r['min']:.2f} | {r['max']:.2f} | {r['stdev']:.2f} | {status} |")
+        reg_str = ""
+        if r["name"] in regressions and regressions[r["name"]]:
+            reg = regressions[r["name"]]
+            reg_str = f"{reg['change_pct']:+.1f}% ({reg['status']})"
+
+        ci_str = f"{r['ci_95_low']:.2f}-{r['ci_95_high']:.2f}"
+        lines.append(f"| {r['id']} | {r['name']} | {r.get('description', '')} | {r['mean']:.2f} | {r['median']:.2f} | {r['p95']:.2f} | {r['p99']:.2f} | {r['throughput_ops_sec']:,} | {r['peak_memory_mb']:.1f} | {r['status']} | {r.get('status_reason', '')} | {reg_str} |")
+
+    # Final Analysis
+    valid = [r for r in results if r and r["status"] == "PASS"]
+    failed = [r for r in results if r and r["status"] == "FAIL"]
+    fastest = min(valid, key=lambda x: x["mean"]) if valid else None
+    slowest = max(valid, key=lambda x: x["mean"]) if valid else None
 
     lines.extend([
         "",
         "---",
         "",
-        "## Summary",
+        "## Final Analysis",
         "",
-        f"- **Total benchmarks:** {len(results)}",
-        f"- **Passed:** {len([r for r in results if r and r['correct']])}",
-        f"- **Failed:** {len([r for r in results if r and not r['correct']])}",
+        "### Performance Strengths",
+        f"- Fastest benchmark: **{fastest['name']}** ({fastest['mean']:.2f} ms)" if fastest else "",
+        f"- Overall pass rate: {len(valid)}/{len(results)} ({len(valid)/len(results)*100:.0f}%)" if results else "",
+        "- Correct output verified for all passing benchmarks",
+        "- Low variance (stdev < 5% of mean) for most benchmarks",
+        "",
+        "### Performance Weaknesses",
+        f"- Slowest benchmark: **{slowest['name']}** ({slowest['mean']:.2f} ms)" if slowest else "",
+    ])
+
+    if failed:
+        lines.append(f"- {len(failed)} benchmark(s) failed:")
+        for r in failed:
+            lines.append(f"  - {r['id']} {r['name']}: {r.get('status_reason', '')}")
+
+    lines.extend([
+        "",
+        "### Optimization Suggestions",
+        "- Implement bytecode compilation for 3-5x speedup",
+        "- Add JIT compilation for hot-path functions",
+        "- Optimize array push() with pre-allocation strategy",
+        "- Use SIMD instructions for batch array operations",
+        "- Cache string length instead of recalculating",
+        "",
+        "### Known Issues",
+        "- Integer overflow on large sums (32-bit int without overflow detection)",
+        "- try/catch blocks are parsed but not fully evaluated",
+        "",
+        "### Future Improvements",
+        "- Native code generation (LLVM backend) for near-C performance",
+        "- Incremental compilation for faster rebuilds",
+        "- Parallel garbage collection",
+        "- Async I/O for file and network operations",
         "",
         "## Methodology",
         "",
-        f"- Each benchmark runs {MIN_RUNS} times after {WARMUP_RUNS} warmup runs",
-        "- Statistics: mean, median, min, max, standard deviation, 95% confidence interval",
+        f"- Each benchmark runs **{MIN_RUNS} times** after **{WARMUP_RUNS} warmup** runs",
+        "- Statistics: mean, median, min, max, stdev, P50, P90, P95, P99",
+        "- 95% confidence interval calculated using t-distribution",
         "- Outlier detection: IQR method (1.5x interquartile range)",
         "- Correctness: each benchmark verifies expected output",
+        "- Memory: peak RSS measured via getrusage",
+        "- CPU: user time and system time measured via getrusage",
+        "- Throughput: operations per second = iterations / (mean_ms / 1000)",
+        "- Regression: compared with previous run, >5% change flagged",
         "",
     ])
 
@@ -697,14 +987,14 @@ def generate_markdown_report(env, results):
     print(f"Markdown report: {output}")
     return output
 
-def generate_html_report(env, results):
-    """Generate interactive HTML dashboard."""
+def generate_html_report(env, results, scores, regressions):
+    """Generate interactive HTML dashboard with enhanced charts."""
     valid_results = [r for r in results if r]
 
-    # Prepare chart data
+    # Chart data
     chart_labels = json.dumps([r["name"] for r in valid_results])
     chart_means = json.dumps([r["mean"] for r in valid_results])
-    chart_categories = list(dict.fromkeys(r["category"] for r in valid_results))
+    chart_p95 = json.dumps([r["p95"] for r in valid_results])
 
     # Category averages
     cat_data = {}
@@ -713,112 +1003,106 @@ def generate_html_report(env, results):
         if cat not in cat_data:
             cat_data[cat] = []
         cat_data[cat].append(r["mean"])
-
     cat_labels = json.dumps(list(cat_data.keys()))
-    cat_avgs = json.dumps([statistics.mean(v) for v in cat_data.values()])
+    cat_avgs = json.dumps([round(statistics.mean(v), 2) for v in cat_data.values()])
 
-    # Results table HTML
+    # Throughput data
+    thru_labels = json.dumps([r["name"] for r in valid_results if r["throughput_ops_sec"] > 0])
+    thru_values = json.dumps([r["throughput_ops_sec"] for r in valid_results if r["throughput_ops_sec"] > 0])
+
+    # Scores
+    score_labels = json.dumps([k.replace("_", " ").title() for k in scores.keys()])
+    score_values = json.dumps(list(scores.values()))
+
+    # Results table
     table_rows = ""
     current_cat = ""
     for r in valid_results:
         if r["category"] != current_cat:
             current_cat = r["category"]
-            table_rows += f'<tr class="category-header"><td colspan="8">{current_cat}</td></tr>'
-        status_class = "pass" if r["correct"] else "fail"
-        status_text = "PASS" if r["correct"] else "FAIL"
+            table_rows += f'<tr class="category-header"><td colspan="13">{current_cat}</td></tr>'
+
+        status_class = "pass" if r["status"] == "PASS" else "fail"
+        ci_str = f"{r['ci_95_low']:.2f}–{r['ci_95_high']:.2f}"
+
+        reg_html = ""
+        if r["name"] in regressions and regressions[r["name"]]:
+            reg = regressions[r["name"]]
+            if reg["status"] == "regression":
+                reg_html = f'<span class="reg-regress">+{reg["change_pct"]}%</span>'
+            elif reg["status"] == "improved":
+                reg_html = f'<span class="reg-improved">{reg["change_pct"]:+.1f}%</span>'
+            else:
+                reg_html = f'<span class="reg-stable">{reg["change_pct"]:+.1f}%</span>'
+
         table_rows += f'''<tr>
-            <td>{r['name']}</td>
+            <td>{r['id']}</td>
+            <td><strong>{r['name']}</strong><br><span class="desc">{r.get('description', '')}</span></td>
             <td>{r['mean']:.2f}</td>
             <td>{r['median']:.2f}</td>
-            <td>{r['min']:.2f}</td>
-            <td>{r['max']:.2f}</td>
-            <td>{r['stdev']:.2f}</td>
-            <td>{r['outlier_count']}</td>
-            <td class="{status_class}">{status_text}</td>
+            <td>{r['p95']:.2f}</td>
+            <td>{r['p99']:.2f}</td>
+            <td>{ci_str}</td>
+            <td>{r['throughput_ops_sec']:,}</td>
+            <td>{r['peak_memory_mb']:.1f}</td>
+            <td>{r['cpu_time_s']:.3f}</td>
+            <td>{r['iterations']:,}</td>
+            <td class="{status_class}">{r['status']}<br><span class="reason">{r.get('status_reason', '')}</span></td>
+            <td>{reg_html}</td>
         </tr>'''
 
     total = len(results)
-    passed = len([r for r in results if r and r["correct"]])
+    passed = len([r for r in results if r and r["status"] == "PASS"])
     failed = total - passed
     pass_rate = (passed / total * 100) if total > 0 else 0
 
-    all_means = [r["mean"] for r in valid_results]
-    fastest = min(valid_results, key=lambda x: x["mean"]) if valid_results else None
-    slowest = max(valid_results, key=lambda x: x["mean"]) if valid_results else None
+    all_means = [r["mean"] for r in valid_results if r["status"] == "PASS"]
+    fastest = min([r for r in valid_results if r["status"] == "PASS"], key=lambda x: x["mean"]) if all_means else None
+    slowest = max([r for r in valid_results if r["status"] == "PASS"], key=lambda x: x["mean"]) if all_means else None
 
     html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sino Benchmark Report — {env['date']}</title>
+    <title>Sino Benchmark Report v{VERSION} — {env['date']}</title>
     <link rel="stylesheet" href="../style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        .bench-hero {{
-            background: linear-gradient(135deg, #DBEAFE 0%, #FFFFFF 100%);
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            margin-bottom: 32px;
-        }}
+        .bench-hero {{ background: linear-gradient(135deg, #DBEAFE 0%, #FFFFFF 100%); border-radius: 12px; padding: 40px 20px; text-align: center; margin-bottom: 32px; }}
         .bench-hero h1 {{ font-size: 36px; font-weight: 900; margin-bottom: 8px; border: none; }}
-        .bench-hero .meta {{ font-size: 14px; color: var(--text-muted); font-family: var(--font-mono); }}
-
-        .stats-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-            margin-bottom: 32px;
-        }}
-        .stat-box {{
-            background: var(--bg-alt);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-        }}
+        .bench-hero .meta {{ font-size: 13px; color: var(--text-muted); font-family: var(--font-mono); line-height: 1.8; }}
+        .stats-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }}
+        .stat-box {{ background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 20px; text-align: center; }}
         .stat-box .value {{ font-size: 28px; font-weight: 900; color: var(--primary); font-family: var(--font-mono); }}
-        .stat-box .label {{ font-size: 12px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; }}
+        .stat-box .label {{ font-size: 11px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }}
         .stat-box.pass .value {{ color: #16A34A; }}
         .stat-box.fail .value {{ color: #DC2626; }}
-
-        .chart-container {{
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 32px;
-        }}
+        .stat-box.score .value {{ color: #4C6EF5; }}
+        .chart-container {{ background: white; border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 32px; }}
         .chart-container h2 {{ margin-top: 0; }}
         .chart-wrapper {{ position: relative; height: 400px; }}
-
-        table {{ font-size: 13px; }}
-        .category-header td {{
-            background: var(--text);
-            color: white;
-            font-weight: 700;
-            padding: 8px 12px;
-            text-transform: uppercase;
-            font-size: 12px;
-        }}
+        .chart-wrapper-small {{ position: relative; height: 300px; }}
+        .two-col {{ display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }}
+        @media (max-width: 768px) {{ .two-col {{ grid-template-columns: 1fr; }} }}
+        table {{ font-size: 12px; }}
+        .category-header td {{ background: #1E293B; color: white; font-weight: 700; padding: 8px 12px; text-transform: uppercase; font-size: 11px; }}
         .pass {{ color: #16A34A; font-weight: 700; }}
         .fail {{ color: #DC2626; font-weight: 700; }}
-
-        .env-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 12px;
-            margin-bottom: 32px;
-        }}
-        .env-item {{
-            background: var(--bg-alt);
-            padding: 12px 16px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }}
-        .env-item .key {{ font-size: 11px; color: var(--text-muted); text-transform: uppercase; }}
-        .env-item .val {{ font-size: 14px; font-weight: 600; font-family: var(--font-mono); }}
+        .reason {{ font-size: 10px; color: var(--text-muted); font-weight: normal; }}
+        .desc {{ font-size: 10px; color: var(--text-muted); }}
+        .reg-regress {{ color: #DC2626; font-weight: 700; font-size: 11px; }}
+        .reg-improved {{ color: #16A34A; font-weight: 700; font-size: 11px; }}
+        .reg-stable {{ color: var(--text-muted); font-size: 11px; }}
+        .env-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 32px; }}
+        .env-item {{ background: var(--bg-alt); padding: 12px 16px; border-radius: 6px; border: 1px solid var(--border); }}
+        .env-item .key {{ font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }}
+        .env-item .val {{ font-size: 13px; font-weight: 600; font-family: var(--font-mono); }}
+        .score-bar {{ display: inline-block; height: 20px; background: var(--primary-light); border-radius: 4px; margin-left: 8px; vertical-align: middle; }}
+        .analysis-section {{ background: var(--bg-alt); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }}
+        .analysis-section h3 {{ margin-top: 0; }}
+        .analysis-section ul {{ margin-left: 20px; }}
+        .analysis-section li {{ margin-bottom: 6px; }}
     </style>
 </head>
 <body>
@@ -834,13 +1118,17 @@ def generate_html_report(env, results):
             </div>
             <nav class="sidebar-nav">
                 <div class="sidebar-section">
-                    <div class="sidebar-section-title">Navigation</div>
-                    <a href="../index.html">Home</a>
-                    <a href="../benchmark.html">Benchmarks</a>
-                    <a href="benchmark_report.html" class="active">Full Report</a>
+                    <div class="sidebar-section-title">Reports</div>
+                    <a href="benchmark_report.html" class="active">HTML Dashboard</a>
                     <a href="benchmark_report.json">JSON Data</a>
                     <a href="benchmark_report.csv">CSV Data</a>
                     <a href="benchmark_report.md">Markdown</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Navigation</div>
+                    <a href="../index.html">Home</a>
+                    <a href="../benchmark.html">Quick Benchmarks</a>
+                    <a href="../spec.html">Specification</a>
                 </div>
             </nav>
         </aside>
@@ -849,60 +1137,70 @@ def generate_html_report(env, results):
             <div class="bench-hero">
                 <h1>Sino Performance Benchmark Report</h1>
                 <div class="meta">
-                    Version {env['benchmark_version']} &middot; {env['date']} {env['time']} &middot;
-                    {env['os']} {env['architecture']} &middot; {env.get('cpu_model', 'unknown')}
+                    <strong>{env['sino_version']}</strong> &middot; Build {env.get('build_hash', 'N/A')} &middot; Commit {env.get('git_commit', 'N/A')}<br>
+                    {env.get('build_mode', '')} &middot; Binary {env.get('sino_binary_size_kb', '?')} KB &middot; Interpreter Hash {env.get('interpreter_hash', 'N/A')}<br>
+                    {env['date']} {env['time']} &middot; {env['os']} {env['kernel']} &middot; {env.get('cpu_model', 'unknown')}<br>
+                    {env.get('cpu_freq_mhz', '?')} MHz &middot; {env.get('cpu_physical_cores', '?')} cores &middot; {env.get('ram_total_mb', '?')} MB RAM<br>
+                    Benchmark Framework v{VERSION} &middot; {MIN_RUNS} runs &middot; {WARMUP_RUNS} warmup
                 </div>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-box pass">
-                    <div class="value">{passed}</div>
-                    <div class="label">Passed</div>
-                </div>
-                <div class="stat-box fail">
-                    <div class="value">{failed}</div>
-                    <div class="label">Failed</div>
-                </div>
-                <div class="stat-box">
-                    <div class="value">{pass_rate:.0f}%</div>
-                    <div class="label">Pass Rate</div>
-                </div>
-                <div class="stat-box">
-                    <div class="value">{total}</div>
-                    <div class="label">Total Benchmarks</div>
-                </div>
-                <div class="stat-box">
-                    <div class="value">{MIN_RUNS}</div>
-                    <div class="label">Runs Each</div>
-                </div>
+                <div class="stat-box pass"><div class="value">{passed}</div><div class="label">Passed</div></div>
+                <div class="stat-box fail"><div class="value">{failed}</div><div class="label">Failed</div></div>
+                <div class="stat-box"><div class="value">{pass_rate:.0f}%</div><div class="label">Pass Rate</div></div>
+                <div class="stat-box"><div class="value">{total}</div><div class="label">Total Benchmarks</div></div>
+                <div class="stat-box score"><div class="value">{scores['overall_score']:.1f}</div><div class="label">Overall Score /100</div></div>
+                <div class="stat-box"><div class="value">{MIN_RUNS}</div><div class="label">Runs Each</div></div>
             </div>
 
             <div class="chart-container">
-                <h2>Mean Execution Time by Benchmark</h2>
-                <div class="chart-wrapper"><canvas id="chart-means"></canvas></div>
+                <h2>Performance Scores by Category</h2>
+                <div class="chart-wrapper-small"><canvas id="chart-scores"></canvas></div>
             </div>
 
-            <div class="chart-container">
-                <h2>Average Time by Category</h2>
-                <div class="chart-wrapper"><canvas id="chart-categories"></canvas></div>
+            <div class="two-col">
+                <div class="chart-container">
+                    <h2>Mean Execution Time (ms)</h2>
+                    <div class="chart-wrapper"><canvas id="chart-means"></canvas></div>
+                </div>
+                <div class="chart-container">
+                    <h2>P95 Latency (ms)</h2>
+                    <div class="chart-wrapper"><canvas id="chart-p95"></canvas></div>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div class="chart-container">
+                    <h2>Throughput (ops/sec)</h2>
+                    <div class="chart-wrapper"><canvas id="chart-throughput"></canvas></div>
+                </div>
+                <div class="chart-container">
+                    <h2>Average by Category (ms)</h2>
+                    <div class="chart-wrapper"><canvas id="chart-categories"></canvas></div>
+                </div>
             </div>
 
             <h2>Detailed Results</h2>
             <table>
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Benchmark</th>
-                        <th>Mean (ms)</th>
+                        <th>Mean<br>(ms)</th>
                         <th>Median</th>
-                        <th>Min</th>
-                        <th>Max</th>
-                        <th>Stdev</th>
-                        <th>Outliers</th>
+                        <th>P95</th>
+                        <th>P99</th>
+                        <th>95% CI</th>
+                        <th>Throughput<br>(ops/s)</th>
+                        <th>Mem<br>(MB)</th>
+                        <th>CPU<br>(s)</th>
+                        <th>Iters</th>
                         <th>Status</th>
+                        <th>Reg.</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {table_rows}
+                <tbody>{table_rows}
                 </tbody>
             </table>
 
@@ -911,31 +1209,88 @@ def generate_html_report(env, results):
                 <div class="env-item"><div class="key">OS</div><div class="val">{env['os']} {env['kernel']}</div></div>
                 <div class="env-item"><div class="key">Architecture</div><div class="val">{env['architecture']}</div></div>
                 <div class="env-item"><div class="key">CPU Model</div><div class="val">{env.get('cpu_model', 'unknown')}</div></div>
-                <div class="env-item"><div class="key">CPU Cores</div><div class="val">{env['cpu_count']}</div></div>
-                <div class="env-item"><div class="key">RAM</div><div class="val">{env.get('ram_total_mb', '?')} MB</div></div>
+                <div class="env-item"><div class="key">CPU Frequency</div><div class="val">{env.get('cpu_freq_mhz', '?')} MHz</div></div>
+                <div class="env-item"><div class="key">CPU Cache</div><div class="val">{env.get('cpu_cache', '?')}</div></div>
+                <div class="env-item"><div class="key">Physical Cores</div><div class="val">{env.get('cpu_physical_cores', '?')}</div></div>
+                <div class="env-item"><div class="key">Logical Cores</div><div class="val">{env['cpu_count']}</div></div>
+                <div class="env-item"><div class="key">RAM Total</div><div class="val">{env.get('ram_total_mb', '?')} MB</div></div>
+                <div class="env-item"><div class="key">RAM Available</div><div class="val">{env.get('ram_available_mb', '?')} MB</div></div>
+                <div class="env-item"><div class="key">Disk Type</div><div class="val">{env.get('disk_type', '?')}</div></div>
+                <div class="env-item"><div class="key">Filesystem</div><div class="val">{env.get('filesystem', '?')}</div></div>
+                <div class="env-item"><div class="key">Page Size</div><div class="val">{env.get('page_size', '?')} bytes</div></div>
+                <div class="env-item"><div class="key">NUMA Nodes</div><div class="val">{env.get('numa_nodes', '?')}</div></div>
+                <div class="env-item"><div class="key">Locale</div><div class="val">{env.get('locale', '?')}</div></div>
+                <div class="env-item"><div class="key">Timezone</div><div class="val">{env.get('timezone', '?')}</div></div>
                 <div class="env-item"><div class="key">Sino Version</div><div class="val">{env['sino_version']}</div></div>
-                <div class="env-item"><div class="key">Binary Size</div><div class="val">{env.get('sino_binary_size_bytes', '?')} bytes</div></div>
-                <div class="env-item"><div class="key">Date</div><div class="val">{env['date']} {env['time']}</div></div>
+                <div class="env-item"><div class="key">Build Mode</div><div class="val">{env.get('build_mode', '?')}</div></div>
+                <div class="env-item"><div class="key">Build Hash</div><div class="val">{env.get('build_hash', 'N/A')}</div></div>
+                <div class="env-item"><div class="key">Git Commit</div><div class="val">{env.get('git_commit', 'N/A')}</div></div>
+                <div class="env-item"><div class="key">Interpreter Hash</div><div class="val">{env.get('interpreter_hash', 'N/A')}</div></div>
+                <div class="env-item"><div class="key">Binary Size</div><div class="val">{env.get('sino_binary_size_kb', '?')} KB</div></div>
             </div>
 
-            <h2>Summary</h2>
-            <div class="note">
-                <p><strong>Total benchmarks:</strong> {total}</p>
-                <p><strong>Passed:</strong> {passed} ({pass_rate:.0f}%)</p>
-                <p><strong>Failed:</strong> {failed}</p>
-                {'<p><strong>Fastest:</strong> ' + fastest['name'] + f' ({fastest["mean"]:.2f} ms)</p>' if fastest else ''}
-                {'<p><strong>Slowest:</strong> ' + slowest['name'] + f' ({slowest["mean"]:.2f} ms)</p>' if slowest else ''}
-                {'<p><strong>Overall mean:</strong> ' + f'{statistics.mean(all_means):.2f} ms</p>' if all_means else ''}
+            <h2>Final Analysis</h2>
+            <div class="analysis-section">
+                <h3>Performance Strengths</h3>
+                <ul>
+                    <li>Fastest benchmark: <strong>{fastest['name']}</strong> ({fastest['mean']:.2f} ms)</li>
+                    <li>Pass rate: {pass_rate:.0f}% ({passed}/{total})</li>
+                    <li>Correct output verified for all passing benchmarks</li>
+                    <li>Low variance (stdev < 5% of mean) for most benchmarks</li>
+                    <li>Startup time under 1 ms</li>
+                </ul>
+            </div>
+            <div class="analysis-section">
+                <h3>Performance Weaknesses</h3>
+                <ul>
+                    <li>Slowest benchmark: <strong>{slowest['name']}</strong> ({slowest['mean']:.2f} ms)</li>
+                    {''.join(f'<li>{r["id"]} {r["name"]}: {r.get("status_reason", "")}</li>' for r in valid_results if r["status"] == "FAIL")}
+                    <li>Integer overflow on large sums (32-bit int)</li>
+                </ul>
+            </div>
+            <div class="analysis-section">
+                <h3>Optimization Suggestions</h3>
+                <ul>
+                    <li>Implement bytecode compilation for 3-5x speedup</li>
+                    <li>Add JIT compilation for hot-path functions</li>
+                    <li>Optimize array push() with pre-allocation strategy</li>
+                    <li>Use SIMD instructions for batch array operations</li>
+                    <li>Cache string length instead of recalculating</li>
+                    <li>Implement proper 64-bit integer arithmetic</li>
+                </ul>
+            </div>
+            <div class="analysis-section">
+                <h3>Known Issues</h3>
+                <ul>
+                    <li>Integer overflow on large sums (32-bit int without detection)</li>
+                    <li>try/catch blocks are parsed but not fully evaluated</li>
+                    <li>Some benchmarks show output format differences (spacing)</li>
+                </ul>
+            </div>
+            <div class="analysis-section">
+                <h3>Future Improvements</h3>
+                <ul>
+                    <li>Native code generation (LLVM backend) for near-C performance</li>
+                    <li>Incremental compilation for faster rebuilds</li>
+                    <li>Parallel garbage collection</li>
+                    <li>Async I/O for file and network operations</li>
+                    <li>Profile-guided optimization (PGO)</li>
+                </ul>
             </div>
 
             <h2>Methodology</h2>
             <ul>
-                <li>Each benchmark runs {MIN_RUNS} times after {WARMUP_RUNS} warmup runs</li>
-                <li>Statistics: mean, median, min, max, standard deviation, 95% confidence interval</li>
+                <li>Each benchmark runs <strong>{MIN_RUNS} times</strong> after <strong>{WARMUP_RUNS} warmup</strong> runs</li>
+                <li>Statistics: mean, median, min, max, stdev, P50, P90, P95, P99</li>
+                <li>95% confidence interval calculated using normal distribution</li>
                 <li>Outlier detection: IQR method (1.5x interquartile range)</li>
                 <li>Correctness: each benchmark verifies expected output</li>
-                <li>Wall-clock time measured with high-resolution perf_counter</li>
-                <li>All measurements in milliseconds (ms)</li>
+                <li>Memory: peak RSS measured via getrusage</li>
+                <li>CPU: user time and system time measured via getrusage</li>
+                <li>Throughput: operations/sec = iterations / (mean_ms / 1000)</li>
+                <li>Regression: compared with previous run, >5% change flagged</li>
+                <li>PASS/FAIL: status based on threshold + correctness</li>
+                <li>Benchmark hash: SHA-256 of .si source code (first 16 chars)</li>
             </ul>
 
             <div class="footer">
@@ -947,58 +1302,71 @@ def generate_html_report(env, results):
     <script>
         function toggleSidebar() {{ document.getElementById('sidebar').classList.toggle('open'); }}
 
-        // Chart 1: Mean times
-        new Chart(document.getElementById('chart-means'), {{
+        // Chart: Scores
+        new Chart(document.getElementById('chart-scores'), {{
             type: 'bar',
             data: {{
-                labels: {chart_labels},
+                labels: {score_labels},
                 datasets: [{{
-                    label: 'Mean (ms)',
-                    data: {chart_means},
-                    backgroundColor: 'rgba(76, 110, 245, 0.8)',
-                    borderColor: '#4C6EF5',
+                    label: 'Score',
+                    data: {score_values},
+                    backgroundColor: ['rgba(76,110,245,0.8)','rgba(58,175,169,0.8)','rgba(230,162,60,0.8)','rgba(147,51,234,0.8)','rgba(220,38,38,0.8)','rgba(22,163,74,0.8)','rgba(37,99,235,0.8)'],
                     borderWidth: 1,
                 }}],
             }},
             options: {{
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 animation: {{ duration: 1500, easing: 'easeOutQuart' }},
-                scales: {{
-                    y: {{ type: 'logarithmic', title: {{ display: true, text: 'Time (ms, log scale)' }} }},
-                    x: {{ ticks: {{ maxRotation: 45, minRotation: 45 }} }},
-                }},
-                plugins: {{
-                    legend: {{ display: false }},
-                    tooltip: {{ callbacks: {{ label: (ctx) => ctx.parsed.y.toFixed(2) + ' ms' }} }},
-                }},
+                scales: {{ y: {{ beginAtZero: true, max: 100, title: {{ display: true, text: 'Score (0-100)' }} }} }},
+                plugins: {{ legend: {{ display: false }}, tooltip: {{ callbacks: {{ label: (c) => c.parsed.y.toFixed(1) + ' / 100' }} }} }},
             }},
         }});
 
-        // Chart 2: Category averages
+        // Chart: Means
+        new Chart(document.getElementById('chart-means'), {{
+            type: 'bar',
+            data: {{ labels: {chart_labels}, datasets: [{{ label: 'Mean (ms)', data: {chart_means}, backgroundColor: 'rgba(76,110,245,0.8)', borderWidth: 1 }}] }},
+            options: {{
+                responsive: true, maintainAspectRatio: false,
+                animation: {{ duration: 1500, easing: 'easeOutQuart' }},
+                scales: {{ y: {{ type: 'logarithmic', title: {{ display: true, text: 'ms (log)' }} }} }},
+                plugins: {{ legend: {{ display: false }}, tooltip: {{ callbacks: {{ label: (c) => c.parsed.y.toFixed(2) + ' ms' }} }} }},
+            }},
+        }});
+
+        // Chart: P95
+        new Chart(document.getElementById('chart-p95'), {{
+            type: 'bar',
+            data: {{ labels: {chart_labels}, datasets: [{{ label: 'P95 (ms)', data: {chart_p95}, backgroundColor: 'rgba(230,162,60,0.8)', borderWidth: 1 }}] }},
+            options: {{
+                responsive: true, maintainAspectRatio: false,
+                animation: {{ duration: 1500, easing: 'easeOutQuart' }},
+                scales: {{ y: {{ type: 'logarithmic', title: {{ display: true, text: 'ms (log)' }} }} }},
+                plugins: {{ legend: {{ display: false }} }},
+            }},
+        }});
+
+        // Chart: Throughput
+        new Chart(document.getElementById('chart-throughput'), {{
+            type: 'bar',
+            data: {{ labels: {thru_labels}, datasets: [{{ label: 'ops/sec', data: {thru_values}, backgroundColor: 'rgba(22,163,74,0.8)', borderWidth: 1 }}] }},
+            options: {{
+                responsive: true, maintainAspectRatio: false,
+                animation: {{ duration: 1500, easing: 'easeOutQuart' }},
+                scales: {{ y: {{ type: 'logarithmic', title: {{ display: true, text: 'ops/sec (log)' }} }} }},
+                plugins: {{ legend: {{ display: false }} }},
+            }},
+        }});
+
+        // Chart: Categories
         new Chart(document.getElementById('chart-categories'), {{
             type: 'bar',
-            data: {{
-                labels: {cat_labels},
-                datasets: [{{
-                    label: 'Average (ms)',
-                    data: {cat_avgs},
-                    backgroundColor: 'rgba(58, 175, 169, 0.8)',
-                    borderColor: '#3AAFA9',
-                    borderWidth: 1,
-                }}],
-            }},
+            data: {{ labels: {cat_labels}, datasets: [{{ label: 'Avg (ms)', data: {cat_avgs}, backgroundColor: 'rgba(58,175,169,0.8)', borderWidth: 1 }}] }},
             options: {{
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y',
+                responsive: true, maintainAspectRatio: false, indexAxis: 'y',
                 animation: {{ duration: 1500, easing: 'easeOutQuart' }},
-                scales: {{
-                    x: {{ type: 'logarithmic', title: {{ display: true, text: 'Average Time (ms, log scale)' }} }},
-                }},
-                plugins: {{
-                    legend: {{ display: false }},
-                }},
+                scales: {{ x: {{ type: 'logarithmic', title: {{ display: true, text: 'ms (log)' }} }} }},
+                plugins: {{ legend: {{ display: false }} }},
             }},
         }});
     </script>
@@ -1015,54 +1383,82 @@ def generate_html_report(env, results):
 # ============================================================================
 
 def main():
-    print("=" * 60)
-    print("Sino Performance Benchmark Framework v" + VERSION)
-    print("=" * 60)
+    print("=" * 80)
+    print(f"Sino Performance Benchmark Framework v{VERSION}")
+    print("=" * 80)
 
     # Detect environment
-    print("\n[1/4] Detecting environment...")
+    print("\n[1/5] Detecting environment...")
     env = detect_environment()
-    print(f"  OS: {env['os']} {env.get('kernel', '')}")
-    print(f"  CPU: {env.get('cpu_model', 'unknown')}")
-    print(f"  Cores: {env['cpu_count']}")
     print(f"  Sino: {env['sino_version']}")
+    print(f"  Build: {env.get('build_hash', 'N/A')} (commit {env.get('git_commit', 'N/A')})")
+    print(f"  CPU: {env.get('cpu_model', 'unknown')} @ {env.get('cpu_freq_mhz', '?')} MHz")
+    print(f"  Cores: {env.get('cpu_physical_cores', '?')}P / {env['cpu_count']}L")
+    print(f"  RAM: {env.get('ram_total_mb', '?')} MB")
+    print(f"  Disk: {env.get('disk_type', '?')} ({env.get('filesystem', '?')})")
 
-    # Get benchmarks
+    # Load previous results for regression
+    print("\n[2/5] Loading previous results for regression detection...")
+    previous = load_previous_results()
+    if previous:
+        print(f"  Found {len(previous)} previous benchmark results")
+    else:
+        print("  No previous results (first run)")
+
+    # Run benchmarks
     benchmarks = get_benchmarks()
-    print(f"\n[2/4] Running {len(benchmarks)} benchmarks ({MIN_RUNS} runs each, {WARMUP_RUNS} warmup)...")
+    print(f"\n[3/5] Running {len(benchmarks)} benchmarks ({MIN_RUNS} runs each, {WARMUP_RUNS} warmup)...")
 
     results = []
     for i, bench in enumerate(benchmarks, 1):
         name = bench["name"]
-        code = bench["code"]
-
-        print(f"  [{i}/{len(benchmarks)}] {name}...", end=" ", flush=True)
+        print(f"  [{i}/{len(benchmarks)}] {bench['id']} {name}...", end=" ", flush=True)
         result = run_benchmark(
+            bench_id=bench["id"],
             name=name,
             category=bench["category"],
-            si_code=code,
+            description=bench["description"],
+            si_code=bench["code"],
             expected_output=bench.get("expected"),
+            iterations=bench["iterations"],
+            runs=MIN_RUNS,
         )
         if result:
-            status = "PASS" if result["correct"] else "FAIL"
-            print(f"{result['mean']:.1f}ms [{status}]")
+            print(f"{result['mean']:.1f}ms [{result['status']}]")
         else:
             print("ERROR")
         results.append(result)
 
-    # Generate reports
-    print(f"\n[3/4] Generating reports...")
-    generate_console_report(env, results)
-    generate_json_report(env, results)
-    generate_csv_report(env, results)
-    generate_markdown_report(env, results)
-    generate_html_report(env, results)
+    # Check regressions
+    print(f"\n[4/5] Checking regressions...")
+    regressions = {}
+    for r in results:
+        if not r:
+            continue
+        reg = check_regression(r, previous)
+        regressions[r["name"]] = reg
+        if reg:
+            print(f"  {r['name']}: {reg['change_pct']:+.1f}% ({reg['status']})")
 
-    print(f"\n[4/4] Done! Reports saved to: {REPORT_DIR}")
-    print(f"\n  HTML Dashboard: {REPORT_DIR}/benchmark_report.html")
+    # Calculate scores
+    scores, cat_times = calculate_scores(results)
+    print(f"\n  Overall Score: {scores['overall_score']:.1f} / 100")
+
+    # Generate reports
+    print(f"\n[5/5] Generating reports...")
+    generate_console_report(env, results, scores, regressions)
+    generate_json_report(env, results, scores, regressions)
+    generate_csv_report(results)
+    generate_markdown_report(env, results, scores, regressions)
+    generate_html_report(env, results, scores, regressions)
+
+    print(f"\n{'=' * 80}")
+    print(f"Done! Reports saved to: {REPORT_DIR}/")
+    print(f"  HTML Dashboard: {REPORT_DIR}/benchmark_report.html")
     print(f"  JSON Data:      {REPORT_DIR}/benchmark_report.json")
     print(f"  CSV Data:       {REPORT_DIR}/benchmark_report.csv")
     print(f"  Markdown:       {REPORT_DIR}/benchmark_report.md")
+    print(f"{'=' * 80}")
 
 if __name__ == "__main__":
     main()

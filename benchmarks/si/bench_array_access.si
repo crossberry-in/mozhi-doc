@@ -1,9 +1,5 @@
 arr = []
-for i = 0; i < 10000; i += 1 {
-    push(arr, i)
-}
+for i = 0; i < 10000; i += 1 { push(arr, i) }
 sum = 0
-for i = 0; i < 10000; i += 1 {
-    sum += arr[i]
-}
+for i = 0; i < 10000; i += 1 { sum += arr[i] }
 echo(sum)

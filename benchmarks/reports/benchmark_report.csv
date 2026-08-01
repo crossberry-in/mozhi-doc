@@ -1,23 +1,27 @@
-name,category,mean_ms,median_ms,min_ms,max_ms,stdev_ms,ci95_low,ci95_high,outliers,correct
-startup_shutdown,Core Runtime,0.4949,0.4914,0.4615,0.5529,0.0243,0.4799,0.51,1,True
-function_call,Core Runtime,55.5721,55.3116,54.7491,57.2914,0.7947,55.0796,56.0647,0,False
-recursive_fibonacci,Core Runtime,102.3687,96.0194,95.6492,127.6503,11.9165,94.9828,109.7546,1,True
-nested_calls,Core Runtime,149.5355,149.3915,148.7995,150.5536,0.5966,149.1658,149.9053,0,False
-loop_sum,Core Runtime,223.1455,223.1075,221.9045,225.2195,0.871,222.6056,223.6853,1,True
-conditional_branching,Core Runtime,329.1752,328.6211,328.3946,331.0363,1.0959,328.4959,329.8544,0,True
-pattern_matching,Core Runtime,31.7495,31.7044,31.508,32.1798,0.2177,31.6145,31.8845,0,True
-variable_access,Core Runtime,551.1545,550.8857,548.9262,553.7838,1.4242,550.2718,552.0372,0,False
-constant_access,Core Runtime,374.0708,372.3067,371.3793,386.3292,4.502,371.2804,376.8612,1,False
-array_create,Collections,3.475,3.4483,3.4044,3.6463,0.0706,3.4313,3.5188,1,False
-array_push,Collections,41.9453,41.7099,41.2816,43.1041,0.6401,41.5485,42.342,0,True
-array_access,Collections,8.0365,7.9881,7.9281,8.3994,0.1423,7.9483,8.1247,1,True
-array_iterate,Collections,6.2223,6.2002,6.1441,6.3903,0.0735,6.1767,6.2678,0,True
-string_create,Strings,2.7994,2.7709,2.7223,2.9187,0.0695,2.7564,2.8425,0,False
-string_concat,Strings,8.165,8.1563,8.104,8.2362,0.0408,8.1398,8.1903,0,False
-string_len,Strings,368.9307,368.1195,367.0718,376.8021,2.9192,367.1213,370.74,1,True
-integer_arithmetic,Math,410.3647,409.2771,408.1145,419.3121,3.3613,408.2813,412.448,1,False
-float_arithmetic,Math,274.7943,272.7244,272.2648,282.7179,3.884,272.387,277.2017,0,False
-power_operation,Math,24.2452,24.2143,24.1215,24.5799,0.125,24.1677,24.3226,1,True
-modulo_operation,Math,266.1553,264.856,264.4008,273.92,3.094,264.2377,268.073,2,False
-try_catch_overhead,Error Handling,0.4908,0.4976,0.4466,0.5332,0.0276,0.4737,0.5079,0,False
-parse_large_program,Compiler,0.4832,0.4842,0.4574,0.5143,0.0158,0.4735,0.493,0,True
+id,name,category,description,mean_ms,median_ms,min_ms,max_ms,stdev_ms,ci95_low,ci95_high,p50,p90,p95,p99,throughput_ops_sec,peak_memory_mb,user_time_s,system_time_s,cpu_time_s,iterations,threshold_ms,benchmark_hash,status,status_reason
+BR001,startup_shutdown,Core Runtime,Program startup and shutdown time (echo single value),0.4226,0.4297,0.3857,0.4562,0.0236,0.408,0.4373,0.4297,0.4434,0.4498,0.4549,2366,17.76,0.0043,0.0034,0.0078,1,100,1c07f30658bbd18b,PASS,Mean 0.42 ms within threshold (100 ms)
+BR002,function_call,Core Runtime,Function call overhead: 100;000 calls to add(a;b),55.0408,54.9483,54.7384,55.6115,0.2783,54.8684,55.2133,54.9483,55.3104,55.4609,55.5814,1816834,17.76,0.659,0.0084,0.6674,100000,500,e270ecebf1b9afd2,PASS,Mean 55.04 ms within threshold (500 ms)
+BR003,recursive_fibonacci,Core Runtime,Recursive Fibonacci(25): tests function call + recursion,95.9723,95.5284,95.2938,99.7794,1.3564,95.1316,96.813,95.5284,96.4819,98.1307,99.4497,2529740,17.76,1.8032,0.0134,1.8166,242785,5000,90460b610b6c0c91,PASS,Mean 95.97 ms within threshold (5000 ms)
+BR004,nested_calls,Core Runtime,Nested function calls (5 levels deep): 100;000 iterations,149.2486,149.2228,148.769,149.8325,0.3609,149.0249,149.4723,149.2228,149.7575,149.795,149.825,670023,17.76,3.5851,0.0194,3.6044,100000,500,ddeeb288ab64040a,PASS,Mean 149.25 ms within threshold (500 ms)
+BR005,loop_sum,Core Runtime,Simple loop: sum 0 to 999;999,224.831,223.9915,221.7811,229.8684,2.9518,223.0015,226.6606,223.9915,228.8435,229.3559,229.7659,4447785,17.76,6.2711,0.0234,6.2944,1000000,500,b3daa925b3ba96f1,PASS,Mean 224.83 ms within threshold (500 ms)
+BR006,conditional_branching,Core Runtime,Conditional if/else branching: 1;000;000 iterations,331.2177,329.5366,328.873,337.0789,3.2521,329.2021,333.2334,329.5366,336.3439,336.7114,337.0054,3019162,17.76,10.2326,0.0294,10.262,1000000,500,4134eb3487eeea45,PASS,Mean 331.22 ms within threshold (500 ms)
+BR007,pattern_matching,Core Runtime,Pattern matching (match/case): 100;000 iterations,31.8305,31.6032,31.4867,32.9511,0.4836,31.5307,32.1302,31.6032,32.3738,32.6625,32.8934,3141641,17.76,10.6076,0.0343,10.6418,100000,500,2f8a22f2b432d3d7,PASS,Mean 31.83 ms within threshold (500 ms)
+BR008,variable_access,Core Runtime,Variable access speed: 5 variables; 1;000;000 iterations,550.6266,549.5775,546.3693,557.4515,3.8085,548.2661,552.9872,549.5775,556.3496,556.9005,557.3413,1816113,17.76,17.1991,0.0413,17.2404,1000000,500,f7e1e144da419038,FAIL,Mean exceeded threshold (500 ms). Measured: 550.63 ms
+BR009,constant_access,Core Runtime,Constant access speed: 3 constants; 1;000;000 iterations,372.0067,370.394,369.2341,382.1682,3.9854,369.5365,374.4769,370.394,375.1917,378.6799,381.4705,2688124,17.76,21.6483,0.0482,21.6966,1000000,500,ed4ce776644c2959,PASS,Mean 372.01 ms within threshold (500 ms)
+BR010,array_create,Collections,Array creation: 10;000 array literal allocations,3.3784,3.3766,3.3464,3.4068,0.0203,3.3658,3.391,3.3766,3.4065,3.4067,3.4068,2959981,17.76,21.6856,0.0507,21.7364,10000,100,8bf5e31b56bc5f57,PASS,Mean 3.38 ms within threshold (100 ms)
+BR011,array_push,Collections,Array push: 100;000 push operations,41.2077,41.1618,41.0276,41.5224,0.1671,41.1041,41.3113,41.1618,41.4176,41.47,41.5119,2426731,17.76,22.1469,0.0877,22.2345,100000,1000,e9508e1a04bed499,PASS,Mean 41.21 ms within threshold (1000 ms)
+BR012,array_access,Collections,Array index access: 10;000 elements; 10;000 reads,7.9896,7.9821,7.9041,8.0964,0.0632,7.9504,8.0288,7.9821,8.0744,8.0854,8.0942,1251627,17.76,22.2338,0.0957,22.3295,10000,500,5cab2b18f9e2a6a1,PASS,Mean 7.99 ms within threshold (500 ms)
+BR013,array_iterate,Collections,Array for-in iteration: 10;000 elements,6.0353,6.036,5.9512,6.0987,0.0523,6.0029,6.0677,6.036,6.0898,6.0943,6.0978,1656918,17.76,22.2936,0.1076,22.4012,10000,500,dd0293f903cbd594,PASS,Mean 6.04 ms within threshold (500 ms)
+BR014,string_create,Strings,String creation: 10;000 string assignments,2.6693,2.6705,2.6544,2.6785,0.0089,2.6638,2.6748,2.6705,2.6782,2.6784,2.6785,3746301,17.76,22.3248,0.1076,22.4324,10000,100,5131bb65ad95be57,PASS,Mean 2.67 ms within threshold (100 ms)
+BR015,string_concat,Strings,String concatenation: 10;000 appends with +,8.0528,8.0515,8.0019,8.1091,0.0371,8.0298,8.0757,8.0515,8.0957,8.1024,8.1077,1241804,17.76,22.4183,0.1096,22.5279,10000,500,55f240f1595bdcba,PASS,Mean 8.05 ms within threshold (500 ms)
+BR016,string_len,Strings,String length: len() called 1;000;000 times,369.412,368.9344,366.4841,375.2845,2.7948,367.6798,371.1443,368.9344,372.0467,373.6656,374.9607,2707005,17.76,26.8399,0.1136,26.9535,1000000,1000,62ab0506fe7e60fc,PASS,Mean 369.41 ms within threshold (1000 ms)
+BR017,integer_arithmetic,Math,Integer arithmetic (+; -; *; /): 1;000;000 iterations,408.4081,408.0863,406.4182,412.2055,1.7042,407.3518,409.4644,408.0863,409.9485,411.077,411.9798,2448531,17.76,31.7474,0.1166,31.864,1000000,1000,6aa8d877346021d4,PASS,Mean 408.41 ms within threshold (1000 ms)
+BR018,float_arithmetic,Math,Float arithmetic: 1;000;000 iterations,275.3741,273.4992,272.65,282.0256,3.5921,273.1477,277.6004,273.4992,281.552,281.7888,281.9783,3631424,17.76,35.0448,0.1186,35.1634,1000000,1000,948f47a102517df7,PASS,Mean 275.37 ms within threshold (1000 ms)
+BR019,power_operation,Math,Power operation (**): 100;000 iterations,24.2474,24.1828,24.0963,24.491,0.1462,24.1568,24.3381,24.1828,24.4772,24.4841,24.4896,4124154,17.76,35.3301,0.1226,35.4527,100000,500,ae584796ca54a2d1,PASS,Mean 24.25 ms within threshold (500 ms)
+BR020,modulo_operation,Math,Modulo operation (%): 1;000;000 iterations,265.7932,265.04,264.529,269.2575,1.6953,264.7424,266.844,265.04,268.7044,268.981,269.2022,3762323,17.76,38.5108,0.1256,38.6364,1000000,1000,fcb58f206cce276e,PASS,Mean 265.79 ms within threshold (1000 ms)
+BR021,try_catch_overhead,Error Handling,Try/catch block overhead: 100;000 iterations (no throw),0.4577,0.4544,0.4342,0.4843,0.0181,0.4465,0.469,0.4544,0.4825,0.4834,0.4842,218483723,17.76,38.5145,0.1268,38.6412,100000,100,be5b7a0f92f8c0ab,PASS,Mean 0.46 ms within threshold (100 ms)
+BR022,parse_large_program,Compiler,Parser speed: 10 function definitions + call,0.4494,0.4514,0.4207,0.4739,0.0148,0.4402,0.4585,0.4514,0.464,0.4689,0.4729,2225,17.76,38.5175,0.1284,38.6459,1,10,a6aedee5cb0bb9c3,PASS,Mean 0.45 ms within threshold (10 ms)
+BR023,stress_deep_recursion,Stress Test,Deep recursion: 500 levels,0.7736,0.7682,0.7417,0.8294,0.0288,0.7558,0.7915,0.7682,0.8044,0.8169,0.8269,646329,17.76,38.5218,0.1327,38.6545,500,1000,6b79d7bd4d69646e,PASS,Mean 0.77 ms within threshold (1000 ms)
+BR024,stress_large_array,Stress Test,Large array: 100;000 push operations,41.1746,41.2051,40.8047,41.7594,0.2911,40.9941,41.355,41.2051,41.4865,41.6229,41.7321,2428682,17.76,38.9846,0.1648,39.1494,100000,5000,e9508e1a04bed499,PASS,Mean 41.17 ms within threshold (5000 ms)
+BR025,stress_many_calls,Stress Test,Many function calls: 1;000;000 noop calls,404.2331,399.7366,398.3045,421.8438,9.3377,398.4455,410.0206,399.7366,421.6645,421.7541,421.8259,2473820,17.76,43.8134,0.1728,43.9862,1000000,2000,755e4786782a6686,PASS,Mean 404.23 ms within threshold (2000 ms)
+BR026,stress_large_loop,Stress Test,Large loop: 10;000;000 iterations,1968.0144,1964.7576,1961.1756,1986.8881,8.1597,1962.957,1973.0718,1964.7576,1978.1629,1982.5255,1986.0156,5081264,17.76,67.4157,0.1758,67.5916,10000000,10000,9ad004b41fc94f5a,PASS,Mean 1968.01 ms within threshold (10000 ms)

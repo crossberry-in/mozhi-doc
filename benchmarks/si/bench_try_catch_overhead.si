@@ -1,9 +1,5 @@
 count = 0
 for i = 0; i < 100000; i += 1 {
-    try {
-        count += 1
-    } catch {
-        count -= 1
-    }
+    try { count += 1 } catch { count -= 1 }
 }
 echo(count)
