@@ -28,7 +28,7 @@ Sino runs on **Linux**, **macOS**, **Windows**, and **Termux** (Android). The in
 ### Linux / macOS / WSL / Termux
 
 ```bash
-curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
 ```
 
 The installer:
@@ -41,7 +41,7 @@ The installer:
 ### Windows (PowerShell)
 
 ```powershell
-irm https://github.com/crossberry-in/sino-lang-docs/raw/main/install.ps1 | iex
+irm https://github.com/crossberry-in/sino-doc/raw/main/install.ps1 | iex
 ```
 
 The PowerShell installer:
@@ -93,7 +93,7 @@ The glibc Linux builds dynamically link against `libc` and `libm` (already prese
 
 ```bash
 # One-line install
-curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
 ```
 
 If `curl` is not installed:
@@ -124,7 +124,7 @@ Alpine uses `musl` libc by default. The installer detects this and downloads the
 apk add --no-cache curl
 
 # Install Sino
-curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
 ```
 
 Verify:
@@ -142,7 +142,7 @@ Termux runs on Android, which uses Bionic libc. The installer detects Termux and
 pkg install -y curl
 
 # Install Sino
-curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
 ```
 
 Sino will be installed to `$PREFIX/bin/sino` (typically `/data/data/com.termux/files/usr/bin/sino`), which is already on your Termux `PATH`. No `sudo` is needed — you own that directory.
@@ -160,7 +160,7 @@ sino --version
 brew install curl
 
 # Or use the system curl (preinstalled on macOS)
-curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
 ```
 
 The installer:
@@ -188,7 +188,7 @@ sino --version
 Open **PowerShell** (Windows 10 1809+ or Windows 11) and run:
 
 ```powershell
-irm https://github.com/crossberry-in/sino-lang-docs/raw/main/install.ps1 | iex
+irm https://github.com/crossberry-in/sino-doc/raw/main/install.ps1 | iex
 ```
 
 The installer:
@@ -215,7 +215,7 @@ wsl --install -d Ubuntu
 Then in the Ubuntu terminal:
 
 ```bash
-curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
 ```
 
 ### Windows Subsystem for Linux (WSL)
@@ -230,7 +230,7 @@ If the installer doesn't work for you, you can install Sino manually.
 
 ### Step 1 — Download the binary
 
-Go to the [Releases page](https://github.com/crossberry-in/sino-lang-docs/releases) and download the correct binary for your platform:
+Go to the [Releases page](https://github.com/crossberry-in/sino-doc/releases) and download the correct binary for your platform:
 
 | Your platform | Download this asset |
 |---------------|---------------------|
@@ -248,7 +248,7 @@ Or download from the command line:
 
 ```bash
 # Example: Linux x86_64
-curl -L -o sino https://github.com/crossberry-in/sino-lang-docs/releases/download/v1.0.0/sino-linux-x86_64
+curl -L -o sino https://github.com/crossberry-in/sino-doc/releases/download/v1.0.0/sino-linux-x86_64
 ```
 
 ### Step 2 — Make it executable (Linux / macOS / Termux only)
@@ -430,6 +430,6 @@ If you see this output, you're ready to start coding in Sino! Head over to the [
 
 ## Need Help?
 
-- 🐛 **Bug reports:** [Open an issue](https://github.com/crossberry-in/sino-lang-docs/issues)
-- 💬 **Questions:** [GitHub Discussions](https://github.com/crossberry-in/sino-lang-docs/discussions)
+- 🐛 **Bug reports:** [Open an issue](https://github.com/crossberry-in/sino-doc/issues)
+- 💬 **Questions:** [GitHub Discussions](https://github.com/crossberry-in/sino-doc/discussions)
 - 📖 **Documentation:** [Usage Guide](USAGE.md) | [Language Reference](LANGUAGE_REFERENCE.md)

@@ -1893,7 +1893,7 @@ Variable 'total' does not exist in this scope.
 
 Hint: Did you mean 'totalPrice'?
 
-Documentation: https://crossberry-in.github.io/sino-lang-docs/errors/SN1001
+Documentation: https://crossberry-in.github.io/sino-doc/errors/SN1001
 ```
 
 ### 16.2 Severity Levels
@@ -1915,7 +1915,7 @@ Diagnostics may include hints (additional context) and suggestions (fix proposal
 
 ### 16.5 Documentation Links
 
-Each error code has a corresponding documentation page. The URL format is `https://crossberry-in.github.io/sino-lang-docs/errors/SNxxxx`. The documentation explains the error cause, common scenarios, and fix approaches.
+Each error code has a corresponding documentation page. The URL format is `https://crossberry-in.github.io/sino-doc/errors/SNxxxx`. The documentation explains the error cause, common scenarios, and fix approaches.
 
 ---
 

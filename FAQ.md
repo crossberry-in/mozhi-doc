@@ -55,7 +55,7 @@ See [Supported Platforms](README.md#supported-platforms) for details.
 Yes! Sino uses statically-linked musl binaries for Termux, which run natively on Android's Linux kernel — no `proot` or `proot-distro` needed. Just run:
 
 ```bash
-curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
 ```
 
 The installer will detect Termux and download `sino-alpine-arm64` (for ARM phones) or `sino-alpine-x86_64` (for x86 emulators).
@@ -70,7 +70,7 @@ Yes, two ways:
 
 1. **Natively** — Download `sino-windows-x86_64.exe` and run it from PowerShell/CMD. Or use the PowerShell installer:
    ```powershell
-   irm https://github.com/crossberry-in/sino-lang-docs/raw/main/install.ps1 | iex
+   irm https://github.com/crossberry-in/sino-doc/raw/main/install.ps1 | iex
    ```
 2. **Via WSL** — Install WSL (Ubuntu) and run the Linux installer inside your WSL terminal.
 
@@ -127,7 +127,7 @@ echo "Name: " + name + ", Age: " + string(age)
 
 ### How do I install Sino?
 
-See the [Installation Guide](INSTALL.md). The fastest method is to download the binary from the [Releases page](https://github.com/crossberry-in/sino-lang-docs/releases) and place it on your `PATH`.
+See the [Installation Guide](INSTALL.md). The fastest method is to download the binary from the [Releases page](https://github.com/crossberry-in/sino-doc/releases) and place it on your `PATH`.
 
 ### How do I check my Sino version?
 
@@ -137,7 +137,7 @@ sino --version
 
 ### How do I upgrade Sino?
 
-Download the latest binary from the [Releases page](https://github.com/crossberry-in/sino-lang-docs/releases) and overwrite the old binary. See [Upgrading](INSTALL.md#upgrading) for details.
+Download the latest binary from the [Releases page](https://github.com/crossberry-in/sino-doc/releases) and overwrite the old binary. See [Upgrading](INSTALL.md#upgrading) for details.
 
 ### How do I uninstall Sino?
 
@@ -151,7 +151,7 @@ See [Uninstalling](INSTALL.md#uninstalling) for details.
 
 ### Can I build Sino from source?
 
-The source code is **closed-source**, so public builds are not supported. If you need a build for a platform not listed under [Supported Platforms](README.md#supported-platforms), please [open an issue](https://github.com/crossberry-in/sino-lang-docs/issues).
+The source code is **closed-source**, so public builds are not supported. If you need a build for a platform not listed under [Supported Platforms](README.md#supported-platforms), please [open an issue](https://github.com/crossberry-in/sino-doc/issues).
 
 ---
 
@@ -183,7 +183,7 @@ Not in the current release. Command-line argument passing may be added in a futu
 
 ### Can I use Sino as an embedded scripting language in my C/C++ application?
 
-The source code is closed, so embedding is not publicly supported. If you are interested in embedding Sino, please [open an issue](https://github.com/crossberry-in/sino-lang-docs/issues) to discuss licensing.
+The source code is closed, so embedding is not publicly supported. If you are interested in embedding Sino, please [open an issue](https://github.com/crossberry-in/sino-doc/issues) to discuss licensing.
 
 ---
 
@@ -261,7 +261,7 @@ See [Common Errors](USAGE.md#common-errors) for more.
 
 ### Where can I report bugs?
 
-Please [open an issue](https://github.com/crossberry-in/sino-lang-docs/issues) with:
+Please [open an issue](https://github.com/crossberry-in/sino-doc/issues) with:
 
 1. Your Sino version (`sino --version`)
 2. Your OS and architecture
@@ -272,6 +272,6 @@ Please [open an issue](https://github.com/crossberry-in/sino-lang-docs/issues) w
 
 ## Still Have Questions?
 
-- 💬 **Ask in [GitHub Discussions](https://github.com/crossberry-in/sino-lang-docs/discussions)**
-- 🐛 **Report bugs via [Issues](https://github.com/crossberry-in/sino-lang-docs/issues)**
+- 💬 **Ask in [GitHub Discussions](https://github.com/crossberry-in/sino-doc/discussions)**
+- 🐛 **Report bugs via [Issues](https://github.com/crossberry-in/sino-doc/issues)**
 - 📖 **Read the [Language Reference](LANGUAGE_REFERENCE.md)**

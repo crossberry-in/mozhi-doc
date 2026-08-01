@@ -1,10 +1,10 @@
 # Sino — Windows installer (PowerShell)
 #
 # Usage (in PowerShell or Windows Terminal):
-#   irm https://github.com/crossberry-in/sino-lang-docs/raw/main/install.ps1 | iex
+#   irm https://github.com/crossberry-in/sino-doc/raw/main/install.ps1 | iex
 #
 # Or download and run:
-#   iwr -OutFile install.ps1 https://github.com/crossberry-in/sino-lang-docs/raw/main/install.ps1
+#   iwr -OutFile install.ps1 https://github.com/crossberry-in/sino-doc/raw/main/install.ps1
 #   .\install.ps1
 #
 # This script:
@@ -18,7 +18,7 @@
 
 $ErrorActionPreference = "Stop"
 
-$Repo = "crossberry-in/sino-lang-docs"
+$Repo = "crossberry-in/sino-doc"
 $InstallDir = "$env:USERPROFILE\.sino\bin"
 $BinaryName = "sino-interpreter.exe"
 $AssetName = "sino-windows-x86_64.exe"
@@ -40,7 +40,7 @@ $arch = $env:PROCESSOR_ARCHITECTURE
 if ($arch -eq "AMD64") { $arch = "x86_64" }
 elseif ($arch -eq "ARM64") {
     Write-Err "ARM64 Windows is not yet supported by Sino. Please open an issue:"
-    Write-Err "  https://github.com/crossberry-in/sino-lang-docs/issues"
+    Write-Err "  https://github.com/crossberry-in/sino-doc/issues"
     exit 1
 }
 else {
@@ -113,7 +113,7 @@ if ($LASTEXITCODE -eq 0) {
 }
 
 Write-Host ""
-Write-OK "Done! For docs, visit: https://github.com/crossberry-in/sino-lang-docs"
+Write-OK "Done! For docs, visit: https://github.com/crossberry-in/sino-doc"
 Write-Host ""
 Write-Info "The interpreter is installed as 'sino-interpreter'."
 Write-Info "Install the sino-pkg dispatcher ('sino') from:"

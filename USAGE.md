@@ -539,6 +539,6 @@ You called a function with the wrong number of arguments. Check the function def
 
 ## Need Help?
 
-- 🐛 **Bug reports:** [Open an issue](https://github.com/crossberry-in/sino-lang-docs/issues)
-- 💬 **Questions:** [GitHub Discussions](https://github.com/crossberry-in/sino-lang-docs/discussions)
+- 🐛 **Bug reports:** [Open an issue](https://github.com/crossberry-in/sino-doc/issues)
+- 💬 **Questions:** [GitHub Discussions](https://github.com/crossberry-in/sino-doc/discussions)
 - 📖 **Full docs:** [Language Reference](LANGUAGE_REFERENCE.md)

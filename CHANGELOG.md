@@ -126,4 +126,4 @@ _No unreleased changes yet._
 ---
 
 For the full release history and binary downloads, visit the
-[Releases page](https://github.com/crossberry-in/sino-lang-docs/releases).
+[Releases page](https://github.com/crossberry-in/sino-doc/releases).

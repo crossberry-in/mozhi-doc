@@ -6,7 +6,7 @@
 
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Termux-blue.svg)](#supported-platforms)
-[![Version: v1.0.0](https://img.shields.io/badge/Version-v1.0.0-green.svg)](https://github.com/crossberry-in/sino-lang-docs/releases)
+[![Version: v1.0.0](https://img.shields.io/badge/Version-v1.0.0-green.svg)](https://github.com/crossberry-in/sino-doc/releases)
 
 </div>
 
@@ -38,13 +38,13 @@
 **Linux / macOS / WSL / Termux** (auto-detects platform and architecture):
 
 ```bash
-curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
+curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
 ```
 
 **Windows** (PowerShell):
 
 ```powershell
-irm https://github.com/crossberry-in/sino-lang-docs/raw/main/install.ps1 | iex
+irm https://github.com/crossberry-in/sino-doc/raw/main/install.ps1 | iex
 ```
 
 ### 2. Verify
@@ -114,7 +114,7 @@ The installer auto-detects your OS, architecture, and libc, then downloads the c
 >
 > **Note for Windows users:** You can run Sino natively (via `sino.exe` in PowerShell/CMD) or via WSL (using the Linux x86_64 build). Both work.
 >
-> **Building from source:** Source code is private. If you need a build for an unsupported platform (e.g., FreeBSD, OpenBSD, Linux 32-bit), please [open an issue](https://github.com/crossberry-in/sino-lang-docs/issues) to request a binary.
+> **Building from source:** Source code is private. If you need a build for an unsupported platform (e.g., FreeBSD, OpenBSD, Linux 32-bit), please [open an issue](https://github.com/crossberry-in/sino-doc/issues) to request a binary.
 
 ---
 
@@ -128,15 +128,15 @@ See [LICENSE](LICENSE) for full terms.
 
 ## Community
 
-- **Report bugs:** [Open an issue](https://github.com/crossberry-in/sino-lang-docs/issues)
-- **Request features:** [Open an issue](https://github.com/crossberry-in/sino-lang-docs/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/crossberry-in/sino-lang-docs/discussions)
+- **Report bugs:** [Open an issue](https://github.com/crossberry-in/sino-doc/issues)
+- **Request features:** [Open an issue](https://github.com/crossberry-in/sino-doc/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/crossberry-in/sino-doc/discussions)
 
 ---
 
 ## Links
 
-- **Releases:** https://github.com/crossberry-in/sino-lang-docs/releases
+- **Releases:** https://github.com/crossberry-in/sino-doc/releases
 - **Documentation:** This repository
 - **Author:** [crossberry-in](https://github.com/crossberry-in)
 

@@ -14,13 +14,13 @@
 #   - Windows x86_64 (via Git Bash / WSL)                → sino-windows-x86_64.exe
 #
 # Usage:
-#   curl -fsSL https://github.com/crossberry-in/sino-lang-docs/raw/main/install.sh | bash
+#   curl -fsSL https://github.com/crossberry-in/sino-doc/raw/main/install.sh | bash
 #
 set -e
 
 # --- Configuration ------------------------------------------------------
 
-REPO="crossberry-in/sino-lang-docs"
+REPO="crossberry-in/sino-doc"
 # Install as 'sino-interpreter' to avoid conflict with the sino-pkg
 # package manager, which installs as 'sino' (the unified dispatcher).
 # The sino-pkg dispatcher will find this binary via find_sino_interpreter().
@@ -270,7 +270,7 @@ main() {
     verify_installation
 
     printf '\n' >&2
-    success "Done! Docs: https://github.com/crossberry-in/sino-lang-docs" >&2
+    success "Done! Docs: https://github.com/crossberry-in/sino-doc" >&2
     printf '\n' >&2
 }
 

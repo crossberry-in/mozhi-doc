@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SN3003 - Division by Zero - Sino Error Reference</title>
+    <meta name="description" content="An integer division or modulo operation was performed with a divisor of zero.">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
+    <style>
+        .error-header { background: #DC262611; border-left: 4px solid #DC2626; padding: 24px; border-radius: 0 8px 8px 0; margin-bottom: 24px; }
+        .error-code { font-family: var(--font-mono); font-size: 14px; color: #DC2626; font-weight: 700; }
+        .error-title { font-size: 28px; font-weight: 800; margin: 4px 0 8px; }
+        .error-summary { font-size: 16px; color: var(--text-muted); }
+        .example { margin: 24px 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .example h4 { background: var(--bg-alt); padding: 12px 16px; margin: 0; border-bottom: 1px solid var(--border); }
+        .example-problem, .example-fix { padding: 16px; }
+        .example-problem { border-bottom: 1px solid var(--border); }
+        .example-problem pre { margin: 8px 0; }
+        .related a { display: inline-block; padding: 4px 12px; background: var(--primary-light); color: var(--primary-dark); border-radius: 4px; font-family: var(--font-mono); font-size: 13px; margin: 2px; }
+        .related a:hover { background: var(--primary); color: white; text-decoration: none; }
+        .back-link { margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
+        <span class="topbar-title">SN3003</span>
+    </div>
+    <div class="wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
+                    Sino
+                </a>
+                <div class="sidebar-version">v2.0</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Navigation</div>
+                    <a href="../index.html">Home</a>
+                    <a href="index.html" class="active">Error Reference</a>
+                    <a href="../spec.html">Specification</a>
+                    <a href="../quickstart.html">Quick Start</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Categories</div>
+                    <a href="index.html#sn1xxx">Parse Errors (SN1xxx)</a>
+                    <a href="index.html#sn2xxx">Type Errors (SN2xxx)</a>
+                    <a href="index.html#sn3xxx">Runtime Errors (SN3xxx)</a>
+                    <a href="index.html#sn4xxx">I/O Errors (SN4xxx)</a>
+                </div>
+            </nav>
+        </aside>
+        <main class="main">
+            <div class="back-link"><a href="index.html">&larr; Back to Error Reference</a></div>
+            <div class="error-header">
+                <div class="error-code">SN3003 &middot; Runtime Error &middot; ERROR</div>
+                <div class="error-title">Division by Zero</div>
+                <div class="error-summary">An integer division or modulo operation was performed with a divisor of zero.</div>
+            </div>
+            <h2>Cause</h2>
+            <p>Dividing by zero is undefined for integers and causes a runtime error.</p>
+            <h2>Examples</h2>
+        <div class="example">
+            <h4>Example 1</h4>
+            <div class="example-problem">
+                <p><strong>Problem:</strong></p>
+                <pre><code>result = 10 / 0</code></pre>
+                <p>Division by zero.</p>
+            </div>
+            <div class="example-fix">
+                <p><strong>Fix:</strong></p>
+                <p>Check the divisor before dividing: if b != 0 { result = a / b }</p>
+            </div>
+        </div>
+            <h2>Hint</h2>
+            <div class="note"><p>Float division by zero returns infinity, not an error. Only integer division by zero errors.</p></div>
+            <h2>Suggestion</h2>
+            <p>Add a check: if divisor != 0 before dividing.</p>
+            
+            <div class="footer">
+                <p>Copyright &copy; 2026 crossberry-in.</p>
+                <p><a href="https://github.com/crossberry-in/sino-doc">View on GitHub</a></p>
+            </div>
+        </main>
+    </div>
+    <script>
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    </script>
+</body>
+</html>
