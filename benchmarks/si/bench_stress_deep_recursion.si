@@ -1,0 +1,5 @@
+fn recurse(n) {
+    if n <= 0 { return 0 }
+    return 1 + recurse(n - 1)
+}
+echo(recurse(500))

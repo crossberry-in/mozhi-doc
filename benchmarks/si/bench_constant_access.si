@@ -1,0 +1,8 @@
+const A = 1
+const B = 2
+const C = 3
+sum = 0
+for i = 0; i < 1000000; i += 1 {
+    sum = A + B + C
+}
+echo(sum)

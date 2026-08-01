@@ -1,0 +1,10 @@
+fn f1(x) { return x + 1 }
+fn f2(x) { return f1(x) + 1 }
+fn f3(x) { return f2(x) + 1 }
+fn f4(x) { return f3(x) + 1 }
+fn f5(x) { return f4(x) + 1 }
+sum = 0
+for i = 0; i < 100000; i += 1 {
+    sum = f5(i)
+}
+echo(sum)

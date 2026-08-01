@@ -1,0 +1,10 @@
+count = 0
+for i = 0; i < 100000; i += 1 {
+    match i % 4 {
+        0 => count += 1
+        1 => count += 2
+        2 => count += 3
+        _ => count += 4
+    }
+}
+echo(count)

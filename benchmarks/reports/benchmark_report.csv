@@ -1,0 +1,23 @@
+name,category,mean_ms,median_ms,min_ms,max_ms,stdev_ms,ci95_low,ci95_high,outliers,correct
+startup_shutdown,Core Runtime,0.4949,0.4914,0.4615,0.5529,0.0243,0.4799,0.51,1,True
+function_call,Core Runtime,55.5721,55.3116,54.7491,57.2914,0.7947,55.0796,56.0647,0,False
+recursive_fibonacci,Core Runtime,102.3687,96.0194,95.6492,127.6503,11.9165,94.9828,109.7546,1,True
+nested_calls,Core Runtime,149.5355,149.3915,148.7995,150.5536,0.5966,149.1658,149.9053,0,False
+loop_sum,Core Runtime,223.1455,223.1075,221.9045,225.2195,0.871,222.6056,223.6853,1,True
+conditional_branching,Core Runtime,329.1752,328.6211,328.3946,331.0363,1.0959,328.4959,329.8544,0,True
+pattern_matching,Core Runtime,31.7495,31.7044,31.508,32.1798,0.2177,31.6145,31.8845,0,True
+variable_access,Core Runtime,551.1545,550.8857,548.9262,553.7838,1.4242,550.2718,552.0372,0,False
+constant_access,Core Runtime,374.0708,372.3067,371.3793,386.3292,4.502,371.2804,376.8612,1,False
+array_create,Collections,3.475,3.4483,3.4044,3.6463,0.0706,3.4313,3.5188,1,False
+array_push,Collections,41.9453,41.7099,41.2816,43.1041,0.6401,41.5485,42.342,0,True
+array_access,Collections,8.0365,7.9881,7.9281,8.3994,0.1423,7.9483,8.1247,1,True
+array_iterate,Collections,6.2223,6.2002,6.1441,6.3903,0.0735,6.1767,6.2678,0,True
+string_create,Strings,2.7994,2.7709,2.7223,2.9187,0.0695,2.7564,2.8425,0,False
+string_concat,Strings,8.165,8.1563,8.104,8.2362,0.0408,8.1398,8.1903,0,False
+string_len,Strings,368.9307,368.1195,367.0718,376.8021,2.9192,367.1213,370.74,1,True
+integer_arithmetic,Math,410.3647,409.2771,408.1145,419.3121,3.3613,408.2813,412.448,1,False
+float_arithmetic,Math,274.7943,272.7244,272.2648,282.7179,3.884,272.387,277.2017,0,False
+power_operation,Math,24.2452,24.2143,24.1215,24.5799,0.125,24.1677,24.3226,1,True
+modulo_operation,Math,266.1553,264.856,264.4008,273.92,3.094,264.2377,268.073,2,False
+try_catch_overhead,Error Handling,0.4908,0.4976,0.4466,0.5332,0.0276,0.4737,0.5079,0,False
+parse_large_program,Compiler,0.4832,0.4842,0.4574,0.5143,0.0158,0.4735,0.493,0,True

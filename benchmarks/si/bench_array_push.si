@@ -1,0 +1,5 @@
+arr = []
+for i = 0; i < 100000; i += 1 {
+    push(arr, i)
+}
+echo(len(arr))
