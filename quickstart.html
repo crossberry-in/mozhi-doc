@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Start — Sino Programming Language</title>
+    <meta name="description" content="Get started with Sino in 5 minutes — write your first program.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
+</head>
+<body>
+    <div class="topbar">
+        <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
+        <span class="topbar-title">Sino</span>
+    </div>
+
+    <div class="wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
+                    Sino
+                </a>
+                <div class="sidebar-version">v2.0</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Getting Started</div>
+                    <a href="index.html">Overview</a>
+                    <a href="install.html">Installation</a>
+                    <a href="quickstart.html" class="active">Quick Start</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Language</div>
+                    <a href="spec.html">Specification</a>
+                    <a href="spec.html#2-lexical-structure">Lexical Structure</a>
+                    <a href="spec.html#3-grammar-ebnf">Grammar (EBNF)</a>
+                    <a href="spec.html#4-type-system">Type System</a>
+                    <a href="spec.html#6-functions">Functions</a>
+                    <a href="spec.html#7-control-flow">Control Flow</a>
+                    <a href="spec.html#8-composite-types">Struct &amp; Enum</a>
+                    <a href="spec.html#9-pattern-matching">Pattern Matching</a>
+                    <a href="spec.html#10-error-handling">Error Handling</a>
+                    <a href="spec.html#11-module-system">Modules</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">External</div>
+                    <a href="https://github.com/crossberry-in/sino-lang-docs" target="_blank">GitHub &#8599;</a>
+                    <a href="https://github.com/crossberry-in/sino-pkg" target="_blank">Package Manager &#8599;</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <h1>Quick Start</h1>
+            <p>Get started with Sino in 5 minutes. This guide assumes you've already <a href="install.html">installed</a> the Sino toolchain.</p>
+
+            <h2>Your First Program</h2>
+            <p>Create a file called <code>hello.si</code>:</p>
+            <pre><code class="code-sino"><span class="comment"># hello.si</span>
+<span class="function">echo</span>(<span class="string">"Hello, World!"</span>)</code></pre>
+
+            <p>Run it:</p>
+            <pre><code>$ sino hello.si
+Hello, World!</code></pre>
+
+            <h2>Variables and Types</h2>
+            <pre><code class="code-sino"><span class="comment"># Variables are declared by assignment</span>
+name = <span class="string">"Sino"</span>
+age = <span class="number">20</span>
+price = <span class="number">99.99</span>
+active = <span class="keyword">true</span>
+
+<span class="comment"># Constants use the const keyword</span>
+<span class="keyword">const</span> PI = <span class="number">3.14159</span>
+
+<span class="comment"># Explicit type annotations (optional)</span>
+count: <span class="keyword">int</span> = <span class="number">0</span>
+label: string = <span class="string">"default"</span>
+
+<span class="function">echo</span>(name, <span class="string">" is "</span>, age, <span class="string">" years old"</span>)</code></pre>
+
+            <h2>Functions</h2>
+            <pre><code class="code-sino"><span class="comment"># Named function</span>
+<span class="keyword">fn</span> <span class="function">add</span>(a, b) {
+    <span class="keyword">return</span> a <span class="operator">+</span> b
+}
+
+<span class="comment"># Function with type annotations</span>
+<span class="keyword">fn</span> <span class="function">greet</span>(name: string) <span class="operator">-&gt;</span> string {
+    <span class="keyword">return</span> <span class="string">"Hello, "</span> <span class="operator">+</span> name
+}
+
+<span class="comment"># Anonymous function (lambda)</span>
+double = <span class="keyword">fn</span>(x) { <span class="keyword">return</span> x <span class="operator">*</span> <span class="number">2</span> }
+
+<span class="function">echo</span>(<span class="function">add</span>(<span class="number">3</span>, <span class="number">4</span>))        <span class="comment"># 7</span>
+<span class="function">echo</span>(<span class="function">greet</span>(<span class="string">"Alice"</span>))    <span class="comment"># Hello, Alice</span>
+<span class="function">echo</span>(<span class="function">double</span>(<span class="number">5</span>))        <span class="comment"># 10</span></code></pre>
+
+            <h2>Control Flow</h2>
+            <pre><code class="code-sino"><span class="comment"># If / else</span>
+<span class="keyword">if</span> age &gt;= <span class="number">18</span> {
+    <span class="function">echo</span>(<span class="string">"Adult"</span>)
+} <span class="keyword">else</span> {
+    <span class="function">echo</span>(<span class="string">"Minor"</span>)
+}
+
+<span class="comment"># While loop</span>
+i = <span class="number">0</span>
+<span class="keyword">while</span> i &lt; <span class="number">5</span> {
+    <span class="function">echo</span>(<span class="string">"i = "</span>, i)
+    i <span class="operator">+=</span> <span class="number">1</span>
+}
+
+<span class="comment"># For loop (C-style)</span>
+<span class="keyword">for</span> j = <span class="number">0</span>; j &lt; <span class="number">3</span>; j <span class="operator">+=</span> <span class="number">1</span> {
+    <span class="function">echo</span>(<span class="string">"j = "</span>, j)
+}
+
+<span class="comment"># For-in loop</span>
+fruits = [<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>]
+<span class="keyword">for</span> fruit <span class="keyword">in</span> fruits {
+    <span class="function">echo</span>(fruit)
+}
+
+<span class="comment"># Match (pattern matching)</span>
+x = <span class="number">2</span>
+<span class="keyword">match</span> x {
+    <span class="number">1</span> =&gt; <span class="function">echo</span>(<span class="string">"One"</span>)
+    <span class="number">2</span> =&gt; <span class="function">echo</span>(<span class="string">"Two"</span>)
+    <span class="number">3</span> =&gt; <span class="function">echo</span>(<span class="string">"Three"</span>)
+    _ =&gt; <span class="function">echo</span>(<span class="string">"Other"</span>)
+}</code></pre>
+
+            <h2>Structs and Traits</h2>
+            <pre><code class="code-sino"><span class="comment"># Define a struct</span>
+<span class="keyword">struct</span> User {
+    name: string
+    age: int
+}
+
+<span class="comment"># Define a trait</span>
+<span class="keyword">trait</span> Greetable {
+    <span class="keyword">fn</span> <span class="function">greet</span>()
+}
+
+<span class="comment"># Implement the trait for User</span>
+<span class="keyword">impl</span> Greetable <span class="keyword">for</span> User {
+    <span class="keyword">fn</span> <span class="function">greet</span>() {
+        <span class="function">echo</span>(<span class="string">"Hi, I'm "</span>, name)
+    }
+}
+
+<span class="comment"># Create an instance</span>
+user = User { name: <span class="string">"Alice"</span>, age: <span class="number">30</span> }
+user.<span class="function">greet</span>()  <span class="comment"># Hi, I'm Alice</span></code></pre>
+
+            <h2>Arrays and Strings</h2>
+            <pre><code class="code-sino"><span class="comment"># Arrays</span>
+nums = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+<span class="function">echo</span>(<span class="function">len</span>(nums))     <span class="comment"># 5</span>
+<span class="function">echo</span>(nums[<span class="number">0</span>])        <span class="comment"># 1</span>
+nums.<span class="function">push</span>(<span class="number">6</span>)         <span class="comment"># add element</span>
+last = nums.<span class="function">pop</span>()      <span class="comment"># remove and return last</span>
+
+<span class="comment"># Strings</span>
+name = <span class="string">"Sino"</span>
+greeting = <span class="string">"Hello, "</span> <span class="operator">+</span> name
+<span class="function">echo</span>(<span class="function">len</span>(name))      <span class="comment"># 4</span></code></pre>
+
+            <h2>Error Handling</h2>
+            <pre><code class="code-sino"><span class="keyword">fn</span> <span class="function">divide</span>(a, b) {
+    <span class="keyword">if</span> b == <span class="number">0</span> {
+        <span class="keyword">throw</span> Error { message: <span class="string">"Division by zero"</span> }
+    }
+    <span class="keyword">return</span> a / b
+}
+
+<span class="keyword">try</span> {
+    result = <span class="function">divide</span>(<span class="number">10</span>, <span class="number">0</span>)
+} <span class="keyword">catch</span> err {
+    <span class="function">echo</span>(<span class="string">"Error: "</span>, err.message)
+}</code></pre>
+
+            <h2>REPL</h2>
+            <p>Start the interactive REPL:</p>
+            <pre><code>$ sino
+Sino REPL
+Version 2.0
+
+&gt; x = 10
+&gt; echo(x)
+10
+&gt; fn double(n) { return n * 2 }
+&gt; double(5)
+10
+&gt; exit</code></pre>
+
+            <h2>Next Steps</h2>
+            <ul>
+                <li>Read the full <a href="spec.html">Language Specification</a></li>
+                <li>Explore <a href="https://github.com/crossberry-in/sino-lang-docs/tree/main/examples">example programs</a></li>
+                <li>Learn about the <a href="spec.html#15-package-manager">Package Manager</a></li>
+                <li>Join the community on <a href="https://github.com/crossberry-in/sino-lang-docs/issues">GitHub Issues</a></li>
+            </ul>
+
+            <div class="footer">
+                <p>Copyright &copy; 2026 crossberry-in.</p>
+                <p><a href="https://github.com/crossberry-in/sino-lang-docs">View on GitHub</a></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,3498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sino Language Specification v2.0</title>
+    <meta name="description" content="Official specification for the Sino programming language v2.0 — syntax, grammar, type system, standard library, and tooling.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
+</head>
+<body>
+    <div class="topbar">
+        <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
+        <span class="topbar-title">Sino Spec</span>
+    </div>
+
+    <div class="wrapper">
+        
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
+                    Sino
+                </a>
+                <div class="sidebar-version">v2.0</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Getting Started</div>
+                    <a href="index.html">Overview</a>
+                    <a href="install.html">Installation</a>
+                    <a href="quickstart.html">Quick Start</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Language</div>
+                    <a href="spec.html" class="active">Specification</a>
+                    <a href="spec.html#2-lexical-structure">Lexical Structure</a>
+                    <a href="spec.html#3-grammar-ebnf">Grammar (EBNF)</a>
+                    <a href="spec.html#4-type-system">Type System</a>
+                    <a href="spec.html#6-functions">Functions</a>
+                    <a href="spec.html#7-control-flow">Control Flow</a>
+                    <a href="spec.html#8-composite-types">Struct &amp; Enum</a>
+                    <a href="spec.html#9-pattern-matching">Pattern Matching</a>
+                    <a href="spec.html#10-error-handling">Error Handling</a>
+                    <a href="spec.html#11-module-system">Modules</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Standard Library</div>
+                    <a href="spec.html#12-standard-library">std.core</a>
+                    <a href="spec.html#12-2-std-io">std.io</a>
+                    <a href="spec.html#12-4-std-math">std.math</a>
+                    <a href="spec.html#12-5-std-string">std.string</a>
+                    <a href="spec.html#12-7-std-json">std.json</a>
+                    <a href="spec.html#12-8-std-http">std.http</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Tooling</div>
+                    <a href="spec.html#14-compiler-and-interpreter">Compiler</a>
+                    <a href="spec.html#15-package-manager">Package Manager</a>
+                    <a href="spec.html#13-foreign-function-interface">FFI</a>
+                    <a href="spec.html#16-diagnostics">Diagnostics</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Reference</div>
+                    <a href="spec.html#appendix-a-error-code-reference">Error Codes</a>
+                    <a href="spec.html#appendix-b-reserved-keywords">Keywords</a>
+                    <a href="spec.html#appendix-c-operator-precedence">Precedence</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">External</div>
+                    <a href="https://github.com/crossberry-in/sino-lang-docs" target="_blank">GitHub Docs &#8599;</a>
+                    <a href="https://github.com/crossberry-in/sino-pkg" target="_blank">Package Manager &#8599;</a>
+                    <a href="https://github.com/crossberry-in/sino-lang-docs/releases" target="_blank">Download &#8599;</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <h1 id="sino-programming-language-specification-v2-0">Sino Programming Language Specification v2.0</h1>
+
+<p><strong>Official Language Specification</strong></p>
+
+<p>Version 2.0 — August 2026</p>
+
+<p>Copyright © 2026 crossberry-in. All Rights Reserved.</p>
+
+<hr>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ol>
+<li><a href="#1-introduction">Introduction</a></li>
+<li><a href="#2-lexical-structure">Lexical Structure</a></li>
+<li><a href="#3-grammar-ebnf">Grammar (EBNF)</a></li>
+<li><a href="#4-type-system">Type System</a></li>
+<li><a href="#5-variables-and-constants">Variables and Constants</a></li>
+<li><a href="#6-functions">Functions</a></li>
+<li><a href="#7-control-flow">Control Flow</a></li>
+<li><a href="#8-composite-types">Composite Types</a></li>
+<li><a href="#9-pattern-matching">Pattern Matching</a></li>
+<li><a href="#10-error-handling">Error Handling</a></li>
+<li><a href="#11-module-system">Module System</a></li>
+<li><a href="#12-standard-library">Standard Library</a></li>
+<li><a href="#13-foreign-function-interface">Foreign Function Interface</a></li>
+<li><a href="#14-compiler-and-interpreter">Compiler and Interpreter</a></li>
+<li><a href="#15-package-manager">Package Manager</a></li>
+<li><a href="#16-diagnostics">Diagnostics</a></li>
+<li><a href="#17-runtime-and-memory">Runtime and Memory</a></li>
+</ol>
+<ul>
+<li><a href="#appendix-a-error-code-reference">Appendix A: Error Code Reference</a></li>
+<li><a href="#appendix-b-reserved-keywords">Appendix B: Reserved Keywords</a></li>
+<li><a href="#appendix-c-operator-precedence">Appendix C: Operator Precedence</a></li>
+</ul>
+
+<hr>
+
+<h2 id="1-introduction">1. Introduction</h2>
+
+<h3 id="1-1-purpose">1.1 Purpose</h3>
+
+<p>This document constitutes the official language specification for the Sino programming language, version 2.0. It defines the syntax, semantics, type system, module system, standard library, and runtime behavior of the language. This specification serves as the authoritative reference for compiler implementers, tooling developers, and programmers who write Sino code. Any conforming implementation of Sino must adhere to the rules and behaviors described in this document. Where this document is silent or ambiguous, implementers should choose the interpretation most consistent with the stated design goals.</p>
+
+<h3 id="1-2-design-goals">1.2 Design Goals</h3>
+
+<p>Sino is designed with the following principles as its foundation. Every language feature, syntax decision, and runtime behavior must align with these goals:</p>
+
+<ul>
+<li><strong>Simplicity</strong> — The language must be easy to learn and read. Syntax should be minimal and consistent across all constructs.</li>
+<li><strong>Static Typing</strong> — The type system provides compile-time type safety with automatic type inference to reduce annotation burden.</li>
+<li><strong>Performance</strong> — Compiled code must achieve native execution speed. The compiler performs optimization passes including constant folding, dead code elimination, and inlining.</li>
+<li><strong>Memory Safety</strong> — The runtime prevents buffer overflows, null pointer dereferences (where statically detectable), and use-after-free errors through ownership tracking and bounds checking.</li>
+<li><strong>Cross-Platform</strong> — Sino programs compile to native code for Linux, macOS, Windows, and Android (via Termux) on x86_64 and ARM64 architectures.</li>
+<li><strong>Native Interoperability</strong> — The Foreign Function Interface allows seamless calls to and from C, C++, Assembly, and Rust code through a stable ABI.</li>
+<li><strong>Production Readiness</strong> — The toolchain provides deterministic builds, reproducible outputs, comprehensive diagnostics, and a complete package manager.</li>
+</ul>
+
+<h3 id="1-3-scope">1.3 Scope</h3>
+
+<p>This specification covers the following components of the Sino ecosystem:</p>
+
+<ul>
+<li>Lexical structure and tokenization rules</li>
+<li>Context-free grammar in Extended Backus-Naur Form (EBNF)</li>
+<li>Static type system, type inference algorithm, and type checking rules</li>
+<li>Runtime semantics for all language constructs</li>
+<li>Module system, import/export mechanisms, and name resolution</li>
+<li>Standard library API surface and behavior contracts</li>
+<li>Foreign Function Interface (FFI) and ABI specifications</li>
+<li>Compiler pipeline: lexing, parsing, analysis, optimization, code generation</li>
+<li>Interpreter execution model for rapid development</li>
+<li>Package manager commands, manifest format, and dependency resolution</li>
+<li>Diagnostic error codes, message formats, and suggestion system</li>
+<li>Runtime memory model, garbage collection, and concurrency primitives</li>
+</ul>
+
+<h3 id="1-4-terminology">1.4 Terminology</h3>
+
+<table>
+<thead><tr>
+<th>Term</th>
+<th>Definition</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Shall</strong></td>
+<td>Indicates a mandatory requirement. Conforming implementations must obey this rule.</td>
+</tr>
+<tr>
+<td><strong>Should</strong></td>
+<td>Indicates a recommendation. Conforming implementations are encouraged but not required to obey this rule.</td>
+</tr>
+<tr>
+<td><strong>May</strong></td>
+<td>Indicates optional behavior. Conforming implementations may or may not implement this feature.</td>
+</tr>
+<tr>
+<td><strong>Implementation-defined</strong></td>
+<td>Behavior that is not specified by this document. The implementer must document the chosen behavior.</td>
+</tr>
+<tr>
+<td><strong>Undefined behavior</strong></td>
+<td>Behavior that is not specified. Implementations are not required to handle this case predictably.</td>
+</tr>
+<tr>
+<td><strong>Conforming implementation</strong></td>
+<td>An implementation that satisfies all mandatory requirements (shall) of this specification.</td>
+</tr>
+<tr>
+<td><strong>Conforming program</strong></td>
+<td>A program that adheres to all syntactic and semantic rules of this specification.</td>
+</tr>
+</tbody></table>
+
+<h3 id="1-5-conformance-levels">1.5 Conformance Levels</h3>
+
+<table>
+<thead><tr>
+<th>Level</th>
+<th>Requirements</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Level 1: Core</strong></td>
+<td>Lexical structure, grammar, type system, control flow, functions, arrays, strings, built-in functions, and the interpreter.</td>
+</tr>
+<tr>
+<td><strong>Level 2: Standard</strong></td>
+<td>Level 1 plus struct, enum, trait, impl, pattern matching, error handling (try/catch/throw), and the standard library core modules.</td>
+</tr>
+<tr>
+<td><strong>Level 3: Full</strong></td>
+<td>Level 2 plus the compiler (native code generation), module system, package manager, FFI, async/await, and the complete standard library.</td>
+</tr>
+<tr>
+<td><strong>Level 4: Extended</strong></td>
+<td>Level 3 plus generic types, trait default methods, advanced pattern matching, and the documentation generator.</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="2-lexical-structure">2. Lexical Structure</h2>
+
+<h3 id="2-1-source-encoding">2.1 Source Encoding</h3>
+
+<p>Sino source files are encoded in UTF-8. All lexical analysis operates on UTF-8 code points. Identifiers may contain Unicode letters and digits as defined by the Unicode General Categories Lu, Ll, Lt, Lm, Lo, and Nd. String literals may contain any valid UTF-8 sequence. A byte order mark (BOM) at the start of a source file is permitted but ignored.</p>
+
+<h3 id="2-2-whitespace">2.2 Whitespace</h3>
+
+<p>Whitespace characters are the space (U+0020), horizontal tab (U+0009), carriage return (U+000D), and line feed (U+000A). Whitespace separates tokens but has no semantic meaning otherwise. Consecutive whitespace characters are treated as a single separator. Line feed (LF) and carriage return followed by line feed (CRLF) both terminate lines. The lexer reports line numbers starting from 1 for diagnostic purposes.</p>
+
+<h3 id="2-3-comments">2.3 Comments</h3>
+
+<p>Sino supports two comment styles. Comments are ignored by the compiler and do not affect program semantics.</p>
+
+<h4>2.3.1 Single-Line Comments</h4>
+
+<p>A single-line comment begins with the hash character <code>#</code> or double slash <code>//</code> and extends to the end of the line.</p>
+
+<pre><code class="code-sino"><span class=<span class="string">"comment"</span>># This is a comment</span>
+x = <span class="number">10</span>  // Also a comment
+<span class=<span class="string">"comment"</span>># Comments can appear anywhere whitespace is allowed</span></code></pre>
+
+<h4>2.3.2 Multi-Line Comments</h4>
+
+<p>A multi-line comment begins with <code>/<em></code> and ends with <code></em>/</code>. Multi-line comments support nesting — a <code>/<em></code> inside a comment starts a nested comment that must be closed with a matching <code></em>/</code>. This allows commenting out blocks of code that already contain comments.</p>
+
+<pre><code class="code-sino">/* This is a
+   multi-line comment */
+
+/* Outer comment
+   /* nested comment */
+   still outer comment
+*/</code></pre>
+
+<h3 id="2-4-identifiers">2.4 Identifiers</h3>
+
+<p>An identifier is a sequence of letters, digits, and underscores. The first character must be a letter or underscore. Identifiers are case-sensitive. There is no length limit on identifiers, but implementations may truncate for display in diagnostics.</p>
+
+<pre><code class="code-ebnf">identifier = letter { letter | digit | "_" } ;
+letter     = "A".."Z" | "a".."z" | "_" | &lt;unicode letter&gt; ;
+digit      = "0".."9" ;</code></pre>
+
+<p><strong>Valid identifiers:</strong></p>
+
+<pre><code class="code-sino">name
+user_name
+_private
+Parser2
+JSON_RPC_METHOD</code></pre>
+
+<p><strong>Invalid identifiers:</strong></p>
+
+<pre><code class="code-sino">2nd_value    <span class=<span class="string">"comment"</span>># starts with digit</span>
+my-var       <span class=<span class="string">"comment"</span>># contains hyphen</span>
+class        <span class=<span class="string">"comment"</span>># reserved keyword</span></code></pre>
+
+<h3 id="2-5-keywords">2.5 Keywords</h3>
+
+<p>The following identifiers are reserved as keywords and cannot be used as variable, function, type, or module names. Keywords are case-sensitive and must appear exactly as listed.</p>
+
+<table>
+<thead><tr>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>const</code></td>
+<td><code>fn</code></td>
+<td><code>if</code></td>
+<td><code>else</code></td>
+</tr>
+<tr>
+<td><code>match</code></td>
+<td><code>while</code></td>
+<td><code>for</code></td>
+<td><code>in</code></td>
+</tr>
+<tr>
+<td><code>break</code></td>
+<td><code>continue</code></td>
+<td><code>return</code></td>
+<td><code>import</code></td>
+</tr>
+<tr>
+<td><code>public</code></td>
+<td><code>private</code></td>
+<td><code>struct</code></td>
+<td><code>enum</code></td>
+</tr>
+<tr>
+<td><code>trait</code></td>
+<td><code>impl</code></td>
+<td><code>async</code></td>
+<td><code>await</code></td>
+</tr>
+<tr>
+<td><code>try</code></td>
+<td><code>catch</code></td>
+<td><code>throw</code></td>
+<td><code>defer</code></td>
+</tr>
+<tr>
+<td><code>true</code></td>
+<td><code>false</code></td>
+<td><code>null</code></td>
+<td></td>
+</tr>
+</tbody></table>
+
+<h3 id="2-6-literals">2.6 Literals</h3>
+
+<h4>2.6.1 Integer Literals</h4>
+
+<p>Integer literals are sequences of digits. Decimal (base 10) is the default. Hexadecimal literals begin with <code>0x</code> or <code>0X</code>. Octal literals begin with <code>0o</code> or <code>0O</code>. Binary literals begin with <code>0b</code> or <code>0B</code>. Underscores may be used as digit separators for readability and are ignored.</p>
+
+<pre><code class="code-sino"><span class="number">42</span>
+1_000_000
+0xFF
+0o755
+0b1010_1010</code></pre>
+
+<h4>2.6.2 Float Literals</h4>
+
+<p>Float literals consist of an integer part, a decimal point, and a fractional part. Either the integer part or the fractional part may be omitted but not both. An optional exponent may follow, introduced by <code>e</code> or <code>E</code>, with an optional sign. Float literals are always 64-bit (<code>float64</code>) unless explicitly cast.</p>
+
+<pre><code class="code-sino"><span class="number">3.14</span>
+<span class="number">0.5</span>
+<span class="number">10</span>.
+.<span class="number">5</span>
+<span class="number">1.</span>5e10
+<span class="number">2.</span>5e-<span class="number">3</span></code></pre>
+
+<h4>2.6.3 String Literals</h4>
+
+<p>String literals are sequences of characters enclosed in double quotes. String literals support escape sequences for special characters. Strings are immutable and UTF-8 encoded.</p>
+
+<table>
+<thead><tr>
+<th>Escape</th>
+<th>Meaning</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>\n</code></td>
+<td>Line feed</td>
+</tr>
+<tr>
+<td><code>\r</code></td>
+<td>Carriage return</td>
+</tr>
+<tr>
+<td><code>\t</code></td>
+<td>Horizontal tab</td>
+</tr>
+<tr>
+<td><code>\"</code></td>
+<td>Double quote</td>
+</tr>
+<tr>
+<td><code>\\</code></td>
+<td>Backslash</td>
+</tr>
+<tr>
+<td><code>\0</code></td>
+<td>Null character</td>
+</tr>
+<tr>
+<td><code>\uXXXX</code></td>
+<td>Unicode code point (4 hex digits)</td>
+</tr>
+</tbody></table>
+
+<pre><code class="code-sino"><span class="string">"Hello, World!"</span>
+<span class="string">"Line <span class="number">1</span>\nLine <span class="number">2</span>"</span>
+<span class="string">"Tab\there"</span>
+<span class="string">"Quote: \"hi\""</span></code></pre>
+
+<h4>2.6.4 Boolean Literals</h4>
+
+<p>Boolean literals are the keywords <code>true</code> and <code>false</code>. They evaluate to the boolean values TRUE and FALSE respectively.</p>
+
+<h4>2.6.5 Null Literal</h4>
+
+<p>The keyword <code>null</code> represents the absence of a value. Null is a valid value for any nullable type.</p>
+
+<h3 id="2-7-operators">2.7 Operators</h3>
+
+<h4>2.7.1 Arithmetic Operators</h4>
+
+<table>
+<thead><tr>
+<th>Operator</th>
+<th>Description</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>+</code></td>
+<td>Addition</td>
+<td><code>a + b</code></td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>Subtraction</td>
+<td><code>a - b</code></td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>Multiplication</td>
+<td><code>a * b</code></td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td>Division</td>
+<td><code>a / b</code></td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td>Modulo (remainder)</td>
+<td><code>a % b</code></td>
+</tr>
+<tr>
+<td><code>**</code></td>
+<td>Exponentiation</td>
+<td><code>a ** b</code></td>
+</tr>
+</tbody></table>
+
+<h4>2.7.2 Compound Assignment Operators</h4>
+
+<table>
+<thead><tr>
+<th>Operator</th>
+<th>Description</th>
+<th>Equivalent To</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>+=</code></td>
+<td>Add and assign</td>
+<td><code>a = a + b</code></td>
+</tr>
+<tr>
+<td><code>-=</code></td>
+<td>Subtract and assign</td>
+<td><code>a = a - b</code></td>
+</tr>
+<tr>
+<td><code>*=</code></td>
+<td>Multiply and assign</td>
+<td><code>a = a * b</code></td>
+</tr>
+<tr>
+<td><code>/=</code></td>
+<td>Divide and assign</td>
+<td><code>a = a / b</code></td>
+</tr>
+<tr>
+<td><code>%=</code></td>
+<td>Modulo and assign</td>
+<td><code>a = a % b</code></td>
+</tr>
+</tbody></table>
+
+<h4>2.7.3 Comparison Operators</h4>
+
+<table>
+<thead><tr>
+<th>Operator</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>==</code></td>
+<td>Equal</td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td>Not equal</td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td>Less than</td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td>Greater than</td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td>Less than or equal</td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td>Greater than or equal</td>
+</tr>
+</tbody></table>
+
+<h4>2.7.4 Logical Operators</h4>
+
+<table>
+<thead><tr>
+<th>Operator</th>
+<th>Description</th>
+<th>Short-circuit</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>and</code></td>
+<td>Logical AND</td>
+<td>Yes — evaluates right only if left is true</td>
+</tr>
+<tr>
+<td><code>or</code></td>
+<td>Logical OR</td>
+<td>Yes — evaluates right only if left is false</td>
+</tr>
+<tr>
+<td><code>not</code></td>
+<td>Logical NOT (prefix)</td>
+<td>N/A — single operand</td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>Logical NOT (prefix, symbol)</td>
+<td>N/A</td>
+</tr>
+</tbody></table>
+
+<h3 id="2-8-delimiters">2.8 Delimiters</h3>
+
+<table>
+<thead><tr>
+<th>Delimiter</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>(</code></td>
+<td>Opening parenthesis (grouping, function call)</td>
+</tr>
+<tr>
+<td><code>)</code></td>
+<td>Closing parenthesis</td>
+</tr>
+<tr>
+<td><code>{</code></td>
+<td>Opening brace (block, struct literal)</td>
+</tr>
+<tr>
+<td><code>}</code></td>
+<td>Closing brace</td>
+</tr>
+<tr>
+<td><code>[</code></td>
+<td>Opening bracket (array literal, index)</td>
+</tr>
+<tr>
+<td><code>]</code></td>
+<td>Closing bracket</td>
+</tr>
+<tr>
+<td><code>,</code></td>
+<td>Comma (separator)</td>
+</tr>
+<tr>
+<td><code>;</code></td>
+<td>Semicolon (statement terminator, optional)</td>
+</tr>
+<tr>
+<td><code>:</code></td>
+<td>Colon (type annotation, key-value)</td>
+</tr>
+<tr>
+<td><code>::</code></td>
+<td>Double colon (module path separator)</td>
+</tr>
+<tr>
+<td><code>.</code></td>
+<td>Dot (member access, method call)</td>
+</tr>
+<tr>
+<td><code>-&gt;</code></td>
+<td>Arrow (return type annotation)</td>
+</tr>
+<tr>
+<td><code>=&gt;</code></td>
+<td>Fat arrow (match arm, key-value)</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="3-grammar-ebnf">3. Grammar (EBNF)</h2>
+
+<p>This chapter defines the context-free grammar of Sino using Extended Backus-Naur Form (EBNF). The grammar is the authoritative definition of syntactically valid Sino programs. All conforming parsers must accept exactly the language defined by these productions.</p>
+
+<h3 id="3-1-notation">3.1 Notation</h3>
+
+<p>The EBNF notation used in this specification follows these conventions:</p>
+
+<ul>
+<li>Non-terminal symbols are written in lowercase (e.g., <em>program</em>).</li>
+<li>Terminal symbols are written in monospace font (e.g., <code>fn</code>).</li>
+<li>Square brackets <code>[ ... ]</code> denote optional elements.</li>
+<li>Braces <code>{ ... }</code> denote zero or more repetitions.</li>
+<li>Parentheses <code>( ... )</code> group alternatives.</li>
+<li>The pipe <code>|</code> separates alternatives.</li>
+<li>A trailing <code>*</code> denotes zero or more, <code>+</code> denotes one or more.</li>
+<li>Quoted strings are literal terminal symbols.</li>
+</ul>
+
+<h3 id="3-2-program-structure">3.2 Program Structure</h3>
+
+<pre><code class="code-ebnf">program        = { declaration } ;
+
+declaration    = import_decl
+                | fn_decl
+                | const_decl
+                | struct_decl
+                | enum_decl
+                | trait_decl
+                | impl_decl
+                | statement ;</code></pre>
+
+<h3 id="3-3-import-declarations">3.3 Import Declarations</h3>
+
+<pre><code class="code-ebnf">import_decl    = "import" module_path ;
+
+module_path    = identifier { "." identifier } ;</code></pre>
+
+<p><strong>Examples:</strong></p>
+
+<pre><code class="code-sino"><span class="keyword">import</span> std.io
+<span class="keyword">import</span> std.math
+<span class="keyword">import</span> mylib.utils.string</code></pre>
+
+<h3 id="3-4-function-declarations">3.4 Function Declarations</h3>
+
+<pre><code class="code-ebnf">fn_decl        = [ visibility ] "fn" identifier
+                  "(" [ param_list ] ")"
+                  [ "-&gt;" type ]
+                  block ;
+
+visibility     = "public" | "private" ;
+
+param_list     = param { "," param } ;
+
+param          = identifier [ ":" type ] [ "=" expression ] ;
+
+block          = "{" { statement } "}" ;</code></pre>
+
+<p><strong>Examples:</strong></p>
+
+<pre><code class="code-sino"><span class="keyword">fn</span> <span class="function">add</span>(a, b) {
+    <span class="keyword">return</span> a + b
+}
+
+<span class="keyword">fn</span> <span class="function">greet</span>(name: string) -&gt; string {
+    <span class="keyword">return</span> <span class="string">"Hello, "</span> + name
+}
+
+<span class="keyword">public</span> <span class="keyword">fn</span> <span class="function">main</span>() {
+    <span class="function">echo</span>(<span class="string">"Hello, Sino!"</span>)
+}
+
+<span class="keyword">fn</span> <span class="function">with_default</span>(a, b = <span class="number">10</span>) {
+    <span class="keyword">return</span> a + b
+}</code></pre>
+
+<h3 id="3-5-constant-declarations">3.5 Constant Declarations</h3>
+
+<pre><code class="code-ebnf">const_decl     = "const" identifier [ ":" type ] "=" expression ;</code></pre>
+
+<pre><code class="code-sino"><span class="keyword">const</span> PI = <span class="number">3.14159</span>
+<span class="keyword">const</span> MAX_SIZE: int = <span class="number">1024</span>
+<span class="keyword">const</span> GREETING = <span class="string">"Hello"</span></code></pre>
+
+<h3 id="3-6-variable-declarations">3.6 Variable Declarations</h3>
+
+<pre><code class="code-ebnf">var_decl       = identifier [ ":" type ] "=" expression ;</code></pre>
+
+<p>Variables are declared by assignment. The type is inferred from the right-hand side expression unless an explicit type annotation is provided. A variable declared without an initial value must have an explicit type annotation.</p>
+
+<pre><code class="code-sino">name = <span class="string">"Sino"</span>
+age = <span class="number">20</span>
+price = <span class="number">99.99</span>
+active = <span class="keyword">true</span>
+
+<span class=<span class="string">"comment"</span>># Explicit type annotation</span>
+count: int = <span class="number">0</span>
+label: string = <span class="string">"default"</span></code></pre>
+
+<h3 id="3-7-struct-declarations">3.7 Struct Declarations</h3>
+
+<pre><code class="code-ebnf">struct_decl    = [ visibility ] "struct" identifier
+                  "{" { field_decl } "}" ;
+
+field_decl     = [ visibility ] identifier ":" type ;</code></pre>
+
+<pre><code class="code-sino"><span class="keyword">struct</span> User {
+    name: string
+    age: int
+    email: string
+}
+
+<span class="keyword">struct</span> Point {
+    x: float
+    y: float
+}</code></pre>
+
+<h3 id="3-8-enum-declarations">3.8 Enum Declarations</h3>
+
+<pre><code class="code-ebnf">enum_decl      = [ visibility ] "enum" identifier
+                  "{" { identifier } "}" ;</code></pre>
+
+<pre><code class="code-sino"><span class="keyword">enum</span> Color {
+    Red
+    Green
+    Blue
+}
+
+<span class="keyword">enum</span> Status {
+    Pending
+    Active
+    Closed
+}</code></pre>
+
+<h3 id="3-9-trait-declarations">3.9 Trait Declarations</h3>
+
+<pre><code class="code-ebnf">trait_decl     = [ visibility ] "trait" identifier
+                  "{" { fn_signature } "}" ;
+
+fn_signature   = "fn" identifier "(" [ param_list ] ")"
+                  [ "-&gt;" type ] ;</code></pre>
+
+<pre><code class="code-sino"><span class="keyword">trait</span> Drawable {
+    <span class="keyword">fn</span> <span class="function">draw</span>()
+    <span class="keyword">fn</span> <span class="function">area</span>() -&gt; float
+}
+
+<span class="keyword">trait</span> Serializable {
+    <span class="keyword">fn</span> <span class="function">serialize</span>() -&gt; string
+    <span class="keyword">fn</span> <span class="function">deserialize</span>(data: string)
+}</code></pre>
+
+<h3 id="3-10-impl-declarations">3.10 Impl Declarations</h3>
+
+<pre><code class="code-ebnf">impl_decl      = "impl" identifier "for" identifier
+                  "{" { fn_decl } "}" ;</code></pre>
+
+<pre><code class="code-sino"><span class="keyword">impl</span> Drawable <span class="keyword">for</span> Circle {
+    <span class="keyword">fn</span> <span class="function">draw</span>() {
+        <span class="function">echo</span>(<span class="string">"Drawing circle"</span>)
+    }
+
+    <span class="keyword">fn</span> <span class="function">area</span>() -&gt; float {
+        <span class="keyword">return</span> <span class="number">3.14159</span> * radius * radius
+    }
+}</code></pre>
+
+<h3 id="3-11-statements">3.11 Statements</h3>
+
+<pre><code class="code-ebnf">statement      = var_decl
+                | assignment
+                | if_stmt
+                | while_stmt
+                | for_stmt
+                | match_stmt
+                | return_stmt
+                | break_stmt
+                | continue_stmt
+                | try_stmt
+                | defer_stmt
+                | throw_stmt
+                | expression_stmt ;
+
+assignment     = identifier ( "=" | "+=" | "-=" | "*=" | "/=" | "%=" )
+                  expression ;
+
+expression_stmt = expression ;</code></pre>
+
+<h3 id="3-12-control-flow-statements">3.12 Control Flow Statements</h3>
+
+<pre><code class="code-ebnf">if_stmt        = "if" expression block
+                  { "else" "if" expression block }
+                  [ "else" block ] ;
+
+while_stmt     = "while" expression block ;
+
+for_stmt       = "for" identifier "in" expression block
+                | "for" [ assignment ] ";"
+                  [ expression ] ";"
+                  [ assignment ] block ;
+
+match_stmt     = "match" expression "{" { match_arm } "}" ;
+
+match_arm      = ( pattern | "_" ) "=&gt;" ( block | expression ) ;
+
+return_stmt    = "return" [ expression ] ;
+
+break_stmt     = "break" ;
+
+continue_stmt  = "continue" ;
+
+try_stmt       = "try" block
+                  [ "catch" [ identifier ] block ] ;
+
+defer_stmt     = "defer" block ;
+
+throw_stmt     = "throw" expression ;</code></pre>
+
+<h3 id="3-13-expressions">3.13 Expressions</h3>
+
+<pre><code class="code-ebnf">expression     = logical_or ;
+
+logical_or     = logical_and { "or" logical_and } ;
+
+logical_and    = equality { "and" equality } ;
+
+equality       = comparison { ( "==" | "!=" ) comparison } ;
+
+comparison     = addition { ( "&lt;" | "&gt;" | "&lt;=" | "&gt;=" ) addition } ;
+
+addition       = multiplication { ( "+" | "-" ) multiplication } ;
+
+multiplication = power { ( "*" | "/" | "%" ) power } ;
+
+power          = unary { "**" unary } ;
+
+unary          = ( "!" | "-" | "not" ) unary
+                | postfix ;
+
+postfix        = primary { call_or_access } ;
+
+call_or_access = "(" [ arg_list ] ")"
+                | "[" expression "]"
+                | "." identifier [ "(" [ arg_list ] ")" ] ;
+
+primary        = integer_lit
+                | float_lit
+                | string_lit
+                | "true"
+                | "false"
+                | "null"
+                | identifier
+                | "(" expression ")"
+                | array_lit
+                | fn_expr
+                | struct_lit ;
+
+arg_list       = expression { "," expression } ;
+
+array_lit      = "[" [ arg_list ] "]" ;
+
+fn_expr        = "fn" "(" [ param_list ] ")" [ "-&gt;" type ] block ;
+
+struct_lit     = identifier "{" { field_init } "}" ;
+
+field_init     = identifier ":" expression { "," identifier ":" expression } ;</code></pre>
+
+<h3 id="3-14-patterns">3.14 Patterns</h3>
+
+<pre><code class="code-ebnf">pattern        = literal_pattern
+                | identifier_pattern
+                | wildcard_pattern
+                | struct_pattern
+                | enum_pattern ;
+
+literal_pattern = integer_lit | float_lit | string_lit
+                  | "true" | "false" | "null" ;
+
+identifier_pattern = identifier ;
+
+wildcard_pattern = "_" ;
+
+struct_pattern = identifier "{" { field_pattern } "}" ;
+
+field_pattern  = identifier ":" pattern ;
+
+enum_pattern   = identifier "::" identifier ;</code></pre>
+
+<h3 id="3-15-types">3.15 Types</h3>
+
+<pre><code class="code-ebnf">type           = primitive_type
+                | identifier
+                | array_type
+                | map_type
+                | tuple_type
+                | fn_type ;
+
+primitive_type = "int" | "int8" | "int16" | "int32" | "int64"
+                | "uint" | "uint8" | "uint16" | "uint32" | "uint64"
+                | "float" | "float32" | "float64"
+                | "bool" | "char" | "string" | "byte" ;
+
+array_type     = "[" type "]" ;
+
+map_type       = "map" "[" type "," type "]" ;
+
+tuple_type     = "(" type { "," type } ")" ;
+
+fn_type        = "fn" "(" [ type_list ] ")" [ "-&gt;" type ] ;
+
+type_list      = type { "," type } ;</code></pre>
+
+<hr>
+
+<h2 id="4-type-system">4. Type System</h2>
+
+<p>Sino employs a static, strong type system with automatic type inference. Types are checked at compile time, preventing type errors before runtime. Type annotations are optional in most contexts — the compiler infers types from usage. This chapter defines all types in Sino, the inference algorithm, and the rules governing type compatibility.</p>
+
+<h3 id="4-1-primitive-types">4.1 Primitive Types</h3>
+
+<p>Sino provides the following primitive types. Each has a fixed size and representation.</p>
+
+<table>
+<thead><tr>
+<th>Type</th>
+<th>Size</th>
+<th>Range</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>int8</code></td>
+<td>1 byte</td>
+<td>-128 to 127</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>int16</code></td>
+<td>2 bytes</td>
+<td>-32768 to 32767</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>int32</code></td>
+<td>4 bytes</td>
+<td>-2147483648 to 2147483647</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>int64</code></td>
+<td>8 bytes</td>
+<td>-9223372036854775808 to 9223372036854775807</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>8 bytes (64-bit) / 4 bytes (32-bit)</td>
+<td>Platform-dependent</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>uint8</code></td>
+<td>1 byte</td>
+<td>0 to 255</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>uint16</code></td>
+<td>2 bytes</td>
+<td>0 to 65535</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>uint32</code></td>
+<td>4 bytes</td>
+<td>0 to 4294967295</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>uint64</code></td>
+<td>8 bytes</td>
+<td>0 to 18446744073709551615</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>uint</code></td>
+<td>8 bytes (64-bit) / 4 bytes (32-bit)</td>
+<td>Platform-dependent</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>float32</code></td>
+<td>4 bytes</td>
+<td>IEEE 754 single precision</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td><code>float64</code></td>
+<td>8 bytes</td>
+<td>IEEE 754 double precision</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>8 bytes</td>
+<td>Alias for float64</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td>1 byte</td>
+<td>true or false</td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>char</code></td>
+<td>4 bytes</td>
+<td>Unicode code point (U+0000 to U+10FFFF)</td>
+<td>U+0000</td>
+</tr>
+<tr>
+<td><code>byte</code></td>
+<td>1 byte</td>
+<td>0 to 255 (unsigned)</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>string</code></td>
+<td>variable</td>
+<td>UTF-8 encoded byte sequence</td>
+<td>""</td>
+</tr>
+</tbody></table>
+
+<h3 id="4-2-integer-type-inference">4.2 Integer Type Inference</h3>
+
+<p>Integer literals are inferred as <code>int</code> by default. If the literal exceeds the range of <code>int</code>, the type is promoted to <code>int64</code>. If the literal is negative and exceeds <code>int64</code>, the compiler reports an error (SN1008). When an integer literal is assigned to a variable with an explicit narrower type annotation, the literal is checked against that type's range.</p>
+
+<pre><code class="code-sino">x = <span class="number">42</span>           <span class=<span class="string">"comment"</span>># inferred <span class="keyword">as</span> int</span>
+y = 0xFF         <span class=<span class="string">"comment"</span>># inferred <span class="keyword">as</span> int</span>
+z: int8 = <span class="number">100</span>    <span class=<span class="string">"comment"</span>># explicitly int8</span>
+big = <span class="number">9999999999</span> <span class=<span class="string">"comment"</span>># inferred <span class="keyword">as</span> <span class="function">int64</span>(exceeds int range on <span class="number">32</span>-bit)</span></code></pre>
+
+<h3 id="4-3-float-type-inference">4.3 Float Type Inference</h3>
+
+<p>Float literals are inferred as <code>float64</code> (aliased as <code>float</code>). If a float literal is assigned to a variable with an explicit <code>float32</code> annotation, the literal is checked for precision loss.</p>
+
+<h3 id="4-4-boolean-type">4.4 Boolean Type</h3>
+
+<p>The <code>bool</code> type represents truth values. The only valid values are <code>true</code> and <code>false</code>. Boolean values are produced by comparison operators (<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>) and logical operators (<code>and</code>, <code>or</code>, <code>not</code>). Boolean values cannot be implicitly converted to or from integers.</p>
+
+<h3 id="4-5-string-type">4.5 String Type</h3>
+
+<p>The <code>string</code> type represents immutable UTF-8 encoded text. Strings support concatenation with the <code>+</code> operator. Strings have a length property accessible via the built-in <code>len()</code> function. Individual characters cannot be accessed via indexing — use the <code>char_at()</code> method or iterate with a for-in loop. String comparison uses lexicographic ordering based on UTF-8 byte sequences.</p>
+
+<pre><code class="code-sino">name = <span class="string">"Sino"</span>
+greeting = <span class="string">"Hello, "</span> + name
+length = <span class="function">len</span>(name)  <span class=<span class="string">"comment"</span>># <span class="number">4</span></span>
+
+<span class="keyword">for</span> ch <span class="keyword">in</span> name {
+    <span class="function">echo</span>(ch)
+}</code></pre>
+
+<h3 id="4-6-collection-types">4.6 Collection Types</h3>
+
+<h4>4.6.1 Array</h4>
+
+<p>Arrays are ordered, mutable collections of elements of the same type. Arrays are dynamically sized — they can grow and shrink at runtime. Array elements are accessed via zero-based indexing with square brackets. Arrays support <code>push()</code>, <code>pop()</code>, <code>len()</code>, and iteration with for-in.</p>
+
+<pre><code class="code-sino">nums = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+first = nums[<span class="number">0</span>]    <span class=<span class="string">"comment"</span>># <span class="number">1</span></span>
+nums.<span class="function">push</span>(<span class="number">6</span>)       <span class=<span class="string">"comment"</span>># nums is now [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]</span>
+last = nums.<span class="function">pop</span>()  <span class=<span class="string">"comment"</span>># last = <span class="number">6</span>, nums is [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]</span>
+count = <span class="function">len</span>(nums)  <span class=<span class="string">"comment"</span>># <span class="number">5</span></span></code></pre>
+
+<h4>4.6.2 Vector</h4>
+
+<p>Vectors are contiguous growable arrays, similar to arrays but with guaranteed contiguous memory layout. Vectors are preferred for numeric computations and FFI. Vectors support the same operations as arrays plus capacity management.</p>
+
+<h4>4.6.3 Map</h4>
+
+<p>Maps are unordered collections of key-value pairs. Keys and values can be of any type. Map keys must be hashable (implement the Hash trait). Maps support insertion, lookup, deletion, and iteration.</p>
+
+<pre><code class="code-sino">ages = map {
+    <span class="string">"Alice"</span>: <span class="number">30</span>,
+    <span class="string">"Bob"</span>: <span class="number">25</span>,
+    <span class="string">"Carol"</span>: <span class="number">35</span>
+}
+
+alice_age = ages[<span class="string">"Alice"</span>]  <span class=<span class="string">"comment"</span>># <span class="number">30</span></span>
+ages[<span class="string">"Dave"</span>] = <span class="number">40</span>          <span class=<span class="string">"comment"</span>># add new entry</span>
+<span class="function">delete</span>(ages, <span class="string">"Bob"</span>)        <span class=<span class="string">"comment"</span>># remove entry</span></code></pre>
+
+<h4>4.6.4 Set</h4>
+
+<p>Sets are unordered collections of unique values. Set elements must be hashable. Sets support membership testing, union, intersection, and difference.</p>
+
+<h4>4.6.5 Tuple</h4>
+
+<p>Tuples are fixed-size, heterogeneous collections. Tuple elements can be of different types. Tuples are immutable. Tuple elements are accessed by position using dot notation.</p>
+
+<pre><code class="code-sino">point = (<span class="number">10</span>, <span class="number">20</span>)
+x = point.<span class="number">0</span>  <span class=<span class="string">"comment"</span>># <span class="number">10</span></span>
+y = point.<span class="number">1</span>  <span class=<span class="string">"comment"</span>># <span class="number">20</span></span>
+
+person = (<span class="string">"Alice"</span>, <span class="number">30</span>, <span class="keyword">true</span>)
+name = person.<span class="number">0</span>  <span class=<span class="string">"comment"</span>># <span class="string">"Alice"</span></span></code></pre>
+
+<h3 id="4-7-type-inference-algorithm">4.7 Type Inference Algorithm</h3>
+
+<p>Sino uses a bidirectional type inference algorithm. The algorithm works in two phases: type synthesis (bottom-up) and type checking (top-down). In synthesis mode, the type of an expression is determined from its sub-expressions. In checking mode, an expected type is pushed down from the context and the expression is checked against it. This allows the compiler to infer types in most situations without requiring explicit annotations.</p>
+
+<h4>4.7.1 Variable Declaration Inference</h4>
+
+<p>When a variable is declared with <code>name = expression</code> and no type annotation, the type is synthesized from the expression:</p>
+
+<pre><code class="code-sino">x = <span class="number">42</span>         <span class=<span class="string">"comment"</span>># <span class="function">int</span>(synthesized from integer literal)</span>
+y = <span class="number">3.14</span>       <span class=<span class="string">"comment"</span>># <span class="function">float</span>(synthesized from float literal)</span>
+z = <span class="string">"hello"</span>    <span class=<span class="string">"comment"</span>># string</span>
+flag = <span class="keyword">true</span>    <span class=<span class="string">"comment"</span>># bool</span>
+items = [<span class="number">1</span>, <span class="number">2</span>] <span class=<span class="string">"comment"</span>># [int] (element type inferred from first element)</span>
+pair = (<span class="number">1</span>, <span class="string">"a"</span>) <span class=<span class="string">"comment"</span>># (int, string)</span></code></pre>
+
+<h4>4.7.2 Function Return Type Inference</h4>
+
+<p>If a function declaration omits the return type annotation, the compiler infers the return type from the return statements in the function body. All return statements must return values of compatible types. If the function has no return statements, the return type is void (unit).</p>
+
+<h4>4.7.3 Generic Type Inference</h4>
+
+<p>When calling a generic function, type parameters are inferred from the argument types. If inference is ambiguous, the programmer must provide explicit type arguments.</p>
+
+<h3 id="4-8-type-compatibility">4.8 Type Compatibility</h3>
+
+<p>Types are compatible if they are identical, or if an implicit conversion exists between them. Sino allows implicit widening conversions between numeric types where no precision is lost. Narrowing conversions require explicit casts.</p>
+
+<table>
+<thead><tr>
+<th>From</th>
+<th>To</th>
+<th>Conversion</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>int8</code></td>
+<td><code>int16 / int32 / int64</code></td>
+<td>Implicit (widening)</td>
+</tr>
+<tr>
+<td><code>int16</code></td>
+<td><code>int32 / int64</code></td>
+<td>Implicit (widening)</td>
+</tr>
+<tr>
+<td><code>int32</code></td>
+<td><code>int64</code></td>
+<td>Implicit (widening)</td>
+</tr>
+<tr>
+<td><code>uint8</code></td>
+<td><code>uint16 / uint32 / uint64</code></td>
+<td>Implicit (widening)</td>
+</tr>
+<tr>
+<td><code>float32</code></td>
+<td><code>float64</code></td>
+<td>Implicit (widening)</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td><code>float</code></td>
+<td>Implicit (widening)</td>
+</tr>
+<tr>
+<td><code>int64</code></td>
+<td><code>int32</code></td>
+<td>Explicit cast required</td>
+</tr>
+<tr>
+<td><code>float64</code></td>
+<td><code>float32</code></td>
+<td>Explicit cast required (may lose precision)</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td><code>int</code></td>
+<td>Explicit cast required (truncates)</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td><code>uint</code></td>
+<td>Explicit cast required (may change sign)</td>
+</tr>
+</tbody></table>
+
+<h3 id="4-9-explicit-type-casts">4.9 Explicit Type Casts</h3>
+
+<p>Explicit type casts use the target type as a function call. Casts that would lose data emit a warning (SN2003) unless suppressed.</p>
+
+<pre><code class="code-sino">x = <span class="number">3.99</span>
+y = <span class="function">int</span>(x)        <span class=<span class="string">"comment"</span>># <span class="number">3</span> (truncates)</span>
+
+n = <span class="number">65</span>
+c = <span class="function">char</span>(n)       <span class=<span class="string">"comment"</span>># 'A'</span>
+
+s = <span class="string">"<span class="number">42</span>"</span>
+num = <span class="function">int</span>(s)      <span class=<span class="string">"comment"</span>># <span class="number">42</span> (parses string)</span>
+
+big = <span class="number">1000</span>
+small = <span class="function">int8</span>(big) <span class=<span class="string">"comment"</span>># SN2003 warning: narrowing cast may lose data</span></code></pre>
+
+<h3 id="4-10-nullable-types">4.10 Nullable Types</h3>
+
+<p>By default, all types are non-nullable. A variable of type <code>T</code> cannot hold the value <code>null</code>. To allow null, use the optional type modifier: <code>T?</code> (read as "T or null"). Nullable types must be checked before access using pattern matching or the null-coalescing operator.</p>
+
+<pre><code class="code-sino">name: string? = <span class="keyword">null</span>
+
+<span class="keyword">if</span> name != <span class="keyword">null</span> {
+    <span class="function">echo</span>(<span class="string">"Hello, "</span> + name)
+} <span class="keyword">else</span> {
+    <span class="function">echo</span>(<span class="string">"No name provided"</span>)
+}
+
+<span class=<span class="string">"comment"</span>># Null-coalescing operator</span>
+display = name ?? <span class="string">"Anonymous"</span></code></pre>
+
+<hr>
+
+<h2 id="5-variables-and-constants">5. Variables and Constants</h2>
+
+<h3 id="5-1-variable-declaration">5.1 Variable Declaration</h3>
+
+<p>Variables in Sino are declared by assignment. The syntax <code>name = expression</code> creates a new variable in the current scope, infers its type from the expression, and binds the value. A variable must be declared before it is used. Redeclaring a variable in the same scope shadows the previous declaration and emits a warning (SN2002).</p>
+
+<pre><code class="code-sino">name = <span class="string">"Sino"</span>
+age = <span class="number">20</span>
+price = <span class="number">99.99</span>
+active = <span class="keyword">true</span></code></pre>
+
+<h3 id="5-2-explicit-type-annotations">5.2 Explicit Type Annotations</h3>
+
+<p>An explicit type annotation can be provided using the colon syntax: <code>name: type = expression</code>. The expression's type must be compatible with the annotated type. If the types are incompatible, the compiler reports an error (SN1003).</p>
+
+<pre><code class="code-sino">count: int = <span class="number">0</span>
+label: string = <span class="string">"default"</span>
+ratio: float = <span class="number">3.14</span>
+flag: bool = <span class="keyword">true</span></code></pre>
+
+<h3 id="5-3-variable-assignment">5.3 Variable Assignment</h3>
+
+<p>An existing variable can be reassigned using the <code>=</code> operator. The new value must be type-compatible with the variable's declared type. Compound assignment operators (<code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>) combine an arithmetic operation with assignment.</p>
+
+<pre><code class="code-sino">x = <span class="number">10</span>
+x = <span class="number">20</span>          <span class=<span class="string">"comment"</span>># reassignment</span>
+x += <span class="number">5</span>          <span class=<span class="string">"comment"</span>># x is now <span class="number">25</span></span>
+x -= <span class="number">10</span>         <span class=<span class="string">"comment"</span>># x is now <span class="number">15</span></span>
+x *= <span class="number">2</span>          <span class=<span class="string">"comment"</span>># x is now <span class="number">30</span></span>
+x /= <span class="number">3</span>          <span class=<span class="string">"comment"</span>># x is now <span class="number">10</span></span>
+x %= <span class="number">3</span>          <span class=<span class="string">"comment"</span>># x is now <span class="number">1</span></span></code></pre>
+
+<h3 id="5-4-constant-declaration">5.4 Constant Declaration</h3>
+
+<p>Constants are declared with the <code>const</code> keyword. Constants must be initialized at declaration with a value that is a compile-time constant. Constants cannot be reassigned after declaration. Attempted reassignment of a constant produces an error (SN1004).</p>
+
+<pre><code class="code-sino"><span class="keyword">const</span> PI = <span class="number">3.14159</span>
+<span class="keyword">const</span> MAX_SIZE = <span class="number">1024</span>
+<span class="keyword">const</span> GREETING = <span class="string">"Hello, Sino!"</span>
+<span class="keyword">const</span> BUFFER_SIZE: int = <span class="number">4096</span></code></pre>
+
+<h3 id="5-5-scope-rules">5.5 Scope Rules</h3>
+
+<p>Sino uses lexical scoping. A variable's scope is the block in which it is declared, from the point of declaration to the end of the block. Variables declared in an inner block shadow variables with the same name in outer blocks. Variables declared in a block are not accessible outside that block.</p>
+
+<pre><code class="code-sino">x = <span class="number">10</span>  <span class=<span class="string">"comment"</span>># outer x</span>
+
+<span class="keyword">if</span> <span class="keyword">true</span> {
+    x = <span class="number">20</span>      <span class=<span class="string">"comment"</span>># modifies outer x</span>
+    y = <span class="number">30</span>      <span class=<span class="string">"comment"</span>># y is local to this block</span>
+    <span class="function">echo</span>(x, y)  <span class=<span class="string">"comment"</span>># <span class="number">20</span> <span class="number">30</span></span>
+}
+
+<span class="function">echo</span>(x)  <span class=<span class="string">"comment"</span>># <span class="number">20</span></span>
+<span class=<span class="string">"comment"</span>># <span class="function">echo</span>(y)  # SN1001: y is <span class="keyword">not</span> defined here</span></code></pre>
+
+<h3 id="5-6-block-scopes">5.6 Block Scopes</h3>
+
+<p>The following constructs introduce new scopes:</p>
+
+<table>
+<thead><tr>
+<th>Construct</th>
+<th>Scope Behavior</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Function body</td>
+<td>Variables declared inside a function are local to that function.</td>
+</tr>
+<tr>
+<td>If/else blocks</td>
+<td>Each if and else block has its own scope.</td>
+</tr>
+<tr>
+<td>While loops</td>
+<td>Each iteration creates a new scope for the loop body.</td>
+</tr>
+<tr>
+<td>For loops</td>
+<td>The loop variable and variables in the body are scoped to the loop.</td>
+</tr>
+<tr>
+<td>Match arms</td>
+<td>Each match arm has its own scope.</td>
+</tr>
+<tr>
+<td>Try/catch blocks</td>
+<td>The try and catch blocks each have their own scope.</td>
+</tr>
+<tr>
+<td>Defer blocks</td>
+<td>Defer blocks have their own scope, capturing variables by value.</td>
+</tr>
+</tbody></table>
+
+<h3 id="5-7-lifetime">5.7 Lifetime</h3>
+
+<p>A variable's lifetime is the duration for which it is valid and accessible. Variables declared on the stack are destroyed when their scope exits. Variables allocated on the heap (via dynamic allocation) are managed by the garbage collector. The compiler tracks lifetimes to prevent use-after-free and dangling reference errors.</p>
+
+<h3 id="5-8-mutability">5.8 Mutability</h3>
+
+<p>By default, all variables are mutable — their values can be changed after declaration. Constants declared with <code>const</code> are immutable. Struct fields are mutable by default but can be made immutable using the <code>const</code> modifier on the field declaration. Function parameters are mutable by default — the function can reassign them locally without affecting the caller's variables.</p>
+
+<hr>
+
+<h2 id="6-functions">6. Functions</h2>
+
+<h3 id="6-1-function-declaration">6.1 Function Declaration</h3>
+
+<p>Functions are declared with the <code>fn</code> keyword followed by a name, parameter list, optional return type, and body block. Functions are first-class values — they can be assigned to variables, passed as arguments, and returned from other functions. A function declaration introduces the function name into the enclosing scope.</p>
+
+<pre><code class="code-sino"><span class="keyword">fn</span> <span class="function">add</span>(a, b) {
+    <span class="keyword">return</span> a + b
+}
+
+<span class="keyword">fn</span> <span class="function">greet</span>(name: string) -&gt; string {
+    <span class="keyword">return</span> <span class="string">"Hello, "</span> + name
+}
+
+<span class="keyword">fn</span> <span class="function">print_message</span>(msg: string) {
+    <span class="function">echo</span>(msg)
+}</code></pre>
+
+<h3 id="6-2-parameters">6.2 Parameters</h3>
+
+<p>Parameters are declared as a comma-separated list of names with optional type annotations. Parameters with type annotations are checked at the call site. Parameters without annotations use type inference from the call site. Default parameter values can be specified with the <code>=</code> syntax.</p>
+
+<pre><code class="code-sino"><span class="keyword">fn</span> <span class="function">compute</span>(a: int, b: int, op: string = <span class="string">"add"</span>) {
+    <span class="keyword">if</span> op == <span class="string">"add"</span> {
+        <span class="keyword">return</span> a + b
+    }
+    <span class="keyword">return</span> a * b
+}
+
+result1 = <span class="function">compute</span>(<span class="number">2</span>, <span class="number">3</span>)              <span class=<span class="string">"comment"</span>># <span class="number">5</span> (uses default op)</span>
+result2 = <span class="function">compute</span>(<span class="number">2</span>, <span class="number">3</span>, <span class="string">"multiply"</span>)  <span class=<span class="string">"comment"</span>># <span class="number">6</span></span></code></pre>
+
+<h3 id="6-3-return-values">6.3 Return Values</h3>
+
+<p>Functions return values using the <code>return</code> statement. If a function has a declared return type, the return expression must be type-compatible. If no return type is declared, the compiler infers it from the return statements. A function with no return statement returns <code>null</code> (the unit value). A return statement with no expression returns <code>null</code>.</p>
+
+<h3 id="6-4-anonymous-functions">6.4 Anonymous Functions</h3>
+
+<p>Anonymous functions (lambdas) are declared with <code>fn</code> followed by a parameter list and body, without a name. Anonymous functions can be assigned to variables, passed as arguments, or returned from functions. Anonymous functions capture variables from their enclosing scope by reference (closures).</p>
+
+<pre><code class="code-sino">add = <span class="keyword">fn</span>(a, b) {
+    <span class="keyword">return</span> a + b
+}
+
+result = <span class="function">add</span>(<span class="number">3</span>, <span class="number">4</span>)  <span class=<span class="string">"comment"</span>># <span class="number">7</span></span>
+
+<span class=<span class="string">"comment"</span>># Inline anonymous function <span class="keyword">as</span> argument</span>
+nums = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+doubled = <span class="function">map</span>(nums, <span class="keyword">fn</span>(x) { <span class="keyword">return</span> x * <span class="number">2</span> })</code></pre>
+
+<h3 id="6-5-closures">6.5 Closures</h3>
+
+<p>A closure is a function that captures variables from its enclosing scope. Closures capture variables by reference — modifications to captured variables inside the closure affect the outer scope. Closures can outlive the scope in which they were created; captured variables remain valid as long as the closure exists.</p>
+
+<pre><code class="code-sino"><span class="keyword">fn</span> <span class="function">make_counter</span>() {
+    count = <span class="number">0</span>
+    <span class="keyword">return</span> <span class="keyword">fn</span>() {
+        count += <span class="number">1</span>
+        <span class="keyword">return</span> count
+    }
+}
+
+counter = <span class="function">make_counter</span>()
+<span class="function">echo</span>(<span class="function">counter</span>())  <span class=<span class="string">"comment"</span>># <span class="number">1</span></span>
+<span class="function">echo</span>(<span class="function">counter</span>())  <span class=<span class="string">"comment"</span>># <span class="number">2</span></span>
+<span class="function">echo</span>(<span class="function">counter</span>())  <span class=<span class="string">"comment"</span>># <span class="number">3</span></span></code></pre>
+
+<h3 id="6-6-higher-order-functions">6.6 Higher-Order Functions</h3>
+
+<p>Higher-order functions are functions that take other functions as parameters or return functions. Sino supports higher-order functions natively. The standard library provides common higher-order functions like <code>map</code>, <code>filter</code>, and <code>reduce</code>.</p>
+
+<pre><code class="code-sino"><span class="keyword">fn</span> <span class="function">apply</span>(f, x) {
+    <span class="keyword">return</span> <span class="function">f</span>(x)
+}
+
+double = <span class="keyword">fn</span>(x) { <span class="keyword">return</span> x * <span class="number">2</span> }
+result = <span class="function">apply</span>(double, <span class="number">5</span>)  <span class=<span class="string">"comment"</span>># <span class="number">10</span></span></code></pre>
+
+<h3 id="6-7-recursion">6.7 Recursion</h3>
+
+<p>Functions can call themselves recursively. Recursive functions must have a base case to terminate recursion. The compiler does not guarantee tail-call optimization; deep recursion may cause stack overflow. For guaranteed stack-safe recursion, use the trampoline pattern or iterative loops.</p>
+
+<pre><code class="code-sino"><span class="keyword">fn</span> <span class="function">factorial</span>(n) {
+    <span class="keyword">if</span> n &lt;= <span class="number">1</span> {
+        <span class="keyword">return</span> <span class="number">1</span>
+    }
+    <span class="keyword">return</span> n * <span class="function">factorial</span>(n - <span class="number">1</span>)
+}
+
+<span class="keyword">fn</span> <span class="function">fibonacci</span>(n) {
+    <span class="keyword">if</span> n &lt;= <span class="number">1</span> {
+        <span class="keyword">return</span> n
+    }
+    <span class="keyword">return</span> <span class="function">fibonacci</span>(n - <span class="number">1</span>) + <span class="function">fibonacci</span>(n - <span class="number">2</span>)
+}
+
+<span class="function">echo</span>(<span class="function">factorial</span>(<span class="number">5</span>))    <span class=<span class="string">"comment"</span>># <span class="number">120</span></span>
+<span class="function">echo</span>(<span class="function">fibonacci</span>(<span class="number">10</span>))   <span class=<span class="string">"comment"</span>># <span class="number">55</span></span></code></pre>
+
+<h3 id="6-8-function-visibility">6.8 Function Visibility</h3>
+
+<p>Functions can be declared with <code>public</code> or <code>private</code> visibility. Public functions are accessible from other modules that import the declaring module. Private functions are only accessible within the declaring module. If no visibility modifier is specified, the function is private by default.</p>
+
+<pre><code class="code-sino"><span class="keyword">public</span> <span class="keyword">fn</span> <span class="function">api_function</span>() {
+    <span class="function">echo</span>(<span class="string">"This is <span class="keyword">public</span>"</span>)
+    <span class="function">helper</span>()
+}
+
+<span class="keyword">private</span> <span class="keyword">fn</span> <span class="function">helper</span>() {
+    <span class="function">echo</span>(<span class="string">"This is <span class="keyword">private</span>"</span>)
+}</code></pre>
+
+<hr>
+
+<h2 id="7-control-flow">7. Control Flow</h2>
+
+<h3 id="7-1-if-statements">7.1 If Statements</h3>
+
+<p>The <code>if</code> statement conditionally executes a block based on a boolean expression. An optional <code>else</code> block executes when the condition is false. Multiple conditions can be chained using <code>else if</code>. The condition expression must evaluate to a <code>bool</code>; implicit truthiness is not supported.</p>
+
+<pre><code class="code-sino">age = <span class="number">20</span>
+
+<span class="keyword">if</span> age &gt;= <span class="number">18</span> {
+    <span class="function">echo</span>(<span class="string">"Adult"</span>)
+} <span class="keyword">else</span> <span class="keyword">if</span> age &gt;= <span class="number">13</span> {
+    <span class="function">echo</span>(<span class="string">"Teenager"</span>)
+} <span class="keyword">else</span> {
+    <span class="function">echo</span>(<span class="string">"Child"</span>)
+}</code></pre>
+
+<h3 id="7-2-while-loops">7.2 While Loops</h3>
+
+<p>The <code>while</code> loop repeatedly executes a block as long as a condition is true. The condition is evaluated before each iteration. If the condition is initially false, the block is never executed. The <code>break</code> statement exits the loop early; the <code>continue</code> statement skips to the next iteration.</p>
+
+<pre><code class="code-sino">i = <span class="number">0</span>
+<span class="keyword">while</span> i &lt; <span class="number">10</span> {
+    <span class="keyword">if</span> i == <span class="number">5</span> {
+        <span class="keyword">break</span>
+    }
+    <span class="keyword">if</span> i % <span class="number">2</span> == <span class="number">0</span> {
+        i += <span class="number">1</span>
+        <span class="keyword">continue</span>
+    }
+    <span class="function">echo</span>(i)
+    i += <span class="number">1</span>
+}</code></pre>
+
+<h3 id="7-3-for-loops-c-style">7.3 For Loops (C-Style)</h3>
+
+<p>The C-style <code>for</code> loop has three parts separated by semicolons: an initializer, a condition, and an increment. The initializer executes once before the loop. The condition is evaluated before each iteration. The increment executes after each iteration. All three parts are optional.</p>
+
+<pre><code class="code-sino">sum = <span class="number">0</span>
+<span class="keyword">for</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i += <span class="number">1</span> {
+    sum += i
+}
+<span class="function">echo</span>(sum)  <span class=<span class="string">"comment"</span>># <span class="number">45</span></span></code></pre>
+
+<h3 id="7-4-for-in-loops">7.4 For-In Loops</h3>
+
+<p>The <code>for-in</code> loop iterates over elements of a collection. It works with arrays, vectors, maps, sets, and any type implementing the Iterable trait. The loop variable is bound to each element in sequence. Modifying the collection during iteration produces undefined behavior.</p>
+
+<pre><code class="code-sino">fruits = [<span class="string">"apple"</span>, <span class="string">"banana"</span>, <span class="string">"cherry"</span>]
+<span class="keyword">for</span> fruit <span class="keyword">in</span> fruits {
+    <span class="function">echo</span>(fruit)
+}
+
+<span class=<span class="string">"comment"</span>># Iterating a map</span>
+ages = map { <span class="string">"Alice"</span>: <span class="number">30</span>, <span class="string">"Bob"</span>: <span class="number">25</span> }
+<span class="keyword">for</span> name <span class="keyword">in</span> ages {
+    <span class="function">echo</span>(name, ages[name])
+}</code></pre>
+
+<h3 id="7-5-match-statements">7.5 Match Statements</h3>
+
+<p>The <code>match</code> statement compares a value against a series of patterns and executes the first matching arm. Each arm consists of a pattern, the <code>=&gt;</code> operator, and a body (either a block or a single expression). The <code>_</code> pattern (wildcard) matches any value and serves as a default case. Match expressions must be exhaustive — if no default arm is provided, the compiler warns about non-exhaustive matching (SN2004).</p>
+
+<pre><code class="code-sino">x = <span class="number">2</span>
+
+<span class="keyword">match</span> x {
+    <span class="number">1</span> =&gt; <span class="function">echo</span>(<span class="string">"One"</span>)
+    <span class="number">2</span> =&gt; <span class="function">echo</span>(<span class="string">"Two"</span>)
+    <span class="number">3</span> =&gt; <span class="function">echo</span>(<span class="string">"Three"</span>)
+    _ =&gt; <span class="function">echo</span>(<span class="string">"Other"</span>)
+}</code></pre>
+
+<h3 id="7-6-break-and-continue">7.6 Break and Continue</h3>
+
+<p>The <code>break</code> statement immediately exits the enclosing loop. The <code>continue</code> statement skips the rest of the current iteration and proceeds to the next. Both statements only affect the innermost loop. Using <code>break</code> or <code>continue</code> outside a loop is a compile error (SN1005).</p>
+
+<h3 id="7-7-return">7.7 Return</h3>
+
+<p>The <code>return</code> statement exits the current function and optionally returns a value. A <code>return</code> without an expression returns <code>null</code>. Using <code>return</code> outside a function is a compile error (SN1006).</p>
+
+<h3 id="7-8-defer">7.8 Defer</h3>
+
+<p>The <code>defer</code> statement schedules a block to execute when the enclosing function returns, regardless of how the function exits (normal return, error, or panic). Deferred blocks execute in last-in-first-out (LIFO) order. Defer is commonly used for resource cleanup (closing files, releasing locks).</p>
+
+<pre><code class="code-sino"><span class="keyword">fn</span> <span class="function">process_file</span>(path) {
+    file = <span class="function">open</span>(path)
+    <span class="keyword">defer</span> {
+        <span class="function">close</span>(file)
+    }
+
+    <span class=<span class="string">"comment"</span>># Process file contents</span>
+    data = <span class="function">read</span>(file)
+    <span class="keyword">return</span> <span class="function">parse</span>(data)
+    <span class=<span class="string">"comment"</span>># <span class="function">close</span>(file) executes here, before function returns</span>
+}</code></pre>
+
+<hr>
+
+<h2 id="8-composite-types">8. Composite Types</h2>
+
+<h3 id="8-1-struct">8.1 Struct</h3>
+
+<p>A struct is a composite data type that groups named fields. Structs are declared with the <code>struct</code> keyword followed by a name and a block containing field declarations. Each field has a name and a type. Struct instances are created with struct literals that specify field values.</p>
+
+<pre><code class="code-sino"><span class="keyword">struct</span> User {
+    name: string
+    age: int
+    email: string
+}
+
+user = User {
+    name: <span class="string">"Alice"</span>
+    age: <span class="number">30</span>
+    email: <span class="string">"alice@example.com"</span>
+}
+
+<span class="function">echo</span>(user.name)  <span class=<span class="string">"comment"</span>># Alice</span>
+<span class="function">echo</span>(user.age)   <span class=<span class="string">"comment"</span>># <span class="number">30</span></span></code></pre>
+
+<h3 id="8-2-enum">8.2 Enum</h3>
+
+<p>An enum is a type that can hold one of several named variants. Enums are declared with the <code>enum</code> keyword followed by a name and a block listing the variants. Enum variants are accessed using the <code>::</code> operator. Enums are commonly used with match statements for exhaustive handling.</p>
+
+<pre><code class="code-sino"><span class="keyword">enum</span> Color {
+    Red
+    Green
+    Blue
+}
+
+<span class="keyword">enum</span> Status {
+    Pending
+    Active
+    Closed
+}
+
+c = Color::Red
+<span class="keyword">match</span> c {
+    Color::Red =&gt; <span class="function">echo</span>(<span class="string">"Red"</span>)
+    Color::Green =&gt; <span class="function">echo</span>(<span class="string">"Green"</span>)
+    Color::Blue =&gt; <span class="function">echo</span>(<span class="string">"Blue"</span>)
+}</code></pre>
+
+<h3 id="8-3-trait">8.3 Trait</h3>
+
+<p>A trait defines a set of method signatures that a type can implement. Traits are declared with the <code>trait</code> keyword followed by a name and a block of method signatures. Traits do not contain implementations — they define a contract that implementing types must fulfill. Types implement traits using the <code>impl</code> keyword.</p>
+
+<pre><code class="code-sino"><span class="keyword">trait</span> Drawable {
+    <span class="keyword">fn</span> <span class="function">draw</span>()
+    <span class="keyword">fn</span> <span class="function">area</span>() -&gt; float
+}
+
+<span class="keyword">trait</span> Comparable {
+    <span class="keyword">fn</span> <span class="function">compare</span>(other) -&gt; int
+}</code></pre>
+
+<h3 id="8-4-impl">8.4 Impl</h3>
+
+<p>The <code>impl</code> block provides method implementations for a type to satisfy a trait. The syntax is <code>impl TraitName for TypeName</code> followed by a block of method implementations. All methods declared in the trait must be implemented. A type can implement multiple traits via separate impl blocks.</p>
+
+<pre><code class="code-sino"><span class="keyword">struct</span> Circle {
+    radius: float
+}
+
+<span class="keyword">impl</span> Drawable <span class="keyword">for</span> Circle {
+    <span class="keyword">fn</span> <span class="function">draw</span>() {
+        <span class="function">echo</span>(<span class="string">"Drawing circle"</span>)
+    }
+
+    <span class="keyword">fn</span> <span class="function">area</span>() -&gt; float {
+        <span class="keyword">return</span> <span class="number">3.14159</span> * radius * radius
+    }
+}
+
+c = Circle { radius: <span class="number">5.0</span> }
+c.<span class="function">draw</span>()         <span class=<span class="string">"comment"</span>># Drawing circle</span>
+<span class="function">echo</span>(c.<span class="function">area</span>())   <span class=<span class="string">"comment"</span>># <span class="number">78.54</span></span></code></pre>
+
+<h3 id="8-5-method-calls">8.5 Method Calls</h3>
+
+<p>Methods are functions associated with a type. Methods are called using dot notation: <code>object.method(args)</code>. Inside a method, the receiver object is accessible via the implicit <code>self</code> parameter. The first parameter of a method is implicitly the receiver type.</p>
+
+<hr>
+
+<h2 id="9-pattern-matching">9. Pattern Matching</h2>
+
+<h3 id="9-1-match-expression">9.1 Match Expression</h3>
+
+<p>The <code>match</code> expression is Sino's primary pattern matching construct. It evaluates a scrutinee expression and compares it against a series of patterns, executing the body of the first matching arm. Match is an expression — it evaluates to the value of the matched arm's body. This makes match useful for conditional value assignment.</p>
+
+<pre><code class="code-sino">x = <span class="number">2</span>
+description = <span class="keyword">match</span> x {
+    <span class="number">1</span> =&gt; <span class="string">"one"</span>
+    <span class="number">2</span> =&gt; <span class="string">"two"</span>
+    <span class="number">3</span> =&gt; <span class="string">"three"</span>
+    _ =&gt; <span class="string">"many"</span>
+}
+<span class="function">echo</span>(description)  <span class=<span class="string">"comment"</span>># two</span></code></pre>
+
+<h3 id="9-2-literal-patterns">9.2 Literal Patterns</h3>
+
+<p>Literal patterns match exact values. Integer, float, string, boolean, and null literals can all be used as patterns. The match is by value equality.</p>
+
+<pre><code class="code-sino">status = <span class="string">"active"</span>
+<span class="keyword">match</span> status {
+    <span class="string">"active"</span> =&gt; <span class="function">echo</span>(<span class="string">"User is active"</span>)
+    <span class="string">"inactive"</span> =&gt; <span class="function">echo</span>(<span class="string">"User is inactive"</span>)
+    <span class="string">"banned"</span> =&gt; <span class="function">echo</span>(<span class="string">"User is banned"</span>)
+    _ =&gt; <span class="function">echo</span>(<span class="string">"Unknown status"</span>)
+}</code></pre>
+
+<h3 id="9-3-variable-patterns">9.3 Variable Patterns</h3>
+
+<p>A variable pattern binds the matched value to a variable. Variable patterns match any value. Variable patterns are useful for capturing the scrutinee value in a catch-all arm.</p>
+
+<pre><code class="code-sino">x = <span class="number">42</span>
+<span class="keyword">match</span> x {
+    <span class="number">0</span> =&gt; <span class="function">echo</span>(<span class="string">"zero"</span>)
+    n =&gt; <span class="function">echo</span>(<span class="string">"non-zero: "</span>, n)  <span class=<span class="string">"comment"</span>># n captures x</span>
+}</code></pre>
+
+<h3 id="9-4-wildcard-pattern">9.4 Wildcard Pattern</h3>
+
+<p>The <code>_</code> (underscore) pattern matches any value without binding it. It is used as a default case at the end of a match. Only one wildcard arm is permitted per match, and it must be the last arm.</p>
+
+<h3 id="9-5-struct-patterns">9.5 Struct Patterns</h3>
+
+<p>Struct patterns match struct values and can bind field values to variables. The pattern uses the struct name followed by field patterns in braces. Partial matching is supported — unnamed fields are ignored.</p>
+
+<pre><code class="code-sino"><span class="keyword">struct</span> Point { x: float, y: float }
+
+p = Point { x: <span class="number">1.0</span>, y: <span class="number">2.0</span> }
+<span class="keyword">match</span> p {
+    Point { x: <span class="number">0</span>, y: <span class="number">0</span> } =&gt; <span class="function">echo</span>(<span class="string">"origin"</span>)
+    Point { x, y } =&gt; <span class="function">echo</span>(<span class="string">"point at "</span>, x, <span class="string">", "</span>, y)
+}</code></pre>
+
+<h3 id="9-6-enum-patterns">9.6 Enum Patterns</h3>
+
+<p>Enum patterns match specific enum variants. The pattern uses the enum name, the <code>::</code> operator, and the variant name. Enum patterns with associated data can bind the data to variables.</p>
+
+<pre><code class="code-sino"><span class="keyword">enum</span> Shape {
+    Circle(float)
+    Square(float)
+    Rectangle(float, float)
+}
+
+shape = Shape::Circle(<span class="number">5.0</span>)
+<span class="keyword">match</span> shape {
+    Shape::Circle(r) =&gt; <span class="function">echo</span>(<span class="string">"circle, radius="</span>, r)
+    Shape::Square(s) =&gt; <span class="function">echo</span>(<span class="string">"square, side="</span>, s)
+    Shape::Rectangle(w, h) =&gt; <span class="function">echo</span>(<span class="string">"rect "</span>, w, <span class="string">"x"</span>, h)
+}</code></pre>
+
+<h3 id="9-7-pattern-guards">9.7 Pattern Guards</h3>
+
+<p>A pattern guard is an additional condition that must be true for the arm to match. Guards are introduced with the <code>if</code> keyword after the pattern. Guards allow more complex matching logic without splitting into multiple arms.</p>
+
+<pre><code class="code-sino">x = <span class="number">15</span>
+<span class="keyword">match</span> x {
+    n <span class="keyword">if</span> n &lt; <span class="number">10</span> =&gt; <span class="function">echo</span>(<span class="string">"small"</span>)
+    n <span class="keyword">if</span> n &lt; <span class="number">100</span> =&gt; <span class="function">echo</span>(<span class="string">"medium"</span>)
+    _ =&gt; <span class="function">echo</span>(<span class="string">"large"</span>)
+}</code></pre>
+
+<h3 id="9-8-exhaustiveness-checking">9.8 Exhaustiveness Checking</h3>
+
+<p>The compiler checks that match expressions are exhaustive — every possible value of the scrutinee type must be handled by some arm. For enums, all variants must be covered (unless a wildcard arm is present). For integers and strings, a wildcard arm is required for exhaustiveness. Non-exhaustive matches produce a warning (SN2004) unless the scrutinee type is open-ended.</p>
+
+<hr>
+
+<h2 id="10-error-handling">10. Error Handling</h2>
+
+<h3 id="10-1-try-catch">10.1 Try/Catch</h3>
+
+<p>The <code>try/catch</code> construct handles errors (exceptions) that occur during execution. The <code>try</code> block contains code that may produce an error. The <code>catch</code> block executes if an error is thrown within the try block. The caught error is bound to an optional variable for inspection.</p>
+
+<pre><code class="code-sino"><span class="keyword">try</span> {
+    file = <span class="function">open</span>(<span class="string">"config.json"</span>)
+    data = <span class="function">read</span>(file)
+    <span class="function">close</span>(file)
+    config = <span class="function">parse_json</span>(data)
+} <span class="keyword">catch</span> err {
+    <span class="function">echo</span>(<span class="string">"Failed to load config: "</span>, err.message)
+    config = <span class="function">default_config</span>()
+}</code></pre>
+
+<h3 id="10-2-throw">10.2 Throw</h3>
+
+<p>The <code>throw</code> statement raises an error, immediately transferring control to the nearest enclosing catch block. If no catch block is found, the error propagates to the top level and the program terminates with an uncaught error panic. The thrown value can be of any type, but using the Error type is recommended.</p>
+
+<pre><code class="code-sino"><span class="keyword">fn</span> <span class="function">divide</span>(a, b) {
+    <span class="keyword">if</span> b == <span class="number">0</span> {
+        <span class="keyword">throw</span> Error { message: <span class="string">"Division by zero"</span> }
+    }
+    <span class="keyword">return</span> a / b
+}</code></pre>
+
+<h3 id="10-3-error-type">10.3 Error Type</h3>
+
+<p>The <code>Error</code> type is the standard error type in Sino. It contains a <code>message</code> field (string) and an optional <code>code</code> field (int). Custom error types can be created by implementing the Error trait. Error types should provide a clear, human-readable message.</p>
+
+<pre><code class="code-sino"><span class="keyword">struct</span> Error {
+    message: string
+    code: int
+}
+
+<span class="keyword">fn</span> <span class="function">validate_age</span>(age) {
+    <span class="keyword">if</span> age &lt; <span class="number">0</span> {
+        <span class="keyword">throw</span> Error {
+            message: <span class="string">"Age cannot be negative"</span>
+            code: <span class="number">1001</span>
+        }
+    }
+    <span class="keyword">if</span> age &gt; <span class="number">150</span> {
+        <span class="keyword">throw</span> Error {
+            message: <span class="string">"Age is unreasonably large"</span>
+            code: <span class="number">1002</span>
+        }
+    }
+}</code></pre>
+
+<h3 id="10-4-error-propagation">10.4 Error Propagation</h3>
+
+<p>Errors propagate up the call stack until a catch block handles them. If a function does not catch an error thrown within it, the error propagates to the caller. If no caller handles the error, the program terminates with a panic. Functions that may throw should document this in their type signature.</p>
+
+<h3 id="10-5-panic">10.5 Panic</h3>
+
+<p>A panic is an unrecoverable error that terminates the program immediately. Panics occur when the runtime detects an invalid state (null pointer dereference, stack overflow, out of memory). Panics print a stack trace to stderr and exit with code 1. Panics cannot be caught by try/catch — use <code>throw</code> for recoverable errors.</p>
+
+<h3 id="10-6-error-codes">10.6 Error Codes</h3>
+
+<p>Sino uses a standardized error code system. Error codes are formatted as <code>SNxNNN</code> where <code>x</code> is the category and <code>NNN</code> is the specific error. Error codes are used in diagnostics and can be looked up in the documentation.</p>
+
+<table>
+<thead><tr>
+<th>Code Range</th>
+<th>Category</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SN1xxx</td>
+<td>Parse errors</td>
+<td>Syntax errors, invalid tokens, malformed expressions</td>
+</tr>
+<tr>
+<td>SN2xxx</td>
+<td>Type errors</td>
+<td>Type mismatches, undefined variables, scope errors</td>
+</tr>
+<tr>
+<td>SN3xxx</td>
+<td>Runtime errors</td>
+<td>Null dereference, index out of bounds, division by zero</td>
+</tr>
+<tr>
+<td>SN4xxx</td>
+<td>I/O errors</td>
+<td>File not found, permission denied, network errors</td>
+</tr>
+<tr>
+<td>SN5xxx</td>
+<td>Link errors</td>
+<td>Undefined symbols, duplicate symbols, missing libraries</td>
+</tr>
+<tr>
+<td>SN6xxx</td>
+<td>Module errors</td>
+<td>Module not found, circular imports, visibility errors</td>
+</tr>
+<tr>
+<td>SN7xxx</td>
+<td>FFI errors</td>
+<td>ABI mismatches, marshalling failures, dangling pointers</td>
+</tr>
+<tr>
+<td>SN8xxx</td>
+<td>Concurrency errors</td>
+<td>Deadlock, race condition, channel closed</td>
+</tr>
+<tr>
+<td>SN9xxx</td>
+<td>Internal errors</td>
+<td>Compiler bugs, unexpected state</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="11-module-system">11. Module System</h2>
+
+<h3 id="11-1-modules">11.1 Modules</h3>
+
+<p>A module is a unit of code organization. Each source file is a module. A directory containing source files can form a package, with each file being a submodule. Modules encapsulate code and control visibility of declarations.</p>
+
+<h3 id="11-2-import">11.2 Import</h3>
+
+<p>The <code>import</code> statement brings declarations from another module into the current scope. The import path uses dots to separate module components. Imported names are accessible without qualification if they are public.</p>
+
+<pre><code class="code-sino"><span class="keyword">import</span> std.io
+<span class="keyword">import</span> std.math
+<span class="keyword">import</span> mylib.utils.string
+
+<span class=<span class="string">"comment"</span>># Use imported functions</span>
+<span class="function">echo</span>(<span class="string">"Hello"</span>)  <span class=<span class="string">"comment"</span>># from std.io</span>
+result = <span class="function">sqrt</span>(<span class="number">16</span>)  <span class=<span class="string">"comment"</span>># from std.math</span></code></pre>
+
+<h3 id="11-3-visibility">11.3 Visibility</h3>
+
+<p>Declarations can be marked <code>public</code> or <code>private</code>. Public declarations are accessible from any module that imports the declaring module. Private declarations are only accessible within the declaring module. The default visibility is private.</p>
+
+<pre><code class="code-sino"><span class=<span class="string">"comment"</span>># <span class="keyword">public</span>: accessible from other modules</span>
+<span class="keyword">public</span> <span class="keyword">fn</span> <span class="function">api_function</span>() {
+    <span class="function">helper</span>()
+}
+
+<span class=<span class="string">"comment"</span>># <span class="keyword">private</span>: only accessible <span class="keyword">in</span> this module</span>
+<span class="keyword">private</span> <span class="keyword">fn</span> <span class="function">helper</span>() {
+    <span class="function">echo</span>(<span class="string">"internal helper"</span>)
+}
+
+<span class=<span class="string">"comment"</span>># no modifier: defaults to <span class="keyword">private</span></span>
+<span class="keyword">fn</span> <span class="function">another_helper</span>() {
+    <span class="function">echo</span>(<span class="string">"also <span class="keyword">private</span>"</span>)
+}</code></pre>
+
+<h3 id="11-4-module-resolution">11.4 Module Resolution</h3>
+
+<p>Module paths are resolved in the following order:</p>
+
+<table>
+<thead><tr>
+<th>Step</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>1. Standard library</td>
+<td>Paths starting with <code>std.</code> are resolved from the Sino standard library installation.</td>
+</tr>
+<tr>
+<td>2. Local modules</td>
+<td>Paths not starting with <code>std.</code> are resolved from the project's source directory.</td>
+</tr>
+<tr>
+<td>3. Package dependencies</td>
+<td>If not found locally, the resolver checks installed package dependencies.</td>
+</tr>
+<tr>
+<td>4. Global cache</td>
+<td>If not in a package, the resolver checks the global module cache at <code>~/.sino/cache/</code>.</td>
+</tr>
+</tbody></table>
+
+<h3 id="11-5-namespaces">11.5 Namespaces</h3>
+
+<p>Modules create namespaces for their declarations. Two modules can declare functions with the same name without conflict. To access a declaration from a specific module, use the module path: <code>module.function()</code>. The import statement can optionally alias a module: <code>import std.math as m</code>.</p>
+
+<hr>
+
+<h2 id="12-standard-library">12. Standard Library</h2>
+
+<p>The Sino standard library provides a comprehensive set of modules for common programming tasks. All standard library modules are accessible via the <code>std.</code> prefix. This chapter documents the available modules and their key functions.</p>
+
+<h3 id="12-1-std-core">12.1 std.core</h3>
+
+<p>Core language primitives and built-in functions.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>echo</code></td>
+<td><code>echo(...args)</code></td>
+<td>Print values to stdout</td>
+</tr>
+<tr>
+<td><code>print</code></td>
+<td><code>print(...args)</code></td>
+<td>Same as echo</td>
+</tr>
+<tr>
+<td><code>len</code></td>
+<td><code>len(x) -&gt; int</code></td>
+<td>Length of array, string, or map</td>
+</tr>
+<tr>
+<td><code>typeof</code></td>
+<td><code>typeof(x) -&gt; string</code></td>
+<td>Type name as string</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td><code>int(x) -&gt; int</code></td>
+<td>Convert to integer</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td><code>float(x) -&gt; float</code></td>
+<td>Convert to float</td>
+</tr>
+<tr>
+<td><code>string</code></td>
+<td><code>string(x) -&gt; string</code></td>
+<td>Convert to string</td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td><code>bool(x) -&gt; bool</code></td>
+<td>Convert to boolean</td>
+</tr>
+<tr>
+<td><code>char</code></td>
+<td><code>char(n) -&gt; char</code></td>
+<td>Convert code point to char</td>
+</tr>
+<tr>
+<td><code>push</code></td>
+<td><code>push(arr, val)</code></td>
+<td>Append element to array</td>
+</tr>
+<tr>
+<td><code>pop</code></td>
+<td><code>pop(arr) -&gt; value</code></td>
+<td>Remove and return last element</td>
+</tr>
+</tbody></table>
+
+<h3 id="12-2-std-io">12.2 std.io</h3>
+
+<p>Input/output operations.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>echo</code></td>
+<td><code>echo(...args)</code></td>
+<td>Print to stdout</td>
+</tr>
+<tr>
+<td><code>input</code></td>
+<td><code>input(prompt) -&gt; string</code></td>
+<td>Read line from stdin</td>
+</tr>
+<tr>
+<td><code>open</code></td>
+<td><code>open(path) -&gt; File</code></td>
+<td>Open file for reading</td>
+</tr>
+<tr>
+<td><code>close</code></td>
+<td><code>close(file)</code></td>
+<td>Close a file</td>
+</tr>
+<tr>
+<td><code>read</code></td>
+<td><code>read(file) -&gt; string</code></td>
+<td>Read entire file contents</td>
+</tr>
+<tr>
+<td><code>write</code></td>
+<td><code>write(file, data)</code></td>
+<td>Write data to file</td>
+</tr>
+<tr>
+<td><code>readline</code></td>
+<td><code>readline(file) -&gt; string</code></td>
+<td>Read one line from file</td>
+</tr>
+<tr>
+<td><code>writeline</code></td>
+<td><code>writeline(file, data)</code></td>
+<td>Write line with newline</td>
+</tr>
+</tbody></table>
+
+<h3 id="12-3-std-fs">12.3 std.fs</h3>
+
+<p>Filesystem operations.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>exists</code></td>
+<td><code>exists(path) -&gt; bool</code></td>
+<td>Check if path exists</td>
+</tr>
+<tr>
+<td><code>is_file</code></td>
+<td><code>is_file(path) -&gt; bool</code></td>
+<td>Check if path is a file</td>
+</tr>
+<tr>
+<td><code>is_dir</code></td>
+<td><code>is_dir(path) -&gt; bool</code></td>
+<td>Check if path is a directory</td>
+</tr>
+<tr>
+<td><code>mkdir</code></td>
+<td><code>mkdir(path)</code></td>
+<td>Create directory</td>
+</tr>
+<tr>
+<td><code>rmdir</code></td>
+<td><code>rmdir(path)</code></td>
+<td>Remove empty directory</td>
+</tr>
+<tr>
+<td><code>remove</code></td>
+<td><code>remove(path)</code></td>
+<td>Delete file</td>
+</tr>
+<tr>
+<td><code>rename</code></td>
+<td><code>rename(old, new)</code></td>
+<td>Rename or move file</td>
+</tr>
+<tr>
+<td><code>copy</code></td>
+<td><code>copy(src, dst)</code></td>
+<td>Copy file</td>
+</tr>
+<tr>
+<td><code>listdir</code></td>
+<td><code>listdir(path) -&gt; [string]</code></td>
+<td>List directory contents</td>
+</tr>
+</tbody></table>
+
+<h3 id="12-4-std-math">12.4 std.math</h3>
+
+<p>Mathematical functions.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>sqrt</code></td>
+<td><code>sqrt(x) -&gt; float</code></td>
+<td>Square root</td>
+</tr>
+<tr>
+<td><code>abs</code></td>
+<td><code>abs(x) -&gt; number</code></td>
+<td>Absolute value</td>
+</tr>
+<tr>
+<td><code>floor</code></td>
+<td><code>floor(x) -&gt; int</code></td>
+<td>Floor to integer</td>
+</tr>
+<tr>
+<td><code>ceil</code></td>
+<td><code>ceil(x) -&gt; int</code></td>
+<td>Ceiling to integer</td>
+</tr>
+<tr>
+<td><code>round</code></td>
+<td><code>round(x) -&gt; int</code></td>
+<td>Round to nearest integer</td>
+</tr>
+<tr>
+<td><code>pow</code></td>
+<td><code>pow(base, exp) -&gt; float</code></td>
+<td>Exponentiation</td>
+</tr>
+<tr>
+<td><code>sin</code></td>
+<td><code>sin(x) -&gt; float</code></td>
+<td>Sine (radians)</td>
+</tr>
+<tr>
+<td><code>cos</code></td>
+<td><code>cos(x) -&gt; float</code></td>
+<td>Cosine (radians)</td>
+</tr>
+<tr>
+<td><code>tan</code></td>
+<td><code>tan(x) -&gt; float</code></td>
+<td>Tangent (radians)</td>
+</tr>
+<tr>
+<td><code>log</code></td>
+<td><code>log(x) -&gt; float</code></td>
+<td>Natural logarithm</td>
+</tr>
+<tr>
+<td><code>log10</code></td>
+<td><code>log10(x) -&gt; float</code></td>
+<td>Base-10 logarithm</td>
+</tr>
+<tr>
+<td><code>min</code></td>
+<td><code>min(a, b) -&gt; number</code></td>
+<td>Minimum of two values</td>
+</tr>
+<tr>
+<td><code>max</code></td>
+<td><code>max(a, b) -&gt; number</code></td>
+<td>Maximum of two values</td>
+</tr>
+</tbody></table>
+
+<h3 id="12-5-std-string">12.5 std.string</h3>
+
+<p>String manipulation functions.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>len</code></td>
+<td><code>len(s) -&gt; int</code></td>
+<td>String length</td>
+</tr>
+<tr>
+<td><code>upper</code></td>
+<td><code>upper(s) -&gt; string</code></td>
+<td>Convert to uppercase</td>
+</tr>
+<tr>
+<td><code>lower</code></td>
+<td><code>lower(s) -&gt; string</code></td>
+<td>Convert to lowercase</td>
+</tr>
+<tr>
+<td><code>trim</code></td>
+<td><code>trim(s) -&gt; string</code></td>
+<td>Remove leading/trailing whitespace</td>
+</tr>
+<tr>
+<td><code>split</code></td>
+<td><code>split(s, sep) -&gt; [string]</code></td>
+<td>Split string by separator</td>
+</tr>
+<tr>
+<td><code>join</code></td>
+<td><code>join(arr, sep) -&gt; string</code></td>
+<td>Join array with separator</td>
+</tr>
+<tr>
+<td><code>contains</code></td>
+<td><code>contains(s, sub) -&gt; bool</code></td>
+<td>Check if string contains substring</td>
+</tr>
+<tr>
+<td><code>replace</code></td>
+<td><code>replace(s, old, new) -&gt; string</code></td>
+<td>Replace all occurrences</td>
+</tr>
+<tr>
+<td><code>substring</code></td>
+<td><code>substring(s, start, end) -&gt; string</code></td>
+<td>Extract substring</td>
+</tr>
+<tr>
+<td><code>reverse</code></td>
+<td><code>reverse(s) -&gt; string</code></td>
+<td>Reverse string</td>
+</tr>
+<tr>
+<td><code>starts_with</code></td>
+<td><code>starts_with(s, prefix) -&gt; bool</code></td>
+<td>Check prefix</td>
+</tr>
+<tr>
+<td><code>ends_with</code></td>
+<td><code>ends_with(s, suffix) -&gt; bool</code></td>
+<td>Check suffix</td>
+</tr>
+</tbody></table>
+
+<h3 id="12-6-std-time">12.6 std.time</h3>
+
+<p>Time and date functions.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>now</code></td>
+<td><code>now() -&gt; int</code></td>
+<td>Current Unix timestamp (seconds)</td>
+</tr>
+<tr>
+<td><code>now_ms</code></td>
+<td><code>now_ms() -&gt; int</code></td>
+<td>Current time in milliseconds</td>
+</tr>
+<tr>
+<td><code>sleep</code></td>
+<td><code>sleep(seconds)</code></td>
+<td>Pause execution</td>
+</tr>
+<tr>
+<td><code>format_time</code></td>
+<td><code>format_time(ts, fmt) -&gt; string</code></td>
+<td>Format timestamp</td>
+</tr>
+<tr>
+<td><code>parse_time</code></td>
+<td><code>parse_time(s, fmt) -&gt; int</code></td>
+<td>Parse time string</td>
+</tr>
+</tbody></table>
+
+<h3 id="12-7-std-json">12.7 std.json</h3>
+
+<p>JSON encoding and decoding.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>parse</code></td>
+<td><code>parse(s) -&gt; value</code></td>
+<td>Parse JSON string</td>
+</tr>
+<tr>
+<td><code>stringify</code></td>
+<td><code>stringify(v) -&gt; string</code></td>
+<td>Convert value to JSON string</td>
+</tr>
+<tr>
+<td><code>stringify_pretty</code></td>
+<td><code>stringify_pretty(v, indent) -&gt; string</code></td>
+<td>Pretty-print JSON</td>
+</tr>
+</tbody></table>
+
+<h3 id="12-8-std-http">12.8 std.http</h3>
+
+<p>HTTP client.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>get</code></td>
+<td><code>get(url) -&gt; Response</code></td>
+<td>HTTP GET request</td>
+</tr>
+<tr>
+<td><code>post</code></td>
+<td><code>post(url, body) -&gt; Response</code></td>
+<td>HTTP POST request</td>
+</tr>
+<tr>
+<td><code>put</code></td>
+<td><code>put(url, body) -&gt; Response</code></td>
+<td>HTTP PUT request</td>
+</tr>
+<tr>
+<td><code>delete</code></td>
+<td><code>delete(url) -&gt; Response</code></td>
+<td>HTTP DELETE request</td>
+</tr>
+</tbody></table>
+
+<h3 id="12-9-std-crypto">12.9 std.crypto</h3>
+
+<p>Cryptographic functions.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>md5</code></td>
+<td><code>md5(data) -&gt; string</code></td>
+<td>MD5 hash (hex)</td>
+</tr>
+<tr>
+<td><code>sha256</code></td>
+<td><code>sha256(data) -&gt; string</code></td>
+<td>SHA-256 hash (hex)</td>
+</tr>
+<tr>
+<td><code>sha512</code></td>
+<td><code>sha512(data) -&gt; string</code></td>
+<td>SHA-512 hash (hex)</td>
+</tr>
+<tr>
+<td><code>hmac</code></td>
+<td><code>hmac(key, data) -&gt; string</code></td>
+<td>HMAC-SHA256</td>
+</tr>
+<tr>
+<td><code>base64_encode</code></td>
+<td><code>base64_encode(data) -&gt; string</code></td>
+<td>Base64 encode</td>
+</tr>
+<tr>
+<td><code>base64_decode</code></td>
+<td><code>base64_decode(s) -&gt; bytes</code></td>
+<td>Base64 decode</td>
+</tr>
+</tbody></table>
+
+<h3 id="12-10-std-regex">12.10 std.regex</h3>
+
+<p>Regular expressions.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>match</code></td>
+<td><code>match(pattern, s) -&gt; bool</code></td>
+<td>Check if pattern matches</td>
+</tr>
+<tr>
+<td><code>find</code></td>
+<td><code>find(pattern, s) -&gt; [string]</code></td>
+<td>Find all matches</td>
+</tr>
+<tr>
+<td><code>replace</code></td>
+<td><code>replace(pattern, s, repl) -&gt; string</code></td>
+<td>Replace matches</td>
+</tr>
+<tr>
+<td><code>split</code></td>
+<td><code>split(pattern, s) -&gt; [string]</code></td>
+<td>Split by pattern</td>
+</tr>
+</tbody></table>
+
+<h3 id="12-11-std-thread">12.11 std.thread</h3>
+
+<p>Threading and concurrency.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>spawn</code></td>
+<td><code>spawn(fn) -&gt; Thread</code></td>
+<td>Start new thread</td>
+</tr>
+<tr>
+<td><code>join</code></td>
+<td><code>join(thread)</code></td>
+<td>Wait for thread to finish</td>
+</tr>
+<tr>
+<td><code>sleep</code></td>
+<td><code>sleep(seconds)</code></td>
+<td>Sleep current thread</td>
+</tr>
+<tr>
+<td><code>channel</code></td>
+<td><code>channel() -&gt; Channel</code></td>
+<td>Create communication channel</td>
+</tr>
+<tr>
+<td><code>send</code></td>
+<td><code>send(ch, value)</code></td>
+<td>Send value to channel</td>
+</tr>
+<tr>
+<td><code>recv</code></td>
+<td><code>recv(ch) -&gt; value</code></td>
+<td>Receive value from channel</td>
+</tr>
+</tbody></table>
+
+<h3 id="12-12-std-process">12.12 std.process</h3>
+
+<p>Process and system operations.</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Signature</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>exec</code></td>
+<td><code>exec(cmd) -&gt; Result</code></td>
+<td>Execute system command</td>
+</tr>
+<tr>
+<td><code>exit</code></td>
+<td><code>exit(code)</code></td>
+<td>Exit program with code</td>
+</tr>
+<tr>
+<td><code>getenv</code></td>
+<td><code>getenv(name) -&gt; string</code></td>
+<td>Get environment variable</td>
+</tr>
+<tr>
+<td><code>setenv</code></td>
+<td><code>setenv(name, value)</code></td>
+<td>Set environment variable</td>
+</tr>
+<tr>
+<td><code>args</code></td>
+<td><code>args() -&gt; [string]</code></td>
+<td>Get command-line arguments</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="13-foreign-function-interface">13. Foreign Function Interface</h2>
+
+<h3 id="13-1-extern-keyword">13.1 extern Keyword</h3>
+
+<p>The <code>extern</code> keyword declares a function implemented in a foreign language. The function signature specifies the Sino types for parameters and return value; the actual implementation is in a linked native library. Foreign functions use the C calling convention by default.</p>
+
+<pre><code class="code-sino">extern <span class="keyword">fn</span> <span class="function">c_add</span>(a: int, b: int) -&gt; int
+extern <span class="keyword">fn</span> <span class="function">c_sqrt</span>(x: float) -&gt; float
+extern <span class="keyword">fn</span> <span class="function">c_strlen</span>(s: string) -&gt; int</code></pre>
+
+<h3 id="13-2-type-marshalling">13.2 Type Marshalling</h3>
+
+<p>Sino types are marshalled to and from native types at the FFI boundary. The following table defines the type correspondences:</p>
+
+<table>
+<thead><tr>
+<th>Sino Type</th>
+<th>Native Type</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>int</code></td>
+<td><code>int64_t</code></td>
+<td>64-bit signed integer</td>
+</tr>
+<tr>
+<td><code>int32</code></td>
+<td><code>int32_t</code></td>
+<td>32-bit signed integer</td>
+</tr>
+<tr>
+<td><code>uint</code></td>
+<td><code>uint64_t</code></td>
+<td>64-bit unsigned integer</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td><code>double</code></td>
+<td>64-bit IEEE float</td>
+</tr>
+<tr>
+<td><code>float32</code></td>
+<td><code>float</code></td>
+<td>32-bit IEEE float</td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td><code>bool / int8_t</code></td>
+<td>1-byte boolean</td>
+</tr>
+<tr>
+<td><code>char</code></td>
+<td><code>uint32_t</code></td>
+<td>Unicode code point</td>
+</tr>
+<tr>
+<td><code>string</code></td>
+<td><code>const char*</code></td>
+<td>Null-terminated UTF-8</td>
+</tr>
+<tr>
+<td><code>byte</code></td>
+<td><code>uint8_t</code></td>
+<td>Raw byte</td>
+</tr>
+<tr>
+<td><code>pointer</code></td>
+<td><code>void*</code></td>
+<td>Raw pointer (unsafe)</td>
+</tr>
+</tbody></table>
+
+<h3 id="13-3-supported-backend-languages">13.3 Supported Backend Languages</h3>
+
+<p>Sino's FFI supports the following backend languages. Each requires its respective compiler to be installed.</p>
+
+<table>
+<thead><tr>
+<th>Language</th>
+<th>File Extension</th>
+<th>Compiler</th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>C</td>
+<td><code>.c</code></td>
+<td>cc / gcc / clang</td>
+<td>Direct linking, C ABI</td>
+</tr>
+<tr>
+<td>C++</td>
+<td><code>.cpp</code></td>
+<td>c++ / g++ / clang++</td>
+<td>Requires <code>extern "C"</code> wrapper</td>
+</tr>
+<tr>
+<td>Assembly</td>
+<td><code>.S</code></td>
+<td>cc / gcc / clang</td>
+<td>Platform-specific (x86_64/ARM64)</td>
+</tr>
+<tr>
+<td>Rust</td>
+<td><code>.rs</code></td>
+<td>rustc</td>
+<td>Requires <code>#[no_mangle]</code> and <code>extern "C"</code></td>
+</tr>
+</tbody></table>
+
+<h3 id="13-4-memory-ownership">13.4 Memory Ownership</h3>
+
+<p>When passing data across the FFI boundary, ownership rules apply. Primitive types (int, float, bool) are passed by value — no ownership concerns. Strings are passed as <code>const char*</code> (read-only) — the foreign code must not modify or free the string. Arrays and structs require explicit marshalling functions. Pointers returned from foreign code must be explicitly freed by the caller.</p>
+
+<hr>
+
+<h2 id="14-compiler-and-interpreter">14. Compiler and Interpreter</h2>
+
+<h3 id="14-1-compilation-pipeline">14.1 Compilation Pipeline</h3>
+
+<p>The Sino compiler transforms source code into native executables through a multi-stage pipeline. Each stage transforms the program representation and may report errors. The pipeline is designed for fast compilation and comprehensive error reporting.</p>
+
+<pre><code class="code-sino">Source Code (.si)
+       |
+       v
+  [<span class="number">1</span>. Lexer]      -- Tokenizes source text
+       |
+       v
+  [<span class="number">2</span>. Parser]     -- Builds AST from tokens
+       |
+       v
+  [<span class="number">3</span>. Analyzer]   -- Semantic analysis
+       |
+       v
+  [<span class="number">4</span>. Type Checker] -- Static type checking
+       |
+       v
+  [<span class="number">5</span>. Optimizer]  -- Optimization passes
+       |
+       v
+  [<span class="number">6</span>. Code Gen]   -- Generate native code
+       |
+       v
+  [<span class="number">7</span>. Linker]     -- Link into executable</code></pre>
+
+<h3 id="14-2-lexical-analysis">14.2 Lexical Analysis</h3>
+
+<p>The lexer converts source text into a stream of tokens. It handles whitespace, comments, and produces tokens with line/column information for diagnostics. Lexical errors (illegal characters) are reported at this stage.</p>
+
+<h3 id="14-3-parsing">14.3 Parsing</h3>
+
+<p>The parser consumes the token stream and builds an Abstract Syntax Tree (AST) according to the grammar in Chapter 3. The parser is a recursive descent parser with Pratt-style expression parsing for operator precedence. Syntax errors (malformed constructs) are reported at this stage.</p>
+
+<h3 id="14-4-semantic-analysis">14.4 Semantic Analysis</h3>
+
+<p>The analyzer walks the AST and performs semantic checks: variable scope resolution, function signature validation, struct/enum/trait registration, and module import resolution. Semantic errors (undefined names, scope violations) are reported at this stage.</p>
+
+<h3 id="14-5-type-checking">14.5 Type Checking</h3>
+
+<p>The type checker applies the type rules from Chapter 4 to every expression and statement. It performs type inference, checks compatibility, and verifies exhaustiveness of match expressions. Type errors (SN2xxx) are reported at this stage.</p>
+
+<h3 id="14-6-optimization">14.6 Optimization</h3>
+
+<p>The optimizer applies transformation passes to improve performance without changing program semantics. Optimization passes include:</p>
+
+<table>
+<thead><tr>
+<th>Pass</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Constant folding</td>
+<td>Evaluate constant expressions at compile time.</td>
+</tr>
+<tr>
+<td>Dead code elimination</td>
+<td>Remove unreachable code and unused variables.</td>
+</tr>
+<tr>
+<td>Function inlining</td>
+<td>Inline small functions at call sites.</td>
+</tr>
+<tr>
+<td>Common subexpression elimination</td>
+<td>Reuse results of identical computations.</td>
+</tr>
+<tr>
+<td>Loop optimization</td>
+<td>Hoist invariant code out of loops, unroll small loops.</td>
+</tr>
+<tr>
+<td>Tail call optimization</td>
+<td>Convert tail-recursive calls to loops where possible.</td>
+</tr>
+</tbody></table>
+
+<h3 id="14-7-code-generation">14.7 Code Generation</h3>
+
+<p>The code generator translates the optimized AST into native machine code. On x86_64, it generates x86-64 assembly. On ARM64, it generates AArch64 assembly. The generated assembly is assembled into object files (.o) by the system assembler.</p>
+
+<h3 id="14-8-linking">14.8 Linking</h3>
+
+<p>The linker combines object files and libraries into the final executable. It resolves symbols, performs relocation, and produces the output file. Link errors (SN5xxx) are reported at this stage.</p>
+
+<h3 id="14-9-interpreter-mode">14.9 Interpreter Mode</h3>
+
+<p>For rapid development, Sino provides an interpreter that executes source code directly without compilation. The interpreter builds the AST and walks it, evaluating expressions and executing statements in real time. The interpreter is used by the REPL and for running scripts. Interpreter behavior matches compiled behavior for all defined semantics.</p>
+
+<h3 id="14-10-bytecode-format">14.10 Bytecode Format</h3>
+
+<p>An intermediate representation between interpretation and native compilation is the Sino bytecode format. Bytecode is a compact, portable representation that can be executed by a virtual machine or further compiled to native code. Bytecode files use the <code>.sibc</code> extension. This format enables fast startup (no parsing overhead) and portability across architectures.</p>
+
+<hr>
+
+<h2 id="15-package-manager">15. Package Manager</h2>
+
+<h3 id="15-1-manifest-sino-toml">15.1 Manifest (sino.toml)</h3>
+
+<p>Every Sino package contains a <code>sino.toml</code> manifest file in its root directory. The manifest declares the package name, version, dependencies, and build configuration. The manifest uses TOML format.</p>
+
+<pre><code class="code-toml">name = "mylib"
+version = "1.0.0"
+authors = ["Author Name"]
+license = "MIT"
+description = "A Sino library"
+
+[dependencies]
+"github:owner/dep1" = "^1.0.0"
+"github:owner/dep2" = "~2.1.0"
+
+[build]
+c = true
+cpp = false
+assembly = true
+rust = false
+
+[build.output]
+type = "static"</code></pre>
+
+<h3 id="15-2-commands">15.2 Commands</h3>
+
+<table>
+<thead><tr>
+<th>Command</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>sino init</code></td>
+<td>Initialize a new project (--lib or --bin)</td>
+</tr>
+<tr>
+<td><code>sino build</code></td>
+<td>Build the project (--static, --shared, --native)</td>
+</tr>
+<tr>
+<td><code>sino add</code></td>
+<td>Add a dependency</td>
+</tr>
+<tr>
+<td><code>sino remove</code></td>
+<td>Remove a dependency</td>
+</tr>
+<tr>
+<td><code>sino update</code></td>
+<td>Update dependencies</td>
+</tr>
+<tr>
+<td><code>sino install</code></td>
+<td>Install dependencies from manifest</td>
+</tr>
+<tr>
+<td><code>sino test</code></td>
+<td>Run tests</td>
+</tr>
+<tr>
+<td><code>sino doc</code></td>
+<td>Generate documentation</td>
+</tr>
+<tr>
+<td><code>sino clean</code></td>
+<td>Remove build artifacts</td>
+</tr>
+<tr>
+<td><code>sino run</code></td>
+<td>Build and run</td>
+</tr>
+<tr>
+<td><code>sino publish</code></td>
+<td>Publish to registry</td>
+</tr>
+<tr>
+<td><code>sino search</code></td>
+<td>Search packages</td>
+</tr>
+<tr>
+<td><code>sino login</code></td>
+<td>Log in to registry</td>
+</tr>
+<tr>
+<td><code>sino doctor</code></td>
+<td>Check environment</td>
+</tr>
+</tbody></table>
+
+<h3 id="15-3-dependency-resolution">15.3 Dependency Resolution</h3>
+
+<p>The package manager resolves dependencies using semantic versioning. Version requirements support the following operators:</p>
+
+<table>
+<thead><tr>
+<th>Operator</th>
+<th>Example</th>
+<th>Matches</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>^</code></td>
+<td><code>^1.2.3</code></td>
+<td>&gt;=1.2.3, &lt;2.0.0 (compatible)</td>
+</tr>
+<tr>
+<td><code>~</code></td>
+<td><code>~1.2.3</code></td>
+<td>&gt;=1.2.3, &lt;1.3.0 (patch only)</td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td><code>&gt;=1.0.0</code></td>
+<td>&gt;=1.0.0</td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td><code>&gt;1.0.0</code></td>
+<td>&gt;1.0.0</td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td><code>&lt;=1.5.0</code></td>
+<td>&lt;=1.5.0</td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td><code>&lt;2.0.0</code></td>
+<td>&lt;2.0.0</td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td><code>=1.2.3</code></td>
+<td>exactly 1.2.3</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td><code>*</code></td>
+<td>any version</td>
+</tr>
+</tbody></table>
+
+<h3 id="15-4-lock-file">15.4 Lock File</h3>
+
+<p>After dependency resolution, the package manager generates a <code>sino.lock</code> file. The lock file records the exact resolved versions of all dependencies. Committing the lock file ensures reproducible builds across machines. The lock file is in JSON format.</p>
+
+<h3 id="15-5-output-types">15.5 Output Types</h3>
+
+<p>The build system can produce three types of output:</p>
+
+<table>
+<thead><tr>
+<th>Type</th>
+<th>Extension</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>static</td>
+<td><code>.a</code></td>
+<td>Static library (lib&amp;lt;name&amp;gt;.a)</td>
+</tr>
+<tr>
+<td>shared</td>
+<td><code>.so/.dylib/.dll</code></td>
+<td>Shared/dynamic library</td>
+</tr>
+<tr>
+<td>native</td>
+<td><code>.silib</code></td>
+<td>Native Sino library (zip of .si files)</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="16-diagnostics">16. Diagnostics</h2>
+
+<h3 id="16-1-error-format">16.1 Error Format</h3>
+
+<p>Sino diagnostics follow a consistent format designed for readability and IDE integration. Each diagnostic includes a severity, error code, message, source location, and optional hints.</p>
+
+<pre><code class="code-sino">error[SN1001]: Unknown variable
+
+  --&gt; src/main.si:<span class="number">12</span>:<span class="number">8</span>
+   |
+<span class="number">12</span> | <span class="function">print</span>(total)
+   |        ^^^^^
+
+Variable 'total' does <span class="keyword">not</span> exist <span class="keyword">in</span> this scope.
+
+Hint: Did you mean 'totalPrice'?
+
+Documentation: https://crossberry-<span class="keyword">in</span>.github.io/sino-lang-docs/errors/SN1001</code></pre>
+
+<h3 id="16-2-severity-levels">16.2 Severity Levels</h3>
+
+<table>
+<thead><tr>
+<th>Level</th>
+<th>Description</th>
+<th>Exit Code</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>error</td>
+<td>Prevents compilation/execution</td>
+<td>1</td>
+</tr>
+<tr>
+<td>warning</td>
+<td>Potential issue, does not prevent compilation</td>
+<td>0</td>
+</tr>
+<tr>
+<td>note</td>
+<td>Additional context for a preceding diagnostic</td>
+<td>0</td>
+</tr>
+<tr>
+<td>help</td>
+<td>Suggestion for fixing a preceding diagnostic</td>
+<td>0</td>
+</tr>
+</tbody></table>
+
+<h3 id="16-3-source-location">16.3 Source Location</h3>
+
+<p>Diagnostics include source locations in the format <code>file:line:column</code>. The location points to the start of the relevant code. For multi-token constructs, a caret (<code>^</code>) highlights the specific tokens involved. Source context shows the line(s) surrounding the error with line numbers.</p>
+
+<h3 id="16-4-hints-and-suggestions">16.4 Hints and Suggestions</h3>
+
+<p>Diagnostics may include hints (additional context) and suggestions (fix proposals). Hints use the "Hint:" prefix. Suggestions use the "Suggestion:" prefix and may include code snippets. These help programmers quickly understand and fix errors.</p>
+
+<h3 id="16-5-documentation-links">16.5 Documentation Links</h3>
+
+<p>Each error code has a corresponding documentation page. The URL format is <code>https://crossberry-in.github.io/sino-lang-docs/errors/SNxxxx</code>. The documentation explains the error cause, common scenarios, and fix approaches.</p>
+
+<hr>
+
+<h2 id="17-runtime-and-memory">17. Runtime and Memory</h2>
+
+<h3 id="17-1-memory-model">17.1 Memory Model</h3>
+
+<p>Sino uses a managed memory model with automatic garbage collection. Memory is allocated on the stack for local variables with known lifetimes, and on the heap for dynamically allocated objects. The runtime tracks object references and reclaims memory that is no longer reachable. The garbage collector uses a mark-and-sweep algorithm with generational optimization.</p>
+
+<h3 id="17-2-stack-vs-heap">17.2 Stack vs Heap</h3>
+
+<p>Primitive types (int, float, bool, char) and small structs are allocated on the stack. Strings, arrays, maps, and large structs are allocated on the heap. The compiler determines allocation strategy based on type and lifetime analysis. Stack allocation is preferred for performance; heap allocation is used when the lifetime extends beyond the stack frame.</p>
+
+<h3 id="17-3-garbage-collection">17.3 Garbage Collection</h3>
+
+<p>The garbage collector (GC) automatically reclaims memory that is no longer referenced by the program. The GC runs periodically and during memory pressure. GC pauses are typically under 1 millisecond for small heaps. Programs can hint the GC to run at specific points using the <code>std.gc.collect()</code> function.</p>
+
+<h3 id="17-4-ownership">17.4 Ownership</h3>
+
+<p>Sino tracks ownership of heap-allocated objects. An object has a single owner at a time. When the owner goes out of scope, the object is scheduled for deallocation. Ownership can be transferred (moved) or shared (via reference counting). This prevents use-after-free and double-free errors.</p>
+
+<h3 id="17-5-concurrency">17.5 Concurrency</h3>
+
+<p>Sino supports concurrent programming via threads and async/await. Threads are operating system threads managed by the runtime. Channels provide type-safe communication between threads. The async/await mechanism enables efficient asynchronous I/O without blocking threads.</p>
+
+<pre><code class="code-sino"><span class="keyword">import</span> std.thread
+
+<span class="keyword">fn</span> <span class="function">worker</span>(id) {
+    <span class="keyword">for</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i += <span class="number">1</span> {
+        <span class="function">echo</span>(<span class="string">"Worker "</span>, id, <span class="string">": "</span>, i)
+        <span class="function">sleep</span>(<span class="number">0.1</span>)
+    }
+}
+
+t1 = <span class="function">spawn</span>(<span class="keyword">fn</span>() { <span class="function">worker</span>(<span class="number">1</span>) })
+t2 = <span class="function">spawn</span>(<span class="keyword">fn</span>() { <span class="function">worker</span>(<span class="number">2</span>) })
+<span class="function">join</span>(t1)
+<span class="function">join</span>(t2)</code></pre>
+
+<h3 id="17-6-async-await">17.6 Async/Await</h3>
+
+<p>The <code>async</code> keyword marks a function as asynchronous. Asynchronous functions return a Future that can be awaited. The <code>await</code> keyword suspends execution until the Future completes. Async functions enable non-blocking I/O operations.</p>
+
+<pre><code class="code-sino"><span class="keyword">async</span> <span class="keyword">fn</span> <span class="function">fetch_data</span>(url) {
+    response = <span class="keyword">await</span> http.<span class="function">get</span>(url)
+    <span class="keyword">return</span> response.body
+}
+
+<span class="keyword">async</span> <span class="keyword">fn</span> <span class="function">main</span>() {
+    data = <span class="keyword">await</span> <span class="function">fetch_data</span>(<span class="string">"https://api.example.com"</span>)
+    <span class="function">echo</span>(data)
+}</code></pre>
+
+<hr>
+
+<h2 id="appendix-a-error-code-reference">Appendix A: Error Code Reference</h2>
+
+<p>This appendix lists all error codes defined by the Sino specification. Error codes are prefixed with <code>SN</code> and categorized by the first digit.</p>
+
+<h3 id="a-1-parse-errors-sn1xxx">A.1 Parse Errors (SN1xxx)</h3>
+
+<table>
+<thead><tr>
+<th>Code</th>
+<th>Error</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SN1001</td>
+<td>Unknown variable</td>
+<td>A variable used before declaration</td>
+</tr>
+<tr>
+<td>SN1002</td>
+<td>Unexpected token</td>
+<td>A token that doesn't fit the grammar</td>
+</tr>
+<tr>
+<td>SN1003</td>
+<td>Type mismatch</td>
+<td>Incompatible types in assignment</td>
+</tr>
+<tr>
+<td>SN1004</td>
+<td>Cannot reassign constant</td>
+<td>Attempt to modify a const value</td>
+</tr>
+<tr>
+<td>SN1005</td>
+<td>Break outside loop</td>
+<td>break used outside a loop</td>
+</tr>
+<tr>
+<td>SN1006</td>
+<td>Return outside function</td>
+<td>return used outside a function</td>
+</tr>
+<tr>
+<td>SN1007</td>
+<td>Missing semicolon</td>
+<td>Expected ; between statements</td>
+</tr>
+<tr>
+<td>SN1008</td>
+<td>Integer overflow</td>
+<td>Literal exceeds type range</td>
+</tr>
+<tr>
+<td>SN1009</td>
+<td>Invalid escape sequence</td>
+<td>Unknown \\ escape in string</td>
+</tr>
+<tr>
+<td>SN1010</td>
+<td>Unterminated string</td>
+<td>String literal not closed</td>
+</tr>
+<tr>
+<td>SN1011</td>
+<td>Unterminated comment</td>
+<td>/<em> without matching </em>/</td>
+</tr>
+<tr>
+<td>SN1012</td>
+<td>Expected {</td>
+<td>Block opening brace missing</td>
+</tr>
+<tr>
+<td>SN1013</td>
+<td>Expected }</td>
+<td>Block closing brace missing</td>
+</tr>
+<tr>
+<td>SN1014</td>
+<td>Expected (</td>
+<td>Opening parenthesis missing</td>
+</tr>
+<tr>
+<td>SN1015</td>
+<td>Expected )</td>
+<td>Closing parenthesis missing</td>
+</tr>
+</tbody></table>
+
+<h3 id="a-2-type-errors-sn2xxx">A.2 Type Errors (SN2xxx)</h3>
+
+<table>
+<thead><tr>
+<th>Code</th>
+<th>Error</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SN2001</td>
+<td>Type inference failure</td>
+<td>Cannot infer type from context</td>
+</tr>
+<tr>
+<td>SN2002</td>
+<td>Variable shadowing</td>
+<td>Variable redeclared in same scope</td>
+</tr>
+<tr>
+<td>SN2003</td>
+<td>Narrowing cast</td>
+<td>Cast may lose data</td>
+</tr>
+<tr>
+<td>SN2004</td>
+<td>Non-exhaustive match</td>
+<td>Match missing cases</td>
+</tr>
+<tr>
+<td>SN2005</td>
+<td>Undefined function</td>
+<td>Function not found</td>
+</tr>
+<tr>
+<td>SN2006</td>
+<td>Argument count mismatch</td>
+<td>Wrong number of arguments</td>
+</tr>
+<tr>
+<td>SN2007</td>
+<td>Undefined type</td>
+<td>Type not found</td>
+</tr>
+<tr>
+<td>SN2008</td>
+<td>Undefined trait</td>
+<td>Trait not found</td>
+</tr>
+<tr>
+<td>SN2009</td>
+<td>Trait not implemented</td>
+<td>Type doesn't implement trait</td>
+</tr>
+<tr>
+<td>SN2010</td>
+<td>Field not found</td>
+<td>Struct field doesn't exist</td>
+</tr>
+</tbody></table>
+
+<h3 id="a-3-runtime-errors-sn3xxx">A.3 Runtime Errors (SN3xxx)</h3>
+
+<table>
+<thead><tr>
+<th>Code</th>
+<th>Error</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SN3001</td>
+<td>Null dereference</td>
+<td>Accessing member of null</td>
+</tr>
+<tr>
+<td>SN3002</td>
+<td>Index out of bounds</td>
+<td>Array index exceeds length</td>
+</tr>
+<tr>
+<td>SN3003</td>
+<td>Division by zero</td>
+<td>Integer division by zero</td>
+</tr>
+<tr>
+<td>SN3004</td>
+<td>Stack overflow</td>
+<td>Recursion too deep</td>
+</tr>
+<tr>
+<td>SN3005</td>
+<td>Out of memory</td>
+<td>Heap allocation failed</td>
+</tr>
+<tr>
+<td>SN3006</td>
+<td>Invalid cast</td>
+<td>Runtime type cast failed</td>
+</tr>
+<tr>
+<td>SN3007</td>
+<td>Uncaught error</td>
+<td>Error not caught by try/catch</td>
+</tr>
+<tr>
+<td>SN3008</td>
+<td>Channel closed</td>
+<td>Sending to closed channel</td>
+</tr>
+</tbody></table>
+
+<h3 id="a-4-i-o-errors-sn4xxx">A.4 I/O Errors (SN4xxx)</h3>
+
+<table>
+<thead><tr>
+<th>Code</th>
+<th>Error</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SN4001</td>
+<td>File not found</td>
+<td>Specified file does not exist</td>
+</tr>
+<tr>
+<td>SN4002</td>
+<td>Permission denied</td>
+<td>Insufficient permissions</td>
+</tr>
+<tr>
+<td>SN4003</td>
+<td>Network error</td>
+<td>Network operation failed</td>
+</tr>
+<tr>
+<td>SN4004</td>
+<td>Connection refused</td>
+<td>Cannot connect to host</td>
+</tr>
+<tr>
+<td>SN4005</td>
+<td>Timeout</td>
+<td>Operation timed out</td>
+</tr>
+<tr>
+<td>SN4006</td>
+<td>Disk full</td>
+<td>No space to write</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="appendix-b-reserved-keywords">Appendix B: Reserved Keywords</h2>
+
+<p>The following identifiers are reserved as keywords in Sino and cannot be used as variable, function, type, or module names.</p>
+
+<table>
+<thead><tr>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>const</code></td>
+<td><code>fn</code></td>
+<td><code>if</code></td>
+<td><code>else</code></td>
+</tr>
+<tr>
+<td><code>match</code></td>
+<td><code>while</code></td>
+<td><code>for</code></td>
+<td><code>in</code></td>
+</tr>
+<tr>
+<td><code>break</code></td>
+<td><code>continue</code></td>
+<td><code>return</code></td>
+<td><code>import</code></td>
+</tr>
+<tr>
+<td><code>public</code></td>
+<td><code>private</code></td>
+<td><code>struct</code></td>
+<td><code>enum</code></td>
+</tr>
+<tr>
+<td><code>trait</code></td>
+<td><code>impl</code></td>
+<td><code>async</code></td>
+<td><code>await</code></td>
+</tr>
+<tr>
+<td><code>try</code></td>
+<td><code>catch</code></td>
+<td><code>throw</code></td>
+<td><code>defer</code></td>
+</tr>
+<tr>
+<td><code>true</code></td>
+<td><code>false</code></td>
+<td><code>null</code></td>
+<td></td>
+</tr>
+</tbody></table>
+
+<h3 id="b-1-contextual-keywords">B.1 Contextual Keywords</h3>
+
+<p>The following identifiers are contextual keywords — they have special meaning in specific contexts but can be used as identifiers elsewhere:</p>
+
+<table>
+<thead><tr>
+<th>Keyword</th>
+<th>Context</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>as</code></td>
+<td>Module aliasing: <code>import std.math as m</code></td>
+</tr>
+<tr>
+<td><code>for</code></td>
+<td>Impl blocks: <code>impl Trait for Type</code></td>
+</tr>
+<tr>
+<td><code>not</code></td>
+<td>Logical NOT: <code>not x</code></td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="appendix-c-operator-precedence">Appendix C: Operator Precedence</h2>
+
+<p>Operators are listed from lowest precedence (evaluated last) to highest precedence (evaluated first). Operators on the same line have equal precedence and are evaluated according to their associativity.</p>
+
+<table>
+<thead><tr>
+<th>Precedence</th>
+<th>Operator</th>
+<th>Associativity</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>1 (lowest)</td>
+<td><code>or</code></td>
+<td>Left</td>
+<td>Logical OR (short-circuit)</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>and</code></td>
+<td>Left</td>
+<td>Logical AND (short-circuit)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>== !=</code></td>
+<td>Left</td>
+<td>Equality comparison</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>&lt; &gt; &lt;= &gt;=</code></td>
+<td>Left</td>
+<td>Relational comparison</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>+ -</code></td>
+<td>Left</td>
+<td>Addition and subtraction</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>* / %</code></td>
+<td>Left</td>
+<td>Multiplication, division, modulo</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>**</code></td>
+<td>Right</td>
+<td>Exponentiation</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>not - !</code></td>
+<td>Prefix</td>
+<td>Unary NOT, negation</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>. () []</code></td>
+<td>Left</td>
+<td>Member access, call, index</td>
+</tr>
+<tr>
+<td>10 (highest)</td>
+<td><code>(grouping)</code></td>
+<td>N/A</td>
+<td>Parenthesized expression</td>
+</tr>
+</tbody></table>
+
+<h3 id="c-1-assignment-operators">C.1 Assignment Operators</h3>
+
+<p>Assignment operators (<code>=</code>, <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>) have lower precedence than all other operators. They are right-associative: <code>a = b = c</code> assigns <code>c</code> to <code>b</code>, then <code>b</code> to <code>a</code>.</p>
+
+<h3 id="c-2-examples">C.2 Examples</h3>
+
+<pre><code class="code-sino"><span class=<span class="string">"comment"</span>># Precedence: * before +</span>
+result = <span class="number">2</span> + <span class="number">3</span> * <span class="number">4</span>    <span class=<span class="string">"comment"</span>># <span class="number">14</span>, <span class="keyword">not</span> <span class="number">20</span></span>
+
+<span class=<span class="string">"comment"</span>># Parentheses override</span>
+result = (<span class="number">2</span> + <span class="number">3</span>) * <span class="number">4</span>  <span class=<span class="string">"comment"</span>># <span class="number">20</span></span>
+
+<span class=<span class="string">"comment"</span>># Exponentiation is right-associative</span>
+result = <span class="number">2</span> ** <span class="number">3</span> ** <span class="number">2</span>  <span class=<span class="string">"comment"</span>># <span class="number">512</span> = <span class="number">2</span>^(<span class="number">3</span>^<span class="number">2</span>) = <span class="number">2</span>^<span class="number">9</span></span>
+
+<span class=<span class="string">"comment"</span>># Logical operators short-circuit</span>
+result = <span class="keyword">false</span> and <span class="function">expensive</span>()  <span class=<span class="string">"comment"</span>># <span class="function">expensive</span>() <span class="keyword">not</span> called</span>
+result = <span class="keyword">true</span> or <span class="function">expensive</span>()    <span class=<span class="string">"comment"</span>># <span class="function">expensive</span>() <span class="keyword">not</span> called</span></code></pre>
+
+<hr>
+
+<p><em>End of Sino Programming Language Specification v2.0</em></p>
+
+<p>Copyright © 2026 crossberry-in. All Rights Reserved.</p>
+
+
+            <div class="footer">
+                <p>Copyright &copy; 2026 crossberry-in. Sino is released under a proprietary license.</p>
+                <p><a href="https://github.com/crossberry-in/sino-lang-docs">View on GitHub</a> | <a href="spec.md">View as Markdown</a></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Close sidebar on mobile when clicking a link
+        document.querySelectorAll('.sidebar-nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    document.getElementById('sidebar').classList.remove('open');
+                }
+            });
+        });
+
+        // Highlight active section in sidebar based on scroll position
+        const headings = document.querySelectorAll('h2, h3');
+        const sidebarLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            headings.forEach(h => {
+                const top = h.offsetTop - 100;
+                if (window.scrollY >= top) {
+                    current = h.id;
+                }
+            });
+
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
