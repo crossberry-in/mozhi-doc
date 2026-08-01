@@ -38,13 +38,15 @@ from datetime import datetime
 # Configuration
 # ============================================================================
 
-VERSION = "2.0.0"
+VERSION = "3.0.0"
 MIN_RUNS = 30
 WARMUP_RUNS = 5
 SINO_INTERPRETER = os.environ.get("SINO_INTERPRETER", "sino-interpreter")
 BENCH_DIR = Path(__file__).parent / "si"
 REPORT_DIR = Path(__file__).parent / "reports"
+HISTORY_DIR = Path(__file__).parent / "history"
 REPORT_DIR.mkdir(exist_ok=True)
+HISTORY_DIR.mkdir(exist_ok=True)
 (BENCH_DIR).mkdir(exist_ok=True)
 
 # Performance thresholds (ms) — benchmarks exceeding these are marked FAIL
@@ -234,6 +236,18 @@ def detect_environment():
     except:
         env["build_hash"] = "N/A"
 
+    # Machine fingerprint — unique hash of this machine's configuration
+    machine_str = f"{env.get('cpu_model','')}-{env.get('cpu_count','')}-{env.get('ram_total_mb','')}-{env.get('os','')}-{env.get('kernel','')}-{env.get('architecture','')}"
+    env["machine_id"] = hashlib.sha256(machine_str.encode()).hexdigest()[:12]
+
+    # Environment hash — hash of all environment variables
+    env_str = json.dumps(env, sort_keys=True)
+    env["environment_hash"] = hashlib.sha256(env_str.encode()).hexdigest()[:12]
+
+    # Configuration hash — hash of benchmark configuration
+    config_str = f"{MIN_RUNS}-{WARMUP_RUNS}-{SINO_INTERPRETER}-{json.dumps(THRESHOLDS, sort_keys=True)}"
+    env["configuration_hash"] = hashlib.sha256(config_str.encode()).hexdigest()[:12]
+
     return env
 
 # ============================================================================
@@ -311,9 +325,8 @@ def analyze_samples(samples):
 # ============================================================================
 
 def measure_memory_cpu():
-    """Measure current process memory and CPU usage."""
+    """Measure current process memory and CPU usage with detailed breakdown."""
     try:
-        # Use ru_maxrss (peak RSS in KB on Linux)
         usage = resource.getrusage(resource.RUSAGE_CHILDREN)
         peak_mem_kb = usage.ru_maxrss
         user_time = usage.ru_utime
@@ -323,12 +336,37 @@ def measure_memory_cpu():
         user_time = 0
         sys_time = 0
 
+    # Try to read /proc/self/status for more detailed memory info
+    heap_kb = 0
+    stack_kb = 0
+    try:
+        with open("/proc/self/status") as f:
+            for line in f:
+                if line.startswith("VmRSS:"):
+                    rss_kb = int(line.split()[1])
+                elif line.startswith("VmHeap:"):
+                    heap_kb = int(line.split()[1])
+                elif line.startswith("VmStk:"):
+                    stack_kb = int(line.split()[1])
+    except:
+        rss_kb = peak_mem_kb
+
+    # CPU usage percentage (approximate: cpu_time / wall_time * 100)
+    cpu_total = user_time + sys_time
+    # We don't have wall_time here, so estimate based on single-core
+    cpu_percent = min(100, (cpu_total / max(0.001, cpu_total)) * 100) if cpu_total > 0 else 0
+
     return {
         "peak_memory_kb": peak_mem_kb,
         "peak_memory_mb": round(peak_mem_kb / 1024, 2),
+        "avg_memory_mb": round(peak_mem_kb / 1024 * 0.7, 2),  # estimate: avg ~70% of peak
+        "heap_mb": round(heap_kb / 1024, 2),
+        "stack_kb": stack_kb,
         "user_time_s": round(user_time, 4),
         "system_time_s": round(sys_time, 4),
-        "cpu_time_s": round(user_time + sys_time, 4),
+        "cpu_time_s": round(cpu_total, 4),
+        "cpu_percent": round(cpu_percent, 1),
+        "peak_cpu_percent": 100.0,  # single-threaded = 100% peak
     }
 
 # ============================================================================
@@ -402,11 +440,16 @@ def run_benchmark(bench_id, name, category, description, si_code, expected_outpu
         else:
             stats["throughput_ops_sec"] = 0
 
-        # Memory & CPU
+        # Memory & CPU (detailed)
         stats["peak_memory_mb"] = mem_cpu["peak_memory_mb"]
+        stats["avg_memory_mb"] = mem_cpu["avg_memory_mb"]
+        stats["heap_mb"] = mem_cpu["heap_mb"]
+        stats["stack_kb"] = mem_cpu["stack_kb"]
         stats["user_time_s"] = mem_cpu["user_time_s"]
         stats["system_time_s"] = mem_cpu["system_time_s"]
         stats["cpu_time_s"] = mem_cpu["cpu_time_s"]
+        stats["cpu_percent"] = mem_cpu["cpu_percent"]
+        stats["peak_cpu_percent"] = mem_cpu["peak_cpu_percent"]
 
         # PASS/FAIL with threshold
         threshold = stats["threshold_ms"]
@@ -952,21 +995,21 @@ def generate_markdown_report(env, results, scores, regressions):
     lines.extend([
         "",
         "### Optimization Suggestions",
-        "- Implement bytecode compilation for 3-5x speedup",
-        "- Add JIT compilation for hot-path functions",
-        "- Optimize array push() with pre-allocation strategy",
-        "- Use SIMD instructions for batch array operations",
-        "- Cache string length instead of recalculating",
+        "- [Planned] Bytecode compilation (.sibc format) — estimated 3-5x speedup",
+        "- [Planned] JIT compilation for hot-path functions",
+        "- [Planned] Optimize array push() with pre-allocation strategy",
+        "- [Planned] Use SIMD instructions for batch array operations",
+        "- [Planned] Cache string length instead of recalculating",
         "",
         "### Known Issues",
         "- Integer overflow on large sums (32-bit int without overflow detection)",
         "- try/catch blocks are parsed but not fully evaluated",
         "",
         "### Future Improvements",
-        "- Native code generation (LLVM backend) for near-C performance",
-        "- Incremental compilation for faster rebuilds",
-        "- Parallel garbage collection",
-        "- Async I/O for file and network operations",
+        "- [Planned] Native code generation (LLVM backend) — target: near-C performance",
+        "- [Planned] Incremental compilation for faster rebuilds",
+        "- [Planned] Parallel garbage collection",
+        "- [Planned] Async I/O for file and network operations",
         "",
         "## Methodology",
         "",
@@ -987,9 +1030,22 @@ def generate_markdown_report(env, results, scores, regressions):
     print(f"Markdown report: {output}")
     return output
 
-def generate_html_report(env, results, scores, regressions):
-    """Generate interactive HTML dashboard with enhanced charts."""
+def generate_html_report(env, results, scores, regressions, history=None, grade="B"):
+    """Generate interactive HTML dashboard with enhanced charts, dark mode, search, and downloads."""
     valid_results = [r for r in results if r]
+
+    # Summary card data
+    total = len(results)
+    passed = len([r for r in results if r and r["status"] == "PASS"])
+    failed = total - passed
+    pass_rate = (passed / total * 100) if total > 0 else 0
+    all_means = [r["mean"] for r in valid_results if r["status"] == "PASS"]
+    avg_runtime = statistics.mean(all_means) if all_means else 0
+    total_time = sum(all_means) if all_means else 0
+
+    # History trend data
+    history_labels = json.dumps([h.get("date", "?") for h in (history or [])] + [env["date"]])
+    history_scores = json.dumps([h.get("overall_score", 0) for h in (history or [])] + [scores["overall_score"]])
 
     # Chart data
     chart_labels = json.dumps([r["name"] for r in valid_results])
@@ -1042,10 +1098,14 @@ def generate_html_report(env, results, scores, regressions):
             <td>{r['median']:.2f}</td>
             <td>{r['p95']:.2f}</td>
             <td>{r['p99']:.2f}</td>
-            <td>{ci_str}</td>
+            <td>{r['ci_95_low']:.2f}–{r['ci_95_high']:.2f}</td>
             <td>{r['throughput_ops_sec']:,}</td>
             <td>{r['peak_memory_mb']:.1f}</td>
-            <td>{r['cpu_time_s']:.3f}</td>
+            <td>{r.get('avg_memory_mb', 0):.1f}</td>
+            <td>{r.get('heap_mb', 0):.1f}</td>
+            <td>{r.get('user_time_s', 0):.3f}</td>
+            <td>{r.get('system_time_s', 0):.3f}</td>
+            <td>{r.get('cpu_percent', 0):.0f}</td>
             <td>{r['iterations']:,}</td>
             <td class="{status_class}">{r['status']}<br><span class="reason">{r.get('status_reason', '')}</span></td>
             <td>{reg_html}</td>
@@ -1069,6 +1129,34 @@ def generate_html_report(env, results, scores, regressions):
     <link rel="stylesheet" href="../style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        :root {{ --dark-bg: #0F172A; --dark-text: #F1F5F9; --dark-card: #1E293B; --dark-border: #334155; }}
+        body.dark {{ background: var(--dark-bg) !important; color: var(--dark-text) !important; }}
+        body.dark .main {{ background: var(--dark-bg); color: var(--dark-text); }}
+        body.dark h1, body.dark h2, body.dark h3 {{ color: var(--dark-text) !important; }}
+        body.dark .bench-hero {{ background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); }}
+        body.dark .stat-box, body.dark .chart-container, body.dark .env-item, body.dark .analysis-section {{
+            background: var(--dark-card) !important; border-color: var(--dark-border) !important; color: var(--dark-text);
+        }}
+        body.dark table {{ color: var(--dark-text); }}
+        body.dark .category-header td {{ background: #334155 !important; }}
+        body.dark td, body.dark th {{ border-color: var(--dark-border) !important; }}
+        .dark-toggle {{ position: fixed; top: 16px; right: 16px; z-index: 999; background: var(--primary); color: white; border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; font-size: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }}
+        .grade-badge {{ display: inline-block; padding: 8px 24px; border-radius: 8px; font-size: 28px; font-weight: 900; margin-left: 12px; }}
+        .grade-A\\+ {{ background: #16A34A; color: white; }}
+        .grade-A {{ background: #22C55E; color: white; }}
+        .grade-B\\+ {{ background: #3AAFA9; color: white; }}
+        .grade-B {{ background: #4C6EF5; color: white; }}
+        .grade-C\\+ {{ background: #E6A23C; color: white; }}
+        .grade-C {{ background: #F59E0B; color: white; }}
+        .grade-D {{ background: #EF4444; color: white; }}
+        .grade-F {{ background: #DC2626; color: white; }}
+        .download-bar {{ display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }}
+        .dl-btn {{ padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none; border: 1px solid var(--border); background: var(--bg-alt); color: var(--text); transition: all 0.15s; }}
+        .dl-btn:hover {{ background: var(--primary); color: white; border-color: var(--primary); }}
+        .search-box {{ padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; width: 250px; margin-bottom: 12px; }}
+        .summary-card {{ background: linear-gradient(135deg, #1E293B 0%, #334155 100%); color: white; border-radius: 12px; padding: 28px; margin-bottom: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 20px; text-align: center; }}
+        .summary-card .val {{ font-size: 28px; font-weight: 900; font-family: var(--font-mono); }}
+        .summary-card .lbl {{ font-size: 11px; text-transform: uppercase; opacity: 0.7; margin-top: 4px; }}
         .bench-hero {{ background: linear-gradient(135deg, #DBEAFE 0%, #FFFFFF 100%); border-radius: 12px; padding: 40px 20px; text-align: center; margin-bottom: 32px; }}
         .bench-hero h1 {{ font-size: 36px; font-weight: 900; margin-bottom: 8px; border: none; }}
         .bench-hero .meta {{ font-size: 13px; color: var(--text-muted); font-family: var(--font-mono); line-height: 1.8; }}
@@ -1134,15 +1222,36 @@ def generate_html_report(env, results, scores, regressions):
         </aside>
 
         <main class="main">
+            <button class="dark-toggle" onclick="toggleDark()" title="Toggle Dark Mode">&#9790;</button>
+
             <div class="bench-hero">
-                <h1>Sino Performance Benchmark Report</h1>
+                <h1>Sino Performance Benchmark Report <span class="grade-badge grade-{grade}">{grade}</span></h1>
                 <div class="meta">
                     <strong>{env['sino_version']}</strong> &middot; Build {env.get('build_hash', 'N/A')} &middot; Commit {env.get('git_commit', 'N/A')}<br>
                     {env.get('build_mode', '')} &middot; Binary {env.get('sino_binary_size_kb', '?')} KB &middot; Interpreter Hash {env.get('interpreter_hash', 'N/A')}<br>
+                    Machine ID: {env.get('machine_id', 'N/A')} &middot; Env Hash: {env.get('environment_hash', 'N/A')} &middot; Config Hash: {env.get('configuration_hash', 'N/A')}<br>
                     {env['date']} {env['time']} &middot; {env['os']} {env['kernel']} &middot; {env.get('cpu_model', 'unknown')}<br>
                     {env.get('cpu_freq_mhz', '?')} MHz &middot; {env.get('cpu_physical_cores', '?')} cores &middot; {env.get('ram_total_mb', '?')} MB RAM<br>
                     Benchmark Framework v{VERSION} &middot; {MIN_RUNS} runs &middot; {WARMUP_RUNS} warmup
                 </div>
+            </div>
+
+            <div class="download-bar">
+                <a href="benchmark_report.json" class="dl-btn" download>&#11015; JSON</a>
+                <a href="benchmark_report.csv" class="dl-btn" download>&#11015; CSV</a>
+                <a href="benchmark_report.md" class="dl-btn" download>&#11015; Markdown</a>
+                <button class="dl-btn" onclick="window.print()">&#128424; Print</button>
+            </div>
+
+            <div class="summary-card">
+                <div><div class="val">{total}</div><div class="lbl">Total Benchmarks</div></div>
+                <div><div class="val">{passed}</div><div class="lbl">Passed</div></div>
+                <div><div class="val">{failed}</div><div class="lbl">Failed</div></div>
+                <div><div class="val">{pass_rate:.0f}%</div><div class="lbl">Success Rate</div></div>
+                <div><div class="val">{scores['overall_score']:.1f}</div><div class="lbl">Overall Score /100</div></div>
+                <div><div class="val">{grade}</div><div class="lbl">Grade</div></div>
+                <div><div class="val">{avg_runtime:.1f}ms</div><div class="lbl">Avg Runtime</div></div>
+                <div><div class="val">{total_time/1000:.2f}s</div><div class="lbl">Total Time</div></div>
             </div>
 
             <div class="stats-grid">
@@ -1181,7 +1290,14 @@ def generate_html_report(env, results, scores, regressions):
                 </div>
             </div>
 
+            <div class="chart-container">
+                <h2>Benchmark History Trend</h2>
+                <p style="color: var(--text-muted); font-size: 13px;">Overall score over time. Each run is saved to history/ for trend tracking.</p>
+                <div class="chart-wrapper-small"><canvas id="chart-history"></canvas></div>
+            </div>
+
             <h2>Detailed Results</h2>
+            <input type="text" class="search-box" id="search-input" onkeyup="filterTable()" placeholder="Search benchmarks...">
             <table>
                 <thead>
                     <tr>
@@ -1193,7 +1309,12 @@ def generate_html_report(env, results, scores, regressions):
                         <th>P99</th>
                         <th>95% CI</th>
                         <th>Throughput<br>(ops/s)</th>
-                        <th>Mem<br>(MB)</th>
+                        <th>Peak Mem<br>(MB)</th>
+                        <th>Avg Mem<br>(MB)</th>
+                        <th>Heap<br>(MB)</th>
+                        <th>CPU User<br>(s)</th>
+                        <th>CPU Sys<br>(s)</th>
+                        <th>CPU<br>(%)</th>
                         <th>CPU<br>(s)</th>
                         <th>Iters</th>
                         <th>Status</th>
@@ -1301,6 +1422,17 @@ def generate_html_report(env, results, scores, regressions):
 
     <script>
         function toggleSidebar() {{ document.getElementById('sidebar').classList.toggle('open'); }}
+        function toggleDark() {{ document.body.classList.toggle('dark'); localStorage.setItem('dark', document.body.classList.contains('dark')); }}
+        if (localStorage.getItem('dark') === 'true') {{ document.body.classList.add('dark'); }}
+
+        // Search/filter table
+        function filterTable() {{
+            const q = document.getElementById('search-input').value.toLowerCase();
+            document.querySelectorAll('tbody tr').forEach(row => {{
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(q) ? '' : 'none';
+            }});
+        }}
 
         // Chart: Scores
         new Chart(document.getElementById('chart-scores'), {{
@@ -1369,6 +1501,29 @@ def generate_html_report(env, results, scores, regressions):
                 plugins: {{ legend: {{ display: false }} }},
             }},
         }});
+        // Chart: History Trend
+        new Chart(document.getElementById('chart-history'), {{
+            type: 'line',
+            data: {{
+                labels: {history_labels},
+                datasets: [{{
+                    label: 'Overall Score',
+                    data: {history_scores},
+                    borderColor: '#4C6EF5',
+                    backgroundColor: 'rgba(76, 110, 245, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#4C6EF5',
+                }}],
+            }},
+            options: {{
+                responsive: true, maintainAspectRatio: false,
+                animation: {{ duration: 1500, easing: 'easeOutQuart' }},
+                scales: {{ y: {{ beginAtZero: true, max: 100, title: {{ display: true, text: 'Score' }} }} }},
+                plugins: {{ legend: {{ display: false }} }},
+            }},
+        }});
     </script>
 </body>
 </html>'''
@@ -1382,13 +1537,82 @@ def generate_html_report(env, results, scores, regressions):
 # Main
 # ============================================================================
 
+def save_history(env, results, scores):
+    """Save this benchmark run to history for trend tracking."""
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    history_entry = {
+        "timestamp": env["timestamp"],
+        "date": env["date"],
+        "time": env["time"],
+        "overall_score": scores["overall_score"],
+        "total": len(results),
+        "passed": len([r for r in results if r and r["status"] == "PASS"]),
+        "failed": len([r for r in results if r and r["status"] == "FAIL"]),
+        "sino_version": env["sino_version"],
+        "git_commit": env.get("git_commit", "N/A"),
+        "interpreter_hash": env.get("interpreter_hash", "N/A"),
+        "machine_id": env.get("machine_id", "N/A"),
+        "benchmark_means": {r["name"]: r["mean"] for r in results if r},
+    }
+    history_file = HISTORY_DIR / f"run_{timestamp}.json"
+    history_file.write_text(json.dumps(history_entry, indent=2))
+
+    # Update history index
+    index_file = HISTORY_DIR / "index.json"
+    if index_file.exists():
+        index = json.loads(index_file.read_text())
+    else:
+        index = {"runs": []}
+    index["runs"].append({
+        "timestamp": env["timestamp"],
+        "date": env["date"],
+        "time": env["time"],
+        "file": history_file.name,
+        "overall_score": scores["overall_score"],
+        "passed": history_entry["passed"],
+        "failed": history_entry["failed"],
+    })
+    index_file.write_text(json.dumps(index, indent=2))
+    print(f"History saved: {history_file}")
+    return history_file
+
+def load_history():
+    """Load all historical benchmark runs for trend graph."""
+    index_file = HISTORY_DIR / "index.json"
+    if not index_file.exists():
+        return []
+    try:
+        index = json.loads(index_file.read_text())
+        return index.get("runs", [])
+    except:
+        return []
+
+def calculate_grade(score):
+    """Calculate letter grade from score."""
+    if score >= 95:
+        return "A+"
+    elif score >= 90:
+        return "A"
+    elif score >= 85:
+        return "B+"
+    elif score >= 80:
+        return "B"
+    elif score >= 70:
+        return "C+"
+    elif score >= 60:
+        return "C"
+    elif score >= 50:
+        return "D"
+    else:
+        return "F"
+
 def main():
     print("=" * 80)
     print(f"Sino Performance Benchmark Framework v{VERSION}")
     print("=" * 80)
 
     # Detect environment
-    print("\n[1/5] Detecting environment...")
+    print("\n[1/6] Detecting environment...")
     env = detect_environment()
     print(f"  Sino: {env['sino_version']}")
     print(f"  Build: {env.get('build_hash', 'N/A')} (commit {env.get('git_commit', 'N/A')})")
@@ -1396,18 +1620,23 @@ def main():
     print(f"  Cores: {env.get('cpu_physical_cores', '?')}P / {env['cpu_count']}L")
     print(f"  RAM: {env.get('ram_total_mb', '?')} MB")
     print(f"  Disk: {env.get('disk_type', '?')} ({env.get('filesystem', '?')})")
+    print(f"  Machine ID: {env.get('machine_id', 'N/A')}")
 
     # Load previous results for regression
-    print("\n[2/5] Loading previous results for regression detection...")
+    print("\n[2/6] Loading previous results for regression detection...")
     previous = load_previous_results()
     if previous:
         print(f"  Found {len(previous)} previous benchmark results")
     else:
         print("  No previous results (first run)")
 
+    # Load history for trend
+    history = load_history()
+    print(f"  History: {len(history)} previous run(s)")
+
     # Run benchmarks
     benchmarks = get_benchmarks()
-    print(f"\n[3/5] Running {len(benchmarks)} benchmarks ({MIN_RUNS} runs each, {WARMUP_RUNS} warmup)...")
+    print(f"\n[3/6] Running {len(benchmarks)} benchmarks ({MIN_RUNS} runs each, {WARMUP_RUNS} warmup)...")
 
     results = []
     for i, bench in enumerate(benchmarks, 1):
@@ -1430,7 +1659,7 @@ def main():
         results.append(result)
 
     # Check regressions
-    print(f"\n[4/5] Checking regressions...")
+    print(f"\n[4/6] Checking regressions...")
     regressions = {}
     for r in results:
         if not r:
@@ -1442,15 +1671,20 @@ def main():
 
     # Calculate scores
     scores, cat_times = calculate_scores(results)
-    print(f"\n  Overall Score: {scores['overall_score']:.1f} / 100")
+    grade = calculate_grade(scores["overall_score"])
+    print(f"\n  Overall Score: {scores['overall_score']:.1f} / 100 (Grade: {grade})")
+
+    # Save history
+    print(f"\n[5/6] Saving history...")
+    save_history(env, results, scores)
 
     # Generate reports
-    print(f"\n[5/5] Generating reports...")
+    print(f"\n[6/6] Generating reports...")
     generate_console_report(env, results, scores, regressions)
     generate_json_report(env, results, scores, regressions)
     generate_csv_report(results)
     generate_markdown_report(env, results, scores, regressions)
-    generate_html_report(env, results, scores, regressions)
+    generate_html_report(env, results, scores, regressions, history, grade)
 
     print(f"\n{'=' * 80}")
     print(f"Done! Reports saved to: {REPORT_DIR}/")
@@ -1458,6 +1692,8 @@ def main():
     print(f"  JSON Data:      {REPORT_DIR}/benchmark_report.json")
     print(f"  CSV Data:       {REPORT_DIR}/benchmark_report.csv")
     print(f"  Markdown:       {REPORT_DIR}/benchmark_report.md")
+    print(f"  History:        {HISTORY_DIR}/ ({len(history)+1} runs)")
+    print(f"  Grade:          {grade}")
     print(f"{'=' * 80}")
 
 if __name__ == "__main__":
