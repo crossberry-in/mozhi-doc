@@ -105,10 +105,10 @@
             <div class="bench-hero">
                 <h1>Mozhi Performance Benchmark Report <span class="grade-badge grade-C+">C+</span></h1>
                 <div class="meta">
-                    <strong>Mozhi v1.0 (C Implementation)</strong> &middot; Build 817cc1b5c13547a5 &middot; Commit c16a659<br>
-                    Release (-O3 -march=native) &middot; Binary 54.7 KB &middot; Interpreter Hash 5065b8dd487010e9<br>
-                    Machine ID: 803582b32a9c &middot; Env Hash: 6bd28df5eff5 &middot; Config Hash: 9e6d26a6a63c<br>
-                    2026-08-01 12:23:35 &middot; Linux 5.10.134-013.8.3.kangaroo.al8.x86_64 &middot; Intel(R) Xeon(R) Processor<br>
+                    <strong>Mozhi v2.0 (C++/ASM/Rust Implementation)</strong> &middot; Build 37b0750b33b9d03b &middot; Commit cfd3754<br>
+                    Release (-O3 -march=native) &middot; Binary 62.7 KB &middot; Interpreter Hash 20ba7a1522760a7c<br>
+                    Machine ID: 803582b32a9c &middot; Env Hash: ddd5baf45ba6 &middot; Config Hash: e562b643c107<br>
+                    2026-08-01 16:15:18 &middot; Linux 5.10.134-013.8.3.kangaroo.al8.x86_64 &middot; Intel(R) Xeon(R) Processor<br>
                     3200.0 MHz &middot; 2 cores &middot; 4041 MB RAM<br>
                     Benchmark Framework v3.0.0 &middot; 10 runs &middot; 2 warmup
                 </div>
@@ -126,10 +126,10 @@
                 <div><div class="val">25</div><div class="lbl">Passed</div></div>
                 <div><div class="val">1</div><div class="lbl">Failed</div></div>
                 <div><div class="val">96%</div><div class="lbl">Success Rate</div></div>
-                <div><div class="val">76.9</div><div class="lbl">Overall Score /100</div></div>
+                <div><div class="val">76.6</div><div class="lbl">Overall Score /100</div></div>
                 <div><div class="val">C+</div><div class="lbl">Grade</div></div>
-                <div><div class="val">204.4ms</div><div class="lbl">Avg Runtime</div></div>
-                <div><div class="val">5.11s</div><div class="lbl">Total Time</div></div>
+                <div><div class="val">227.0ms</div><div class="lbl">Avg Runtime</div></div>
+                <div><div class="val">5.68s</div><div class="lbl">Total Time</div></div>
             </div>
 
             <div class="stats-grid">
@@ -137,7 +137,7 @@
                 <div class="stat-box fail"><div class="value">1</div><div class="label">Failed</div></div>
                 <div class="stat-box"><div class="value">96%</div><div class="label">Pass Rate</div></div>
                 <div class="stat-box"><div class="value">26</div><div class="label">Total Benchmarks</div></div>
-                <div class="stat-box score"><div class="value">76.9</div><div class="label">Overall Score /100</div></div>
+                <div class="stat-box score"><div class="value">76.6</div><div class="label">Overall Score /100</div></div>
                 <div class="stat-box"><div class="value">10</div><div class="label">Runs Each</div></div>
             </div>
 
@@ -202,471 +202,471 @@
                 <tbody><tr class="category-header"><td colspan="13">Core Runtime</td></tr><tr>
             <td>BR001</td>
             <td><strong>startup_shutdown</strong><br><span class="desc">Program startup and shutdown time (echo single value)</span></td>
-            <td>0.44</td>
-            <td>0.43</td>
             <td>0.47</td>
-            <td>0.47</td>
-            <td>0.42–0.45</td>
-            <td>2,290</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>0.005</td>
-            <td>0.002</td>
-            <td>100</td>
-            <td>1</td>
-            <td class="pass">PASS<br><span class="reason">Mean 0.44 ms within threshold (100 ms)</span></td>
-            <td><span class="reg-stable">+3.3%</span></td>
-        </tr><tr>
-            <td>BR002</td>
-            <td><strong>function_call</strong><br><span class="desc">Function call overhead: 100,000 calls to add(a,b)</span></td>
-            <td>55.95</td>
-            <td>55.41</td>
-            <td>58.88</td>
-            <td>60.81</td>
-            <td>54.77–57.13</td>
-            <td>1,787,374</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>0.668</td>
-            <td>0.007</td>
-            <td>100</td>
-            <td>100,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 55.95 ms within threshold (500 ms)</span></td>
-            <td><span class="reg-stable">+1.6%</span></td>
-        </tr><tr>
-            <td>BR003</td>
-            <td><strong>recursive_fibonacci</strong><br><span class="desc">Recursive Fibonacci(25): tests function call + recursion</span></td>
-            <td>95.80</td>
-            <td>95.72</td>
-            <td>96.46</td>
-            <td>96.75</td>
-            <td>95.54–96.07</td>
-            <td>2,534,200</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>1.811</td>
-            <td>0.014</td>
-            <td>100</td>
-            <td>242,785</td>
-            <td class="pass">PASS<br><span class="reason">Mean 95.80 ms within threshold (5000 ms)</span></td>
-            <td><span class="reg-stable">-0.2%</span></td>
-        </tr><tr>
-            <td>BR004</td>
-            <td><strong>nested_calls</strong><br><span class="desc">Nested function calls (5 levels deep): 100,000 iterations</span></td>
-            <td>150.23</td>
-            <td>149.83</td>
-            <td>152.55</td>
-            <td>153.69</td>
-            <td>149.35–151.11</td>
-            <td>665,648</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>3.606</td>
-            <td>0.019</td>
-            <td>100</td>
-            <td>100,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 150.23 ms within threshold (500 ms)</span></td>
-            <td><span class="reg-stable">+0.7%</span></td>
-        </tr><tr>
-            <td>BR005</td>
-            <td><strong>loop_sum</strong><br><span class="desc">Simple loop: sum 0 to 999,999</span></td>
-            <td>223.75</td>
-            <td>223.28</td>
-            <td>226.02</td>
-            <td>226.65</td>
-            <td>222.93–224.57</td>
-            <td>4,469,216</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>6.280</td>
-            <td>0.027</td>
-            <td>100</td>
-            <td>1,000,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 223.75 ms within threshold (500 ms)</span></td>
-            <td><span class="reg-stable">-0.5%</span></td>
-        </tr><tr>
-            <td>BR006</td>
-            <td><strong>conditional_branching</strong><br><span class="desc">Conditional if/else branching: 1,000,000 iterations</span></td>
-            <td>332.39</td>
-            <td>331.06</td>
-            <td>336.98</td>
-            <td>337.47</td>
-            <td>330.52–334.26</td>
-            <td>3,008,539</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>10.252</td>
-            <td>0.037</td>
-            <td>100</td>
-            <td>1,000,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 332.39 ms within threshold (500 ms)</span></td>
-            <td><span class="reg-stable">+0.4%</span></td>
-        </tr><tr>
-            <td>BR007</td>
-            <td><strong>pattern_matching</strong><br><span class="desc">Pattern matching (match/case): 100,000 iterations</span></td>
-            <td>31.84</td>
-            <td>31.79</td>
-            <td>32.25</td>
-            <td>32.47</td>
-            <td>31.68–32.00</td>
-            <td>3,140,348</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>10.630</td>
-            <td>0.039</td>
-            <td>100</td>
-            <td>100,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 31.84 ms within threshold (500 ms)</span></td>
-            <td><span class="reg-stable">+0.0%</span></td>
-        </tr><tr>
-            <td>BR008</td>
-            <td><strong>variable_access</strong><br><span class="desc">Variable access speed: 5 variables, 1,000,000 iterations</span></td>
-            <td>550.87</td>
-            <td>547.90</td>
-            <td>563.86</td>
-            <td>571.91</td>
-            <td>545.72–556.02</td>
-            <td>1,815,320</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>17.229</td>
-            <td>0.047</td>
-            <td>100</td>
-            <td>1,000,000</td>
-            <td class="fail">FAIL<br><span class="reason">Mean exceeded threshold (500 ms). Measured: 550.87 ms</span></td>
-            <td><span class="reg-stable">+0.0%</span></td>
-        </tr><tr>
-            <td>BR009</td>
-            <td><strong>constant_access</strong><br><span class="desc">Constant access speed: 3 constants, 1,000,000 iterations</span></td>
-            <td>371.89</td>
-            <td>370.80</td>
-            <td>377.17</td>
-            <td>380.02</td>
-            <td>369.88–373.90</td>
-            <td>2,688,973</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>21.683</td>
-            <td>0.050</td>
-            <td>100</td>
-            <td>1,000,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 371.89 ms within threshold (500 ms)</span></td>
-            <td><span class="reg-stable">-0.0%</span></td>
-        </tr><tr class="category-header"><td colspan="13">Collections</td></tr><tr>
-            <td>BR010</td>
-            <td><strong>array_create</strong><br><span class="desc">Array creation: 10,000 array literal allocations</span></td>
-            <td>3.41</td>
-            <td>3.39</td>
-            <td>3.47</td>
-            <td>3.48</td>
-            <td>3.38–3.43</td>
-            <td>2,936,254</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>21.720</td>
-            <td>0.053</td>
-            <td>100</td>
-            <td>10,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 3.41 ms within threshold (100 ms)</span></td>
-            <td><span class="reg-stable">+0.8%</span></td>
-        </tr><tr>
-            <td>BR011</td>
-            <td><strong>array_push</strong><br><span class="desc">Array push: 100,000 push operations</span></td>
-            <td>41.83</td>
-            <td>41.73</td>
-            <td>42.26</td>
-            <td>42.27</td>
-            <td>41.65–42.02</td>
-            <td>2,390,492</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>22.192</td>
-            <td>0.083</td>
-            <td>100</td>
-            <td>100,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 41.83 ms within threshold (1000 ms)</span></td>
-            <td><span class="reg-stable">+1.5%</span></td>
-        </tr><tr>
-            <td>BR012</td>
-            <td><strong>array_access</strong><br><span class="desc">Array index access: 10,000 elements, 10,000 reads</span></td>
-            <td>8.11</td>
-            <td>8.09</td>
-            <td>8.24</td>
-            <td>8.25</td>
-            <td>8.06–8.17</td>
-            <td>1,232,407</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>22.280</td>
-            <td>0.089</td>
-            <td>100</td>
-            <td>10,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 8.11 ms within threshold (500 ms)</span></td>
-            <td><span class="reg-stable">+1.6%</span></td>
-        </tr><tr>
-            <td>BR013</td>
-            <td><strong>array_iterate</strong><br><span class="desc">Array for-in iteration: 10,000 elements</span></td>
-            <td>6.12</td>
-            <td>6.11</td>
-            <td>6.20</td>
-            <td>6.22</td>
-            <td>6.09–6.15</td>
-            <td>1,633,907</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>22.346</td>
-            <td>0.095</td>
-            <td>100</td>
-            <td>10,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 6.12 ms within threshold (500 ms)</span></td>
-            <td><span class="reg-stable">+1.4%</span></td>
-        </tr><tr class="category-header"><td colspan="13">Strings</td></tr><tr>
-            <td>BR014</td>
-            <td><strong>string_create</strong><br><span class="desc">String creation: 10,000 string assignments</span></td>
-            <td>2.72</td>
-            <td>2.72</td>
-            <td>2.76</td>
-            <td>2.77</td>
-            <td>2.70–2.74</td>
-            <td>3,678,229</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>22.374</td>
-            <td>0.100</td>
-            <td>100</td>
-            <td>10,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 2.72 ms within threshold (100 ms)</span></td>
-            <td><span class="reg-stable">+1.9%</span></td>
-        </tr><tr>
-            <td>BR015</td>
-            <td><strong>string_concat</strong><br><span class="desc">String concatenation: 10,000 appends with +</span></td>
-            <td>8.18</td>
-            <td>8.16</td>
-            <td>8.28</td>
-            <td>8.30</td>
-            <td>8.14–8.22</td>
-            <td>1,222,972</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>22.468</td>
-            <td>0.103</td>
-            <td>100</td>
-            <td>10,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 8.18 ms within threshold (500 ms)</span></td>
-            <td><span class="reg-stable">+1.5%</span></td>
-        </tr><tr>
-            <td>BR016</td>
-            <td><strong>string_len</strong><br><span class="desc">String length: len() called 1,000,000 times</span></td>
-            <td>374.12</td>
-            <td>367.97</td>
-            <td>402.52</td>
-            <td>422.34</td>
-            <td>362.49–385.74</td>
-            <td>2,672,972</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>26.933</td>
-            <td>0.110</td>
-            <td>100</td>
-            <td>1,000,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 374.12 ms within threshold (1000 ms)</span></td>
-            <td><span class="reg-stable">+1.3%</span></td>
-        </tr><tr class="category-header"><td colspan="13">Math</td></tr><tr>
-            <td>BR017</td>
-            <td><strong>integer_arithmetic</strong><br><span class="desc">Integer arithmetic (+, -, *, /): 1,000,000 iterations</span></td>
-            <td>409.19</td>
-            <td>407.72</td>
-            <td>415.74</td>
-            <td>415.99</td>
-            <td>406.97–411.41</td>
-            <td>2,443,842</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>31.837</td>
-            <td>0.117</td>
-            <td>100</td>
-            <td>1,000,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 409.19 ms within threshold (1000 ms)</span></td>
-            <td><span class="reg-stable">+0.2%</span></td>
-        </tr><tr>
-            <td>BR018</td>
-            <td><strong>float_arithmetic</strong><br><span class="desc">Float arithmetic: 1,000,000 iterations</span></td>
-            <td>273.14</td>
-            <td>272.57</td>
-            <td>275.60</td>
-            <td>276.47</td>
-            <td>272.20–274.08</td>
-            <td>3,661,140</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>35.105</td>
-            <td>0.122</td>
-            <td>100</td>
-            <td>1,000,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 273.14 ms within threshold (1000 ms)</span></td>
-            <td><span class="reg-stable">-0.8%</span></td>
-        </tr><tr>
-            <td>BR019</td>
-            <td><strong>power_operation</strong><br><span class="desc">Power operation (**): 100,000 iterations</span></td>
-            <td>24.66</td>
-            <td>24.20</td>
-            <td>26.69</td>
-            <td>28.24</td>
-            <td>23.80–25.53</td>
-            <td>4,054,673</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>35.394</td>
-            <td>0.126</td>
-            <td>100</td>
-            <td>100,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 24.66 ms within threshold (500 ms)</span></td>
-            <td><span class="reg-stable">+1.7%</span></td>
-        </tr><tr>
-            <td>BR020</td>
-            <td><strong>modulo_operation</strong><br><span class="desc">Modulo operation (%): 1,000,000 iterations</span></td>
-            <td>265.57</td>
-            <td>265.32</td>
-            <td>267.95</td>
-            <td>268.08</td>
-            <td>264.73–266.41</td>
-            <td>3,765,500</td>
-            <td>18.2</td>
-            <td>12.8</td>
-            <td>0.0</td>
-            <td>38.567</td>
-            <td>0.133</td>
-            <td>100</td>
-            <td>1,000,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 265.57 ms within threshold (1000 ms)</span></td>
-            <td><span class="reg-stable">-0.1%</span></td>
-        </tr><tr class="category-header"><td colspan="13">Error Handling</td></tr><tr>
-            <td>BR021</td>
-            <td><strong>try_catch_overhead</strong><br><span class="desc">Try/catch block overhead: 100,000 iterations (no throw)</span></td>
-            <td>0.47</td>
-            <td>0.46</td>
+            <td>0.48</td>
             <td>0.51</td>
             <td>0.52</td>
             <td>0.45–0.49</td>
-            <td>213,174,163</td>
-            <td>18.2</td>
+            <td>2,125</td>
+            <td>18.3</td>
             <td>12.8</td>
             <td>0.0</td>
-            <td>38.570</td>
+            <td>0.004</td>
+            <td>0.004</td>
+            <td>100</td>
+            <td>1</td>
+            <td class="pass">PASS<br><span class="reason">Mean 0.47 ms within threshold (100 ms)</span></td>
+            <td><span class="reg-regress">+7.8%</span></td>
+        </tr><tr>
+            <td>BR002</td>
+            <td><strong>function_call</strong><br><span class="desc">Function call overhead: 100,000 calls to add(a,b)</span></td>
+            <td>59.01</td>
+            <td>58.89</td>
+            <td>59.47</td>
+            <td>59.59</td>
+            <td>58.83–59.19</td>
+            <td>1,694,611</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>0.709</td>
+            <td>0.005</td>
+            <td>100</td>
+            <td>100,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 59.01 ms within threshold (500 ms)</span></td>
+            <td><span class="reg-regress">+5.5%</span></td>
+        </tr><tr>
+            <td>BR003</td>
+            <td><strong>recursive_fibonacci</strong><br><span class="desc">Recursive Fibonacci(25): tests function call + recursion</span></td>
+            <td>100.69</td>
+            <td>100.00</td>
+            <td>104.05</td>
+            <td>106.49</td>
+            <td>99.29–102.09</td>
+            <td>2,411,136</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>1.910</td>
+            <td>0.008</td>
+            <td>100</td>
+            <td>242,785</td>
+            <td class="pass">PASS<br><span class="reason">Mean 100.69 ms within threshold (5000 ms)</span></td>
+            <td><span class="reg-regress">+5.1%</span></td>
+        </tr><tr>
+            <td>BR004</td>
+            <td><strong>nested_calls</strong><br><span class="desc">Nested function calls (5 levels deep): 100,000 iterations</span></td>
+            <td>160.16</td>
+            <td>159.77</td>
+            <td>162.09</td>
+            <td>163.48</td>
+            <td>159.35–160.96</td>
+            <td>624,379</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>3.824</td>
+            <td>0.015</td>
+            <td>100</td>
+            <td>100,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 160.16 ms within threshold (500 ms)</span></td>
+            <td><span class="reg-regress">+6.6%</span></td>
+        </tr><tr>
+            <td>BR005</td>
+            <td><strong>loop_sum</strong><br><span class="desc">Simple loop: sum 0 to 999,999</span></td>
+            <td>250.56</td>
+            <td>249.82</td>
+            <td>253.68</td>
+            <td>255.17</td>
+            <td>249.40–251.73</td>
+            <td>3,991,001</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>6.821</td>
+            <td>0.019</td>
+            <td>100</td>
+            <td>1,000,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 250.56 ms within threshold (500 ms)</span></td>
+            <td><span class="reg-regress">+12.0%</span></td>
+        </tr><tr>
+            <td>BR006</td>
+            <td><strong>conditional_branching</strong><br><span class="desc">Conditional if/else branching: 1,000,000 iterations</span></td>
+            <td>386.73</td>
+            <td>373.50</td>
+            <td>443.65</td>
+            <td>485.59</td>
+            <td>362.88–410.57</td>
+            <td>2,585,805</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>11.423</td>
+            <td>0.027</td>
+            <td>100</td>
+            <td>1,000,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 386.73 ms within threshold (500 ms)</span></td>
+            <td><span class="reg-regress">+16.3%</span></td>
+        </tr><tr>
+            <td>BR007</td>
+            <td><strong>pattern_matching</strong><br><span class="desc">Pattern matching (match/case): 100,000 iterations</span></td>
+            <td>35.93</td>
+            <td>35.89</td>
+            <td>36.15</td>
+            <td>36.17</td>
+            <td>35.82–36.04</td>
+            <td>2,783,252</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>11.849</td>
+            <td>0.031</td>
+            <td>100</td>
+            <td>100,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 35.93 ms within threshold (500 ms)</span></td>
+            <td><span class="reg-regress">+12.8%</span></td>
+        </tr><tr>
+            <td>BR008</td>
+            <td><strong>variable_access</strong><br><span class="desc">Variable access speed: 5 variables, 1,000,000 iterations</span></td>
+            <td>534.79</td>
+            <td>534.11</td>
+            <td>539.08</td>
+            <td>540.54</td>
+            <td>533.28–536.29</td>
+            <td>1,869,909</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>18.256</td>
+            <td>0.036</td>
+            <td>100</td>
+            <td>1,000,000</td>
+            <td class="fail">FAIL<br><span class="reason">Mean exceeded threshold (500 ms). Measured: 534.79 ms</span></td>
+            <td><span class="reg-stable">-2.9%</span></td>
+        </tr><tr>
+            <td>BR009</td>
+            <td><strong>constant_access</strong><br><span class="desc">Constant access speed: 3 constants, 1,000,000 iterations</span></td>
+            <td>387.85</td>
+            <td>386.10</td>
+            <td>396.00</td>
+            <td>401.03</td>
+            <td>384.63–391.06</td>
+            <td>2,578,333</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>22.896</td>
+            <td>0.043</td>
+            <td>100</td>
+            <td>1,000,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 387.85 ms within threshold (500 ms)</span></td>
+            <td><span class="reg-stable">+4.3%</span></td>
+        </tr><tr class="category-header"><td colspan="13">Collections</td></tr><tr>
+            <td>BR010</td>
+            <td><strong>array_create</strong><br><span class="desc">Array creation: 10,000 array literal allocations</span></td>
+            <td>3.53</td>
+            <td>3.53</td>
+            <td>3.55</td>
+            <td>3.56</td>
+            <td>3.51–3.54</td>
+            <td>2,835,351</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>22.933</td>
+            <td>0.048</td>
+            <td>100</td>
+            <td>10,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 3.53 ms within threshold (100 ms)</span></td>
+            <td><span class="reg-stable">+3.6%</span></td>
+        </tr><tr>
+            <td>BR011</td>
+            <td><strong>array_push</strong><br><span class="desc">Array push: 100,000 push operations</span></td>
+            <td>42.70</td>
+            <td>42.72</td>
+            <td>42.98</td>
+            <td>43.03</td>
+            <td>42.58–42.82</td>
+            <td>2,342,063</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>23.407</td>
+            <td>0.086</td>
+            <td>100</td>
+            <td>100,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 42.70 ms within threshold (1000 ms)</span></td>
+            <td><span class="reg-stable">+2.1%</span></td>
+        </tr><tr>
+            <td>BR012</td>
+            <td><strong>array_access</strong><br><span class="desc">Array index access: 10,000 elements, 10,000 reads</span></td>
+            <td>8.31</td>
+            <td>8.28</td>
+            <td>8.47</td>
+            <td>8.51</td>
+            <td>8.25–8.37</td>
+            <td>1,203,283</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>23.501</td>
+            <td>0.090</td>
+            <td>100</td>
+            <td>10,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 8.31 ms within threshold (500 ms)</span></td>
+            <td><span class="reg-stable">+2.4%</span></td>
+        </tr><tr>
+            <td>BR013</td>
+            <td><strong>array_iterate</strong><br><span class="desc">Array for-in iteration: 10,000 elements</span></td>
+            <td>6.36</td>
+            <td>6.35</td>
+            <td>6.50</td>
+            <td>6.52</td>
+            <td>6.31–6.41</td>
+            <td>1,571,462</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>23.572</td>
+            <td>0.094</td>
+            <td>100</td>
+            <td>10,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 6.36 ms within threshold (500 ms)</span></td>
+            <td><span class="reg-stable">+4.0%</span></td>
+        </tr><tr class="category-header"><td colspan="13">Strings</td></tr><tr>
+            <td>BR014</td>
+            <td><strong>string_create</strong><br><span class="desc">String creation: 10,000 string assignments</span></td>
+            <td>2.93</td>
+            <td>2.92</td>
+            <td>2.97</td>
+            <td>2.98</td>
+            <td>2.91–2.94</td>
+            <td>3,416,818</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>23.605</td>
+            <td>0.096</td>
+            <td>100</td>
+            <td>10,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 2.93 ms within threshold (100 ms)</span></td>
+            <td><span class="reg-regress">+7.7%</span></td>
+        </tr><tr>
+            <td>BR015</td>
+            <td><strong>string_concat</strong><br><span class="desc">String concatenation: 10,000 appends with +</span></td>
+            <td>8.37</td>
+            <td>8.37</td>
+            <td>8.43</td>
+            <td>8.45</td>
+            <td>8.35–8.39</td>
+            <td>1,194,158</td>
+            <td>18.3</td>
+            <td>12.8</td>
+            <td>0.0</td>
+            <td>23.700</td>
+            <td>0.100</td>
+            <td>100</td>
+            <td>10,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 8.37 ms within threshold (500 ms)</span></td>
+            <td><span class="reg-stable">+2.4%</span></td>
+        </tr><tr>
+            <td>BR016</td>
+            <td><strong>string_len</strong><br><span class="desc">String length: len() called 1,000,000 times</span></td>
+            <td>390.88</td>
+            <td>389.89</td>
+            <td>395.49</td>
+            <td>395.84</td>
+            <td>389.22–392.54</td>
+            <td>2,558,299</td>
+            <td>18.7</td>
+            <td>13.1</td>
+            <td>0.0</td>
+            <td>28.383</td>
+            <td>0.108</td>
+            <td>100</td>
+            <td>1,000,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 390.88 ms within threshold (1000 ms)</span></td>
+            <td><span class="reg-stable">+4.5%</span></td>
+        </tr><tr class="category-header"><td colspan="13">Math</td></tr><tr>
+            <td>BR017</td>
+            <td><strong>integer_arithmetic</strong><br><span class="desc">Integer arithmetic (+, -, *, /): 1,000,000 iterations</span></td>
+            <td>445.91</td>
+            <td>445.74</td>
+            <td>449.11</td>
+            <td>450.91</td>
+            <td>444.61–447.20</td>
+            <td>2,242,628</td>
+            <td>18.7</td>
+            <td>13.1</td>
+            <td>0.0</td>
+            <td>33.718</td>
+            <td>0.117</td>
+            <td>100</td>
+            <td>1,000,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 445.91 ms within threshold (1000 ms)</span></td>
+            <td><span class="reg-regress">+9.0%</span></td>
+        </tr><tr>
+            <td>BR018</td>
+            <td><strong>float_arithmetic</strong><br><span class="desc">Float arithmetic: 1,000,000 iterations</span></td>
+            <td>313.37</td>
+            <td>312.98</td>
+            <td>315.82</td>
+            <td>317.08</td>
+            <td>312.37–314.37</td>
+            <td>3,191,099</td>
+            <td>18.7</td>
+            <td>13.1</td>
+            <td>0.0</td>
+            <td>37.466</td>
+            <td>0.123</td>
+            <td>100</td>
+            <td>1,000,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 313.37 ms within threshold (1000 ms)</span></td>
+            <td><span class="reg-regress">+14.7%</span></td>
+        </tr><tr>
+            <td>BR019</td>
+            <td><strong>power_operation</strong><br><span class="desc">Power operation (**): 100,000 iterations</span></td>
+            <td>27.16</td>
+            <td>27.18</td>
+            <td>27.25</td>
+            <td>27.27</td>
+            <td>27.11–27.21</td>
+            <td>3,682,061</td>
+            <td>18.7</td>
+            <td>13.1</td>
+            <td>0.0</td>
+            <td>37.787</td>
+            <td>0.127</td>
+            <td>100</td>
+            <td>100,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 27.16 ms within threshold (500 ms)</span></td>
+            <td><span class="reg-regress">+10.1%</span></td>
+        </tr><tr>
+            <td>BR020</td>
+            <td><strong>modulo_operation</strong><br><span class="desc">Modulo operation (%): 1,000,000 iterations</span></td>
+            <td>320.00</td>
+            <td>295.71</td>
+            <td>412.90</td>
+            <td>439.94</td>
+            <td>288.72–351.29</td>
+            <td>3,124,952</td>
+            <td>18.7</td>
+            <td>13.1</td>
+            <td>0.0</td>
+            <td>41.566</td>
+            <td>0.134</td>
+            <td>100</td>
+            <td>1,000,000</td>
+            <td class="pass">PASS<br><span class="reason">Mean 320.00 ms within threshold (1000 ms)</span></td>
+            <td><span class="reg-regress">+20.5%</span></td>
+        </tr><tr class="category-header"><td colspan="13">Error Handling</td></tr><tr>
+            <td>BR021</td>
+            <td><strong>try_catch_overhead</strong><br><span class="desc">Try/catch block overhead: 100,000 iterations (no throw)</span></td>
+            <td>0.48</td>
+            <td>0.48</td>
+            <td>0.51</td>
+            <td>0.53</td>
+            <td>0.46–0.49</td>
+            <td>209,555,742</td>
+            <td>18.7</td>
+            <td>13.1</td>
+            <td>0.0</td>
+            <td>41.570</td>
             <td>0.135</td>
             <td>100</td>
             <td>100,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 0.47 ms within threshold (100 ms)</span></td>
-            <td><span class="reg-stable">+2.5%</span></td>
+            <td class="pass">PASS<br><span class="reason">Mean 0.48 ms within threshold (100 ms)</span></td>
+            <td><span class="reg-stable">+1.7%</span></td>
         </tr><tr class="category-header"><td colspan="13">Compiler</td></tr><tr>
             <td>BR022</td>
             <td><strong>parse_large_program</strong><br><span class="desc">Parser speed: 10 function definitions + call</span></td>
-            <td>0.46</td>
-            <td>0.45</td>
+            <td>0.48</td>
+            <td>0.48</td>
             <td>0.51</td>
-            <td>0.53</td>
-            <td>0.44–0.48</td>
-            <td>2,156</td>
-            <td>18.2</td>
-            <td>12.8</td>
+            <td>0.52</td>
+            <td>0.47–0.49</td>
+            <td>2,076</td>
+            <td>18.7</td>
+            <td>13.1</td>
             <td>0.0</td>
-            <td>38.574</td>
+            <td>41.574</td>
             <td>0.136</td>
             <td>100</td>
             <td>1</td>
-            <td class="pass">PASS<br><span class="reason">Mean 0.46 ms within threshold (10 ms)</span></td>
-            <td><span class="reg-stable">+3.2%</span></td>
+            <td class="pass">PASS<br><span class="reason">Mean 0.48 ms within threshold (10 ms)</span></td>
+            <td><span class="reg-stable">+3.8%</span></td>
         </tr><tr class="category-header"><td colspan="13">Stress Test</td></tr><tr>
             <td>BR023</td>
             <td><strong>stress_deep_recursion</strong><br><span class="desc">Deep recursion: 500 levels</span></td>
-            <td>0.81</td>
-            <td>0.81</td>
-            <td>0.84</td>
-            <td>0.84</td>
-            <td>0.80–0.83</td>
-            <td>616,295</td>
-            <td>18.2</td>
-            <td>12.8</td>
+            <td>0.87</td>
+            <td>0.86</td>
+            <td>0.92</td>
+            <td>0.94</td>
+            <td>0.85–0.89</td>
+            <td>575,573</td>
+            <td>18.7</td>
+            <td>13.1</td>
             <td>0.0</td>
-            <td>38.578</td>
+            <td>41.580</td>
             <td>0.140</td>
             <td>100</td>
             <td>500</td>
-            <td class="pass">PASS<br><span class="reason">Mean 0.81 ms within threshold (1000 ms)</span></td>
-            <td><span class="reg-stable">+4.9%</span></td>
+            <td class="pass">PASS<br><span class="reason">Mean 0.87 ms within threshold (1000 ms)</span></td>
+            <td><span class="reg-regress">+7.1%</span></td>
         </tr><tr>
             <td>BR024</td>
             <td><strong>stress_large_array</strong><br><span class="desc">Large array: 100,000 push operations</span></td>
-            <td>41.76</td>
-            <td>41.76</td>
-            <td>42.06</td>
-            <td>42.11</td>
-            <td>41.61–41.90</td>
-            <td>2,394,854</td>
-            <td>18.2</td>
-            <td>12.8</td>
+            <td>43.25</td>
+            <td>43.22</td>
+            <td>43.72</td>
+            <td>43.75</td>
+            <td>43.07–43.43</td>
+            <td>2,312,176</td>
+            <td>18.7</td>
+            <td>13.1</td>
             <td>0.0</td>
-            <td>39.046</td>
-            <td>0.173</td>
+            <td>42.072</td>
+            <td>0.166</td>
             <td>100</td>
             <td>100,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 41.76 ms within threshold (5000 ms)</span></td>
-            <td><span class="reg-stable">+1.4%</span></td>
+            <td class="pass">PASS<br><span class="reason">Mean 43.25 ms within threshold (5000 ms)</span></td>
+            <td><span class="reg-stable">+3.6%</span></td>
         </tr><tr>
             <td>BR025</td>
             <td><strong>stress_many_calls</strong><br><span class="desc">Many function calls: 1,000,000 noop calls</span></td>
-            <td>404.16</td>
-            <td>400.49</td>
-            <td>420.65</td>
-            <td>430.15</td>
-            <td>397.85–410.47</td>
-            <td>2,474,273</td>
-            <td>18.2</td>
-            <td>12.8</td>
+            <td>439.51</td>
+            <td>439.24</td>
+            <td>442.07</td>
+            <td>442.95</td>
+            <td>438.56–440.46</td>
+            <td>2,275,249</td>
+            <td>18.7</td>
+            <td>13.1</td>
             <td>0.0</td>
-            <td>43.882</td>
-            <td>0.178</td>
+            <td>47.339</td>
+            <td>0.170</td>
             <td>100</td>
             <td>1,000,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 404.16 ms within threshold (2000 ms)</span></td>
-            <td><span class="reg-stable">-0.0%</span></td>
+            <td class="pass">PASS<br><span class="reason">Mean 439.51 ms within threshold (2000 ms)</span></td>
+            <td><span class="reg-regress">+8.7%</span></td>
         </tr><tr>
             <td>BR026</td>
             <td><strong>stress_large_loop</strong><br><span class="desc">Large loop: 10,000,000 iterations</span></td>
-            <td>1984.22</td>
-            <td>1969.36</td>
-            <td>2051.69</td>
-            <td>2052.70</td>
-            <td>1962.16–2006.27</td>
-            <td>5,039,772</td>
-            <td>18.2</td>
-            <td>12.8</td>
+            <td>2239.55</td>
+            <td>2233.25</td>
+            <td>2270.25</td>
+            <td>2285.69</td>
+            <td>2227.51–2251.58</td>
+            <td>4,465,190</td>
+            <td>18.7</td>
+            <td>13.1</td>
             <td>0.0</td>
-            <td>67.703</td>
-            <td>0.182</td>
+            <td>74.196</td>
+            <td>0.176</td>
             <td>100</td>
             <td>10,000,000</td>
-            <td class="pass">PASS<br><span class="reason">Mean 1984.22 ms within threshold (10000 ms)</span></td>
-            <td><span class="reg-stable">+0.8%</span></td>
+            <td class="pass">PASS<br><span class="reason">Mean 2239.55 ms within threshold (10000 ms)</span></td>
+            <td><span class="reg-regress">+12.9%</span></td>
         </tr>
                 </tbody>
             </table>
@@ -681,26 +681,26 @@
                 <div class="env-item"><div class="key">Physical Cores</div><div class="val">2</div></div>
                 <div class="env-item"><div class="key">Logical Cores</div><div class="val">2</div></div>
                 <div class="env-item"><div class="key">RAM Total</div><div class="val">4041 MB</div></div>
-                <div class="env-item"><div class="key">RAM Available</div><div class="val">3551 MB</div></div>
+                <div class="env-item"><div class="key">RAM Available</div><div class="val">3492 MB</div></div>
                 <div class="env-item"><div class="key">Disk Type</div><div class="val">unknown</div></div>
-                <div class="env-item"><div class="key">Filesystem</div><div class="val">2%</div></div>
+                <div class="env-item"><div class="key">Filesystem</div><div class="val">17%</div></div>
                 <div class="env-item"><div class="key">Page Size</div><div class="val">4096 bytes</div></div>
                 <div class="env-item"><div class="key">NUMA Nodes</div><div class="val">0</div></div>
                 <div class="env-item"><div class="key">Locale</div><div class="val">unknown</div></div>
                 <div class="env-item"><div class="key">Timezone</div><div class="val">UTC</div></div>
-                <div class="env-item"><div class="key">Mozhi Version</div><div class="val">Mozhi v1.0 (C Implementation)</div></div>
+                <div class="env-item"><div class="key">Mozhi Version</div><div class="val">Mozhi v2.0 (C++/ASM/Rust Implementation)</div></div>
                 <div class="env-item"><div class="key">Build Mode</div><div class="val">Release (-O3 -march=native)</div></div>
-                <div class="env-item"><div class="key">Build Hash</div><div class="val">817cc1b5c13547a5</div></div>
-                <div class="env-item"><div class="key">Git Commit</div><div class="val">c16a659</div></div>
-                <div class="env-item"><div class="key">Interpreter Hash</div><div class="val">5065b8dd487010e9</div></div>
-                <div class="env-item"><div class="key">Binary Size</div><div class="val">54.7 KB</div></div>
+                <div class="env-item"><div class="key">Build Hash</div><div class="val">37b0750b33b9d03b</div></div>
+                <div class="env-item"><div class="key">Git Commit</div><div class="val">cfd3754</div></div>
+                <div class="env-item"><div class="key">Interpreter Hash</div><div class="val">20ba7a1522760a7c</div></div>
+                <div class="env-item"><div class="key">Binary Size</div><div class="val">62.7 KB</div></div>
             </div>
 
             <h2>Final Analysis</h2>
             <div class="analysis-section">
                 <h3>Performance Strengths</h3>
                 <ul>
-                    <li>Fastest benchmark: <strong>startup_shutdown</strong> (0.44 ms)</li>
+                    <li>Fastest benchmark: <strong>startup_shutdown</strong> (0.47 ms)</li>
                     <li>Pass rate: 96% (25/26)</li>
                     <li>Correct output verified for all passing benchmarks</li>
                     <li>Low variance (stdev < 5% of mean) for most benchmarks</li>
@@ -710,8 +710,8 @@
             <div class="analysis-section">
                 <h3>Performance Weaknesses</h3>
                 <ul>
-                    <li>Slowest benchmark: <strong>stress_large_loop</strong> (1984.22 ms)</li>
-                    <li>BR008 variable_access: Mean exceeded threshold (500 ms). Measured: 550.87 ms</li>
+                    <li>Slowest benchmark: <strong>stress_large_loop</strong> (2239.55 ms)</li>
+                    <li>BR008 variable_access: Mean exceeded threshold (500 ms). Measured: 534.79 ms</li>
                     <li>Integer overflow on large sums (32-bit int)</li>
                 </ul>
             </div>
@@ -787,7 +787,7 @@
                 labels: ["Runtime Score", "Collections Score", "Strings Score", "Math Score", "Compiler Score", "Error Handling Score", "Overall Score"],
                 datasets: [{
                     label: 'Score',
-                    data: [65.4, 82.4, 68.4, 64.2, 100, 100, 76.9],
+                    data: [65.1, 82.3, 68.1, 63.4, 100, 100, 76.6],
                     backgroundColor: ['rgba(76,110,245,0.8)','rgba(58,175,169,0.8)','rgba(230,162,60,0.8)','rgba(147,51,234,0.8)','rgba(220,38,38,0.8)','rgba(22,163,74,0.8)','rgba(37,99,235,0.8)'],
                     borderWidth: 1,
                 }],
@@ -803,7 +803,7 @@
         // Chart: Means
         new Chart(document.getElementById('chart-means'), {
             type: 'bar',
-            data: { labels: ["startup_shutdown", "function_call", "recursive_fibonacci", "nested_calls", "loop_sum", "conditional_branching", "pattern_matching", "variable_access", "constant_access", "array_create", "array_push", "array_access", "array_iterate", "string_create", "string_concat", "string_len", "integer_arithmetic", "float_arithmetic", "power_operation", "modulo_operation", "try_catch_overhead", "parse_large_program", "stress_deep_recursion", "stress_large_array", "stress_many_calls", "stress_large_loop"], datasets: [{ label: 'Mean (ms)', data: [0.4366, 55.948, 95.8034, 150.2296, 223.7529, 332.3872, 31.8436, 550.8671, 371.8892, 3.4057, 41.8324, 8.1142, 6.1203, 2.7187, 8.1768, 374.1154, 409.1918, 273.139, 24.6629, 265.569, 0.4691, 0.4638, 0.8113, 41.7562, 404.1592, 1984.2166], backgroundColor: 'rgba(76,110,245,0.8)', borderWidth: 1 }] },
+            data: { labels: ["startup_shutdown", "function_call", "recursive_fibonacci", "nested_calls", "loop_sum", "conditional_branching", "pattern_matching", "variable_access", "constant_access", "array_create", "array_push", "array_access", "array_iterate", "string_create", "string_concat", "string_len", "integer_arithmetic", "float_arithmetic", "power_operation", "modulo_operation", "try_catch_overhead", "parse_large_program", "stress_deep_recursion", "stress_large_array", "stress_many_calls", "stress_large_loop"], datasets: [{ label: 'Mean (ms)', data: [0.4706, 59.0106, 100.6932, 160.1592, 250.5637, 386.7267, 35.9292, 534.7853, 387.8475, 3.5269, 42.6974, 8.3106, 6.3635, 2.9267, 8.3741, 390.8848, 445.9055, 313.3717, 27.1587, 320.0049, 0.4772, 0.4816, 0.8687, 43.2493, 439.5124, 2239.5463], backgroundColor: 'rgba(76,110,245,0.8)', borderWidth: 1 }] },
             options: {
                 responsive: true, maintainAspectRatio: false,
                 animation: { duration: 1500, easing: 'easeOutQuart' },
@@ -815,7 +815,7 @@
         // Chart: P95
         new Chart(document.getElementById('chart-p95'), {
             type: 'bar',
-            data: { labels: ["startup_shutdown", "function_call", "recursive_fibonacci", "nested_calls", "loop_sum", "conditional_branching", "pattern_matching", "variable_access", "constant_access", "array_create", "array_push", "array_access", "array_iterate", "string_create", "string_concat", "string_len", "integer_arithmetic", "float_arithmetic", "power_operation", "modulo_operation", "try_catch_overhead", "parse_large_program", "stress_deep_recursion", "stress_large_array", "stress_many_calls", "stress_large_loop"], datasets: [{ label: 'P95 (ms)', data: [0.4707, 58.8817, 96.4578, 152.547, 226.0202, 336.9752, 32.2455, 563.8644, 377.1744, 3.4688, 42.2582, 8.2374, 6.2007, 2.763, 8.2785, 402.5218, 415.743, 275.6041, 26.6924, 267.9538, 0.5119, 0.5136, 0.8399, 42.06, 420.6511, 2051.689], backgroundColor: 'rgba(230,162,60,0.8)', borderWidth: 1 }] },
+            data: { labels: ["startup_shutdown", "function_call", "recursive_fibonacci", "nested_calls", "loop_sum", "conditional_branching", "pattern_matching", "variable_access", "constant_access", "array_create", "array_push", "array_access", "array_iterate", "string_create", "string_concat", "string_len", "integer_arithmetic", "float_arithmetic", "power_operation", "modulo_operation", "try_catch_overhead", "parse_large_program", "stress_deep_recursion", "stress_large_array", "stress_many_calls", "stress_large_loop"], datasets: [{ label: 'P95 (ms)', data: [0.5094, 59.4697, 104.0532, 162.0923, 253.6787, 443.6474, 36.1461, 539.0797, 395.9982, 3.5516, 42.9793, 8.4721, 6.4968, 2.9661, 8.4252, 395.4922, 449.1132, 315.821, 27.2547, 412.9043, 0.5124, 0.5097, 0.9185, 43.7229, 442.0677, 2270.2487], backgroundColor: 'rgba(230,162,60,0.8)', borderWidth: 1 }] },
             options: {
                 responsive: true, maintainAspectRatio: false,
                 animation: { duration: 1500, easing: 'easeOutQuart' },
@@ -827,7 +827,7 @@
         // Chart: Throughput
         new Chart(document.getElementById('chart-throughput'), {
             type: 'bar',
-            data: { labels: ["startup_shutdown", "function_call", "recursive_fibonacci", "nested_calls", "loop_sum", "conditional_branching", "pattern_matching", "variable_access", "constant_access", "array_create", "array_push", "array_access", "array_iterate", "string_create", "string_concat", "string_len", "integer_arithmetic", "float_arithmetic", "power_operation", "modulo_operation", "try_catch_overhead", "parse_large_program", "stress_deep_recursion", "stress_large_array", "stress_many_calls", "stress_large_loop"], datasets: [{ label: 'ops/sec', data: [2290, 1787374, 2534200, 665648, 4469216, 3008539, 3140348, 1815320, 2688973, 2936254, 2390492, 1232407, 1633907, 3678229, 1222972, 2672972, 2443842, 3661140, 4054673, 3765500, 213174163, 2156, 616295, 2394854, 2474273, 5039772], backgroundColor: 'rgba(22,163,74,0.8)', borderWidth: 1 }] },
+            data: { labels: ["startup_shutdown", "function_call", "recursive_fibonacci", "nested_calls", "loop_sum", "conditional_branching", "pattern_matching", "variable_access", "constant_access", "array_create", "array_push", "array_access", "array_iterate", "string_create", "string_concat", "string_len", "integer_arithmetic", "float_arithmetic", "power_operation", "modulo_operation", "try_catch_overhead", "parse_large_program", "stress_deep_recursion", "stress_large_array", "stress_many_calls", "stress_large_loop"], datasets: [{ label: 'ops/sec', data: [2125, 1694611, 2411136, 624379, 3991001, 2585805, 2783252, 1869909, 2578333, 2835351, 2342063, 1203283, 1571462, 3416818, 1194158, 2558299, 2242628, 3191099, 3682061, 3124952, 209555742, 2076, 575573, 2312176, 2275249, 4465190], backgroundColor: 'rgba(22,163,74,0.8)', borderWidth: 1 }] },
             options: {
                 responsive: true, maintainAspectRatio: false,
                 animation: { duration: 1500, easing: 'easeOutQuart' },
@@ -839,7 +839,7 @@
         // Chart: Categories
         new Chart(document.getElementById('chart-categories'), {
             type: 'bar',
-            data: { labels: ["Core Runtime", "Collections", "Strings", "Math", "Error Handling", "Compiler", "Stress Test"], datasets: [{ label: 'Avg (ms)', data: [201.46, 14.87, 128.34, 243.14, 0.47, 0.46, 607.74], backgroundColor: 'rgba(58,175,169,0.8)', borderWidth: 1 }] },
+            data: { labels: ["Core Runtime", "Collections", "Strings", "Math", "Error Handling", "Compiler", "Stress Test"], datasets: [{ label: 'Avg (ms)', data: [212.91, 15.22, 134.06, 276.61, 0.48, 0.48, 680.79], backgroundColor: 'rgba(58,175,169,0.8)', borderWidth: 1 }] },
             options: {
                 responsive: true, maintainAspectRatio: false, indexAxis: 'y',
                 animation: { duration: 1500, easing: 'easeOutQuart' },
@@ -851,10 +851,10 @@
         new Chart(document.getElementById('chart-history'), {
             type: 'line',
             data: {
-                labels: ["2026-08-01"],
+                labels: ["2026-08-01", "2026-08-01"],
                 datasets: [{
                     label: 'Overall Score',
-                    data: [76.9],
+                    data: [76.9, 76.6],
                     borderColor: '#4C6EF5',
                     backgroundColor: 'rgba(76, 110, 245, 0.1)',
                     fill: true,

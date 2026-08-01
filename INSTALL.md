@@ -248,7 +248,7 @@ Or download from the command line:
 
 ```bash
 # Example: Linux x86_64
-curl -L -o mozhi https://github.com/crossberry-in/mozhi-doc/releases/download/v1.0.0/mozhi-linux-x86_64
+curl -L -o mozhi https://github.com/crossberry-in/mozhi-doc/releases/download/v2.0.0/mozhi-linux-x86_64
 ```
 
 ### Step 2 — Make it executable (Linux / macOS / Termux only)
