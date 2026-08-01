@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Development Roadmap — Sino Programming Language</title>
+    <meta name="description" content="Complete 12-phase development roadmap for the Sino programming language.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
+    <style>
+        .roadmap-hero {
+            background: linear-gradient(135deg, #DBEAFE 0%, #FFFFFF 100%);
+            border-radius: 12px;
+            padding: 48px 20px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .roadmap-hero h1 { font-size: 42px; font-weight: 900; border: none; margin-bottom: 8px; }
+        .roadmap-hero .subtitle { font-size: 18px; color: var(--primary); font-weight: 600; }
+        .roadmap-hero .version { font-size: 14px; color: var(--text-muted); margin-top: 8px; font-family: var(--font-mono); }
+
+        .progress-overview {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+        .progress-overview h2 { color: white; margin-top: 0; }
+        .progress-bar-large {
+            background: #475569;
+            border-radius: 8px;
+            height: 32px;
+            overflow: hidden;
+            margin: 16px 0;
+            position: relative;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #4C6EF5, #818CF8);
+            height: 100%;
+            border-radius: 8px;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .progress-stat { text-align: center; }
+        .progress-stat .num { font-size: 32px; font-weight: 900; font-family: var(--font-mono); }
+        .progress-stat .lbl { font-size: 11px; opacity: 0.7; text-transform: uppercase; }
+
+        .phase-card {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease;
+        }
+        .phase-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .phase-header {
+            background: var(--text);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .phase-header h2 { color: white; margin: 0; font-size: 18px; }
+        .phase-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-critical { background: #EF4444; }
+        .badge-high { background: #F59E0B; }
+        .badge-medium { background: #3AAFA9; }
+        .badge-low { background: #64748B; }
+        .phase-body { padding: 20px 24px; }
+        .phase-body table { margin: 0; }
+        .phase-body th { font-size: 12px; }
+
+        .status-done { color: #16A34A; font-weight: 700; }
+        .status-planned { color: var(--text-muted); }
+        .status-partial { color: #F59E0B; font-weight: 700; }
+        .status-notstarted { color: #94A3B8; }
+
+        .timeline-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            font-size: 14px;
+        }
+        .timeline-table th { background: var(--text); color: white; padding: 12px; text-align: left; }
+        .timeline-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        .timeline-table .version { font-weight: 700; font-family: var(--font-mono); color: var(--primary); }
+        .timeline-table .released { color: #16A34A; font-weight: 700; }
+
+        .longterm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .longterm-card {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .longterm-card h3 { margin-top: 0; font-size: 16px; }
+        .longterm-card p { font-size: 13px; color: var(--text-muted); margin: 0; }
+
+        .phase-progress-mini {
+            display: inline-block;
+            width: 120px;
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            margin-left: 12px;
+            overflow: hidden;
+            vertical-align: middle;
+        }
+        .phase-progress-fill {
+            height: 100%;
+            background: #16A34A;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .phase-header { flex-direction: column; gap: 8px; align-items: flex-start; }
+            .roadmap-hero h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
+        <span class="topbar-title">Roadmap</span>
+    </div>
+    <div class="wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
+                    Sino
+                </a>
+                <div class="sidebar-version">v2.0</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Navigation</div>
+                    <a href="index.html">Home</a>
+                    <a href="spec.html">Specification</a>
+                    <a href="benchmark.html">Benchmarks</a>
+                    <a href="roadmap.html" class="active">Roadmap</a>
+                    <a href="quickstart.html">Quick Start</a>
+                    <a href="install.html">Install</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Phases</div>
+                    <a href="#phase-1">1. Language Core</a>
+                    <a href="#phase-2">2. Collections</a>
+                    <a href="#phase-3">3. Standard Library</a>
+                    <a href="#phase-4">4. Networking</a>
+                    <a href="#phase-5">5. Concurrency</a>
+                    <a href="#phase-6">6. Package Manager</a>
+                    <a href="#phase-7">7. Compiler</a>
+                    <a href="#phase-8">8. Runtime</a>
+                    <a href="#phase-9">9. Developer Experience</a>
+                    <a href="#phase-10">10. Testing</a>
+                    <a href="#phase-11">11. Cross Platform</a>
+                    <a href="#phase-12">12. Security</a>
+                    <a href="#longterm">Long-Term Goals</a>
+                    <a href="#timeline">Version Timeline</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">External</div>
+                    <a href="https://github.com/crossberry-in/sino-doc" target="_blank">GitHub &#8599;</a>
+                    <a href="ROADMAP.md">Markdown Version</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <div class="roadmap-hero">
+                <h1>Development Roadmap</h1>
+                <div class="subtitle">Sino Programming Language</div>
+                <div class="version">Version 2.0 &middot; Updated August 2026</div>
+            </div>
+
+            <div class="progress-overview">
+                <h2>Overall Progress</h2>
+                <div class="progress-bar-large">
+                    <div class="progress-fill" style="width: 22%;">22%</div>
+                </div>
+                <div class="progress-stats">
+                    <div class="progress-stat"><div class="num">130</div><div class="lbl">Total Features</div></div>
+                    <div class="progress-stat"><div class="num" style="color:#4ADE80;">29</div><div class="lbl">Completed</div></div>
+                    <div class="progress-stat"><div class="num" style="color:#FBBF24;">1</div><div class="lbl">In Progress</div></div>
+                    <div class="progress-stat"><div class="num" style="color:#94A3B8;">100</div><div class="lbl">Planned</div></div>
+                    <div class="progress-stat"><div class="num">12</div><div class="lbl">Phases</div></div>
+                    <div class="progress-stat"><div class="num">10</div><div class="lbl">Long-Term</div></div>
+                </div>
+            </div>
+
+            <h2 id="phase-1">Phase 1 — Language Core</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Language Core</h2>
+                    <span class="phase-badge badge-critical">Critical &middot; v2.1</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Feature</th><th>Status</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>Generic Functions</td><td class="status-planned">Planned</td><td>Functions parameterized by type</td></tr>
+                            <tr><td>Generic Types</td><td class="status-planned">Planned</td><td>Structs/enums with type parameters</td></tr>
+                            <tr><td>Trait / Interface System</td><td class="status-planned">Planned</td><td>Full trait dispatch, default methods</td></tr>
+                            <tr><td>Struct Methods</td><td class="status-planned">Planned</td><td>impl blocks with self receiver</td></tr>
+                            <tr><td>Enum Methods</td><td class="status-planned">Planned</td><td>impl blocks for enums</td></tr>
+                            <tr><td>Extension Methods</td><td class="status-planned">Planned</td><td>Add methods to existing types</td></tr>
+                            <tr><td>Named Arguments</td><td class="status-planned">Planned</td><td>f(name: "Alice")</td></tr>
+                            <tr><td>Default Arguments</td><td class="status-planned">Planned</td><td>Parameters with default values</td></tr>
+                            <tr><td>Function Overloading</td><td class="status-planned">Planned</td><td>Same name, different signatures</td></tr>
+                            <tr><td>Operator Overloading</td><td class="status-planned">Planned</td><td>Custom +, -, *, / for types</td></tr>
+                            <tr><td>Lambda Functions</td><td class="status-done">&#10003; Done</td><td>Anonymous functions</td></tr>
+                            <tr><td>Closures</td><td class="status-done">&#10003; Done</td><td>Capture enclosing scope</td></tr>
+                            <tr><td>Iterator System</td><td class="status-planned">Planned</td><td>map, filter, collect, lazy eval</td></tr>
+                            <tr><td>Range Type</td><td class="status-planned">Planned</td><td>1..10, 1..=10, 0..</td></tr>
+                            <tr><td>Pattern Matching Enhancement</td><td class="status-planned">Planned</td><td>Guards, or-patterns, bindings</td></tr>
+                            <tr><td>Destructuring</td><td class="status-planned">Planned</td><td>let (x, y) = point</td></tr>
+                            <tr><td>Tuple Type</td><td class="status-planned">Planned</td><td>(int, string, bool)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="phase-2">Phase 2 — Collections</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Collections</h2>
+                    <span class="phase-badge badge-high">High &middot; v2.2</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Feature</th><th>Status</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>Vector</td><td class="status-planned">Planned</td><td>Contiguous growable array</td></tr>
+                            <tr><td>Hash Map</td><td class="status-planned">Planned</td><td>O(1) key-value lookup</td></tr>
+                            <tr><td>Hash Set</td><td class="status-planned">Planned</td><td>Unique element collection</td></tr>
+                            <tr><td>Linked List</td><td class="status-planned">Planned</td><td>Doubly-linked list</td></tr>
+                            <tr><td>Queue</td><td class="status-planned">Planned</td><td>FIFO queue</td></tr>
+                            <tr><td>Stack</td><td class="status-planned">Planned</td><td>LIFO stack</td></tr>
+                            <tr><td>Deque</td><td class="status-planned">Planned</td><td>Double-ended queue</td></tr>
+                            <tr><td>Priority Queue</td><td class="status-planned">Planned</td><td>Heap-based priority</td></tr>
+                            <tr><td>Ordered Map</td><td class="status-planned">Planned</td><td>Insertion-ordered map</td></tr>
+                            <tr><td>Ordered Set</td><td class="status-planned">Planned</td><td>Insertion-ordered set</td></tr>
+                            <tr><td>Ring Buffer</td><td class="status-planned">Planned</td><td>Fixed-size circular buffer</td></tr>
+                            <tr><td>Bit Set</td><td class="status-planned">Planned</td><td>Compact bit storage</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="phase-3">Phase 3 — Standard Library</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Standard Library</h2>
+                    <span class="phase-badge badge-high">High &middot; v2.3</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Module</th><th>Status</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>std.fs</td><td class="status-planned">Planned</td><td>File system operations</td></tr>
+                            <tr><td>std.path</td><td class="status-planned">Planned</td><td>Cross-platform path manipulation</td></tr>
+                            <tr><td>std.process</td><td class="status-planned">Planned</td><td>Process spawning, pipe, exit</td></tr>
+                            <tr><td>std.env</td><td class="status-planned">Planned</td><td>Environment variables</td></tr>
+                            <tr><td>std.time</td><td class="status-planned">Planned</td><td>Timestamps, durations, sleep</td></tr>
+                            <tr><td>std.date</td><td class="status-planned">Planned</td><td>Date parsing, formatting, timezones</td></tr>
+                            <tr><td>std.random</td><td class="status-planned">Planned</td><td>Random number generation</td></tr>
+                            <tr><td>std.uuid</td><td class="status-planned">Planned</td><td>UUID v4/v5 generation</td></tr>
+                            <tr><td>std.base64</td><td class="status-planned">Planned</td><td>Base64 encode/decode</td></tr>
+                            <tr><td>std.hex</td><td class="status-planned">Planned</td><td>Hex encode/decode</td></tr>
+                            <tr><td>std.json</td><td class="status-planned">Planned</td><td>JSON parse, stringify, streaming</td></tr>
+                            <tr><td>std.xml</td><td class="status-planned">Planned</td><td>XML parse, serialize, XPath</td></tr>
+                            <tr><td>std.csv</td><td class="status-planned">Planned</td><td>CSV read/write</td></tr>
+                            <tr><td>std.toml</td><td class="status-planned">Planned</td><td>TOML parse/serialize</td></tr>
+                            <tr><td>std.yaml</td><td class="status-planned">Planned</td><td>YAML parse/serialize</td></tr>
+                            <tr><td>std.compress</td><td class="status-planned">Planned</td><td>gzip, zlib, deflate, bzip2</td></tr>
+                            <tr><td>std.archive</td><td class="status-planned">Planned</td><td>tar, zip, extraction</td></tr>
+                            <tr><td>std.crypto</td><td class="status-planned">Planned</td><td>AES, RSA, HMAC, SHA family</td></tr>
+                            <tr><td>std.hash</td><td class="status-planned">Planned</td><td>MD5, SHA-256, SHA-512, BLAKE3</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="phase-4">Phase 4 — Networking</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Networking</h2>
+                    <span class="phase-badge badge-medium">Medium &middot; v2.4</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Feature</th><th>Status</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>HTTP Client</td><td class="status-planned">Planned</td><td>GET, POST, PUT, DELETE, streaming, TLS</td></tr>
+                            <tr><td>HTTP Server</td><td class="status-planned">Planned</td><td>Routing, middleware, static files</td></tr>
+                            <tr><td>TCP</td><td class="status-planned">Planned</td><td>TCP socket client/server</td></tr>
+                            <tr><td>UDP</td><td class="status-planned">Planned</td><td>UDP socket support</td></tr>
+                            <tr><td>WebSocket</td><td class="status-planned">Planned</td><td>Client/server, ping/pong, frames</td></tr>
+                            <tr><td>DNS</td><td class="status-planned">Planned</td><td>DNS resolution, custom resolvers</td></tr>
+                            <tr><td>TLS</td><td class="status-planned">Planned</td><td>TLS/SSL secure connections</td></tr>
+                            <tr><td>URL Parser</td><td class="status-planned">Planned</td><td>URL parsing, building, encoding</td></tr>
+                            <tr><td>MIME Parser</td><td class="status-planned">Planned</td><td>MIME type detection, multipart</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="phase-5">Phase 5 — Concurrency</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Concurrency</h2>
+                    <span class="phase-badge badge-medium">Medium &middot; v2.5</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Feature</th><th>Status</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>Threads</td><td class="status-planned">Planned</td><td>OS-level threads with join/detach</td></tr>
+                            <tr><td>Async</td><td class="status-planned">Planned</td><td>async fn returning Future&lt;T&gt;</td></tr>
+                            <tr><td>Await</td><td class="status-planned">Planned</td><td>await expression for async functions</td></tr>
+                            <tr><td>Task Scheduler</td><td class="status-planned">Planned</td><td>Cooperative runtime, work stealing</td></tr>
+                            <tr><td>Channels</td><td class="status-planned">Planned</td><td>MPSC, SPSC, broadcast channels</td></tr>
+                            <tr><td>Mutex</td><td class="status-planned">Planned</td><td>Mutual exclusion lock</td></tr>
+                            <tr><td>RWLock</td><td class="status-planned">Planned</td><td>Read-write lock</td></tr>
+                            <tr><td>Atomic Types</td><td class="status-planned">Planned</td><td>AtomicInt, AtomicBool, AtomicPtr</td></tr>
+                            <tr><td>Thread Pool</td><td class="status-planned">Planned</td><td>Fixed-size worker pool</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="phase-6">Phase 6 — Package Manager</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Package Manager</h2>
+                    <span class="phase-badge badge-high">High &middot; v2.2</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Feature</th><th>Status</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>sino install</td><td class="status-done">&#10003; Done</td><td>Install dependencies from sino.toml</td></tr>
+                            <tr><td>sino update</td><td class="status-done">&#10003; Done</td><td>Update dependencies</td></tr>
+                            <tr><td>sino remove</td><td class="status-done">&#10003; Done</td><td>Remove dependencies</td></tr>
+                            <tr><td>sino search</td><td class="status-done">&#10003; Done</td><td>Search packages</td></tr>
+                            <tr><td>sino publish</td><td class="status-partial">Partial</td><td>Stub — needs public registry</td></tr>
+                            <tr><td>Dependency Lock File</td><td class="status-done">&#10003; Done</td><td>sino.lock with resolved versions</td></tr>
+                            <tr><td>Version Resolution</td><td class="status-done">&#10003; Done</td><td>Semver with ^, ~, &gt;=, &lt;, *</td></tr>
+                            <tr><td>Offline Cache</td><td class="status-done">&#10003; Done</td><td>~/.sino/cache/ for offline builds</td></tr>
+                            <tr><td>Mirrors</td><td class="status-planned">Planned</td><td>Mirror servers for faster downloads</td></tr>
+                            <tr><td>Private Registry</td><td class="status-planned">Planned</td><td>Self-hosted registry</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="phase-7">Phase 7 — Compiler</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Compiler</h2>
+                    <span class="phase-badge badge-critical">Critical &middot; v3.0</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Feature</th><th>Status</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>Lexer</td><td class="status-done">&#10003; Done</td><td>Full tokenizer</td></tr>
+                            <tr><td>Parser</td><td class="status-done">&#10003; Done</td><td>Recursive descent + Pratt parser</td></tr>
+                            <tr><td>AST Generation</td><td class="status-done">&#10003; Done</td><td>Complete AST</td></tr>
+                            <tr><td>Semantic Analysis</td><td class="status-done">&#10003; Done</td><td>Scope resolution, validation</td></tr>
+                            <tr><td>Type Checking</td><td class="status-done">&#10003; Done</td><td>Static type checking with inference</td></tr>
+                            <tr><td>Incremental Compilation</td><td class="status-planned">Planned</td><td>Only recompile changed modules</td></tr>
+                            <tr><td>Bytecode Generation</td><td class="status-planned">Planned</td><td>Compile to .sibc bytecode</td></tr>
+                            <tr><td>Dead Code Elimination</td><td class="status-planned">Planned</td><td>Remove unreachable code</td></tr>
+                            <tr><td>Constant Folding</td><td class="status-planned">Planned</td><td>Evaluate constants at compile time</td></tr>
+                            <tr><td>Inline Expansion</td><td class="status-planned">Planned</td><td>Inline small functions</td></tr>
+                            <tr><td>Escape Analysis</td><td class="status-planned">Planned</td><td>Stack vs heap allocation</td></tr>
+                            <tr><td>Register Allocation</td><td class="status-planned">Planned</td><td>Efficient register usage</td></tr>
+                            <tr><td>Link Time Optimization</td><td class="status-planned">Planned</td><td>Cross-module optimization</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="phase-8">Phase 8 — Runtime</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Runtime</h2>
+                    <span class="phase-badge badge-critical">Critical &middot; v3.0</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Feature</th><th>Status</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>Tree-walking Interpreter</td><td class="status-done">&#10003; Done</td><td>Current execution model (v2.0)</td></tr>
+                            <tr><td>Bytecode VM</td><td class="status-planned">Planned</td><td>Stack-based VM for .sibc</td></tr>
+                            <tr><td>Garbage Collector</td><td class="status-planned">Planned</td><td>Mark-sweep, generational</td></tr>
+                            <tr><td>JIT Compiler</td><td class="status-planned">Planned</td><td>Just-in-time for hot paths</td></tr>
+                            <tr><td>Native Code Generator</td><td class="status-planned">Planned</td><td>LLVM backend</td></tr>
+                            <tr><td>Dynamic Loader</td><td class="status-planned">Planned</td><td>Load .silib at runtime</td></tr>
+                            <tr><td>Plugin System</td><td class="status-planned">Planned</td><td>Dynamically loadable modules</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="phase-9">Phase 9 — Developer Experience</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Developer Experience</h2>
+                    <span class="phase-badge badge-medium">Medium &middot; v3.0</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Feature</th><th>Status</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>LSP Server</td><td class="status-planned">Planned</td><td>Language Server Protocol</td></tr>
+                            <tr><td>Auto Completion</td><td class="status-planned">Planned</td><td>Context-aware completion</td></tr>
+                            <tr><td>Hover Help</td><td class="status-planned">Planned</td><td>Show type and docs on hover</td></tr>
+                            <tr><td>Go to Definition</td><td class="status-planned">Planned</td><td>Jump to symbol definition</td></tr>
+                            <tr><td>Rename Symbol</td><td class="status-planned">Planned</td><td>Project-wide renaming</td></tr>
+                            <tr><td>Formatter (sino fmt)</td><td class="status-done">&#10003; Done</td><td>Basic code formatting</td></tr>
+                            <tr><td>Linter (sino lint)</td><td class="status-done">&#10003; Done</td><td>Basic linting</td></tr>
+                            <tr><td>Debugger</td><td class="status-planned">Planned</td><td>Source-level debugger</td></tr>
+                            <tr><td>Profiler</td><td class="status-planned">Planned</td><td>CPU and memory profiler</td></tr>
+                            <tr><td>Coverage Tool</td><td class="status-planned">Planned</td><td>Code coverage reporting</td></tr>
+                            <tr><td>Documentation Generator</td><td class="status-done">&#10003; Done</td><td>sino doc generates API docs</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="phase-10">Phase 10 — Testing</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Testing</h2>
+                    <span class="phase-badge badge-high">High &middot; v2.3</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Feature</th><th>Status</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>Unit Testing</td><td class="status-done">&#10003; Done</td><td>sino test runs tests/</td></tr>
+                            <tr><td>Integration Testing</td><td class="status-planned">Planned</td><td>Multi-module tests</td></tr>
+                            <tr><td>Benchmark Framework</td><td class="status-done">&#10003; Done</td><td>26 tests, statistics, history</td></tr>
+                            <tr><td>Mock Library</td><td class="status-planned">Planned</td><td>Mock functions and types</td></tr>
+                            <tr><td>Snapshot Testing</td><td class="status-planned">Planned</td><td>Golden file comparison</td></tr>
+                            <tr><td>Property Testing</td><td class="status-planned">Planned</td><td>Random input verification</td></tr>
+                            <tr><td>Fuzz Testing</td><td class="status-planned">Planned</td><td>Automated fuzzing</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="phase-11">Phase 11 — Cross Platform</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Cross Platform</h2>
+                    <span class="phase-badge badge-high">High &middot; v2.2</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Platform</th><th>Architecture</th><th>Status</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            <tr><td>Linux</td><td>x86_64</td><td class="status-done">&#10003; Done</td><td>Primary development platform</td></tr>
+                            <tr><td>Linux</td><td>ARM64</td><td class="status-done">&#10003; Done</td><td>Raspberry Pi, ARM servers</td></tr>
+                            <tr><td>Alpine Linux</td><td>x86_64</td><td class="status-done">&#10003; Done</td><td>Static musl build</td></tr>
+                            <tr><td>Alpine Linux</td><td>ARM64</td><td class="status-done">&#10003; Done</td><td>Static musl build</td></tr>
+                            <tr><td>Termux (Android)</td><td>ARM64</td><td class="status-done">&#10003; Done</td><td>Via static musl build</td></tr>
+                            <tr><td>macOS</td><td>Intel</td><td class="status-done">&#10003; Done</td><td>Mach-O binary</td></tr>
+                            <tr><td>macOS</td><td>Apple Silicon</td><td class="status-done">&#10003; Done</td><td>Mach-O binary</td></tr>
+                            <tr><td>Windows</td><td>x86_64</td><td class="status-done">&#10003; Done</td><td>PE32+ executable</td></tr>
+                            <tr><td>WebAssembly</td><td>wasm32</td><td class="status-planned">Planned</td><td>Browser execution</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="phase-12">Phase 12 — Security</h2>
+            <div class="phase-card">
+                <div class="phase-header">
+                    <h2>Security</h2>
+                    <span class="phase-badge badge-low">Low &middot; v3.0+</span>
+                </div>
+                <div class="phase-body">
+                    <table>
+                        <thead><tr><th>Feature</th><th>Status</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>Sandboxed Execution</td><td class="status-planned">Planned</td><td>Restrict file/network/process access</td></tr>
+                            <tr><td>Capability Permissions</td><td class="status-planned">Planned</td><td>Explicit permission grants</td></tr>
+                            <tr><td>Memory Leak Detection</td><td class="status-planned">Planned</td><td>Allocation tracking</td></tr>
+                            <tr><td>Race Detection</td><td class="status-planned">Planned</td><td>Thread sanitizer</td></tr>
+                            <tr><td>Static Analyzer</td><td class="status-planned">Planned</td><td>Compile-time security analysis</td></tr>
+                            <tr><td>Secure Package Verification</td><td class="status-planned">Planned</td><td>Package signing</td></tr>
+                            <tr><td>Package Signature Validation</td><td class="status-planned">Planned</td><td>GPG/minisign checking</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2 id="longterm">Long-Term Goals</h2>
+            <p>These are ambitious goals that extend beyond the 12-phase roadmap.</p>
+            <div class="longterm-grid">
+                <div class="longterm-card">
+                    <h3>Self-hosting Compiler</h3>
+                    <p>Rewrite the Sino compiler in Sino itself</p>
+                </div>
+                <div class="longterm-card">
+                    <h3>Native IDE</h3>
+                    <p>Full-featured IDE built specifically for Sino</p>
+                </div>
+                <div class="longterm-card">
+                    <h3>Official GUI Toolkit</h3>
+                    <p>Cross-platform GUI library (desktop + mobile)</p>
+                </div>
+                <div class="longterm-card">
+                    <h3>Database Driver Framework</h3>
+                    <p>Unified interface for SQL/NoSQL databases</p>
+                </div>
+                <div class="longterm-card">
+                    <h3>Embedded Runtime</h3>
+                    <p>Lightweight runtime for embedded systems</p>
+                </div>
+                <div class="longterm-card">
+                    <h3>Plugin Ecosystem</h3>
+                    <p>VS Code, IntelliJ, Vim plugins</p>
+                </div>
+                <div class="longterm-card">
+                    <h3>Official Package Registry</h3>
+                    <p>Hosted registry at registry.sino-lang.org</p>
+                </div>
+                <div class="longterm-card">
+                    <h3>Continuous Benchmark Dashboard</h3>
+                    <p>Automated CI benchmark with web dashboard</p>
+                </div>
+                <div class="longterm-card">
+                    <h3>Language Server Ecosystem</h3>
+                    <p>LSP for all major editors</p>
+                </div>
+                <div class="longterm-card">
+                    <h3>Stable ABI</h3>
+                    <p>Binary compatibility across versions</p>
+                </div>
+            </div>
+
+            <h2 id="timeline">Version Timeline</h2>
+            <table class="timeline-table">
+                <thead>
+                    <tr><th>Version</th><th>Target</th><th>Focus</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="version">v2.0</td><td class="released">&#10003; Released</td><td>New syntax, C++/ASM/Rust backend</td></tr>
+                    <tr><td class="version">v2.1</td><td>Q3 2026</td><td>Language core: generics, traits, iterators</td></tr>
+                    <tr><td class="version">v2.2</td><td>Q4 2026</td><td>Collections + package manager</td></tr>
+                    <tr><td class="version">v2.3</td><td>Q1 2027</td><td>Standard library + testing</td></tr>
+                    <tr><td class="version">v2.4</td><td>Q2 2027</td><td>Networking library</td></tr>
+                    <tr><td class="version">v2.5</td><td>Q3 2027</td><td>Concurrency (threads, async/await)</td></tr>
+                    <tr><td class="version">v3.0</td><td>Q4 2027</td><td>Bytecode VM + JIT + native codegen</td></tr>
+                    <tr><td class="version">v3.1</td><td>Q1 2028</td><td>Developer experience: LSP, debugger</td></tr>
+                    <tr><td class="version">v4.0</td><td>Q4 2028</td><td>Self-hosting compiler</td></tr>
+                </tbody>
+            </table>
+
+            <div class="footer">
+                <p>Sino Development Roadmap &middot; Copyright &copy; 2026 crossberry-in</p>
+                <p><a href="https://github.com/crossberry-in/sino-doc">View on GitHub</a> &middot; <a href="ROADMAP.md">Markdown Version</a></p>
+            </div>
+        </main>
+    </div>
+    <script>
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    </script>
+</body>
+</html>
