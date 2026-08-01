@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Benchmarks — Sino Programming Language</title>
+    <meta name="description" content="Animated performance comparison: Sino vs C vs Python on fibonacci and loop benchmarks.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ===== Animated Benchmark Page Styles ===== */
+
+        .bench-hero {
+            text-align: center;
+            padding: 48px 20px 32px;
+            background: linear-gradient(135deg, #DBEAFE 0%, #FFFFFF 100%);
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+
+        .bench-hero h1 {
+            font-size: 42px;
+            font-weight: 900;
+            color: #0F172A;
+            margin-bottom: 8px;
+            border: none;
+            letter-spacing: -0.02em;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .bench-hero .subtitle {
+            font-size: 18px;
+            color: #2563EB;
+            font-weight: 600;
+            animation: fadeInDown 0.8s ease-out 0.15s both;
+        }
+
+        .bench-hero .meta {
+            font-size: 14px;
+            color: #64748B;
+            margin-top: 12px;
+            font-family: var(--font-mono);
+            animation: fadeInDown 0.8s ease-out 0.3s both;
+        }
+
+        /* Stats row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 32px 0;
+        }
+
+        .stat-card {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--primary);
+            font-family: var(--font-mono);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .stat-card.c-lang .stat-value { color: #3AAFA9; }
+        .stat-card.python .stat-value { color: #E6A23C; }
+        .stat-card.sino .stat-value { color: #4C6EF5; }
+
+        /* Chart container */
+        .chart-container {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 32px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out 0.4s forwards;
+        }
+
+        .chart-container h2 {
+            margin-top: 0;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+
+        .chart-wrapper-two {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        /* Race animation */
+        .race-section {
+            margin: 48px 0;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out 0.5s forwards;
+        }
+
+        .race-section h2 {
+            text-align: center;
+        }
+
+        .race-track {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-top: 24px;
+        }
+
+        .race-lane {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 16px;
+        }
+
+        .race-label {
+            width: 120px;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .race-bar-container {
+            flex: 1;
+            background: #E2E8F0;
+            border-radius: 8px;
+            height: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .race-bar {
+            height: 100%;
+            border-radius: 8px;
+            width: 0%;
+            transition: width 2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            font-family: var(--font-mono);
+        }
+
+        .race-bar.c-lang { background: linear-gradient(90deg, #3AAFA9, #2DD4BF); }
+        .race-bar.python { background: linear-gradient(90deg, #E6A23C, #FBBF24); }
+        .race-bar.sino { background: linear-gradient(90deg, #4C6EF5, #818CF8); }
+
+        .race-time {
+            width: 80px;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Results table */
+        .results-table {
+            margin: 32px 0;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out 0.6s forwards;
+        }
+
+        /* Static image */
+        .static-chart {
+            margin: 32px 0;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out 0.7s forwards;
+        }
+
+        .static-chart img {
+            max-width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Animated counter */
+        .counter {
+            display: inline-block;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Keyframes */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .winner-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #10B981;
+            color: white;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Tabs */
+        .bench-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .bench-tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+        }
+
+        .bench-tab:hover {
+            color: var(--primary);
+        }
+
+        .bench-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeInUp 0.4s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
+        <span class="topbar-title">Benchmarks</span>
+    </div>
+
+    <div class="wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
+                    Sino
+                </a>
+                <div class="sidebar-version">v2.0</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Navigation</div>
+                    <a href="index.html">Home</a>
+                    <a href="benchmark.html" class="active">Benchmarks</a>
+                    <a href="benchmark.html">Benchmarks</a>
+                    <a href="spec.html">Specification</a>
+                    <a href="quickstart.html">Quick Start</a>
+                    <a href="install.html">Install</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Error Docs</div>
+                    <a href="errors/index.html">Error Reference</a>
+                    <a href="errors/SN1001.html">SN1001</a>
+                    <a href="errors/SN3003.html">SN3003</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">External</div>
+                    <a href="https://github.com/crossberry-in/sino-doc" target="_blank">GitHub &#8599;</a>
+                    <a href="https://github.com/crossberry-in/sino-doc/releases" target="_blank">Download &#8599;</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <!-- Hero -->
+            <div class="bench-hero">
+                <h1>Performance Benchmarks</h1>
+                <div class="subtitle">Sino vs C vs Python</div>
+                <div class="meta">Measured on x86_64 Linux &middot; August 2026 &middot; 3-run average</div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-row">
+                <div class="stat-card c-lang">
+                    <div class="stat-value"><span class="counter" data-target="1" data-suffix="ms">0</span></div>
+                    <div class="stat-label">C (gcc -O2) &middot; Fastest</div>
+                </div>
+                <div class="stat-card python">
+                    <div class="stat-value"><span class="counter" data-target="938" data-suffix="ms">0</span></div>
+                    <div class="stat-label">Python 3 &middot; Loop Sum</div>
+                </div>
+                <div class="stat-card sino">
+                    <div class="stat-value"><span class="counter" data-target="5196" data-suffix="ms">0</span></div>
+                    <div class="stat-label">Sino &middot; Loop Sum</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="bench-tabs">
+                <button class="bench-tab active" onclick="switchTab('animated')">Animated Charts</button>
+                <button class="bench-tab" onclick="switchTab('race')">Race Animation</button>
+                <button class="bench-tab" onclick="switchTab('static')">Static Image</button>
+                <button class="bench-tab" onclick="switchTab('table')">Results Table</button>
+            </div>
+
+            <!-- Tab: Animated Charts -->
+            <div id="tab-animated" class="tab-content active">
+                <div class="chart-container">
+                    <h2>Execution Time Comparison <span class="winner-badge">C Wins</span></h2>
+                    <p style="color: var(--text-muted); font-size: 14px;">Lower is better. Log scale due to large differences.</p>
+                    <div class="chart-wrapper">
+                        <canvas id="chart-time"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h2>Relative Speed (C = 1&times; baseline)</h2>
+                    <p style="color: var(--text-muted); font-size: 14px;">How many times slower than C. Log scale.</p>
+                    <div class="chart-wrapper">
+                        <canvas id="chart-relative"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Race Animation -->
+            <div id="tab-race" class="tab-content">
+                <div class="race-section">
+                    <h2>Benchmark Race: Fibonacci(35)</h2>
+                    <p style="text-align: center; color: var(--text-muted);">Watch the race &mdash; bars animate to scale. Shorter = faster.</p>
+                    <div class="race-track">
+                        <div class="race-lane">
+                            <div class="race-label" style="color: #3AAFA9;">C (gcc -O2)</div>
+                            <div class="race-bar-container">
+                                <div class="race-bar c-lang" data-width="0.1">14ms</div>
+                            </div>
+                            <div class="race-time">14ms</div>
+                        </div>
+                        <div class="race-lane">
+                            <div class="race-label" style="color: #E6A23C;">Python 3</div>
+                            <div class="race-bar-container">
+                                <div class="race-bar python" data-width="5.6">1,284ms</div>
+                            </div>
+                            <div class="race-time">1,284ms</div>
+                        </div>
+                        <div class="race-lane">
+                            <div class="race-label" style="color: #4C6EF5;">Sino</div>
+                            <div class="race-bar-container">
+                                <div class="race-bar sino" data-width="100">23,031ms</div>
+                            </div>
+                            <div class="race-time">23,031ms</div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; margin-top: 16px; color: var(--text-muted); font-size: 13px;">
+                        Click the "Replay Race" button to watch again.
+                    </p>
+                    <div style="text-align: center;">
+                        <button class="btn btn-primary" onclick="replayRace()">Replay Race</button>
+                    </div>
+                </div>
+
+                <div class="race-section">
+                    <h2>Benchmark Race: Loop Sum 10M</h2>
+                    <div class="race-track">
+                        <div class="race-lane">
+                            <div class="race-label" style="color: #3AAFA9;">C (gcc -O2)</div>
+                            <div class="race-bar-container">
+                                <div class="race-bar c-lang" data-width="0.02">1ms</div>
+                            </div>
+                            <div class="race-time">1ms</div>
+                        </div>
+                        <div class="race-lane">
+                            <div class="race-label" style="color: #E6A23C;">Python 3</div>
+                            <div class="race-bar-container">
+                                <div class="race-bar python" data-width="18">938ms</div>
+                            </div>
+                            <div class="race-time">938ms</div>
+                        </div>
+                        <div class="race-lane">
+                            <div class="race-label" style="color: #4C6EF5;">Sino</div>
+                            <div class="race-bar-container">
+                                <div class="race-bar sino" data-width="100">5,196ms</div>
+                            </div>
+                            <div class="race-time">5,196ms</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Static Image -->
+            <div id="tab-static" class="tab-content">
+                <div class="static-chart">
+                    <h2>Static Benchmark Chart (PNG)</h2>
+                    <p style="color: var(--text-muted);">Generated with matplotlib at 200 DPI. Suitable for embedding in documents.</p>
+                    <img src="benchmark-results.png" alt="Sino vs C vs Python benchmark results" loading="lazy">
+                </div>
+            </div>
+
+            <!-- Tab: Results Table -->
+            <div id="tab-table" class="tab-content">
+                <div class="results-table">
+                    <h2>Full Results Table</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Benchmark</th>
+                                <th>C (gcc -O2)</th>
+                                <th>Python 3</th>
+                                <th>Sino (interpreter)</th>
+                                <th>Sino vs C</th>
+                                <th>Winner</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Fibonacci(30)</strong><br>Recursive</td>
+                                <td><span style="color:#3AAFA9;font-weight:700;">2 ms</span></td>
+                                <td>131 ms</td>
+                                <td><span style="color:#4C6EF5;font-weight:700;">2,085 ms</span></td>
+                                <td>1,042&times; slower</td>
+                                <td><span class="winner-badge">C</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fibonacci(35)</strong><br>Recursive</td>
+                                <td><span style="color:#3AAFA9;font-weight:700;">14 ms</span></td>
+                                <td>1,284 ms</td>
+                                <td><span style="color:#4C6EF5;font-weight:700;">23,031 ms</span></td>
+                                <td>1,645&times; slower</td>
+                                <td><span class="winner-badge">C</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Loop Sum</strong><br>10M iterations</td>
+                                <td><span style="color:#3AAFA9;font-weight:700;">1 ms</span></td>
+                                <td>938 ms</td>
+                                <td><span style="color:#4C6EF5;font-weight:700;">5,196 ms</span></td>
+                                <td>5,196&times; slower</td>
+                                <td><span class="winner-badge">C</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Analysis</h3>
+                    <div class="note">
+                        <p><strong>C (gcc -O2)</strong> is the fastest &mdash; compiled to native machine code with optimization. This is the baseline.</p>
+                    </div>
+                    <div class="note">
+                        <p><strong>Python 3</strong> is 65&ndash;938&times; slower than C. CPython is a bytecode interpreter with no JIT in standard mode.</p>
+                    </div>
+                    <div class="note">
+                        <p><strong>Sino (tree-walking interpreter)</strong> is 1,042&ndash;5,196&times; slower than C. Sino currently walks the AST directly without compiling to bytecode or native code.</p>
+                    </div>
+
+                    <h3>Roadmap: Performance Improvements</h3>
+                    <table>
+                        <thead>
+                            <tr><th>Phase</th><th>Feature</th><th>Expected Speedup</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td>Tree-walking interpreter (current)</td><td>Baseline</td><td>&#10003; Done</td></tr>
+                            <tr><td>2</td><td>Bytecode compilation (.sibc format)</td><td>3&ndash;5&times; faster</td><td>Planned</td></tr>
+                            <tr><td>3</td><td>JIT compilation (hot path optimization)</td><td>10&ndash;50&times; faster</td><td>Planned</td></tr>
+                            <tr><td>4</td><td>Native code generation (LLVM backend)</td><td>Approach C speed</td><td>Planned</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2>Benchmark Methodology</h2>
+            <ul>
+                <li><strong>Platform:</strong> x86_64 Linux, gcc 14.2.0, Python 3.12.13</li>
+                <li><strong>C compilation:</strong> <code>gcc -O2 fib.c -o fib_c</code></li>
+                <li><strong>Python:</strong> <code>python3 fib.py</code> (CPython, no JIT)</li>
+                <li><strong>Sino:</strong> <code>sino fib.si</code> (tree-walking interpreter v2.0)</li>
+                <li><strong>Measurement:</strong> 3 runs, average taken. Wall-clock time via <code>date +%s%N</code></li>
+                <li><strong>Correctness:</strong> All implementations produce identical results: Fib(30)=832040, Fib(35)=9227465, Sum=49999995000000</li>
+            </ul>
+
+            <h2>Benchmark Code</h2>
+            <p>All three implementations use identical algorithms:</p>
+
+            <h3>Sino (fib.si)</h3>
+            <pre><code>fn fibonacci(n) {
+    if n &lt;= 1 {
+        return n
+    }
+    return fibonacci(n - 1) + fibonacci(n - 2)
+}
+
+result = fibonacci(30)
+echo("Fib(30) = ", result)</code></pre>
+
+            <h3>C (fib.c)</h3>
+            <pre><code>#include &lt;stdio.h&gt;
+long fibonacci(long n) {
+    if (n &lt;= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+int main() {
+    printf("Fib(30) = %ld\n", fibonacci(30));
+    return 0;
+}</code></pre>
+
+            <h3>Python (fib.py)</h3>
+            <pre><code>def fibonacci(n):
+    if n &lt;= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+print(f"Fib(30) = {fibonacci(30)}")</code></pre>
+
+            <div class="footer">
+                <p>Copyright &copy; 2026 crossberry-in.</p>
+                <p><a href="https://github.com/crossberry-in/sino-doc">View on GitHub</a></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ===== Sidebar Toggle =====
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // ===== Tab Switching =====
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.bench-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+
+            // Trigger animations
+            if (tabName === 'animated') {
+                setTimeout(initCharts, 100);
+            }
+            if (tabName === 'race') {
+                setTimeout(startRace, 200);
+            }
+        }
+
+        // ===== Animated Counter =====
+        function animateCounter(el) {
+            const target = parseInt(el.dataset.target);
+            const suffix = el.dataset.suffix || '';
+            const duration = 1500;
+            const start = performance.now();
+
+            function update(now) {
+                const elapsed = now - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+                const current = Math.floor(target * eased);
+                el.textContent = current.toLocaleString() + suffix;
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    el.textContent = target.toLocaleString() + suffix;
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        // Start counters on page load
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.counter').forEach(c => animateCounter(c));
+            setTimeout(initCharts, 300);
+        });
+
+        // ===== Chart.js Charts =====
+        let chart1 = null, chart2 = null;
+
+        function initCharts() {
+            // Chart 1: Execution Time
+            const ctx1 = document.getElementById('chart-time');
+            if (chart1) chart1.destroy();
+            chart1 = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Fibonacci(30)', 'Fibonacci(35)', 'Loop Sum 10M'],
+                    datasets: [
+                        {
+                            label: 'C (gcc -O2)',
+                            data: [2, 14, 1],
+                            backgroundColor: 'rgba(58, 175, 169, 0.8)',
+                            borderColor: '#3AAFA9',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: 'Python 3',
+                            data: [131, 1284, 938],
+                            backgroundColor: 'rgba(230, 162, 60, 0.8)',
+                            borderColor: '#E6A23C',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: 'Sino (interpreter)',
+                            data: [2085, 23031, 5196],
+                            backgroundColor: 'rgba(76, 110, 245, 0.8)',
+                            borderColor: '#4C6EF5',
+                            borderWidth: 2,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart',
+                        delay: function(ctx) {
+                            return ctx.dataIndex * 200 + ctx.datasetIndex * 300;
+                        },
+                    },
+                    scales: {
+                        y: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Time (milliseconds)' },
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                        },
+                        x: {
+                            grid: { display: false },
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { font: { size: 13 } },
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    return ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString() + ' ms';
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            // Chart 2: Relative Speed
+            const ctx2 = document.getElementById('chart-relative');
+            if (chart2) chart2.destroy();
+            chart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Fibonacci(30)', 'Fibonacci(35)', 'Loop Sum 10M'],
+                    datasets: [
+                        {
+                            label: 'C (baseline)',
+                            data: [1, 1, 1],
+                            backgroundColor: 'rgba(58, 175, 169, 0.8)',
+                            borderColor: '#3AAFA9',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: 'Python 3',
+                            data: [65.5, 91.7, 938],
+                            backgroundColor: 'rgba(230, 162, 60, 0.8)',
+                            borderColor: '#E6A23C',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: 'Sino',
+                            data: [1042, 1645, 5196],
+                            backgroundColor: 'rgba(76, 110, 245, 0.8)',
+                            borderColor: '#4C6EF5',
+                            borderWidth: 2,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart',
+                        delay: function(ctx) {
+                            return ctx.dataIndex * 200 + ctx.datasetIndex * 300;
+                        },
+                    },
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Relative Time (C = 1x, log scale)' },
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                        },
+                        y: {
+                            grid: { display: false },
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { font: { size: 13 } },
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    return ctx.dataset.label + ': ' + ctx.parsed.x.toLocaleString() + 'x slower';
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+        }
+
+        // ===== Race Animation =====
+        function startRace() {
+            const bars = document.querySelectorAll('.race-bar');
+            bars.forEach(bar => {
+                bar.style.width = '0%';
+            });
+            setTimeout(() => {
+                bars.forEach(bar => {
+                    const width = bar.dataset.width;
+                    bar.style.width = width + '%';
+                });
+            }, 100);
+        }
+
+        function replayRace() {
+            startRace();
+        }
+    </script>
+</body>
+</html>
