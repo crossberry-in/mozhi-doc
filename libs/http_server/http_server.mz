@@ -151,3 +151,109 @@ fn http_router(method, path, routes) {
 fn http_error_json(code, message) {
     return "{\"error\": {\"code\": " + string(code) + ", \"message\": \"" + message + "\"}}"
 }
+
+# ============================================================
+# Static File Serving
+# ============================================================
+
+# Guess the content type from a file extension.
+fn http_content_type(path) {
+    if path.ends_with(".html") or path.ends_with(".htm") {
+        return "text/html; charset=UTF-8"
+    }
+    if path.ends_with(".css") {
+        return "text/css; charset=UTF-8"
+    }
+    if path.ends_with(".js") {
+        return "application/javascript; charset=UTF-8"
+    }
+    if path.ends_with(".json") {
+        return "application/json; charset=UTF-8"
+    }
+    if path.ends_with(".png") {
+        return "image/png"
+    }
+    if path.ends_with(".jpg") or path.ends_with(".jpeg") {
+        return "image/jpeg"
+    }
+    if path.ends_with(".svg") {
+        return "image/svg+xml"
+    }
+    if path.ends_with(".txt") {
+        return "text/plain; charset=UTF-8"
+    }
+    return "application/octet-stream"
+}
+
+# Serve a static file from disk.
+# If the file doesn't exist, returns a 404.
+fn http_serve_file(filepath) {
+    if not file_exists(filepath) {
+        return http_404("File not found: " + filepath)
+    }
+    content = read_file(filepath)
+    ct = http_content_type(filepath)
+    return http_response("200 OK", ct, content)
+}
+
+# Serve static files from a directory.
+# path is the request path (e.g. "/" or "/style.css").
+# dir is the filesystem directory (e.g. "./public").
+# If path is "/", serves index.html.
+fn http_serve_static(path, dir) {
+    # Strip query string
+    clean = path
+    if path.contains("?") {
+        clean = path.split("?")[0]
+    }
+
+    # If path ends with /, append index.html
+    if clean.ends_with("/") {
+        clean = clean + "index.html"
+    }
+
+    # Remove leading /
+    if clean.len() > 0 and clean[0] == "/" {
+        clean = clean.slice(1)
+    }
+
+    # Build full path
+    filepath = dir + "/" + clean
+    return http_serve_file(filepath)
+}
+
+# Run a Mozhi file and return its output as an HTTP response.
+fn http_run_mz(filepath) {
+    if not file_exists(filepath) {
+        return http_404("File not found: " + filepath)
+    }
+    output = run_mz(filepath)
+    return http_ok_text(output)
+}
+
+# Run a shell script and return its output.
+fn http_run_sh(filepath) {
+    if not file_exists(filepath) {
+        return http_404("File not found: " + filepath)
+    }
+    output = run_sh(filepath)
+    return http_ok_text(output)
+}
+
+# Run a C file and return its output.
+fn http_run_c(filepath) {
+    if not file_exists(filepath) {
+        return http_404("File not found: " + filepath)
+    }
+    output = run_c(filepath)
+    return http_ok_text(output)
+}
+
+# Run a Python file and return its output.
+fn http_run_py(filepath) {
+    if not file_exists(filepath) {
+        return http_404("File not found: " + filepath)
+    }
+    output = run_py(filepath)
+    return http_ok_text(output)
+}

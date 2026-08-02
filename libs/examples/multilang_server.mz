@@ -1,0 +1,112 @@
+import http from "mozhi-http"
+import html from "mozhi-html"
+
+# Routes:
+#   GET /              → serve public/index.html
+#   GET /style.css     → serve public/style.css
+#   GET /script.sh     → run shell script, return output
+#   GET /hello.mz      → run Mozhi file, return output
+#   GET /calc.c        → compile & run C file, return output
+#   GET /data.py       → run Python file, return output
+#   GET /api/info      → JSON API
+#   GET /api/files     → list files in public/ dir
+#   GET /<other>       → serve from public/ dir, or 404
+
+fn handler(method, path) {
+    echo("[" + method + "] " + path)
+
+    # Strip query string
+    route = path
+    if path.contains("?") {
+        route = path.split("?")[0]
+    }
+
+    # API routes
+    if route == "/api/info" {
+        return http.http_ok_json("{\"name\": \"Mozhi\", \"version\": \"2.4.0\", \"features\": [\"static-files\", \"shell-run\", \"multi-language\"]}")
+    }
+
+    if route == "/api/files" {
+        files = list_dir("public")
+        out = "{\"files\": ["
+        i = 0
+        for f in files {
+            if i > 0 {
+                out = out + ", "
+            }
+            out = out + "\"" + f + "\""
+            i = i + 1
+        }
+        out = out + "]}"
+        return http.http_ok_json(out)
+    }
+
+    # Run shell script
+    if route == "/script.sh" or route == "/sh" {
+        return http.http_run_sh("scripts/hello.sh")
+    }
+
+    # Run Mozhi file
+    if route == "/hello.mz" or route == "/mz" {
+        return http.http_run_mz("scripts/hello.mz")
+    }
+
+    # Run C file
+    if route == "/calc.c" or route == "/c" {
+        return http.http_run_c("scripts/calc.c")
+    }
+
+    # Run Python file
+    if route == "/data.py" or route == "/py" {
+        return http.http_run_py("scripts/data.py")
+    }
+
+    # Static files from public/ directory
+    # This serves index.html for "/", style.css for "/style.css", etc.
+    return http.http_serve_static(route, "public")
+}
+
+# Create directories and files if they don't exist
+fn setup() {
+    if not file_exists("public") {
+        run("mkdir -p public scripts")
+    }
+    if not file_exists("public/index.html") {
+        write_file("public/index.html", "<!DOCTYPE html>\n<html>\n<head><title>Mozhi Server</title><link rel=\"stylesheet\" href=\"/style.css\"></head>\n<body>\n<h1>Welcome to Mozhi!</h1>\n<p>This page is served from <code>public/index.html</code>.</p>\n<h2>Endpoints</h2>\n<ul>\n<li><a href=\"/style.css\">/style.css</a> — static CSS</li>\n<li><a href=\"/script.sh\">/script.sh</a> — run shell script</li>\n<li><a href=\"/hello.mz\">/hello.mz</a> — run Mozhi file</li>\n<li><a href=\"/calc.c\">/calc.c</a> — compile & run C</li>\n<li><a href=\"/data.py\">/data.py</a> — run Python</li>\n<li><a href=\"/api/info\">/api/info</a> — JSON API</li>\n<li><a href=\"/api/files\">/api/files</a> — list files</li>\n</ul>\n</body>\n</html>")
+    }
+    if not file_exists("public/style.css") {
+        write_file("public/style.css", "body { font-family: sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; } h1 { color: #2563eb; } code { background: #f3f4f6; padding: 2px 6px; border-radius: 3px; } ul { line-height: 1.8; } a { color: #2563eb; }")
+    }
+    if not file_exists("scripts/hello.sh") {
+        write_file("scripts/hello.sh", "#!/bin/bash\necho \"Hello from Shell!\"\necho \"Time: $(date)\"\necho \"User: $(whoami)\"\necho \"Disk:\"\ndf -h / | tail -1")
+    }
+    if not file_exists("scripts/hello.mz") {
+        write_file("scripts/hello.mz", "echo(\"Hello from Mozhi!\")\necho(\"Math: 10 * 10 = \" + string(10 * 10))\necho(\"String reverse: \" + \"Mozhi\".reverse())")
+    }
+    if not file_exists("scripts/calc.c") {
+        write_file("scripts/calc.c", "#include <stdio.h>\nint main() {\n    printf(\"Hello from C!\\n\");\n    int sum = 0;\n    for (int i = 1; i <= 10; i++) sum += i;\n    printf(\"Sum 1..10 = %d\\n\", sum);\n    printf(\"Factorial 5 = %d\\n\", 120);\n    return 0;\n}")
+    }
+    if not file_exists("scripts/data.py") {
+        write_file("scripts/data.py", "import json\nprint(\"Hello from Python!\")\ndata = {\"name\": \"Mozhi\", \"version\": \"2.4.0\", \"languages\": [\"C\", \"Go\", \"Rust\", \"Python\"]}\nprint(json.dumps(data, indent=2))")
+    }
+}
+
+setup()
+
+echo("============================================")
+echo("  Mozhi Web Server v2.4.0")
+echo("  http://localhost:8080")
+echo("============================================")
+echo("Endpoints:")
+echo("  GET /              — index.html")
+echo("  GET /style.css     — static CSS")
+echo("  GET /script.sh     — run shell script")
+echo("  GET /hello.mz      — run Mozhi file")
+echo("  GET /calc.c        — compile & run C")
+echo("  GET /data.py       — run Python")
+echo("  GET /api/info      — JSON API")
+echo("  GET /api/files     — list files")
+echo("============================================")
+
+server = http.http_start(8080)
+http.http_serve_loop(server, handler)
