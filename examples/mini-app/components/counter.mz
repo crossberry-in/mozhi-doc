@@ -1,0 +1,36 @@
+# ============================================================
+# Counter Component — Interactive button with state
+# ============================================================
+
+import html from "mozhi-html"
+
+# This component renders an interactive counter
+# State is managed client-side in the browser via JavaScript
+
+counter_html = "
+<div class=\"card counter\">
+    <h2>Interactive Counter</h2>
+    <p>State is managed in the browser. Click the buttons to change the count.</p>
+    <div class=\"counter-display\">
+        <button class=\"btn\" onclick=\"dec()\">-</button>
+        <span id=\"count\">0</span>
+        <button class=\"btn\" onclick=\"inc()\">+</button>
+    </div>
+    <button class=\"btn btn-reset\" onclick=\"reset()\">Reset</button>
+</div>
+<script>
+function inc() {
+    var el = document.getElementById('count');
+    el.textContent = parseInt(el.textContent) + 1;
+}
+function dec() {
+    var el = document.getElementById('count');
+    el.textContent = parseInt(el.textContent) - 1;
+}
+function reset() {
+    document.getElementById('count').textContent = '0';
+}
+</script>
+"
+
+echo(counter_html)

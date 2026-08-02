@@ -1,0 +1,19 @@
+# ============================================================
+# Header Component
+# Renders the top navigation/header of the app
+# ============================================================
+
+import html from "mozhi-html"
+
+nav_items = ["Home", "About", "Docs", "GitHub"]
+
+nav_html = ""
+for item in nav_items {
+    nav_html = nav_html + "<a href=\"/" + item.lower() + "\">" + item + "</a>"
+}
+
+echo(html.html_div("header",
+    html.html_h1("Mozhi Dev Server") +
+    html.html_p("React-like live reload with .mz components") +
+    "<nav>" + nav_html + "</nav>"
+))

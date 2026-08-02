@@ -1,0 +1,14 @@
+# ============================================================
+# Footer Component
+# Renders the bottom footer
+# ============================================================
+
+import html from "mozhi-html"
+
+year = run("date +%Y").trim()
+
+echo(html.html_div("footer",
+    html.html_p("Built with Mozhi v2.4.0 + Live Reload") +
+    "<p>&copy; " + year + " Mozhi Project</p>" +
+    html.html_a("https://github.com/crossberry-in/mozhi-doc", "GitHub")
+))

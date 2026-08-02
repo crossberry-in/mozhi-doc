@@ -1,0 +1,39 @@
+# ============================================================
+# Card Component
+# A reusable card UI element
+# ============================================================
+
+import html from "mozhi-html"
+
+fn card(title, body, button_text) {
+    btn = ""
+    if button_text != "" {
+        btn = "<button class=\"btn\" onclick=\"alert('Hello from Mozhi!')\">" + button_text + "</button>"
+    }
+    return html.html_div("card",
+        html.html_h2(title) +
+        html.html_p(body) +
+        btn
+    )
+}
+
+# Render a card
+echo(card(
+    "Welcome to Mozhi!",
+    "This component is rendered server-side by Mozhi. Edit this file and save — the browser will auto-reload with your changes.",
+    "Click Me"
+))
+
+# Render another card
+echo(card(
+    "Live Reload",
+    "The dev server watches all files in public/ and components/. When you save a file, the browser refreshes automatically. No manual refresh needed!",
+    ""
+))
+
+# Render a stats card
+echo(card(
+    "Features",
+    "- Server-side rendering with .mz files\n- Live reload via SSE\n- Static file serving\n- Component-based architecture\n- Hot-swap components without restart",
+    ""
+))

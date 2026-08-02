@@ -1,0 +1,214 @@
+# ============================================================
+# Mozhi Dev Server — React-like Live Reload (v2.4.0+)
+# ============================================================
+# Watches files for changes and pushes reload events to the browser
+# via Server-Sent Events (SSE).
+#
+# Usage:
+#   mozhi-interpreter dev_server.mz
+#   # Open http://127.0.0.1:3000
+#
+# Features:
+#   - Live reload on file save (no browser refresh needed)
+#   - Hot-swap .mz components without restarting server
+#   - Static file serving from public/
+#   - SSE-based push notifications
+#   - File watcher polling every 1 second
+# ============================================================
+
+import http from "mozhi-http"
+import html from "mozhi-html"
+
+# ============================================================
+# State
+# ============================================================
+
+# Track file modification times for change detection
+last_mtime = ""
+
+# Get current timestamp
+fn now() {
+    return run("date +%s")
+}
+
+# Check if any watched files changed
+fn check_changes() {
+    # Check all .mz, .html, .css files
+    result = run("find public components -type f \\( -name '*.mz' -o -name '*.html' -o -name '*.css' -o -name '*.js' \\) -newer /tmp/mozhi_dev_marker 2>/dev/null | head -1")
+    if result.trim() != "" {
+        return true
+    }
+    return false
+}
+
+# Initialize the marker file
+fn init_watcher() {
+    run("touch /tmp/mozhi_dev_marker")
+    echo("[dev] File watcher initialized")
+}
+
+# ============================================================
+# Routes
+# ============================================================
+
+fn handler(method, path) {
+    # SSE endpoint for live reload
+    if path == "/__dev_reload" {
+        # Check for changes
+        changed = check_changes()
+        if changed {
+            # Update marker
+            run("touch /tmp/mozhi_dev_marker")
+            echo("[dev] Changes detected — reloading browser")
+
+            # SSE response with reload event
+            body = "event: reload\ndata: " + now() + "\n\n"
+            response = "HTTP/1.1 200 OK\r\n"
+            response = response + "Content-Type: text/event-stream\r\n"
+            response = response + "Cache-Control: no-cache\r\n"
+            response = response + "Connection: keep-alive\r\n"
+            response = response + "Access-Control-Allow-Origin: *\r\n"
+            response = response + "\r\n"
+            response = response + body
+            return response
+        }
+
+        # No changes — send heartbeat
+        body = ": heartbeat\n\n"
+        response = "HTTP/1.1 200 OK\r\n"
+        response = response + "Content-Type: text/event-stream\r\n"
+        response = response + "Cache-Control: no-cache\r\n"
+        response = response + "Connection: keep-alive\r\n"
+        response = response + "\r\n"
+        response = response + body
+        return response
+    }
+
+    # Dev status endpoint
+    if path == "/__dev_status" {
+        status = "{\"status\": \"running\", \"version\": \"2.4.0\", \"watching\": [\"public/\", \"components/\"]}"
+        return http.http_ok_json(status)
+    }
+
+    # Inject live-reload script into HTML pages
+    route = path
+    if path.contains("?") {
+        route = path.split("?")[0]
+    }
+
+    if route == "/" or route == "" {
+        route = "/index.html"
+    }
+
+    # Check if it's an HTML file
+    if route.ends_with(".html") or route == "/" {
+        filepath = "public" + route
+        if route == "/" or route == "" {
+            filepath = "public/index.html"
+        }
+
+        if file_exists(filepath) {
+            content = read_file(filepath)
+
+            # Inject the live-reload script before </body>
+            reload_script = "<script>" +
+                "(function() {" +
+                "  var es = new EventSource('/__dev_reload');" +
+                "  es.addEventListener('reload', function(e) {" +
+                "    console.log('[mozhi-dev] Reloading...');" +
+                "    location.reload();" +
+                "  });" +
+                "  console.log('[mozhi-dev] Live reload connected');" +
+                "})();</script>"
+
+            # Insert before </body> or append
+            if content.contains("</body>") {
+                content = content.replace("</body>", reload_script + "</body>")
+            } else {
+                content = content + reload_script
+            }
+
+            return http.http_ok_html(content)
+        }
+        return http.http_404("File not found: " + filepath)
+    }
+
+    # Serve component .mz files as rendered HTML
+    if route.contains("/components/") and route.ends_with(".mz") {
+        comp_path = route.slice(1)  # remove leading /
+        if file_exists(comp_path) {
+            # Run the component .mz file and return its output
+            return http.http_run_mz(comp_path)
+        }
+        return http.http_404("Component not found: " + comp_path)
+    }
+
+    # Static files
+    return http.http_serve_static(route, "public")
+}
+
+# ============================================================
+# Main
+# ============================================================
+
+# Ensure required directories exist
+fn setup() {
+    run("mkdir -p public components scripts")
+    init_watcher()
+
+    # Create default index.html if missing
+    if not file_exists("public/index.html") {
+        write_file("public/index.html", "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Mozhi Dev Server</title>\n  <link rel=\"stylesheet\" href=\"/style.css\">\n</head>\n<body>\n  <div id=\"app\"></div>\n  <script src=\"/app.js\"></script>\n</body>\n</html>")
+    }
+
+    if not file_exists("public/style.css") {
+        write_file("public/style.css", "* { margin: 0; padding: 0; box-sizing: border-box; }\nbody { font-family: system-ui, sans-serif; background: #0d1117; color: #c9d1d9; padding: 2rem; }\nh1 { color: #58a6ff; margin-bottom: 1rem; }\n.card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }\n.btn { display: inline-block; background: #238636; color: white; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }\n.btn:hover { background: #2ea043; }\n.status { position: fixed; bottom: 1rem; right: 1rem; background: #161b22; border: 1px solid #30363d; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; }\n.status::before { content: '\\\\25CF'; color: #3fb950; margin-right: 0.5rem; }")
+    }
+
+    if not file_exists("public/app.js") {
+        write_file("public/app.js", "// Mozhi Dev Server — Frontend\n// Components are rendered server-side via .mz files\n\nasync function loadComponent(name) {\n  const res = await fetch('/components/' + name + '.mz');\n  if (res.ok) {\n    return await res.text();\n  }\n  return '<p>Component not found: ' + name + '</p>';\n}\n\nasync function render() {\n  const app = document.getElementById('app');\n  const header = await loadComponent('header');\n  const card = await loadComponent('card');\n  const footer = await loadComponent('footer');\n  app.innerHTML = header + card + footer;\n}\n\nrender();")
+    }
+
+    # Create default components if missing
+    if not file_exists("components/header.mz") {
+        write_file("components/header.mz", "import html from \"mozhi-html\"\necho(html.html_div(\"header\", html.html_h1(\"Mozhi Dev Server\") + html.html_p(\"Live reload active — edit any file and watch it update!\")))")
+    }
+
+    if not file_exists("components/card.mz") {
+        write_file("components/card.mz", "import html from \"mozhi-html\"\necho(html.html_div(\"card\", html.html_h2(\"Welcome!\") + html.html_p(\"This component is rendered by Mozhi on the server. Edit components/card.mz and save — the page will reload automatically.\") + \"<button class=\\\"btn\\\" onclick=\\\"alert('Hello from Mozhi!')\\\">Click Me</button>\"))")
+    }
+
+    if not file_exists("components/footer.mz") {
+        write_file("components/footer.mz", "import html from \"mozhi-html\"\necho(html.html_div(\"footer\", html.html_p(\"Built with Mozhi v2.4.0 + Live Reload\")))")
+    }
+
+    echo("[dev] Default files created")
+}
+
+setup()
+
+echo("")
+echo("============================================")
+echo("  Mozhi Dev Server v2.4.0")
+echo("  Live Reload: ENABLED")
+echo("============================================")
+echo("")
+echo("  URL:     http://127.0.0.1:3000")
+echo("  Watching: public/ components/")
+echo("")
+echo("  Endpoints:")
+echo("    GET /              — App (with live reload injected)")
+echo("    GET /style.css     — Stylesheet")
+echo("    GET /app.js        — Frontend JS")
+echo("    GET /components/X  — Render .mz component")
+echo("    GET /__dev_reload  — SSE live reload stream")
+echo("    GET /__dev_status  — Dev server status")
+echo("")
+echo("  Edit any file in public/ or components/")
+echo("  and the browser will auto-reload.")
+echo("")
+echo("  Press Ctrl+C to stop")
+echo("")
+
+server = http.http_start(3000)
+http.http_serve_loop(server, handler)
