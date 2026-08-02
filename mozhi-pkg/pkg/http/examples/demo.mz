@@ -1,0 +1,2 @@
+import mod from "../src/mod.mz"
+echo(mod.http_ok_html("<h1>Hello HTTP!</h1>"))

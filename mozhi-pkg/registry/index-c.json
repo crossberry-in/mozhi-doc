@@ -1,0 +1,70 @@
+{
+  "letter": "c",
+  "count": 2,
+  "packages": [
+    {
+      "name": "collections",
+      "version": "1.0.0",
+      "description": "Array operations \u2014 sort, reverse, sum, min, max, mean, contains, slice, concat, range",
+      "category": "data",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/collections",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "sort": "mod.sort",
+        "reverse": "mod.reverse",
+        "sum": "mod.sum",
+        "min": "mod.min",
+        "max": "mod.max",
+        "mean": "mod.mean",
+        "contains": "mod.contains",
+        "index_of": "mod.index_of",
+        "slice": "mod.slice",
+        "concat": "mod.concat",
+        "range": "mod.range",
+        "join": "mod.join"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "8278ac0c741bee966b0592fb1e2bf4bf0659c2559a1fa20a49ae4c56397f8393",
+      "has_mod": true,
+      "source": "pkg/collections/src/mod.mz",
+      "install": "pkg/collections/src/"
+    },
+    {
+      "name": "crypto",
+      "version": "1.0.0",
+      "description": "Cryptography helpers \u2014 MD5, SHA-256, base64, UUID, file checksums",
+      "category": "crypto",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/crypto",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "md5": "mod.md5",
+        "sha256": "mod.sha256",
+        "sha1": "mod.sha1",
+        "base64_encode": "mod.base64_encode",
+        "base64_decode": "mod.base64_decode",
+        "uuid": "mod.uuid",
+        "random_hex": "mod.random_hex",
+        "file_sha256": "mod.file_sha256"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "dfedf68ecfc17a39724a81f03935df089395596de59c5ce6e7ab56e69c3c29eb",
+      "has_mod": true,
+      "source": "pkg/crypto/src/mod.mz",
+      "install": "pkg/crypto/src/"
+    }
+  ]
+}

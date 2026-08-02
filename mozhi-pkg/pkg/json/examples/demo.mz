@@ -1,0 +1,4 @@
+import mod from "../src/mod.mz"
+echo(mod.json_string("Hello"))
+sample = "{\"name\": \"Mozhi\"}"
+echo(mod.json_get(sample, "name"))

@@ -1,0 +1,97 @@
+{
+  "letter": "r",
+  "count": 3,
+  "packages": [
+    {
+      "name": "random",
+      "version": "1.0.0",
+      "description": "Random number generation \u2014 int range, choice, shuffle, UUID, dice, coin flip",
+      "category": "general",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/random",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "int_range": "mod.int_range",
+        "choice": "mod.choice",
+        "hex": "mod.hex",
+        "uuid": "mod.uuid",
+        "shuffle": "mod.shuffle",
+        "boolean": "mod.boolean",
+        "dice": "mod.dice",
+        "coin_flip": "mod.coin_flip"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "618b1d05003ba217d2c54e994b5b9fe90b2961373623b9cd7c4d19d3459687f2",
+      "has_mod": true,
+      "source": "pkg/random/src/mod.mz",
+      "install": "pkg/random/src/"
+    },
+    {
+      "name": "react",
+      "version": "1.0.0",
+      "description": "React-like framework \u2014 components, hooks, router, live reload, HMR",
+      "category": "web",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/react",
+      "modules": [
+        "devtools.mz",
+        "hooks.mz",
+        "mod.mz",
+        "router.mz"
+      ],
+      "exports": {
+        "h": "mod.h",
+        "div": "mod.div",
+        "h1": "mod.h1",
+        "p": "mod.p",
+        "button": "mod.button",
+        "html_document": "mod.html_document",
+        "className": "mod.className"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "40f466a4418607e35f51276eb49f9f48d2ade2c20f97dd59863f8d4935be5c5e",
+      "has_mod": true,
+      "source": "pkg/react/src/mod.mz",
+      "install": "pkg/react/src/"
+    },
+    {
+      "name": "regex",
+      "version": "1.0.0",
+      "description": "Regular expression helpers \u2014 match, find, replace, validate email/URL/IP",
+      "category": "text",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/regex",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "match": "mod.match",
+        "find_all": "mod.find_all",
+        "replace": "mod.replace",
+        "replace_all": "mod.replace_all",
+        "extract": "mod.extract",
+        "is_email": "mod.is_email",
+        "is_url": "mod.is_url"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "82561510025d2bccd95c8ee7bf11d4d42f6a96c02132f5eb272107f5cc649c16",
+      "has_mod": true,
+      "source": "pkg/regex/src/mod.mz",
+      "install": "pkg/regex/src/"
+    }
+  ]
+}

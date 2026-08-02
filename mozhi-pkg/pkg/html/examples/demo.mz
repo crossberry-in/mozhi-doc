@@ -1,0 +1,2 @@
+import mod from "../src/mod.mz"
+echo(mod.html_page("Demo", mod.html_h1("Hello HTML!") + mod.html_p("Built with Mozhi.")))

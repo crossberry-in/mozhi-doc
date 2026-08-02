@@ -1,0 +1,70 @@
+{
+  "letter": "h",
+  "count": 2,
+  "packages": [
+    {
+      "name": "html",
+      "version": "1.0.0",
+      "description": "HTML element generation utilities \u2014 38 functions for building web pages",
+      "category": "web",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/html",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "html_doctype": "mod.html_doctype",
+        "html_tag": "mod.html_tag",
+        "html_page": "mod.html_page",
+        "html_div": "mod.html_div",
+        "html_h1": "mod.html_h1",
+        "html_p": "mod.html_p",
+        "html_a": "mod.html_a",
+        "html_ul": "mod.html_ul",
+        "html_table": "mod.html_table",
+        "html_form": "mod.html_form"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "41b9314663131bcb389eecddae1aed736a954760e7ea1db652e1e89750911809",
+      "has_mod": true,
+      "source": "pkg/html/src/mod.mz",
+      "install": "pkg/html/src/"
+    },
+    {
+      "name": "http",
+      "version": "1.0.0",
+      "description": "HTTP server utilities \u2014 serve static files, run scripts, JSON API",
+      "category": "web",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/http",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "http_start": "mod.http_start",
+        "http_ok_html": "mod.http_ok_html",
+        "http_ok_json": "mod.http_ok_json",
+        "http_404": "mod.http_404",
+        "http_serve_static": "mod.http_serve_static",
+        "http_serve_file": "mod.http_serve_file",
+        "http_run_sh": "mod.http_run_sh",
+        "http_run_c": "mod.http_run_c",
+        "http_run_py": "mod.http_run_py",
+        "http_run_mz": "mod.http_run_mz"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "eed4a8220a54463537465bf95365eb4905287b7ab68c0dffcb4235f723305677",
+      "has_mod": true,
+      "source": "pkg/http/src/mod.mz",
+      "install": "pkg/http/src/"
+    }
+  ]
+}

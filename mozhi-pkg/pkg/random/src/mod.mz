@@ -1,0 +1,87 @@
+# ============================================================
+# random — Random number generation for Mozhi (v1.0.0)
+# Uses /dev/urandom and shell commands
+# ============================================================
+
+# Random integer in range [min, max]
+fn int_range(min_val, max_val) {
+    if max_val <= min_val {
+        return min_val
+    }
+    range = max_val - min_val + 1
+    result = run("echo $(($RANDOM % " + string(range) + " + " + string(min_val) + "))")
+    return string(result.trim())
+}
+
+# Random float in range [0, 1)
+fn float_01() {
+    result = run("echo \"scale=10; $(head -c 4 /dev/urandom | od -An -tu4 | tr -d ' ') / 4294967296\" | bc 2>/dev/null || echo 0.5")
+    return result.trim()
+}
+
+# Random element from array
+fn choice(arr) {
+    if arr.len() == 0 { return "" }
+    idx = int_range(0, arr.len() - 1)
+    i = 0
+    target = 0
+    # Parse the int from string
+    target = idx * 1
+    for x in arr {
+        if i == target { return x }
+        i = i + 1
+    }
+    return arr[0]
+}
+
+# Random hex string of given length
+fn hex(length) {
+    result = run("head -c " + string(length) + " /dev/urandom | od -A n -t x1 | tr -d ' \\n' | head -c " + string(length))
+    return result.trim()
+}
+
+# Random UUID
+fn uuid() {
+    result = run("cat /proc/sys/kernel/random/uuid 2>/dev/null || uuidgen 2>/dev/null || echo '00000000-0000-0000-0000-000000000000'")
+    return result.trim()
+}
+
+# Shuffle an array (Fisher-Yates)
+fn shuffle(arr) {
+    n = arr.len()
+    i = n - 1
+    while i > 0 {
+        j_str = int_range(0, i)
+        j = j_str * 1
+        temp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = temp
+        i = i - 1
+    }
+    return arr
+}
+
+# Random boolean
+fn boolean() {
+    result = run("echo $(($RANDOM % 2))")
+    return result.trim() == "1"
+}
+
+# Random string of given length from charset
+fn string_rand(length) {
+    result = run("head -c " + string(length) + " /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c " + string(length))
+    return result.trim()
+}
+
+# Roll a die (1-6)
+fn dice() {
+    return int_range(1, 6)
+}
+
+# Flip a coin ("heads" or "tails")
+fn coin_flip() {
+    if boolean() {
+        return "heads"
+    }
+    return "tails"
+}

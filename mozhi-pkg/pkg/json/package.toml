@@ -1,0 +1,17 @@
+[package]
+name = "json"
+version = "1.0.0"
+category = "data"
+description = "JSON encoder/decoder helpers — encode objects, arrays, get values"
+license = "MIT"
+edition = "2024"
+
+[modules]
+mod = "JSON: encode, decode, escape, pretty-print"
+
+[exports]
+json_string = "mod.json_string"
+json_object = "mod.json_object"
+json_array = "mod.json_array"
+json_get = "mod.json_get"
+json_escape = "mod.json_escape"

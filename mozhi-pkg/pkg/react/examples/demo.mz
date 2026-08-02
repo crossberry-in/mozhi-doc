@@ -1,0 +1,2 @@
+import mod from "../src/mod.mz"
+echo(mod.html_document("Demo", mod.div(mod.className("app"), mod.h1("", "Mozhi React!"))))

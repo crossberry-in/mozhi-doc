@@ -1,0 +1,61 @@
+# ============================================================
+# regex — Regular expression helpers for Mozhi (v1.0.0)
+# Uses shell grep/sed for regex operations
+# ============================================================
+
+# Check if string matches a pattern
+fn match(text, pattern) {
+    result = run("echo '" + text + "' | grep -qE '" + pattern + "' && echo 'true' || echo 'false'")
+    return result.trim() == "true"
+}
+
+# Find all matches (returns array of matches, one per line)
+fn find_all(text, pattern) {
+    result = run("echo '" + text + "' | grep -oE '" + pattern + "'")
+    return result.trim()
+}
+
+# Replace first match
+fn replace(text, pattern, replacement) {
+    result = run("echo '" + text + "' | sed -E 's/" + pattern + "/" + replacement + "/' | tr -d '\\n'")
+    return result
+}
+
+# Replace all matches
+fn replace_all(text, pattern, replacement) {
+    result = run("echo '" + text + "' | sed -E 's/" + pattern + "/" + replacement + "/g' | tr -d '\\n'")
+    return result
+}
+
+# Extract first match
+fn extract(text, pattern) {
+    result = run("echo '" + text + "' | grep -oE '" + pattern + "' | head -1")
+    return result.trim()
+}
+
+# Count matches
+fn count(text, pattern) {
+    result = run("echo '" + text + "' | grep -oE '" + pattern + "' | wc -l")
+    return string(result.trim())
+}
+
+# Split string by pattern
+fn split(text, pattern) {
+    result = run("echo '" + text + "' | sed -E 's/" + pattern + "/\\n/g'")
+    return result.trim()
+}
+
+# Validate email format
+fn is_email(text) {
+    return match(text, "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
+}
+
+# Validate URL format
+fn is_url(text) {
+    return match(text, "^https?://[A-Za-z0-9.-]+")
+}
+
+# Validate IP address
+fn is_ipv4(text) {
+    return match(text, "^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$")
+}

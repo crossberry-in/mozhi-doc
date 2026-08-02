@@ -1,0 +1,24 @@
+[package]
+name = "collections"
+version = "1.0.0"
+category = "data"
+description = "Array operations — sort, reverse, sum, min, max, mean, contains, slice, concat, range"
+license = "MIT"
+edition = "2024"
+
+[modules]
+mod = "Collections: array helpers"
+
+[exports]
+sort = "mod.sort"
+reverse = "mod.reverse"
+sum = "mod.sum"
+min = "mod.min"
+max = "mod.max"
+mean = "mod.mean"
+contains = "mod.contains"
+index_of = "mod.index_of"
+slice = "mod.slice"
+concat = "mod.concat"
+range = "mod.range"
+join = "mod.join"

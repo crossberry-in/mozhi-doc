@@ -1,0 +1,6 @@
+import mod from "../src/mod.mz"
+echo("Dice: " + string(mod.dice()))
+echo("Coin: " + mod.coin_flip())
+echo("UUID: " + mod.uuid())
+echo("Hex(8): " + mod.hex(8))
+echo("Bool: " + string(mod.boolean()))

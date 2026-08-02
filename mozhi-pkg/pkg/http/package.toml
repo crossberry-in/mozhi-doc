@@ -1,0 +1,22 @@
+[package]
+name = "http"
+version = "1.0.0"
+category = "web"
+description = "HTTP server utilities — serve static files, run scripts, JSON API"
+license = "MIT"
+edition = "2024"
+
+[modules]
+mod = "HTTP server: start, serve, static files, multi-language run"
+
+[exports]
+http_start = "mod.http_start"
+http_ok_html = "mod.http_ok_html"
+http_ok_json = "mod.http_ok_json"
+http_404 = "mod.http_404"
+http_serve_static = "mod.http_serve_static"
+http_serve_file = "mod.http_serve_file"
+http_run_sh = "mod.http_run_sh"
+http_run_c = "mod.http_run_c"
+http_run_py = "mod.http_run_py"
+http_run_mz = "mod.http_run_mz"

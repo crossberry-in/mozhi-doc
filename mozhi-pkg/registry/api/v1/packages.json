@@ -1,8 +1,191 @@
 {
   "name": "mozhi",
   "version": "1.0.0",
-  "updated": "2026-08-02T19:00:26Z",
+  "updated": "2026-08-02T19:56:03Z",
   "packages": [
+    {
+      "name": "collections",
+      "version": "1.0.0",
+      "description": "Array operations \u2014 sort, reverse, sum, min, max, mean, contains, slice, concat, range",
+      "category": "data",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/collections",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "sort": "mod.sort",
+        "reverse": "mod.reverse",
+        "sum": "mod.sum",
+        "min": "mod.min",
+        "max": "mod.max",
+        "mean": "mod.mean",
+        "contains": "mod.contains",
+        "index_of": "mod.index_of",
+        "slice": "mod.slice",
+        "concat": "mod.concat",
+        "range": "mod.range",
+        "join": "mod.join"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "8278ac0c741bee966b0592fb1e2bf4bf0659c2559a1fa20a49ae4c56397f8393",
+      "has_mod": true,
+      "source": "pkg/collections/src/mod.mz",
+      "install": "pkg/collections/src/"
+    },
+    {
+      "name": "crypto",
+      "version": "1.0.0",
+      "description": "Cryptography helpers \u2014 MD5, SHA-256, base64, UUID, file checksums",
+      "category": "crypto",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/crypto",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "md5": "mod.md5",
+        "sha256": "mod.sha256",
+        "sha1": "mod.sha1",
+        "base64_encode": "mod.base64_encode",
+        "base64_decode": "mod.base64_decode",
+        "uuid": "mod.uuid",
+        "random_hex": "mod.random_hex",
+        "file_sha256": "mod.file_sha256"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "dfedf68ecfc17a39724a81f03935df089395596de59c5ce6e7ab56e69c3c29eb",
+      "has_mod": true,
+      "source": "pkg/crypto/src/mod.mz",
+      "install": "pkg/crypto/src/"
+    },
+    {
+      "name": "datetime",
+      "version": "1.0.0",
+      "description": "Date and time helpers \u2014 now, today, format, day of week, timestamps",
+      "category": "general",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/datetime",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "now": "mod.now",
+        "today": "mod.today",
+        "iso8601": "mod.iso8601",
+        "format": "mod.format",
+        "day_of_week": "mod.day_of_week",
+        "year": "mod.year"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "2e8db9d0d3b2169effdd9aadbc5a5c609f0ca948ef2c705a5e0c7a4dadddadc6",
+      "has_mod": true,
+      "source": "pkg/datetime/src/mod.mz",
+      "install": "pkg/datetime/src/"
+    },
+    {
+      "name": "html",
+      "version": "1.0.0",
+      "description": "HTML element generation utilities \u2014 38 functions for building web pages",
+      "category": "web",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/html",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "html_doctype": "mod.html_doctype",
+        "html_tag": "mod.html_tag",
+        "html_page": "mod.html_page",
+        "html_div": "mod.html_div",
+        "html_h1": "mod.html_h1",
+        "html_p": "mod.html_p",
+        "html_a": "mod.html_a",
+        "html_ul": "mod.html_ul",
+        "html_table": "mod.html_table",
+        "html_form": "mod.html_form"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "41b9314663131bcb389eecddae1aed736a954760e7ea1db652e1e89750911809",
+      "has_mod": true,
+      "source": "pkg/html/src/mod.mz",
+      "install": "pkg/html/src/"
+    },
+    {
+      "name": "http",
+      "version": "1.0.0",
+      "description": "HTTP server utilities \u2014 serve static files, run scripts, JSON API",
+      "category": "web",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/http",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "http_start": "mod.http_start",
+        "http_ok_html": "mod.http_ok_html",
+        "http_ok_json": "mod.http_ok_json",
+        "http_404": "mod.http_404",
+        "http_serve_static": "mod.http_serve_static",
+        "http_serve_file": "mod.http_serve_file",
+        "http_run_sh": "mod.http_run_sh",
+        "http_run_c": "mod.http_run_c",
+        "http_run_py": "mod.http_run_py",
+        "http_run_mz": "mod.http_run_mz"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "eed4a8220a54463537465bf95365eb4905287b7ab68c0dffcb4235f723305677",
+      "has_mod": true,
+      "source": "pkg/http/src/mod.mz",
+      "install": "pkg/http/src/"
+    },
+    {
+      "name": "json",
+      "version": "1.0.0",
+      "description": "JSON encoder/decoder helpers \u2014 encode objects, arrays, get values",
+      "category": "data",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/json",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "json_string": "mod.json_string",
+        "json_object": "mod.json_object",
+        "json_array": "mod.json_array",
+        "json_get": "mod.json_get",
+        "json_escape": "mod.json_escape"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "b4a8723e32f911d4e897ab376fef2065c7aa990554604a0971ebd9e46d7b14c1",
+      "has_mod": true,
+      "source": "pkg/json/src/mod.mz",
+      "install": "pkg/json/src/"
+    },
     {
       "name": "math_utils",
       "version": "1.0.0",
@@ -112,6 +295,131 @@
       "has_mod": false,
       "source": "pkg/physics/src/mod.mz",
       "install": "pkg/physics/src/"
+    },
+    {
+      "name": "random",
+      "version": "1.0.0",
+      "description": "Random number generation \u2014 int range, choice, shuffle, UUID, dice, coin flip",
+      "category": "general",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/random",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "int_range": "mod.int_range",
+        "choice": "mod.choice",
+        "hex": "mod.hex",
+        "uuid": "mod.uuid",
+        "shuffle": "mod.shuffle",
+        "boolean": "mod.boolean",
+        "dice": "mod.dice",
+        "coin_flip": "mod.coin_flip"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "618b1d05003ba217d2c54e994b5b9fe90b2961373623b9cd7c4d19d3459687f2",
+      "has_mod": true,
+      "source": "pkg/random/src/mod.mz",
+      "install": "pkg/random/src/"
+    },
+    {
+      "name": "react",
+      "version": "1.0.0",
+      "description": "React-like framework \u2014 components, hooks, router, live reload, HMR",
+      "category": "web",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/react",
+      "modules": [
+        "devtools.mz",
+        "hooks.mz",
+        "mod.mz",
+        "router.mz"
+      ],
+      "exports": {
+        "h": "mod.h",
+        "div": "mod.div",
+        "h1": "mod.h1",
+        "p": "mod.p",
+        "button": "mod.button",
+        "html_document": "mod.html_document",
+        "className": "mod.className"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "40f466a4418607e35f51276eb49f9f48d2ade2c20f97dd59863f8d4935be5c5e",
+      "has_mod": true,
+      "source": "pkg/react/src/mod.mz",
+      "install": "pkg/react/src/"
+    },
+    {
+      "name": "regex",
+      "version": "1.0.0",
+      "description": "Regular expression helpers \u2014 match, find, replace, validate email/URL/IP",
+      "category": "text",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/regex",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "match": "mod.match",
+        "find_all": "mod.find_all",
+        "replace": "mod.replace",
+        "replace_all": "mod.replace_all",
+        "extract": "mod.extract",
+        "is_email": "mod.is_email",
+        "is_url": "mod.is_url"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "82561510025d2bccd95c8ee7bf11d4d42f6a96c02132f5eb272107f5cc649c16",
+      "has_mod": true,
+      "source": "pkg/regex/src/mod.mz",
+      "install": "pkg/regex/src/"
+    },
+    {
+      "name": "strings",
+      "version": "1.0.0",
+      "description": "String manipulation \u2014 reverse, capitalize, snake_case, slugify, pad, truncate",
+      "category": "text",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/strings",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "reverse": "mod.reverse",
+        "capitalize": "mod.capitalize",
+        "snake_case": "mod.snake_case",
+        "camel_case": "mod.camel_case",
+        "slugify": "mod.slugify",
+        "repeat": "mod.repeat",
+        "pad_left": "mod.pad_left",
+        "pad_right": "mod.pad_right",
+        "truncate": "mod.truncate",
+        "count": "mod.count",
+        "starts_with": "mod.starts_with",
+        "ends_with": "mod.ends_with"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "d0c6878feafea9c780ed0f93ae5745d262e9602b1101fdb1c195a2036d97beee",
+      "has_mod": true,
+      "source": "pkg/strings/src/mod.mz",
+      "install": "pkg/strings/src/"
     }
   ]
 }

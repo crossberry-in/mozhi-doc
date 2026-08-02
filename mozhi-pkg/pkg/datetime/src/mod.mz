@@ -1,0 +1,67 @@
+# ============================================================
+# datetime — Date and time helpers for Mozhi (v1.0.0)
+# Uses shell `date` command for formatting
+# ============================================================
+
+# Current Unix timestamp
+fn now() {
+    return run("date +%s").trim()
+}
+
+# Current date (YYYY-MM-DD)
+fn today() {
+    return run("date +%Y-%m-%d").trim()
+}
+
+# Current time (HH:MM:SS)
+fn time_now() {
+    return run("date +%H:%M:%S").trim()
+}
+
+# Current date and time (ISO 8601)
+fn iso8601() {
+    return run("date -u +%Y-%m-%dT%H:%M:%SZ").trim()
+}
+
+# Format date with custom format
+# See: date --help for format codes
+fn format(fmt) {
+    return run("date +" + fmt).trim()
+}
+
+# Day of week (e.g. "Monday")
+fn day_of_week() {
+    return run("date +%A").trim()
+}
+
+# Month name (e.g. "January")
+fn month_name() {
+    return run("date +%B").trim()
+}
+
+# Year (e.g. "2026")
+fn year() {
+    return run("date +%Y").trim()
+}
+
+# Unix timestamp to date string
+fn from_timestamp(ts) {
+    return run("date -d @" + string(ts) +" +%Y-%m-%d").trim()
+}
+
+# Seconds since epoch (alias of now)
+fn epoch() {
+    return now()
+}
+
+# Uptime in seconds
+fn uptime() {
+    result = run("cat /proc/uptime 2>/dev/null | cut -d' ' -f1 || echo 0")
+    return result.trim()
+}
+
+# Sleep for N seconds
+fn sleep_seconds(s) {
+    run("sleep " + string(s))
+    return ""
+}

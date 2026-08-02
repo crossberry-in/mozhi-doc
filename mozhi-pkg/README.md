@@ -63,10 +63,20 @@ pkg install mypackage
 
 ## Available Packages
 
-| Package | Version | Category | Description |
-|---------|---------|----------|-------------|
-| `physics` | v1.0.0 | general | Physics library: mechanics, motion, energy, gravity, etc. |
-| `math_utils` | v1.0.0 | math | Extended math helpers: arithmetic, geometry, statistics |
+| Package | Version | Category | Exports | Description |
+|---------|---------|----------|---------|-------------|
+| `collections` | v1.0.0 | data | 12 | Array operations — sort, reverse, sum, min, max, mean, ... |
+| `crypto` | v1.0.0 | crypto | 8 | Cryptography helpers — MD5, SHA-256, base64, UUID, file... |
+| `datetime` | v1.0.0 | general | 6 | Date and time helpers — now, today, format, day of week... |
+| `html` | v1.0.0 | web | 10 | HTML element generation utilities — 38 functions for bu... |
+| `http` | v1.0.0 | web | 10 | HTTP server utilities — serve static files, run scripts... |
+| `json` | v1.0.0 | data | 5 | JSON encoder/decoder helpers — encode objects, arrays, ... |
+| `math_utils` | v1.0.0 | math | 9 | Extended math helpers: arithmetic, geometry, statistics... |
+| `physics` | v1.0.0 | general | 59 | Production-ready physics library for Mozhi: mechanics, ... |
+| `random` | v1.0.0 | general | 8 | Random number generation — int range, choice, shuffle, ... |
+| `react` | v1.0.0 | web | 7 | React-like framework — components, hooks, router, live ... |
+| `regex` | v1.0.0 | text | 7 | Regular expression helpers — match, find, replace, vali... |
+| `strings` | v1.0.0 | text | 12 | String manipulation — reverse, capitalize, snake_case, ... |
 
 ## Structure
 

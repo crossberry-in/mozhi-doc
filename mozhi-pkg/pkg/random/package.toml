@@ -1,0 +1,20 @@
+[package]
+name = "random"
+version = "1.0.0"
+category = "general"
+description = "Random number generation — int range, choice, shuffle, UUID, dice, coin flip"
+license = "MIT"
+edition = "2024"
+
+[modules]
+mod = "Random: int, float, choice, shuffle, uuid, dice"
+
+[exports]
+int_range = "mod.int_range"
+choice = "mod.choice"
+hex = "mod.hex"
+uuid = "mod.uuid"
+shuffle = "mod.shuffle"
+boolean = "mod.boolean"
+dice = "mod.dice"
+coin_flip = "mod.coin_flip"

@@ -1,0 +1,5 @@
+import mod from "../src/mod.mz"
+echo(mod.reverse("hello"))
+echo(mod.capitalize("mozhi"))
+echo(mod.slugify("Hello, World!"))
+echo(mod.repeat("ab", 5))

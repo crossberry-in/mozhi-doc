@@ -1,0 +1,40 @@
+{
+  "letter": "s",
+  "count": 1,
+  "packages": [
+    {
+      "name": "strings",
+      "version": "1.0.0",
+      "description": "String manipulation \u2014 reverse, capitalize, snake_case, slugify, pad, truncate",
+      "category": "text",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/strings",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "reverse": "mod.reverse",
+        "capitalize": "mod.capitalize",
+        "snake_case": "mod.snake_case",
+        "camel_case": "mod.camel_case",
+        "slugify": "mod.slugify",
+        "repeat": "mod.repeat",
+        "pad_left": "mod.pad_left",
+        "pad_right": "mod.pad_right",
+        "truncate": "mod.truncate",
+        "count": "mod.count",
+        "starts_with": "mod.starts_with",
+        "ends_with": "mod.ends_with"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "d0c6878feafea9c780ed0f93ae5745d262e9602b1101fdb1c195a2036d97beee",
+      "has_mod": true,
+      "source": "pkg/strings/src/mod.mz",
+      "install": "pkg/strings/src/"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+import mod from "../src/mod.mz"
+echo("Today: " + mod.today())
+echo("Time: " + mod.time_now())
+echo("ISO: " + mod.iso8601())
+echo("Day: " + mod.day_of_week())
+echo("Year: " + mod.year())

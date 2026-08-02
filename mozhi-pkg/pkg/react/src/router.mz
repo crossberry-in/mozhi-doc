@@ -1,0 +1,131 @@
+# ============================================================
+# Mozhi React — Router (v1.0.0)
+# Client-side hash-based routing
+# ============================================================
+# Uses URL hash (#/path) for client-side routing.
+# No server configuration needed.
+# ============================================================
+
+# ------------------------------------------------------------
+# Route definitions
+# ------------------------------------------------------------
+
+# Create a router with routes
+# routes is an array of [path, component_fn] pairs
+# Since Mozhi can't pass functions, we use a convention:
+# each route renders its HTML on the server.
+
+fn router(routes) {
+    # Generate the router script + all route HTML
+    script = "<script>
+window.__mozhiRoutes = {};
+window.__mozhiNavigate = function(path) {
+    window.location.hash = '#' + path;
+};
+window.addEventListener('hashchange', function() {
+    var path = window.location.hash.slice(1) || '/';
+    var route = window.__mozhiRoutes[path];
+    if (route) {
+        document.getElementById('app').innerHTML = route;
+    } else {
+        document.getElementById('app').innerHTML = window.__mozhiRoutes['*'] || '<h1>404</h1><p>Page not found</p>';
+    }
+});
+window.addEventListener('load', function() {
+    window.dispatchEvent(new Event('hashchange'));
+});
+</script>"
+
+    # Register routes
+    route_script = "<script>"
+    for route in routes {
+        path = route[0]
+        html_content = route[1]
+        # Escape quotes in HTML content
+        escaped = html_content.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n")
+        route_script = route_script + "window.__mozhiRoutes[\"" + path + "\"] = \"" + escaped + "\";"
+    }
+    route_script = route_script + "</script>"
+
+    return script + route_script + "<div id=\"app\"></div>"
+}
+
+# Link component — generates an <a> tag with hash navigation
+fn link(to, text) {
+    return "<a href=\"#" + to + "\" onclick=\"window.__mozhiNavigate('" + to + "'); return false;\">" + text + "</a>"
+}
+
+# NavLink — link with active state
+fn navlink(to, text, active_path) {
+    cls = "nav-link"
+    if to == active_path {
+        cls = cls + " active"
+    }
+    return "<a href=\"#" + to + "\" class=\"" + cls + "\" onclick=\"window.__mozhiNavigate('" + to + "'); return false;\">" + text + "</a>"
+}
+
+# Redirect — client-side redirect
+fn redirect(to) {
+    return "<script>window.location.hash = '#" + to + "';</script>"
+}
+
+# ------------------------------------------------------------
+# Route guards
+# ------------------------------------------------------------
+
+# ProtectedRoute — only render if condition is true
+fn protected_route(condition, path, component_html, redirect_to) {
+    if condition {
+        return component_html
+    }
+    return redirect(redirect_to)
+}
+
+# ------------------------------------------------------------
+# URL params
+# ------------------------------------------------------------
+
+# Parse query string from URL
+fn parse_query(path) {
+    if not path.contains("?") {
+        return ""
+    }
+    parts = path.split("?")
+    if parts.len() >= 2 {
+        return parts[1]
+    }
+    return ""
+}
+
+# Get query parameter value
+fn query_param(path, key) {
+    query = parse_query(path)
+    if query == "" {
+        return ""
+    }
+    pairs = query.split("&")
+    for pair in pairs {
+        kv = pair.split("=")
+        if kv.len() == 2 {
+            if kv[0] == key {
+                return kv[1]
+            }
+        }
+    }
+    return ""
+}
+
+# ------------------------------------------------------------
+# Navigation bar
+# ------------------------------------------------------------
+
+fn navbar(links, active_path) {
+    nav_html = "<nav class=\"navbar\">"
+    for link_data in links {
+        to = link_data[0]
+        text = link_data[1]
+        nav_html = nav_html + navlink(to, text, active_path)
+    }
+    nav_html = nav_html + "</nav>"
+    return nav_html
+}

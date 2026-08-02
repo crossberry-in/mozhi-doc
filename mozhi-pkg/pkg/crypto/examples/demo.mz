@@ -1,0 +1,4 @@
+import mod from "../src/mod.mz"
+echo("sha256('hello') = " + mod.sha256("hello"))
+echo("uuid = " + mod.uuid())
+echo("base64('Mozhi') = " + mod.base64_encode("Mozhi"))

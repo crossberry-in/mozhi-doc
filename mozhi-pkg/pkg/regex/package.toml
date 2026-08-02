@@ -1,0 +1,19 @@
+[package]
+name = "regex"
+version = "1.0.0"
+category = "text"
+description = "Regular expression helpers — match, find, replace, validate email/URL/IP"
+license = "MIT"
+edition = "2024"
+
+[modules]
+mod = "Regex: match, find_all, replace, split, validate"
+
+[exports]
+match = "mod.match"
+find_all = "mod.find_all"
+replace = "mod.replace"
+replace_all = "mod.replace_all"
+extract = "mod.extract"
+is_email = "mod.is_email"
+is_url = "mod.is_url"

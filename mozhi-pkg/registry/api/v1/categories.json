@@ -1,10 +1,28 @@
 {
   "categories": {
+    "data": [
+      "collections",
+      "json"
+    ],
+    "crypto": [
+      "crypto"
+    ],
+    "general": [
+      "datetime",
+      "physics",
+      "random"
+    ],
+    "web": [
+      "html",
+      "http",
+      "react"
+    ],
     "math": [
       "math_utils"
     ],
-    "general": [
-      "physics"
+    "text": [
+      "regex",
+      "strings"
     ]
   }
 }

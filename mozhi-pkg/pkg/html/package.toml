@@ -1,0 +1,22 @@
+[package]
+name = "html"
+version = "1.0.0"
+category = "web"
+description = "HTML element generation utilities — 38 functions for building web pages"
+license = "MIT"
+edition = "2024"
+
+[modules]
+mod = "HTML generators: tags, forms, tables, lists, nav, etc."
+
+[exports]
+html_doctype = "mod.html_doctype"
+html_tag = "mod.html_tag"
+html_page = "mod.html_page"
+html_div = "mod.html_div"
+html_h1 = "mod.html_h1"
+html_p = "mod.html_p"
+html_a = "mod.html_a"
+html_ul = "mod.html_ul"
+html_table = "mod.html_table"
+html_form = "mod.html_form"

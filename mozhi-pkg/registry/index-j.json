@@ -1,0 +1,33 @@
+{
+  "letter": "j",
+  "count": 1,
+  "packages": [
+    {
+      "name": "json",
+      "version": "1.0.0",
+      "description": "JSON encoder/decoder helpers \u2014 encode objects, arrays, get values",
+      "category": "data",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/json",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "json_string": "mod.json_string",
+        "json_object": "mod.json_object",
+        "json_array": "mod.json_array",
+        "json_get": "mod.json_get",
+        "json_escape": "mod.json_escape"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "b4a8723e32f911d4e897ab376fef2065c7aa990554604a0971ebd9e46d7b14c1",
+      "has_mod": true,
+      "source": "pkg/json/src/mod.mz",
+      "install": "pkg/json/src/"
+    }
+  ]
+}

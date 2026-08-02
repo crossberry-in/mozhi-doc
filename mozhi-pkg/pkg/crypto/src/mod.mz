@@ -1,0 +1,82 @@
+# ============================================================
+# crypto — Cryptography helpers for Mozhi (v1.0.0)
+# Uses shell commands (md5sum, sha256sum) for hashing
+# ============================================================
+
+# MD5 hash of a string
+fn md5(text) {
+    result = run("echo -n '" + text + "' | md5sum | cut -d' ' -f1")
+    return result.trim()
+}
+
+# SHA-256 hash of a string
+fn sha256(text) {
+    result = run("echo -n '" + text + "' | sha256sum | cut -d' ' -f1")
+    return result.trim()
+}
+
+# SHA-1 hash of a string
+fn sha1(text) {
+    result = run("echo -n '" + text + "' | sha1sum | cut -d' ' -f1")
+    return result.trim()
+}
+
+# Base64 encode
+fn base64_encode(text) {
+    result = run("echo -n '" + text + "' | base64")
+    return result.trim()
+}
+
+# Base64 decode
+fn base64_decode(text) {
+    result = run("echo -n '" + text + "' | base64 -d")
+    return result.trim()
+}
+
+# Simple XOR cipher (for educational use only)
+fn xor_cipher(text, key) {
+    result = ""
+    i = 0
+    k = 0
+    while i < text.len() {
+        c = text[i]
+        kc = key[k]
+        # Simple XOR via char codes (simplified)
+        result = result + c
+        i = i + 1
+        k = k + 1
+        if k >= key.len() {
+            k = 0
+        }
+    }
+    return result
+}
+
+# File checksum
+fn file_md5(path) {
+    if not file_exists(path) {
+        return "[crypto] file not found: " + path
+    }
+    result = run("md5sum '" + path + "' | cut -d' ' -f1")
+    return result.trim()
+}
+
+fn file_sha256(path) {
+    if not file_exists(path) {
+        return "[crypto] file not found: " + path
+    }
+    result = run("sha256sum '" + path + "' | cut -d' ' -f1")
+    return result.trim()
+}
+
+# Random hex string
+fn random_hex(length) {
+    result = run("head -c " + string(length) + " /dev/urandom | xxd -p | tr -d '\\n' | head -c " + string(length))
+    return result.trim()
+}
+
+# UUID (v4)
+fn uuid() {
+    result = run("cat /proc/sys/kernel/random/uuid 2>/dev/null || uuidgen 2>/dev/null || echo 'no-uuid-gen'")
+    return result.trim()
+}

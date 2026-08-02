@@ -1,0 +1,18 @@
+[package]
+name = "datetime"
+version = "1.0.0"
+category = "general"
+description = "Date and time helpers — now, today, format, day of week, timestamps"
+license = "MIT"
+edition = "2024"
+
+[modules]
+mod = "DateTime: now, today, format, day_of_week"
+
+[exports]
+now = "mod.now"
+today = "mod.today"
+iso8601 = "mod.iso8601"
+format = "mod.format"
+day_of_week = "mod.day_of_week"
+year = "mod.year"

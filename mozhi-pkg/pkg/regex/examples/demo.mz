@@ -1,0 +1,4 @@
+import mod from "../src/mod.mz"
+echo(mod.is_email("user@example.com"))
+echo(mod.is_url("https://github.com"))
+echo(mod.replace_all("hello world foo", " ", "_"))

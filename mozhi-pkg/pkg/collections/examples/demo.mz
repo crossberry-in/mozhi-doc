@@ -1,0 +1,10 @@
+import mod from "../src/mod.mz"
+nums = [3, 1, 4, 1, 5, 9, 2, 6]
+echo("Original: " + mod.join(nums, ", "))
+echo("Sorted: " + mod.join(mod.sort(nums), ", "))
+echo("Sum: " + string(mod.sum(nums)))
+echo("Max: " + string(mod.max(nums)))
+echo("Min: " + string(mod.min(nums)))
+echo("Mean: " + string(mod.mean(nums)))
+echo("Contains 5: " + string(mod.contains(nums, 5)))
+echo("Range 0-5: " + mod.join(mod.range(0, 6), ", "))

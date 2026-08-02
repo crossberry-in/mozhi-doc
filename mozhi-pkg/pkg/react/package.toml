@@ -1,0 +1,22 @@
+[package]
+name = "react"
+version = "1.0.0"
+category = "web"
+description = "React-like framework — components, hooks, router, live reload, HMR"
+license = "MIT"
+edition = "2024"
+
+[modules]
+mod = "Core: h(), div(), h1(), props(), html_document()"
+hooks = "State: useState, useEffect, useMemo, serialize_state"
+router = "Routing: link(), navlink(), navbar(), redirect()"
+devtools = "Dev: file watcher, SSE, CSS hot-swap, error overlay"
+
+[exports]
+h = "mod.h"
+div = "mod.div"
+h1 = "mod.h1"
+p = "mod.p"
+button = "mod.button"
+html_document = "mod.html_document"
+className = "mod.className"
