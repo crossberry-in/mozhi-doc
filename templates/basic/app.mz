@@ -1,0 +1,66 @@
+# ============================================================
+# Mozhi Basic Template
+# A simple program demonstrating core features
+# ============================================================
+
+echo("=== Mozhi Basic Template ===")
+echo("")
+
+# Variables
+name = "Mozhi"
+version = "2.4.0"
+echo("Language: " + name)
+echo("Version: " + version)
+echo("")
+
+# Math
+echo("Math:")
+echo("  10 + 5 = " + string(10 + 5))
+echo("  10 * 5 = " + string(10 * 5))
+echo("  sqrt(144) = " + string(sqrt(144)))
+echo("")
+
+# Strings
+echo("Strings:")
+greeting = "Hello, " + name + "!"
+echo("  " + greeting)
+echo("  Upper: " + greeting.upper())
+echo("  Length: " + string(greeting.len()))
+echo("")
+
+# Arrays
+echo("Arrays:")
+fruits = ["apple", "banana", "cherry"]
+for fruit in fruits {
+    echo("  - " + fruit)
+}
+echo("")
+
+# Functions
+fn factorial(n) {
+    if n <= 1 {
+        return 1
+    }
+    return n * factorial(n - 1)
+}
+
+echo("Functions:")
+echo("  5! = " + string(factorial(5)))
+echo("  10! = " + string(factorial(10)))
+echo("")
+
+# File I/O
+echo("File I/O:")
+write_file("/tmp/mozhi_basic.txt", "Created by Mozhi!")
+if file_exists("/tmp/mozhi_basic.txt") {
+    echo("  File created: " + read_file("/tmp/mozhi_basic.txt"))
+}
+echo("")
+
+# Shell
+echo("Shell:")
+echo("  Current dir: " + run("pwd").trim())
+echo("  Date: " + run("date").trim())
+echo("")
+
+echo("=== Done! Edit this file and run again. ===")

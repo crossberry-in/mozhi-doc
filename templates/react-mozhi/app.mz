@@ -1,0 +1,140 @@
+# ============================================================
+# Mozhi React Template — React-like app with live reload
+# ============================================================
+# Run: mozhi-interpreter app.mz
+# Open: http://127.0.0.1:3000
+# ============================================================
+
+import http from "mozhi-http"
+import react from "react.mz"
+import devtools from "react_devtools.mz"
+
+devtools.init_watcher()
+
+fn handler(method, path) {
+    echo("[" + method + "] " + path)
+
+    route = path
+    if path.contains("?") {
+        route = path.split("?")[0]
+    }
+
+    # SSE: Live reload
+    if route == "/__dev_reload" {
+        change_type = devtools.hmr_check()
+        if change_type == "full_reload" {
+            devtools.update_marker()
+            return devtools.sse_reload()
+        }
+        if change_type == "css_reload" {
+            devtools.update_marker()
+            response = "HTTP/1.1 200 OK\r\n"
+            response = response + "Content-Type: text/event-stream\r\n"
+            response = response + "Cache-Control: no-cache\r\n"
+            response = response + "\r\n"
+            response = response + "event: css_reload\ndata: ok\n\n"
+            return response
+        }
+        return devtools.sse_heartbeat()
+    }
+
+    # Component endpoint
+    if route.contains("/components/") and route.ends_with(".mz") {
+        comp_path = "components" + route.replace("/components", "")
+        if file_exists(comp_path) {
+            return http.http_run_mz(comp_path)
+        }
+        return http.http_404("Not found: " + comp_path)
+    }
+
+    # Main page
+    if route == "/" or route == "" {
+        body = react.div("id=\"app\"",
+            react.header("class=\"app-header\"",
+                react.h1("", "Mozhi React") +
+                react.nav("class=\"navbar\"",
+                    "<a href=\"#/\">Home</a>" +
+                    "<a href=\"#/counter\">Counter</a>" +
+                    "<a href=\"#/about\">About</a>"
+                )
+            ) +
+            react.div("id=\"page-content\"", "") +
+            react.footer("class=\"app-footer\"",
+                react.p("", "Built with Mozhi React")
+            ) +
+            "<script>
+async function loadPage(path) {
+    var res = await fetch('/components' + path + '.mz');
+    var html = res.ok ? await res.text() : '<div class=\"card\"><h2>404</h2></div>';
+    var c = document.getElementById('page-content');
+    if (c) c.innerHTML = html;
+}
+window.addEventListener('hashchange', function() {
+    loadPage(window.location.hash.slice(1) || '/');
+});
+window.addEventListener('load', function() {
+    loadPage(window.location.hash.slice(1) || '/');
+});
+var es = new EventSource('/__dev_reload');
+es.addEventListener('reload', function(e) { location.reload(); });
+es.addEventListener('css_reload', function(e) {
+    document.querySelectorAll('link[rel=\"stylesheet\"]').forEach(function(l) {
+        l.href = l.href.split('?')[0] + '?v=' + Date.now();
+    });
+});
+</script>"
+        )
+        head = "<link rel=\"stylesheet\" href=\"/style.css\">"
+        return http.http_ok_html(react.html_document("Mozhi React App", body, head))
+    }
+
+    return http.http_serve_static(route, "public")
+}
+
+# Setup default files
+fn setup() {
+    run("mkdir -p public components")
+
+    if not file_exists("public/style.css") {
+        css = "* { margin: 0; padding: 0; box-sizing: border-box; }"
+        css = css + " body { font-family: system-ui, sans-serif; background: #0d1117; color: #c9d1d9; }"
+        css = css + " #app { max-width: 800px; margin: 0 auto; padding: 2rem; }"
+        css = css + " .app-header { text-align: center; margin-bottom: 2rem; }"
+        css = css + " .app-header h1 { color: #58a6ff; }"
+        css = css + " .navbar { display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; }"
+        css = css + " .navbar a { color: #58a6ff; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; }"
+        css = css + " .navbar a:hover { background: #21262d; }"
+        css = css + " .app-footer { text-align: center; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #30363d; color: #8b949e; }"
+        css = css + " .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }"
+        css = css + " .card h2 { color: #58a6ff; margin-bottom: 0.5rem; }"
+        css = css + " .btn { background: #238636; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }"
+        css = css + " .btn:hover { background: #2ea043; }"
+        write_file("public/style.css", css)
+    }
+
+    if not file_exists("components/index.mz") {
+        write_file("components/index.mz", "import react from \"react.mz\"\necho(react.div(\"class=\\\"card\\\"\", react.h2(\"\", \"Welcome!\") + react.p(\"\", \"Edit components/index.mz and save. Browser auto-reloads!\")))")
+    }
+
+    if not file_exists("components/counter.mz") {
+        write_file("components/counter.mz", "import react from \"react.mz\"\necho(react.div(\"class=\\\"card\\\"\", react.h2(\"\", \"Counter\") + \"<button class='btn' onclick='dec()'>-</button><span id='c' style='font-size:1.5rem;color:#58a6ff;margin:0 1rem;'>0</span><button class='btn' onclick='inc()'>+</button><script>function inc(){var e=document.getElementById('c');e.textContent=parseInt(e.textContent)+1}function dec(){var e=document.getElementById('c');e.textContent=parseInt(e.textContent)-1}</script>\"))")
+    }
+
+    if not file_exists("components/about.mz") {
+        write_file("components/about.mz", "import react from \"react.mz\"\necho(react.div(\"class=\\\"card\\\"\", react.h2(\"\", \"About\") + react.p(\"\", \"Mozhi React - React-like framework with live reload.\")))")
+    }
+}
+
+setup()
+
+echo("")
+echo("============================================")
+echo("  Mozhi React App")
+echo("  http://127.0.0.1:3000")
+echo("============================================")
+echo("Pages: #/  #/counter  #/about")
+echo("Edit any file - browser auto-reloads!")
+echo("")
+
+server = http.http_start(3000)
+http.http_serve_loop(server, handler)

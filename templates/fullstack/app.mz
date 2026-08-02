@@ -1,0 +1,75 @@
+# ============================================================
+# Mozhi Full-Stack Template
+# Static files + JSON API + Shell + Multi-language run
+# ============================================================
+
+import http from "mozhi-http"
+import html from "mozhi-html"
+
+fn setup() {
+    run("mkdir -p public components scripts")
+
+    if not file_exists("public/index.html") {
+        write_file("public/index.html", "<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mozhi Full-Stack</title>\n  <link rel=\"stylesheet\" href=\"/style.css\">\n</head>\n<body>\n  <h1>Mozhi Full-Stack App</h1>\n  <h2>Endpoints</h2>\n  <ul>\n    <li><a href=\"/api/info\">/api/info</a> - JSON API</li>\n    <li><a href=\"/run/shell\">/run/shell</a> - Run shell script</li>\n    <li><a href=\"/run/c\">/run/c</a> - Compile & run C</li>\n    <li><a href=\"/run/py\">/run/py</a> - Run Python</li>\n  </ul>\n</body>\n</html>")
+    }
+
+    if not file_exists("public/style.css") {
+        write_file("public/style.css", "body { font-family: system-ui, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 720px; margin: 2rem auto; padding: 0 1rem; } h1 { color: #58a6ff; } a { color: #58a6ff; } ul { line-height: 1.8; }")
+    }
+
+    if not file_exists("scripts/status.sh") {
+        write_file("scripts/status.sh", "#!/bin/bash\necho 'Shell: OK'\necho 'Date: '$(date)\necho 'User: '$(whoami)")
+    }
+
+    if not file_exists("scripts/demo.c") {
+        write_file("scripts/demo.c", "#include <stdio.h>\nint main() {\n    printf(\"C: OK\\n\");\n    printf(\"Sum 1..10 = %d\\n\", 55);\n    return 0;\n}")
+    }
+
+    if not file_exists("scripts/demo.py") {
+        write_file("scripts/demo.py", "print('Python: OK')\nprint('2**10 =', 2**10)")
+    }
+}
+
+setup()
+
+fn handler(method, path) {
+    echo("[" + method + "] " + path)
+
+    route = path
+    if path.contains("?") {
+        route = path.split("?")[0]
+    }
+
+    # API
+    if route == "/api/info" {
+        return http.http_ok_json("{\"name\": \"Mozhi Full-Stack\", \"version\": \"2.4.0\"}")
+    }
+
+    # Multi-language
+    if route == "/run/shell" {
+        return http.http_run_sh("scripts/status.sh")
+    }
+    if route == "/run/c" {
+        return http.http_run_c("scripts/demo.c")
+    }
+    if route == "/run/py" {
+        return http.http_run_py("scripts/demo.py")
+    }
+
+    # Static files
+    return http.http_serve_static(route, "public")
+}
+
+echo("=== Mozhi Full-Stack App ===")
+echo("http://127.0.0.1:8080")
+echo("")
+echo("Endpoints:")
+echo("  GET /            - Home page")
+echo("  GET /api/info    - JSON API")
+echo("  GET /run/shell   - Run shell script")
+echo("  GET /run/c       - Compile & run C")
+echo("  GET /run/py      - Run Python")
+echo("")
+
+server = http.http_start(8080)
+http.http_serve_loop(server, handler)

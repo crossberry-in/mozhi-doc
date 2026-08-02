@@ -1,0 +1,19 @@
+# ============================================================
+# Mozhi Static File Server Template
+# Serves static files from public/ directory
+# ============================================================
+
+import http from "mozhi-http"
+
+fn handler(method, path) {
+    echo("[" + method + "] " + path)
+    return http.http_serve_static(path, "public")
+}
+
+echo("=== Mozhi Static Server ===")
+echo("Serving files from public/")
+echo("http://127.0.0.1:8080")
+echo("")
+
+server = http.http_start(8080)
+http.http_serve_loop(server, handler)
