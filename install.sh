@@ -16,7 +16,7 @@ install_dir="/usr/local/bin"
 [ ! -w "$install_dir" ] && install_dir="$HOME/.local/bin" && mkdir -p "$install_dir"
 
 asset_name="mozhi-interpreter-${os}-${arch}"
-url="https://github.com/${REPO}/releases/download/v2.2.1/${asset_name}"
+url="https://github.com/${REPO}/releases/download/v2.3.0/${asset_name}"
 tmp_file="${TMPDIR:-/tmp}/${asset_name}"
 
 info "Downloading ${asset_name}..."
