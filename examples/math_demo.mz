@@ -29,19 +29,29 @@ echo("is_prime(100)   = " + string(math_utils.is_prime(100)))
 echo("fibonacci(20)   = " + string(math_utils.fibonacci(20)))
 echo("")
 
-echo("--- Statistics ---")
-nums = [10, 20, 30, 40, 50]
-echo("sum([10,20,30,40,50])  = " + string(math_utils.sum(nums)))
-echo("mean([10,20,30,40,50]) = " + string(math_utils.mean(nums)))
-echo("max([10,20,30,40,50])  = " + string(math_utils.max(nums)))
-echo("min([10,20,30,40,50])  = " + string(math_utils.min(nums)))
-echo("")
-
 echo("--- Utility ---")
 echo("clamp(15, 0, 10)     = " + string(math_utils.clamp(15, 0, 10)))
 echo("lerp(0, 100, 0.5)    = " + string(math_utils.lerp(0, 100, 0.5)))
 echo("radians(180)         = " + string(math_utils.radians(180)))
 echo("degrees(3.14159)     = " + string(math_utils.degrees(3.14159)))
+echo("")
+
+echo("--- Primes up to 30 ---")
+i = 2
+while i <= 30 {
+    if math_utils.is_prime(i) {
+        echo("  " + string(i) + " is prime")
+    }
+    i = i + 1
+}
+echo("")
+
+echo("--- Fibonacci sequence (first 15) ---")
+i = 0
+while i < 15 {
+    echo("  fib(" + string(i) + ") = " + string(math_utils.fibonacci(i)))
+    i = i + 1
+}
 echo("")
 
 echo("=== Done! ===")

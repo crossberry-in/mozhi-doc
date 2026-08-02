@@ -35,8 +35,8 @@ echo("")
 
 # Style 3: File path import (functions via alias.func())
 echo("--- Style 3: File Path Import ---")
-# Create a local helper file
-write_file("/tmp/mylib.mz", "fn greet(name) {\n    return \"Hello, \" + name + \"!\"\n}\n\nfn double(x) {\n    return x * 2\n}")
+# Create a local helper file in the current directory
+write_file("mylib.mz", "fn greet(name) {\n    return \"Hello, \" + name + \"!\"\n}\n\nfn double(x) {\n    return x * 2\n}")
 
 import my from "mylib.mz"
 

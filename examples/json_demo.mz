@@ -7,34 +7,31 @@ import json from "mozhi-json"
 echo("=== JSON Library Demo ===")
 echo("")
 
-echo("--- Encoding ---")
-pairs = [
-    ["name", "Mozhi"],
-    ["version", "2.4.0"],
-    ["author", "Z.ai"]
-]
-obj = json.json_object(pairs)
-echo("json_object: " + obj)
+echo("--- Encoding single values ---")
+echo("json_string('hello')  = " + json.json_string("hello"))
+echo("json_number(42)       = " + json.json_number(42))
+echo("json_bool(true)       = " + json.json_bool(true))
+echo("json_null()           = " + json.json_null())
 echo("")
 
-echo("--- Pretty Printing ---")
-pretty = json.json_object_pretty(pairs, 0)
-echo("pretty:")
-echo(pretty)
-echo("")
-
-echo("--- Arrays ---")
-items = ["apple", "banana", "cherry"]
-arr = json.json_array(items)
-echo("json_array: " + arr)
+echo("--- Key-Value pairs ---")
+kv1 = json.json_kv("name", "Mozhi")
+kv2 = json.json_kv("version", "2.4.0")
+echo("json_kv('name', 'Mozhi')    = " + kv1)
+echo("json_kv('version', '2.4.0') = " + kv2)
 echo("")
 
 echo("--- Decoding (json_get) ---")
 sample = "{\"name\": \"Mozhi\", \"version\": \"2.4.0\", \"author\": \"Z.ai\"}"
 echo("Sample JSON: " + sample)
+echo("")
 echo("json_get('name')    = " + json.json_get(sample, "name"))
 echo("json_get('version') = " + json.json_get(sample, "version"))
 echo("json_get('author')  = " + json.json_get(sample, "author"))
+echo("")
+
+echo("--- Escape ---")
+echo("json_escape('hello\\nworld') = " + json.json_escape("hello\nworld"))
 echo("")
 
 echo("--- Building JSON manually ---")
