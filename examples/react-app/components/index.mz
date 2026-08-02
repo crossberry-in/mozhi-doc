@@ -1,0 +1,2 @@
+import react from "react.mz"
+echo(react.div("class=\"card\"", react.h2("", "Welcome!") + react.p("", "Mozhi React - a React-like framework with live reload.")))

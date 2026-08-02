@@ -1,0 +1,182 @@
+# ============================================================
+# Mozhi React — DevTools (v1.0.0)
+# Development server with live reload and hot module replacement
+# ============================================================
+
+# ------------------------------------------------------------
+# File watcher — checks for file changes
+# ------------------------------------------------------------
+
+# Get modification time of a file
+fn file_mtime(path) {
+    return run("stat -c %Y \"" + path + "\" 2>/dev/null || echo 0")
+}
+
+# Check if any file in a directory has changed since last check
+fn check_dir_changed(dir, last_check) {
+    result = run("find \"" + dir + "\" -type f -newer \"" + last_check + "\" 2>/dev/null | head -1")
+    if result.trim() != "" {
+        return true
+    }
+    return false
+}
+
+# Touch the marker file (update last check time)
+fn update_marker() {
+    run("touch /tmp/.mozhi_dev_marker")
+}
+
+# Initialize the watcher
+fn init_watcher() {
+    run("touch /tmp/.mozhi_dev_marker")
+}
+
+# ------------------------------------------------------------
+# Live reload via SSE (Server-Sent Events)
+# ------------------------------------------------------------
+
+# SSE response for reload event
+fn sse_reload() {
+    response = "HTTP/1.1 200 OK\r\n"
+    response = response + "Content-Type: text/event-stream\r\n"
+    response = response + "Cache-Control: no-cache\r\n"
+    response = response + "Connection: keep-alive\r\n"
+    response = response + "Access-Control-Allow-Origin: *\r\n"
+    response = response + "\r\n"
+    response = response + "event: reload\ndata: " + run("date +%s") + "\n\n"
+    return response
+}
+
+# SSE heartbeat (no changes)
+fn sse_heartbeat() {
+    response = "HTTP/1.1 200 OK\r\n"
+    response = response + "Content-Type: text/event-stream\r\n"
+    response = response + "Cache-Control: no-cache\r\n"
+    response = response + "Connection: keep-alive\r\n"
+    response = response + "\r\n"
+    response = response + ": heartbeat\n\n"
+    return response
+}
+
+# ------------------------------------------------------------
+# Inject live reload script into HTML
+# ------------------------------------------------------------
+
+fn inject_reload_script(html_content) {
+    reload_script = "<script>
+(function() {
+    var es = new EventSource('/__dev_reload');
+    es.addEventListener('reload', function(e) {
+        console.log('[mozhi-react] Reloading...');
+        location.reload();
+    });
+    es.onerror = function() {
+        console.log('[mozhi-react] SSE error, retrying...');
+        setTimeout(function() { location.reload(); }, 2000);
+    };
+    console.log('[mozhi-react] Live reload connected');
+})();
+</script>"
+
+    if html_content.contains("</body>") {
+        return html_content.replace("</body>", reload_script + "</body>")
+    }
+    return html_content + reload_script
+}
+
+# ------------------------------------------------------------
+# Dev overlay — shows build status in the browser
+# ------------------------------------------------------------
+
+fn dev_overlay(status) {
+    color = "#3fb950"
+    if status == "error" {
+        color = "#f85149"
+    }
+    overlay = "<div id=\"__mozhi_dev_overlay\" style=\"
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        background: #161b22;
+        border: 1px solid " + color + ";
+        color: " + color + ";
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.8rem;
+        z-index: 99999;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    \">
+        <span style=\"animation: pulse 2s infinite;\">●</span>
+        Mozhi Dev — " + status + "
+    </div>
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>"
+    return overlay
+}
+
+# ------------------------------------------------------------
+# HMR — Hot Module Replacement (simplified)
+# ------------------------------------------------------------
+
+# Instead of true HMR, we do a smart reload:
+#   - If only CSS changed, reload just the stylesheet
+#   - If JS/MZ changed, reload the whole page
+
+fn hmr_check() {
+    # Check if only CSS files changed
+    css_changed = run("find public components -name '*.css' -newer /tmp/.mozhi_dev_marker 2>/dev/null | head -1")
+    mz_changed = run("find public components -name '*.mz' -newer /tmp/.mozhi_dev_marker 2>/dev/null | head -1")
+    js_changed = run("find public -name '*.js' -newer /tmp/.mozhi_dev_marker 2>/dev/null | head -1")
+
+    if mz_changed.trim() != "" or js_changed.trim() != "" {
+        return "full_reload"
+    }
+    if css_changed.trim() != "" {
+        return "css_reload"
+    }
+    return "no_change"
+}
+
+# Generate HMR script for CSS-only reload
+fn hmr_css_reload_script() {
+    return "<script>
+(function() {
+    var links = document.querySelectorAll('link[rel=\"stylesheet\"]');
+    links.forEach(function(link) {
+        var href = link.href.split('?')[0] + '?v=' + Date.now();
+        link.href = href;
+    });
+    console.log('[mozhi-react] CSS hot-swapped');
+})();
+</script>"
+}
+
+# ------------------------------------------------------------
+# Error overlay — display errors in the browser
+# ------------------------------------------------------------
+
+fn error_overlay(error_message) {
+    return "<div id=\"__mozhi_error\" style=\"
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        right: 1rem;
+        background: #f85149;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 0.9rem;
+        z-index: 99999;
+        white-space: pre-wrap;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    \">
+        <strong>⚠ Mozhi Error</strong>
+        <pre style=\"margin-top: 0.5rem; white-space: pre-wrap;\">" + error_message + "</pre>
+    </div>"
+}

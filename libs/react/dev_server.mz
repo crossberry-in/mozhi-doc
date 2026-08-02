@@ -1,0 +1,281 @@
+# ============================================================
+# Mozhi React — Dev Server
+# ============================================================
+# A development server with:
+#   - Live reload (SSE)
+#   - Component hot-swap
+#   - Error overlay
+#   - CSS-only hot swap (no full page reload)
+#   - File watcher
+#
+# Usage:
+#   mozhi-interpreter dev_server.mz
+#   # Open http://127.0.0.1:3000
+# ============================================================
+
+import http from "mozhi-http"
+import react from "react.mz"
+import hooks from "react_hooks.mz"
+import devtools from "react_devtools.mz"
+
+# Initialize file watcher
+devtools.init_watcher()
+echo("[react] File watcher initialized")
+
+# ============================================================
+# Route handler
+# ============================================================
+
+fn handler(method, path) {
+    echo("[" + method + "] " + path)
+
+    # Strip query string
+    route = path
+    if path.contains("?") {
+        route = path.split("?")[0]
+    }
+
+    # ---- SSE: Live reload endpoint ----
+    if route == "/__dev_reload" {
+        change_type = devtools.hmr_check()
+
+        if change_type == "full_reload" {
+            devtools.update_marker()
+            echo("[react] Full reload triggered")
+            return devtools.sse_reload()
+        }
+
+        if change_type == "css_reload" {
+            devtools.update_marker()
+            echo("[react] CSS hot-swap triggered")
+            # Send CSS reload event
+            response = "HTTP/1.1 200 OK\r\n"
+            response = response + "Content-Type: text/event-stream\r\n"
+            response = response + "Cache-Control: no-cache\r\n"
+            response = response + "\r\n"
+            response = response + "event: css_reload\ndata: " + run("date +%s") + "\n\n"
+            return response
+        }
+
+        return devtools.sse_heartbeat()
+    }
+
+    # ---- Dev status endpoint ----
+    if route == "/__dev_status" {
+        status = devtools.dev_overlay("running")
+        return http.http_ok_json("{\"status\": \"running\", \"version\": \"1.0.0\"}")
+    }
+
+    # ---- Component endpoint: /components/<name>.mz ----
+    if route.contains("/components/") and route.ends_with(".mz") {
+        comp_path = route.slice(1)  # remove leading /
+        if file_exists(comp_path) {
+            return http.http_run_mz(comp_path)
+        }
+        return http.http_404("Component not found: " + comp_path)
+    }
+
+    # ---- Static files with HTML injection ----
+    if route == "/" or route == "" {
+        route = "/index.html"
+    }
+
+    # If HTML file, inject dev tools
+    if route.ends_with(".html") or route == "/index.html" {
+        filepath = "public" + route
+        if route == "/index.html" {
+            filepath = "public/index.html"
+        }
+
+        if file_exists(filepath) {
+            content = read_file(filepath)
+
+            # Inject live reload script
+            content = devtools.inject_reload_script(content)
+
+            # Inject dev overlay
+            content = content.replace("</body>", devtools.dev_overlay("running") + "</body>")
+
+            # Inject HMR script for CSS-only reload
+            hmr_script = "<script>
+(function() {
+    var es = new EventSource('/__dev_reload');
+    es.addEventListener('css_reload', function(e) {
+        var links = document.querySelectorAll('link[rel=\"stylesheet\"]');
+        links.forEach(function(link) {
+            var href = link.href.split('?')[0] + '?v=' + Date.now();
+            link.href = href;
+        });
+        console.log('[mozhi-react] CSS hot-swapped');
+    });
+})();
+</script>"
+            content = content.replace("</body>", hmr_script + "</body>")
+
+            return http.http_ok_html(content)
+        }
+        return http.http_404("File not found: " + filepath)
+    }
+
+    # Serve other static files
+    return http.http_serve_static(route, "public")
+}
+
+# ============================================================
+# Setup: create default files
+# ============================================================
+
+fn setup() {
+    run("mkdir -p public components pages")
+
+    # index.html
+    if not file_exists("public/index.html") {
+        write_file("public/index.html", react.html_document("Mozhi React App",
+            "<div id=\"app\"></div>" +
+            "<script src=\"/app.js\"></script>",
+            "<link rel=\"stylesheet\" href=\"/style.css\">"
+        ))
+    }
+
+    # style.css
+    if not file_exists("public/style.css") {
+        write_file("public/style.css", "* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: system-ui, sans-serif; background: #0d1117; color: #c9d1d9; }
+#app { max-width: 800px; margin: 0 auto; padding: 2rem; }
+.btn { background: #238636; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }
+.btn:hover { background: #2ea043; }
+.btn-red { background: #da3633; }
+.btn-red:hover { background: #f85149; }
+.card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+h1 { color: #58a6ff; }
+h2 { color: #58a6ff; margin-bottom: 0.5rem; }
+.navbar { display: flex; gap: 1rem; margin-bottom: 2rem; }
+.navbar a { color: #58a6ff; text-decoration: none; padding: 0.5rem; border-radius: 4px; }
+.navbar a:hover, .navbar a.active { background: #21262d; }
+input { background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; padding: 0.5rem; border-radius: 4px; }")
+    }
+
+    # app.js — frontend loader
+    if not file_exists("public/app.js") {
+        write_file("public/app.js", "// Mozhi React — Frontend
+async function loadComponent(name) {
+    const res = await fetch('/components/' + name + '.mz');
+    return res.ok ? await res.text() : '<div class=\"card\">Component not found: ' + name + '</div>';
+}
+
+async function render() {
+    const app = document.getElementById('app');
+    const [header, counter, todos, footer] = await Promise.all([
+        loadComponent('header'),
+        loadComponent('counter'),
+        loadComponent('todos'),
+        loadComponent('footer')
+    ]);
+    app.innerHTML = header + counter + todos + footer;
+}
+
+render();
+console.log('[mozhi-react] App loaded');")
+    }
+
+    # Default components
+    if not file_exists("components/header.mz") {
+        write_file("components/header.mz", "import react from \"mozhi-react\"
+echo(react.div(className(\"header\"),
+    react.h1(\"\", \"Mozhi React\") +
+    react.p(\"\", \"React-like framework with live reload\") +
+    react.nav(className(\"navbar\"),
+        react.a(\"href=\\\"#/\\\"\", \"Home\") +
+        react.a(\"href=\\\"#/about\\\"\", \"About\")
+    )
+))")
+    }
+
+    if not file_exists("components/counter.mz") {
+        write_file("components/counter.mz", "import react from \"mozhi-react\"
+echo(react.div(className(\"card\"),
+    react.h2(\"\", \"Counter\") +
+    react.p(\"\", \"Click the buttons to change the count.\") +
+    \"<div style=\\\"display: flex; gap: 1rem; align-items: center; margin: 1rem 0;\\\">\" +
+    \"<button class=\\\"btn\\\" onclick=\\\"dec()\\\">-</button>\" +
+    \"<span id=\\\"count\\\" style=\\\"font-size: 1.5rem; font-weight: bold; color: #58a6ff; min-width: 3rem; text-align: center;\\\">0</span>\" +
+    \"<button class=\\\"btn\\\" onclick=\\\"inc()\\\">+</button>\" +
+    \"<button class=\\\"btn btn-red\\\" onclick=\\\"reset()\\\">Reset</button>\" +
+    \"</div>\" +
+    \"<script>
+function inc() { var el = document.getElementById('count'); el.textContent = parseInt(el.textContent) + 1; }
+function dec() { var el = document.getElementById('count'); el.textContent = parseInt(el.textContent) - 1; }
+function reset() { document.getElementById('count').textContent = '0'; }
+</script>\"
+))")
+    }
+
+    if not file_exists("components/todos.mz") {
+        write_file("components/todos.mz", "import react from \"mozhi-react\"
+echo(react.div(className(\"card\"),
+    react.h2(\"\", \"Todo List\") +
+    react.p(\"\", \"Add items to your todo list.\") +
+    \"<div style=\\\"display: flex; gap: 0.5rem; margin: 1rem 0;\\\">\" +
+    \"<input type=\\\"text\\\" id=\\\"todo-input\\\" placeholder=\\\"Enter a todo...\\\" style=\\\"flex: 1;\\\" onkeypress=\\\"if(event.key==='Enter') addTodo()\\\">\" +
+    \"<button class=\\\"btn\\\" onclick=\\\"addTodo()\\\">Add</button>\" +
+    \"</div>\" +
+    \"<ul id=\\\"todo-list\\\" style=\\\"list-style: none;\\\"></ul>\" +
+    \"<script>
+function addTodo() {
+    var input = document.getElementById('todo-input');
+    var text = input.value.trim();
+    if (!text) return;
+    var li = document.createElement('li');
+    li.style.cssText = 'padding: 0.5rem; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between;';
+    li.innerHTML = '<span>' + text + '</span><button class=\\\"btn btn-red\\\" style=\\\"padding: 0.25rem 0.5rem; font-size: 0.8rem;\\\" onclick=\\\"this.parentElement.remove()\\\">×</button>';
+    document.getElementById('todo-list').appendChild(li);
+    input.value = '';
+}
+</script>\"
+))")
+    }
+
+    if not file_exists("components/footer.mz") {
+        write_file("components/footer.mz", "import react from \"mozhi-react\"
+year = run(\"date +%Y\").trim()
+echo(react.div(className(\"footer\"),
+    react.p(\"\", \"Built with Mozhi React v1.0.0\") +
+    react.p(\"\", \"© \" + year + \" Mozhi Project\")
+))")
+    }
+
+    echo("[react] Default files created")
+}
+
+setup()
+
+# ============================================================
+# Start server
+# ============================================================
+
+echo("")
+echo("============================================")
+echo("  Mozhi React Dev Server v1.0.0")
+echo("  Live Reload: ENABLED (SSE)")
+echo("  HMR: CSS hot-swap + full reload for .mz/.js")
+echo("============================================")
+echo("")
+echo("  URL:      http://127.0.0.1:3000")
+echo("  Watching: public/ components/ pages/")
+echo("")
+echo("  Endpoints:")
+echo("    GET /                — App (with dev tools)")
+echo("    GET /style.css       — Stylesheet")
+echo("    GET /app.js          — Frontend JS")
+echo("    GET /components/<n>  — Render .mz component")
+echo("    GET /__dev_reload    — SSE live reload stream")
+echo("    GET /__dev_status    — Dev server status")
+echo("")
+echo("  Edit any file → browser auto-reloads")
+echo("  CSS-only changes → hot-swapped (no reload)")
+echo("")
+echo("  Press Ctrl+C to stop")
+echo("")
+
+server = http.http_start(3000)
+http.http_serve_loop(server, handler)

@@ -1,0 +1,169 @@
+# ============================================================
+# Mozhi React — Hooks (v1.0.0)
+# State management for components
+# ============================================================
+# Since Mozhi runs server-side, "hooks" work differently than
+# in React. State is managed via:
+#   1. Client-side JavaScript (for interactivity)
+#   2. Server-side state (for initial render)
+#
+# This module provides helpers for generating stateful components.
+# ============================================================
+
+# ------------------------------------------------------------
+# useState — Generate client-side state management
+# ------------------------------------------------------------
+
+# useState(name, initial_value, update_handler)
+# Returns HTML attributes + script for a stateful element
+#
+# Example:
+#   count_state = useState("count", 0, "inc")
+#   → returns script that manages a "count" variable in the browser
+fn useState(name, initial_value, setter_fn) {
+    script = "<script>
+(function() {
+    var " + name + " = " + initial_value + ";
+    window.__mozhiState = window.__mozhiState || {};
+    window.__mozhiState." + name + " = " + name + ";
+
+    window." + setter_fn + " = function() {
+        " + name + "+" + "+;
+        window.__mozhiState." + name + " = " + name + ";
+        var el = document.getElementById('" + name + "-display');
+        if (el) el.textContent = " + name + ";
+    };
+})();
+</script>"
+    return script
+}
+
+# useStateString — for string state
+fn useStateString(name, initial_value, setter_fn) {
+    script = "<script>
+(function() {
+    var " + name + " = \"" + initial_value + "\";
+    window.__mozhiState = window.__mozhiState || {};
+    window.__mozhiState." + name + " = " + name + ";
+
+    window." + setter_fn + " = function(newValue) {
+        " + name + " = newValue;
+        window.__mozhiState." + name + " = " + name + ";
+        var el = document.getElementById('" + name + "-display');
+        if (el) el.textContent = " + name + ";
+    };
+})();
+</script>"
+    return script
+}
+
+# ------------------------------------------------------------
+# useEffect — Generate client-side effect
+# ------------------------------------------------------------
+
+# useEffect(effect_code, deps)
+# Runs code on page load (simplified — no dependency tracking)
+fn useEffect(effect_code) {
+    return "<script>
+(function() {
+    " + effect_code + "
+})();
+</script>"
+}
+
+# useEffectOnLoad — run when page loads
+fn useEffectOnLoad(effect_code) {
+    return "<script>
+document.addEventListener('DOMContentLoaded', function() {
+    " + effect_code + "
+});
+</script>"
+}
+
+# ------------------------------------------------------------
+# useMemo — cache expensive computation
+# ------------------------------------------------------------
+
+# Since Mozhi is server-side, "memoization" means computing once
+# and embedding the result. This is a no-op helper.
+fn useMemo(compute_fn, deps) {
+    # In server-side rendering, everything is computed once.
+    # This just returns the computed value.
+    return compute_fn
+}
+
+# ------------------------------------------------------------
+# useRef — generate a unique element ID
+# ------------------------------------------------------------
+
+ref_counter = 0
+
+fn useRef() {
+    ref_counter = ref_counter + 1
+    return "ref-" + string(ref_counter)
+}
+
+# ------------------------------------------------------------
+# useCallback — generate a named callback function
+# ------------------------------------------------------------
+
+fn useCallback(fn_name, body) {
+    return "<script>
+window." + fn_name + " = function() {
+    " + body + "
+};
+</script>"
+}
+
+# ------------------------------------------------------------
+# State serialization
+# ------------------------------------------------------------
+
+# Serialize state to JSON for client hydration
+fn serialize_state(pairs) {
+    result = "{"
+    i = 0
+    for pair in pairs {
+        if i > 0 {
+            result = result + ", "
+        }
+        key = pair[0]
+        val = pair[1]
+        # Try to determine type
+        if val == "true" or val == "false" or val == "null" {
+            result = result + "\"" + key + "\": " + val
+        } else {
+            # Check if numeric
+            is_num = false
+            if val.len() > 0 {
+                first = val[0]
+                if (first >= "0" and first <= "9") or first == "-" {
+                    is_num = true
+                }
+            }
+            if is_num {
+                result = result + "\"" + key + "\": " + val
+            } else {
+                result = result + "\"" + key + "\": \"" + val + "\""
+            }
+        }
+        i = i + 1
+    }
+    result = result + "}"
+    return result
+}
+
+# ------------------------------------------------------------
+# Context — pass state to child components
+# ------------------------------------------------------------
+
+# Create a context value (just a wrapper for now)
+fn createContext(default_value) {
+    return default_value
+}
+
+# Provider — wraps children with a context value
+fn provider(context_name, value, children) {
+    script = "<script>window.__mozhiContext = window.__mozhiContext || {}; window.__mozhiContext." + context_name + " = " + value + ";</script>"
+    return script + children
+}

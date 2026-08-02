@@ -1,0 +1,163 @@
+# ============================================================
+# Mozhi React App — Main Entry
+# ============================================================
+# Run: mozhi-interpreter app.mz
+# Open: http://127.0.0.1:3000
+# ============================================================
+
+import http from "mozhi-http"
+import react from "react.mz"
+import hooks from "react_hooks.mz"
+import router from "react_router.mz"
+import devtools from "react_devtools.mz"
+
+devtools.init_watcher()
+
+# ============================================================
+# HTTP Handler
+# ============================================================
+
+fn handler(method, path) {
+    echo("[" + method + "] " + path)
+
+    route = path
+    if path.contains("?") {
+        route = path.split("?")[0]
+    }
+
+    # SSE: live reload
+    if route == "/__dev_reload" {
+        change_type = devtools.hmr_check()
+        if change_type == "full_reload" {
+            devtools.update_marker()
+            return devtools.sse_reload()
+        }
+        if change_type == "css_reload" {
+            devtools.update_marker()
+            response = "HTTP/1.1 200 OK\r\n"
+            response = response + "Content-Type: text/event-stream\r\n"
+            response = response + "Cache-Control: no-cache\r\n"
+            response = response + "\r\n"
+            response = response + "event: css_reload\ndata: ok\n\n"
+            return response
+        }
+        return devtools.sse_heartbeat()
+    }
+
+    # Component endpoint: /components/<name>.mz
+    if route.contains("/components/") and route.ends_with(".mz") {
+        comp_path = "components" + route.replace("/components", "")
+        if file_exists(comp_path) {
+            return http.http_run_mz(comp_path)
+        }
+        return http.http_404("Component not found: " + comp_path)
+    }
+
+    # Main page
+    if route == "/" or route == "" {
+        body = react.div("id=\"app\"",
+            react.header("class=\"app-header\"",
+                react.h1("", "Mozhi React") +
+                react.nav("class=\"navbar\"",
+                    "<a href=\"#/\">Home</a>" +
+                    "<a href=\"#/counter\">Counter</a>" +
+                    "<a href=\"#/todos\">Todos</a>" +
+                    "<a href=\"#/about\">About</a>"
+                )
+            ) +
+            react.div("id=\"page-content\"", "") +
+            react.footer("class=\"app-footer\"",
+                react.p("", "Built with Mozhi React v1.0.0")
+            ) +
+            "<script>
+async function loadPage(path) {
+    var res = await fetch('/components' + path + '.mz');
+    var html = res.ok ? await res.text() : '<div class=\"card\"><h2>404</h2><p>Not found: ' + path + '</p></div>';
+    var content = document.getElementById('page-content');
+    if (content) content.innerHTML = html;
+}
+window.addEventListener('hashchange', function() {
+    loadPage(window.location.hash.slice(1) || '/');
+});
+window.addEventListener('load', function() {
+    loadPage(window.location.hash.slice(1) || '/');
+});
+var es = new EventSource('/__dev_reload');
+es.addEventListener('reload', function(e) { location.reload(); });
+es.addEventListener('css_reload', function(e) {
+    document.querySelectorAll('link[rel=\"stylesheet\"]').forEach(function(l) {
+        l.href = l.href.split('?')[0] + '?v=' + Date.now();
+    });
+});
+</script>"
+        )
+
+        head = "<link rel=\"stylesheet\" href=\"/style.css\">"
+        return http.http_ok_html(react.html_document("Mozhi React App", body, head))
+    }
+
+    # Static files
+    return http.http_serve_static(route, "public")
+}
+
+# ============================================================
+# Setup
+# ============================================================
+
+fn setup() {
+    run("mkdir -p public components")
+
+    # CSS
+    if not file_exists("public/style.css") {
+        css = "* { margin: 0; padding: 0; box-sizing: border-box; }"
+        css = css + " body { font-family: system-ui, sans-serif; background: #0d1117; color: #c9d1d9; }"
+        css = css + " #app { max-width: 800px; margin: 0 auto; padding: 2rem; }"
+        css = css + " .app-header { text-align: center; margin-bottom: 2rem; }"
+        css = css + " .app-header h1 { color: #58a6ff; font-size: 2rem; }"
+        css = css + " .navbar { display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; }"
+        css = css + " .navbar a { color: #58a6ff; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; }"
+        css = css + " .navbar a:hover { background: #21262d; }"
+        css = css + " .app-footer { text-align: center; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #30363d; color: #8b949e; }"
+        css = css + " .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }"
+        css = css + " .card h2 { color: #58a6ff; margin-bottom: 0.5rem; }"
+        css = css + " .btn { background: #238636; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }"
+        css = css + " .btn:hover { background: #2ea043; }"
+        css = css + " .btn-red { background: #da3633; }"
+        css = css + " input { background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; padding: 0.5rem; border-radius: 4px; }"
+        write_file("public/style.css", css)
+    }
+
+    # Components
+    if not file_exists("components/index.mz") {
+        write_file("components/index.mz", "import react from \"react.mz\"\necho(react.div(\"class=\\\"card\\\"\", react.h2(\"\", \"Welcome!\") + react.p(\"\", \"Mozhi React - a React-like framework with live reload.\")))")
+    }
+
+    if not file_exists("components/counter.mz") {
+        write_file("components/counter.mz", "import react from \"react.mz\"\necho(react.div(\"class=\\\"card\\\"\", react.h2(\"\", \"Counter\") + react.p(\"\", \"Click to change count.\") + \"<button class='btn' onclick='dec()'>-</button><span id='count' style='font-size:1.5rem;color:#58a6ff;margin:0 1rem;'>0</span><button class='btn' onclick='inc()'>+</button>\" + \"<script>function inc(){var e=document.getElementById('count');e.textContent=parseInt(e.textContent)+1}function dec(){var e=document.getElementById('count');e.textContent=parseInt(e.textContent)-1}</script>\"))")
+    }
+
+    if not file_exists("components/todos.mz") {
+        write_file("components/todos.mz", "import react from \"react.mz\"\necho(react.div(\"class=\\\"card\\\"\", react.h2(\"\", \"Todo List\") + \"<input type='text' id='todo' placeholder='Add todo...' style='margin-right:0.5rem;'><button class='btn' onclick='addTodo()'>Add</button><ul id='list' style='list-style:none;margin-top:1rem;'></ul>\" + \"<script>function addTodo(){var i=document.getElementById('todo');var t=i.value.trim();if(!t)return;var l=document.createElement('li');l.style.cssText='padding:0.5rem;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;';l.innerHTML='<span>'+t+'</span><button class=\\\"btn btn-red\\\" style=\\\"padding:2px 8px;font-size:0.8rem;\\\" onclick=\\\"this.parentElement.remove()\\\">x</button>';document.getElementById('list').appendChild(l);i.value='';}</script>\"))")
+    }
+
+    if not file_exists("components/about.mz") {
+        write_file("components/about.mz", "import react from \"react.mz\"\necho(react.div(\"class=\\\"card\\\"\", react.h2(\"\", \"About\") + react.p(\"\", \"Mozhi React is a React-like framework for Mozhi.\") + react.h3(\"\", \"Features\") + \"<ul><li>Component-based</li><li>Server-side rendering</li><li>Live reload (SSE)</li><li>CSS hot-swap</li><li>Hash routing</li></ul>\"))")
+    }
+
+    echo("[react] Setup complete")
+}
+
+setup()
+
+echo("")
+echo("============================================")
+echo("  Mozhi React App v1.0.0")
+echo("  http://127.0.0.1:3000")
+echo("============================================")
+echo("")
+echo("Pages: #/  #/counter  #/todos  #/about")
+echo("Press Ctrl+C to stop")
+echo("")
+
+server = http.http_start(3000)
+http.http_serve_loop(server, handler)

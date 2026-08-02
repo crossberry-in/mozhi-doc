@@ -1,0 +1,2 @@
+import react from "react.mz"
+echo(react.div("class=\"card\"", react.h2("", "Counter") + react.p("", "Click to change count.") + "<button class='btn' onclick='dec()'>-</button><span id='count' style='font-size:1.5rem;color:#58a6ff;margin:0 1rem;'>0</span><button class='btn' onclick='inc()'>+</button>" + "<script>function inc(){var e=document.getElementById('count');e.textContent=parseInt(e.textContent)+1}function dec(){var e=document.getElementById('count');e.textContent=parseInt(e.textContent)-1}</script>"))

@@ -1,0 +1,2 @@
+import react from "react.mz"
+echo(react.div("class=\"card\"", react.h2("", "About") + react.p("", "Mozhi React is a React-like framework for Mozhi.") + react.h3("", "Features") + "<ul><li>Component-based</li><li>Server-side rendering</li><li>Live reload (SSE)</li><li>CSS hot-swap</li><li>Hash routing</li></ul>"))

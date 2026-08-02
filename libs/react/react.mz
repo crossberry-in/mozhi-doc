@@ -1,0 +1,329 @@
+# ============================================================
+# Mozhi React — Core (v1.0.0)
+# Component system, virtual DOM, and server-side rendering
+# ============================================================
+# This is the core of the Mozhi React framework.
+# It provides:
+#   - Component() — define a component
+#   - h() — create virtual elements (like React.createElement)
+#   - renderToString() — render to HTML string
+#   - Fragment — group children without wrapper
+# ============================================================
+
+# ------------------------------------------------------------
+# Virtual DOM Node
+# ------------------------------------------------------------
+# A virtual node is a map-like structure represented as a string:
+#   "tag|props|children"
+# For simplicity, we use strings and arrays.
+
+# Create a virtual element (like React.createElement)
+# h(tag, props, children)
+#   tag: string (e.g. "div", "span", "h1")
+#   props: string of HTML attributes (e.g. "class=\"foo\" id=\"bar\"")
+#   children: string or array of strings (HTML content)
+fn h(tag, props, children) {
+    if props == "" {
+        opening = "<" + tag + ">"
+    } else {
+        opening = "<" + tag + " " + props + ">"
+    }
+    closing = "</" + tag + ">"
+
+    # If children is a string, just concatenate
+    child_html = children
+    return opening + child_html + closing
+}
+
+# Self-closing tag (img, br, hr, input, meta, link)
+fn h_self_closing(tag, props) {
+    if props == "" {
+        return "<" + tag + ">"
+    }
+    return "<" + tag + " " + props + ">"
+}
+
+# Fragment — group children without a wrapper element
+fn fragment(children) {
+    # Just concatenate all children
+    result = ""
+    for child in children {
+        result = result + child
+    }
+    return result
+}
+
+# ------------------------------------------------------------
+# HTML Element Helpers
+# ------------------------------------------------------------
+
+fn div(props, children) {
+    return h("div", props, children)
+}
+
+fn span(props, children) {
+    return h("span", props, children)
+}
+
+fn h1(props, children) {
+    return h("h1", props, children)
+}
+
+fn h2(props, children) {
+    return h("h2", props, children)
+}
+
+fn h3(props, children) {
+    return h("h3", props, children)
+}
+
+fn p(props, children) {
+    return h("p", props, children)
+}
+
+fn a(props, children) {
+    return h("a", props, children)
+}
+
+fn button(props, children) {
+    return h("button", props, children)
+}
+
+fn input(props) {
+    return h_self_closing("input", props)
+}
+
+fn img(props) {
+    return h_self_closing("img", props)
+}
+
+fn ul(props, children) {
+    return h("ul", props, children)
+}
+
+fn li(props, children) {
+    return h("li", props, children)
+}
+
+fn form(props, children) {
+    return h("form", props, children)
+}
+
+fn label(props, children) {
+    return h("label", props, children)
+}
+
+fn header(props, children) {
+    return h("header", props, children)
+}
+
+fn footer(props, children) {
+    return h("footer", props, children)
+}
+
+fn nav(props, children) {
+    return h("nav", props, children)
+}
+
+fn section(props, children) {
+    return h("section", props, children)
+}
+
+fn main(props, children) {
+    return h("main", props, children)
+}
+
+fn script(code) {
+    return h("script", "", code)
+}
+
+fn style(css) {
+    return h("style", "", css)
+}
+
+# ------------------------------------------------------------
+# Props Builder
+# ------------------------------------------------------------
+
+# Build props string from key-value pairs
+# props([["class", "card"], ["id", "my-card"]])
+# → 'class="card" id="my-card"'
+fn props(pairs) {
+    result = ""
+    for pair in pairs {
+        key = pair[0]
+        val = pair[1]
+        result = result + key + "=\"" + val + "\" "
+    }
+    # Trim trailing space
+    return result.trim()
+}
+
+# className helper
+fn className(name) {
+    return "class=\"" + name + "\""
+}
+
+# id helper
+fn id(value) {
+    return "id=\"" + value + "\""
+}
+
+# onclick helper — generates onclick="handler()"
+fn onclick(handler) {
+    return "onclick=\"" + handler + "\""
+}
+
+# style helper — generates style="..."
+fn style_str(styles) {
+    result = "style=\""
+    for pair in styles {
+        result = result + pair[0] + ":" + pair[1] + ";"
+    }
+    result = result + "\""
+    return result
+}
+
+# ------------------------------------------------------------
+# Component Definition
+# ------------------------------------------------------------
+
+# A Component is a function that takes props and returns HTML.
+# In Mozhi, components are just regular functions:
+
+# Example:
+#   fn Greeting(props) {
+#       return h("h1", "", "Hello, " + props + "!")
+#   }
+#
+# Usage:
+#   echo(Greeting("World"))
+
+# render(Component, props) — render a component to string
+fn render(component_fn, props) {
+    return component_fn(props)
+}
+
+# render_to_string — alias for render
+fn render_to_string(component_fn, props) {
+    return component_fn(props)
+}
+
+# ------------------------------------------------------------
+# Conditional Rendering
+# ------------------------------------------------------------
+
+fn if_else(condition, true_html, false_html) {
+    if condition {
+        return true_html
+    }
+    return false_html
+}
+
+fn if_true(condition, html) {
+    if condition {
+        return html
+    }
+    return ""
+}
+
+# ------------------------------------------------------------
+# List Rendering
+# ------------------------------------------------------------
+
+# map(items, render_fn) — render a list of items
+# render_fn is called for each item and should return HTML
+fn map_list(items, render_fn_name) {
+    # Note: Mozhi can't pass functions as arguments yet,
+    # so we use a convention: the render function must be named
+    # and accept a single item.
+    # This is a limitation — for now, use manual loops.
+    result = ""
+    for item in items {
+        # Call the function by name using eval-like pattern
+        # Since Mozhi doesn't have eval(), we return a placeholder
+        result = result + "<li>" + item + "</li>"
+    }
+    return result
+}
+
+# join_children(children) — join array of HTML strings
+fn join_children(children) {
+    result = ""
+    for child in children {
+        result = result + child
+    }
+    return result
+}
+
+# ------------------------------------------------------------
+# HTML Document
+# ------------------------------------------------------------
+
+# Create a full HTML document
+fn html_document(title, body_content, head_extra) {
+    doc = "<!DOCTYPE html>\n"
+    doc = doc + "<html lang=\"en\">\n"
+    doc = doc + "<head>\n"
+    doc = doc + "  <meta charset=\"UTF-8\">\n"
+    doc = doc + "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+    doc = doc + "  <title>" + title + "</title>\n"
+    if head_extra != "" {
+        doc = doc + "  " + head_extra + "\n"
+    }
+    doc = doc + "</head>\n"
+    doc = doc + "<body>\n"
+    doc = doc + body_content + "\n"
+    doc = doc + "</body>\n"
+    doc = doc + "</html>"
+    return doc
+}
+
+# Create HTML document with CSS and JS
+fn html_page(title, body, css, js) {
+    head = ""
+    if css != "" {
+        head = head + "<link rel=\"stylesheet\" href=\"" + css + "\">\n"
+    }
+    if js != "" {
+        head = head + "<script src=\"" + js + "\"></script>\n"
+    }
+    return html_document(title, body, head)
+}
+
+# ------------------------------------------------------------
+# Hydration Script
+# ------------------------------------------------------------
+
+# Generate the client-side hydration script
+# This sets up event listeners and state management
+fn hydrate_script(initial_state_json) {
+    code = "
+<script>
+window.__MOZHI_STATE__ = " + initial_state_json + ";
+
+window.__mozhiUpdate = function(key, value) {
+    window.__MOZHI_STATE__[key] = value;
+    window.__mozhiRender();
+};
+
+window.__mozhiGetState = function(key) {
+    return window.__MOZHI_STATE__[key];
+};
+
+window.__mozhiRender = function() {
+    // Trigger a re-render by fetching updated HTML
+    fetch(window.location.pathname + '?__partial=1&state=' + encodeURIComponent(JSON.stringify(window.__MOZHI_STATE__)))
+        .then(r => r.text())
+        .then(html => {
+            const app = document.getElementById('app');
+            if (app) app.innerHTML = html;
+        })
+        .catch(e => console.error('[mozhi-react] Render error:', e));
+};
+
+console.log('[mozhi-react] Hydrated with state:', window.__MOZHI_STATE__);
+</script>
+"
+    return code
+}
