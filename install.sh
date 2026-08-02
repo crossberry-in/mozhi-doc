@@ -16,13 +16,26 @@ install_dir="/usr/local/bin"
 [ ! -w "$install_dir" ] && install_dir="$HOME/.local/bin" && mkdir -p "$install_dir"
 
 asset_name="mozhi-interpreter-${os}-${arch}"
-url="https://github.com/${REPO}/releases/download/v2.1.0/${asset_name}"
+url="https://github.com/${REPO}/releases/download/v2.2.1/${asset_name}"
 tmp_file="${TMPDIR:-/tmp}/${asset_name}"
 
 info "Downloading ${asset_name}..."
 if ! curl -fSL --progress-bar --max-time 30 -o "$tmp_file" "$url"; then
-    error "Download failed. URL: $url"
-    exit 1
+    info "Pre-built binary not found, building from source..."
+    # Clone and build from source
+    src_dir="${TMPDIR:-/tmp}/mozhi-src"
+    rm -rf "$src_dir"
+    git clone --depth 1 https://github.com/${REPO}.git "$src_dir" 2>&1 | tail -3
+    if [ -d "$src_dir/interpreter" ]; then
+        (cd "$src_dir/interpreter" && \
+         gcc -O2 -I include src/*.c -o "$tmp_file" -lm 2>&1) || {
+            error "Build failed. Install gcc and try again."
+            exit 1
+        }
+    else
+        error "Download failed and source not found. URL: $url"
+        exit 1
+    fi
 fi
 chmod +x "$tmp_file"
 
