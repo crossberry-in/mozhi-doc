@@ -1,0 +1,42 @@
+# ============================================================
+# Shell & System Example — v2.4.0
+# Demonstrates: run(), shell()
+# ============================================================
+
+echo("=== Shell Command Demo ===")
+
+# Basic shell command
+echo("Current directory:")
+echo(run("pwd"))
+
+echo("")
+echo("System info:")
+echo(run("uname -a"))
+
+echo("")
+echo("Disk usage:")
+echo(run("df -h /"))
+
+echo("")
+echo("Who am I?")
+echo(run("whoami"))
+
+echo("")
+echo("Date and time:")
+echo(run("date"))
+
+echo("")
+echo("List files in current directory:")
+echo(run("ls -la"))
+
+echo("")
+echo("=== Using shell() alias ===")
+echo(shell("echo 'shell() is an alias for run()'"))
+
+echo("")
+echo("=== Chain commands ===")
+result = run("echo 'Hello' | tr 'a-z' 'A-Z'")
+echo("Uppercase: " + result)
+
+echo("")
+echo("=== Done! ===")

@@ -1,0 +1,41 @@
+# helper.mz — Example Mozhi file for run_mz() demo
+
+echo("Hello from Mozhi!")
+
+# Math operations
+echo("Math:")
+echo("  7 * 8 = " + string(7 * 8))
+echo("  100 / 7 = " + string(100 / 7))
+echo("  100 % 7 = " + string(100 % 7))
+
+# String operations
+echo("")
+echo("Strings:")
+echo("  upper: " + "hello".upper())
+echo("  lower: " + "WORLD".lower())
+echo("  reverse: " + "Mozhi".reverse())
+echo("  length: " + string("Mozhi".len()))
+
+# Array operations
+echo("")
+echo("Arrays:")
+nums = [10, 20, 30, 40, 50]
+echo("  array: " + string(nums))
+echo("  length: " + string(nums.len()))
+echo("  first: " + string(nums[0]))
+echo("  last: " + string(nums[4]))
+
+# Function
+echo("")
+echo("Functions:")
+fn factorial(n) {
+    if n <= 1 {
+        return 1
+    }
+    return n * factorial(n - 1)
+}
+echo("  5! = " + string(factorial(5)))
+echo("  10! = " + string(factorial(10)))
+
+echo("")
+echo("Done!")

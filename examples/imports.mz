@@ -1,0 +1,47 @@
+# ============================================================
+# Import Styles Example — v2.3.0+
+# Demonstrates all three import styles
+# ============================================================
+
+echo("=== Import Styles Demo ===")
+echo("")
+
+# Style 1: Wildcard import (functions available directly)
+echo("--- Style 1: Wildcard Import ---")
+import html
+
+page = html_page("My Page",
+    html_div("container",
+        html_h1("Hello Mozhi!") +
+        html_p("This was built with wildcard import.") +
+        html_a("https://github.com/crossberry-in/mozhi-doc", "Visit Docs")
+    )
+)
+echo(page)
+
+echo("")
+
+# Style 2: Namespace import (functions via alias.func())
+echo("--- Style 2: Namespace Import ---")
+import strings from "mozhi-strings"
+
+echo(strings.reverse("hello"))
+echo(strings.capitalize("mozhi"))
+echo(strings.repeat("ab", 5))
+echo(strings.snake_case("camelCaseVariable"))
+echo(strings.slugify("Hello, World!"))
+
+echo("")
+
+# Style 3: File path import (functions via alias.func())
+echo("--- Style 3: File Path Import ---")
+# Create a local helper file
+write_file("/tmp/mylib.mz", "fn greet(name) {\n    return \"Hello, \" + name + \"!\"\n}\n\nfn double(x) {\n    return x * 2\n}")
+
+import my from "mylib.mz"
+
+echo(my.greet("Mozhi"))
+echo("double(21) = " + string(my.double(21)))
+
+echo("")
+echo("=== All import styles work! ===")

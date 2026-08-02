@@ -1,0 +1,47 @@
+# ============================================================
+# Math Library Showcase
+# ============================================================
+
+import math_utils from "mozhi-math-utils"
+
+echo("=== Math Utils Library Demo ===")
+echo("")
+
+echo("--- Constants ---")
+echo("PI = " + string(math_utils.PI))
+echo("E  = " + string(math_utils.E))
+echo("")
+
+echo("--- Basic Operations ---")
+echo("abs(-42)        = " + string(math_utils.abs(-42)))
+echo("square(7)       = " + string(math_utils.square(7)))
+echo("cube(3)         = " + string(math_utils.cube(3)))
+echo("pow(2, 10)      = " + string(math_utils.pow(2, 10)))
+echo("sqrt(144)       = " + string(math_utils.sqrt(144)))
+echo("")
+
+echo("--- Number Theory ---")
+echo("factorial(10)   = " + string(math_utils.factorial(10)))
+echo("gcd(48, 36)     = " + string(math_utils.gcd(48, 36)))
+echo("lcm(4, 6)       = " + string(math_utils.lcm(4, 6)))
+echo("is_prime(97)    = " + string(math_utils.is_prime(97)))
+echo("is_prime(100)   = " + string(math_utils.is_prime(100)))
+echo("fibonacci(20)   = " + string(math_utils.fibonacci(20)))
+echo("")
+
+echo("--- Statistics ---")
+nums = [10, 20, 30, 40, 50]
+echo("sum([10,20,30,40,50])  = " + string(math_utils.sum(nums)))
+echo("mean([10,20,30,40,50]) = " + string(math_utils.mean(nums)))
+echo("max([10,20,30,40,50])  = " + string(math_utils.max(nums)))
+echo("min([10,20,30,40,50])  = " + string(math_utils.min(nums)))
+echo("")
+
+echo("--- Utility ---")
+echo("clamp(15, 0, 10)     = " + string(math_utils.clamp(15, 0, 10)))
+echo("lerp(0, 100, 0.5)    = " + string(math_utils.lerp(0, 100, 0.5)))
+echo("radians(180)         = " + string(math_utils.radians(180)))
+echo("degrees(3.14159)     = " + string(math_utils.degrees(3.14159)))
+echo("")
+
+echo("=== Done! ===")

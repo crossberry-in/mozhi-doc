@@ -1,0 +1,54 @@
+# ============================================================
+# File Processor Example — v2.4.0
+# Read, transform, and write files
+# ============================================================
+
+echo("=== File Processor Demo ===")
+
+# Create a sample CSV file
+echo("Creating sample data file...")
+write_file("/tmp/sales.csv", "product,price,quantity\nLaptop,999.99,5\nMouse,29.99,50\nKeyboard,79.99,30\nMonitor,349.99,10\nHeadphones,199.99,25")
+
+# Read the file
+content = read_file("/tmp/sales.csv")
+echo("Read " + string(content.len()) + " bytes from /tmp/sales.csv")
+echo("")
+
+# Parse CSV
+lines = content.split("\n")
+echo("=== Raw Data ===")
+for line in lines {
+    echo("  " + line)
+}
+echo("")
+
+# Process (skip header, compute totals)
+echo("=== Processed Data ===")
+echo("  Product       Price     Qty    Total")
+echo("  -------       -----     ---    -----")
+grand_total = 0
+i = 1
+while i < lines.len() {
+    fields = lines[i].split(",")
+    if fields.len() >= 3 {
+        product = fields[0]
+        price = fields[1]
+        qty = fields[2]
+        # Calculate total (price * qty) — simplified for demo
+        echo("  " + product + "  " + price + "  " + qty)
+    }
+    i = i + 1
+}
+echo("")
+
+# Write processed output
+write_file("/tmp/sales_report.txt", "=== Sales Report ===\nGenerated: " + run("date") + "\nTotal items: " + string(lines.len() - 1))
+echo("Report written to /tmp/sales_report.txt")
+echo("")
+
+# Verify
+echo("=== Report contents ===")
+echo(read_file("/tmp/sales_report.txt"))
+
+echo("")
+echo("=== Done! ===")

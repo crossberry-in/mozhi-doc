@@ -1,0 +1,52 @@
+# ============================================================
+# File I/O Example — v2.4.0
+# Demonstrates: read_file, write_file, file_exists, list_dir
+# ============================================================
+
+echo("=== File I/O Demo ===")
+
+# Write a file
+echo("Writing to /tmp/mozhi_demo.txt...")
+write_file("/tmp/mozhi_demo.txt", "Line 1: Hello from Mozhi!\nLine 2: File I/O works!\nLine 3: End of file.")
+
+# Check if file exists
+if file_exists("/tmp/mozhi_demo.txt") {
+    echo("File exists!")
+} else {
+    echo("File not found!")
+    return
+}
+
+# Read the file back
+echo("")
+echo("=== File contents ===")
+content = read_file("/tmp/mozhi_demo.txt")
+echo(content)
+
+# Append to the file (read + write)
+echo("")
+echo("=== Appending to file ===")
+new_content = content + "\nLine 4: Appended by Mozhi!"
+write_file("/tmp/mozhi_demo.txt", new_content)
+echo("File updated!")
+
+# Read again to verify
+echo("")
+echo("=== Updated contents ===")
+echo(read_file("/tmp/mozhi_demo.txt"))
+
+# List files in /tmp
+echo("")
+echo("=== Files in /tmp (first 10) ===")
+files = list_dir("/tmp")
+count = 0
+for f in files {
+    if count < 10 {
+        echo("  " + f)
+        count = count + 1
+    }
+}
+echo("  ... and " + string(files.len() - 10) + " more")
+
+echo("")
+echo("=== Done! ===")

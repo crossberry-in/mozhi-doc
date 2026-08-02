@@ -1,28 +1,38 @@
-# Match statement in Mozhi
+# Match statement in Mozhi v2.0+
 
-var x = 2
+echo("=== Match Statement ===")
 
-match x:
-    case 1:
-        echo "One"
-    case 2:
-        echo "Two"
-    case 3:
-        echo "Three"
-    default:
-        echo "Unknown"
-end
+# Match with numbers
+x = 2
+echo("Matching x = " + string(x) + ":")
+match x {
+    1 => echo("  One")
+    2 => echo("  Two")
+    3 => echo("  Three")
+    _ => echo("  Other")
+}
 
 # Match with strings
-var fruit = "apple"
+day = "Tuesday"
+echo("")
+echo("Matching day = '" + day + "':")
+match day {
+    "Monday" => echo("  Start of work week")
+    "Tuesday" => echo("  Second day")
+    "Wednesday" => echo("  Hump day")
+    "Thursday" => echo("  Almost there")
+    "Friday" => echo("  TGIF!")
+    _ => echo("  Weekend!")
+}
 
-match fruit:
-    case "apple":
-        echo "It's an apple"
-    case "banana":
-        echo "It's a banana"
-    case "cherry":
-        echo "It's a cherry"
-    default:
-        echo "Unknown fruit"
-end
+# Match with default
+status = 404
+echo("")
+echo("Matching HTTP status " + string(status) + ":")
+match status {
+    200 => echo("  OK")
+    301 => echo("  Moved Permanently")
+    404 => echo("  Not Found")
+    500 => echo("  Internal Server Error")
+    _ => echo("  Unknown status")
+}

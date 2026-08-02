@@ -1,0 +1,49 @@
+# ============================================================
+# JSON Library Showcase
+# ============================================================
+
+import json from "mozhi-json"
+
+echo("=== JSON Library Demo ===")
+echo("")
+
+echo("--- Encoding ---")
+pairs = [
+    ["name", "Mozhi"],
+    ["version", "2.4.0"],
+    ["author", "Z.ai"]
+]
+obj = json.json_object(pairs)
+echo("json_object: " + obj)
+echo("")
+
+echo("--- Pretty Printing ---")
+pretty = json.json_object_pretty(pairs, 0)
+echo("pretty:")
+echo(pretty)
+echo("")
+
+echo("--- Arrays ---")
+items = ["apple", "banana", "cherry"]
+arr = json.json_array(items)
+echo("json_array: " + arr)
+echo("")
+
+echo("--- Decoding (json_get) ---")
+sample = "{\"name\": \"Mozhi\", \"version\": \"2.4.0\", \"author\": \"Z.ai\"}"
+echo("Sample JSON: " + sample)
+echo("json_get('name')    = " + json.json_get(sample, "name"))
+echo("json_get('version') = " + json.json_get(sample, "version"))
+echo("json_get('author')  = " + json.json_get(sample, "author"))
+echo("")
+
+echo("--- Building JSON manually ---")
+response = "{"
+response = response + "\"status\": \"ok\", "
+response = response + "\"count\": 3, "
+response = response + "\"items\": [\"a\", \"b\", \"c\"]"
+response = response + "}"
+echo("Built: " + response)
+echo("")
+
+echo("=== Done! ===")

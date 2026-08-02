@@ -1,13 +1,44 @@
-# Fibonacci sequence in Mozhi
+# Fibonacci sequence in Mozhi v2.0+
 
-func fibonacci(n):
-    if n <= 1:
+# Recursive (slow for large n)
+fn fib_recursive(n) {
+    if n <= 1 {
         return n
-    end
-    return fibonacci(n - 1) + fibonacci(n - 2)
-end
+    }
+    return fib_recursive(n - 1) + fib_recursive(n - 2)
+}
 
-echo "Fibonacci sequence:"
-for var i = 0; i < 20; i = i + 1:
-    echo "F(", i, ") = ", fibonacci(i)
-end
+# Iterative (fast)
+fn fib_iter(n) {
+    if n <= 1 {
+        return n
+    }
+    a = 0
+    b = 1
+    i = 2
+    while i <= n {
+        c = a + b
+        a = b
+        b = c
+        i = i + 1
+    }
+    return b
+}
+
+echo("=== Fibonacci ===")
+echo("")
+echo("Recursive:")
+for i = 0; i < 15; i = i + 1 {
+    echo("  fib(" + string(i) + ") = " + string(fib_recursive(i)))
+}
+
+echo("")
+echo("Iterative (first 20):")
+for i = 0; i < 20; i = i + 1 {
+    echo("  fib(" + string(i) + ") = " + string(fib_iter(i)))
+}
+
+echo("")
+echo("Large values:")
+echo("  fib(30) = " + string(fib_iter(30)))
+echo("  fib(50) = " + string(fib_iter(50)))

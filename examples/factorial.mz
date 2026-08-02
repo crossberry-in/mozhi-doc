@@ -1,12 +1,32 @@
-# Factorial in Mozhi
+# Factorial in Mozhi v2.0+
 
-func factorial(n):
-    if n <= 1:
+# Recursive factorial
+fn factorial(n) {
+    if n <= 1 {
         return 1
-    end
+    }
     return n * factorial(n - 1)
-end
+}
 
-for var i = 0; i < 15; i = i + 1:
-    echo i, "! = ", factorial(i)
-end
+# Iterative factorial
+fn factorial_iter(n) {
+    result = 1
+    i = 2
+    while i <= n {
+        result = result * i
+        i = i + 1
+    }
+    return result
+}
+
+echo("=== Factorial ===")
+echo("Recursive:")
+echo("  5! = " + string(factorial(5)))
+echo("  10! = " + string(factorial(10)))
+echo("  15! = " + string(factorial(15)))
+
+echo("")
+echo("Iterative:")
+echo("  5! = " + string(factorial_iter(5)))
+echo("  10! = " + string(factorial_iter(10)))
+echo("  15! = " + string(factorial_iter(15)))

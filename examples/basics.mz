@@ -1,94 +1,97 @@
-# Basic examples in Mozhi
+# Basic examples in Mozhi v2.0+
+# Variables (no var keyword — just assign)
+num = 42
+pi = 3.14159
+str = "Hello, Mozhi!"
+flag = true
+nothing = null
 
-# Variables and types
-var num = 42
-var pi = 3.14159
-var str = "Hello, Mozhi!"
-var flag = true
-var nothing = null
-
-echo "Integer: ", num
-echo "Float: ", pi
-echo "String: ", str
-echo "Boolean: ", flag
-echo "Null: ", nothing
+echo("Integer: " + string(num))
+echo("Float: " + string(pi))
+echo("String: " + str)
+echo("Boolean: " + string(flag))
+echo("Null: " + string(nothing))
 
 # Arithmetic
-echo ""
-echo "Arithmetic:"
-echo "10 + 5 = ", 10 + 5
-echo "10 - 5 = ", 10 - 5
-echo "10 * 5 = ", 10 * 5
-echo "10 / 5 = ", 10 / 5
-echo "10 % 3 = ", 10 % 3
-echo "2 ** 10 = ", 2 ** 10
+echo("")
+echo("=== Arithmetic ===")
+echo("10 + 5 = " + string(10 + 5))
+echo("10 - 5 = " + string(10 - 5))
+echo("10 * 5 = " + string(10 * 5))
+echo("10 / 5 = " + string(10 / 5))
+echo("10 % 3 = " + string(10 % 3))
 
 # Comparison
-echo ""
-echo "Comparison:"
-echo "5 > 3: ", 5 > 3
-echo "5 < 3: ", 5 < 3
-echo "5 == 5: ", 5 == 5
-echo "5 != 5: ", 5 != 5
+echo("")
+echo("=== Comparison ===")
+echo("5 > 3: " + string(5 > 3))
+echo("5 < 3: " + string(5 < 3))
+echo("5 == 5: " + string(5 == 5))
+echo("5 != 5: " + string(5 != 5))
 
 # Logical
-echo ""
-echo "Logical:"
-echo "true and false: ", true and false
-echo "true or false: ", true or false
-echo "not true: ", not true
+echo("")
+echo("=== Logical ===")
+echo("true and false: " + string(true and false))
+echo("true or false: " + string(true or false))
+echo("not true: " + string(not true))
 
 # Strings
-echo ""
-echo "Strings:"
-var greeting = "Hello" + ", " + "World!"
-echo greeting
-echo "Length: ", len(greeting)
+echo("")
+echo("=== Strings ===")
+greeting = "Hello" + ", " + "World!"
+echo(greeting)
+echo("Length: " + string(greeting.len()))
+echo("Upper: " + greeting.upper())
+echo("Lower: " + greeting.lower())
 
 # Arrays
-echo ""
-echo "Arrays:"
-var arr = [10, 20, 30, 40, 50]
-echo "Array: ", arr
-echo "Length: ", len(arr)
-echo "First: ", arr[0]
-echo "Last: ", arr[4]
+echo("")
+echo("=== Arrays ===")
+arr = [10, 20, 30, 40, 50]
+echo("Length: " + string(arr.len()))
+echo("First: " + string(arr[0]))
+echo("Last: " + string(arr[4]))
 
-push(arr, 60)
-echo "After push: ", arr
+arr.push(60)
+echo("After push(60): length = " + string(arr.len()))
 
-var last = pop(arr)
-echo "Popped: ", last
-echo "After pop: ", arr
+last = arr.pop()
+echo("Popped: " + string(last))
 
 # Functions
-echo ""
-echo "Functions:"
-func square(x):
+echo("")
+echo("=== Functions ===")
+fn square(x) {
     return x * x
-end
+}
 
-echo "square(5) = ", square(5)
-echo "square(10) = ", square(10)
-
-# Closures
-func make_adder(n):
-    func adder(x):
-        return x + n
-    end
-    return adder
-end
-
-var add5 = make_adder(5)
-var add10 = make_adder(10)
-
-echo "add5(3) = ", add5(3)
-echo "add10(3) = ", add10(3)
+echo("square(5) = " + string(square(5)))
+echo("square(10) = " + string(square(10)))
 
 # For-in loop
-echo ""
-echo "For-in loop:"
-var fruits = ["apple", "banana", "cherry"]
-for var fruit in fruits:
-    echo fruit
-end
+echo("")
+echo("=== For-in Loop ===")
+fruits = ["apple", "banana", "cherry"]
+for fruit in fruits {
+    echo("  " + fruit)
+}
+
+# If/Else
+echo("")
+echo("=== If/Else ===")
+age = 20
+if age >= 18 {
+    echo("Adult")
+} else {
+    echo("Minor")
+}
+
+# While loop
+echo("")
+echo("=== While Loop ===")
+i = 0
+while i < 5 {
+    echo("  i = " + string(i))
+    i = i + 1
+}

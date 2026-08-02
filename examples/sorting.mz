@@ -1,31 +1,72 @@
-# Sorting algorithms in Mozhi
+# Sorting algorithms in Mozhi v2.0+
 
-func bubble_sort(arr):
-    var n = len(arr)
-    for var i = 0; i < n - 1; i = i + 1:
-        for var j = 0; j < n - i - 1; j = j + 1:
-            if arr[j] > arr[j + 1]:
-                var temp = arr[j]
+echo("=== Sorting Algorithms ===")
+
+# Bubble sort
+fn bubble_sort(arr) {
+    n = arr.len()
+    i = 0
+    while i < n {
+        j = 0
+        while j < n - i - 1 {
+            if arr[j] > arr[j + 1] {
+                temp = arr[j]
                 arr[j] = arr[j + 1]
                 arr[j + 1] = temp
-            end
-        end
-    end
+            }
+            j = j + 1
+        }
+        i = i + 1
+    }
     return arr
-end
+}
 
-func print_array(arr):
-    var result = "["
-    for var i = 0; i < len(arr); i = i + 1:
-        result = result + string(arr[i])
-        if i < len(arr) - 1:
-            result = result + ", "
-        end
-    end
-    result = result + "]"
-    return result
-end
+# Selection sort
+fn selection_sort(arr) {
+    n = arr.len()
+    i = 0
+    while i < n - 1 {
+        min_idx = i
+        j = i + 1
+        while j < n {
+            if arr[j] < arr[min_idx] {
+                min_idx = j
+            }
+            j = j + 1
+        }
+        if min_idx != i {
+            temp = arr[i]
+            arr[i] = arr[min_idx]
+            arr[min_idx] = temp
+        }
+        i = i + 1
+    }
+    return arr
+}
 
-var data = [64, 34, 25, 12, 22, 11, 90]
-echo "Original: ", print_array(data)
-echo "Sorted: ", print_array(bubble_sort(data))
+# Test data
+nums = [64, 34, 25, 12, 22, 11, 90]
+echo("Original: " + string(nums[0]) + ", " + string(nums[1]) + ", " + string(nums[2]) + ", " + string(nums[3]) + ", " + string(nums[4]) + ", " + string(nums[5]) + ", " + string(nums[6]))
+
+echo("")
+echo("Bubble Sort:")
+sorted1 = bubble_sort([64, 34, 25, 12, 22, 11, 90])
+for x in sorted1 {
+    echo("  " + string(x))
+}
+
+echo("")
+echo("Selection Sort:")
+sorted2 = selection_sort([64, 34, 25, 12, 22, 11, 90])
+for x in sorted2 {
+    echo("  " + string(x))
+}
+
+# Sort strings
+echo("")
+echo("Sort strings:")
+words = ["cherry", "apple", "banana", "date"]
+sorted_words = bubble_sort(words)
+for w in sorted_words {
+    echo("  " + w)
+}

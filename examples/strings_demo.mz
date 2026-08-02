@@ -1,0 +1,40 @@
+# ============================================================
+# Strings Library Showcase
+# ============================================================
+
+import strings from "mozhi-strings"
+
+echo("=== Strings Library Demo ===")
+echo("")
+
+echo("--- Basic Operations ---")
+echo("repeat('ab', 4)      = " + strings.repeat("ab", 4))
+echo("reverse('hello')     = " + strings.reverse("hello"))
+echo("capitalize('mozhi')  = " + strings.capitalize("mozhi"))
+echo("title_case('hello w') = " + strings.title_case("hello world"))
+echo("")
+
+echo("--- Case Conversion ---")
+echo("snake_case('camelCase')  = " + strings.snake_case("camelCase"))
+echo("camel_case('snake_case') = " + strings.camel_case("snake_case"))
+echo("")
+
+echo("--- Search & Count ---")
+echo("count('banana', 'an')    = " + string(strings.count("banana", "an")))
+echo("starts_with('hello', 'he') = " + string(strings.starts_with("hello", "he")))
+echo("ends_with('hello', 'lo')   = " + string(strings.ends_with("hello", "lo")))
+echo("")
+
+echo("--- Padding & Truncation ---")
+echo("pad_left('42', 5, '0')     = " + strings.pad_left("42", 5, "0"))
+echo("pad_right('hi', 5, '-')    = " + strings.pad_right("hi", 5, "-"))
+echo("truncate('Hello World', 8, '...') = " + strings.truncate("Hello World", 8, "..."))
+echo("zero_pad(42, 6)            = " + strings.zero_pad(42, 6))
+echo("")
+
+echo("--- Transformation ---")
+echo("slugify('Hello, World!')   = " + strings.slugify("Hello, World!"))
+echo("strip('---hello---', '-')  = " + strings.strip("---hello---", "-"))
+echo("")
+
+echo("=== Done! ===")

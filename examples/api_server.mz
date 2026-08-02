@@ -1,0 +1,92 @@
+# ============================================================
+# JSON API Server — v2.4.0
+# A REST-like JSON API with CRUD endpoints
+# ============================================================
+
+import http from "mozhi-http"
+import json from "mozhi-json"
+
+# In-memory "database"
+items = [
+    ["id": "1", "name": "Learn Mozhi", "done": "false"],
+    ["id": "2", "name": "Build a project", "done": "false"]
+]
+next_id = 3
+
+fn handler(method, path) {
+    echo("[" + method + "] " + path)
+
+    route = path
+    if path.contains("?") {
+        route = path.split("?")[0]
+    }
+
+    # GET /api/items — list all items
+    if method == "GET" and route == "/api/items" {
+        out = "{\"items\": ["
+        i = 0
+        for item in items {
+            if i > 0 {
+                out = out + ", "
+            }
+            out = out + "{\"id\": \"" + item["id"] + "\", \"name\": \"" + item["name"] + "\", \"done\": " + item["done"] + "}"
+            i = i + 1
+        }
+        out = out + "], \"count\": " + string(items.len()) + "}"
+        return http.http_ok_json(out)
+    }
+
+    # GET /api/items/:id — get single item
+    if method == "GET" and route.contains("/api/items/") {
+        id = route.split("/")[3]
+        for item in items {
+            if item["id"] == id {
+                return http.http_ok_json("{\"id\": \"" + item["id"] + "\", \"name\": \"" + item["name"] + "\", \"done\": " + item["done"] + "}")
+            }
+        }
+        return http.http_ok_json("{\"error\": \"Item not found\"}")
+    }
+
+    # POST /api/items — create new item (simulated)
+    if method == "POST" and route == "/api/items" {
+        new_item = ["id": string(next_id), "name": "New Item " + string(next_id), "done": "false"]
+        # Note: real POST body parsing not supported; this is a demo
+        return http.http_ok_json("{\"message\": \"Created item " + string(next_id) + "\", \"id\": " + string(next_id) + "}")
+    }
+
+    # GET /api/health — health check
+    if route == "/api/health" {
+        return http.http_ok_json("{\"status\": \"healthy\", \"version\": \"2.4.0\"}")
+    }
+
+    # Root — API docs
+    if route == "/" or route == "/api" {
+        docs = "{"
+        docs = docs + "\"name\": \"Mozhi API\", "
+        docs = docs + "\"version\": \"2.4.0\", "
+        docs = docs + "\"endpoints\": {"
+        docs = docs + "\"GET /api/items\": \"List all items\", "
+        docs = docs + "\"GET /api/items/:id\": \"Get single item\", "
+        docs = docs + "\"POST /api/items\": \"Create new item\", "
+        docs = docs + "\"GET /api/health\": \"Health check\""
+        docs = docs + "}}"
+        return http.http_ok_json(docs)
+    }
+
+    return http.http_404("{\"error\": \"Not found\"}")
+}
+
+echo("=== Mozhi JSON API Server ===")
+echo("API endpoints:")
+echo("  GET  /              - API docs")
+echo("  GET  /api/items     - List all items")
+echo("  GET  /api/items/1   - Get item by ID")
+echo("  POST /api/items     - Create new item")
+echo("  GET  /api/health    - Health check")
+echo("")
+echo("URL: http://localhost:8080")
+echo("Press Ctrl+C to stop")
+echo("")
+
+server = http.http_start(8080)
+http.http_serve_loop(server, handler)

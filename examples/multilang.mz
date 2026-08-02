@@ -1,0 +1,41 @@
+# ============================================================
+# Multi-Language Run Example — v2.4.0
+# Demonstrates: run_c, run_cpp, run_py, run_sh, run_mz
+# ============================================================
+
+echo("=== Multi-Language Run Demo ===")
+echo("")
+
+# Create helper files
+write_file("/tmp/mozhi_helper.c", "#include <stdio.h>\nint main() {\n    printf(\"Hello from C!\\n\");\n    int sum = 0;\n    for (int i = 1; i <= 100; i++) sum += i;\n    printf(\"Sum 1..100 = %d\\n\", sum);\n    printf(\"Factorial 10 = %d\\n\", 3628800);\n    return 0;\n}")
+
+write_file("/tmp/mozhi_helper.cpp", "#include <iostream>\n#include <vector>\n#include <algorithm>\nint main() {\n    std::cout << \"Hello from C++!\" << std::endl;\n    std::vector<int> v = {5, 3, 1, 4, 2};\n    std::sort(v.begin(), v.end());\n    std::cout << \"Sorted: \";\n    for (int x : v) std::cout << x << \" \";\n    std::cout << std::endl;\n    return 0;\n}")
+
+write_file("/tmp/mozhi_helper.py", "import json\nprint('Hello from Python!')\ndata = {\n    'name': 'Mozhi',\n    'version': '2.4.0',\n    'features': ['file-io', 'shell', 'multi-language']\n}\nprint(json.dumps(data, indent=2))")
+
+write_file("/tmp/mozhi_helper.sh", "#!/bin/bash\necho 'Hello from Shell!'\necho 'Date: '$(date)\necho 'User: '$(whoami)\necho 'Files in /tmp:'\nls /tmp | head -5")
+
+write_file("/tmp/mozhi_helper.mz", "echo(\"Hello from Mozhi!\")\necho(\"Math: 7 * 8 = \" + string(7 * 8))\necho(\"String: \" + \"hello\".upper())")
+
+# Run each language
+echo("=== C ===")
+echo(run_c("/tmp/mozhi_helper.c"))
+
+echo("")
+echo("=== C++ ===")
+echo(run_cpp("/tmp/mozhi_helper.cpp"))
+
+echo("")
+echo("=== Python ===")
+echo(run_py("/tmp/mozhi_helper.py"))
+
+echo("")
+echo("=== Shell ===")
+echo(run_sh("/tmp/mozhi_helper.sh"))
+
+echo("")
+echo("=== Mozhi ===")
+echo(run_mz("/tmp/mozhi_helper.mz"))
+
+echo("")
+echo("=== All languages tested! ===")
