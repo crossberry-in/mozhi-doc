@@ -34,12 +34,12 @@ fn html_body(content) {
 }
 
 fn html_page(title, body) {
-    page = html_doctype() + "\n"
-    page = page + "<html lang=\"en\">\n"
-    page = page + html_head(title) + "\n"
-    page = page + html_body(body) + "\n"
-    page = page + "</html>"
-    return page
+    out = html_doctype() + "\n"
+    out = out + "<html lang=\"en\">\n"
+    out = out + html_head(title) + "\n"
+    out = out + html_body(body) + "\n"
+    out = out + "</html>"
+    return out
 }
 
 fn html_div(class_name, content) {
@@ -93,47 +93,47 @@ fn html_img(src, alt) {
 }
 
 fn html_ul(items) {
-    html = "<ul>"
+    out = "<ul>"
     for item in items {
-        html = html + "<li>" + item + "</li>"
+        out = out + "<li>" + item + "</li>"
     }
-    html = html + "</ul>"
-    return html
+    out = out + "</ul>"
+    return out
 }
 
 fn html_ol(items) {
-    html = "<ol>"
+    out = "<ol>"
     for item in items {
-        html = html + "<li>" + item + "</li>"
+        out = out + "<li>" + item + "</li>"
     }
-    html = html + "</ol>"
-    return html
+    out = out + "</ol>"
+    return out
 }
 
 fn html_table(headers, rows) {
-    html = "<table border=\"1\" cellpadding=\"5\">\n<tr>"
+    out = "<table border=\"1\" cellpadding=\"5\">\n<tr>"
     for h in headers {
-        html = html + "<th>" + h + "</th>"
+        out = out + "<th>" + h + "</th>"
     }
-    html = html + "</tr>\n"
+    out = out + "</tr>\n"
     for row in rows {
-        html = html + "<tr>"
+        out = out + "<tr>"
         for cell in row {
-            html = html + "<td>" + string(cell) + "</td>"
+            out = out + "<td>" + string(cell) + "</td>"
         }
-        html = html + "</tr>\n"
+        out = out + "</tr>\n"
     }
-    html = html + "</table>"
-    return html
+    out = out + "</table>"
+    return out
 }
 
 fn html_form(action, method, inputs) {
-    html = "<form action=\"" + action + "\" method=\"" + method + "\">"
+    out = "<form action=\"" + action + "\" method=\"" + method + "\">"
     for input in inputs {
-        html = html + input
+        out = out + input
     }
-    html = html + "</form>"
-    return html
+    out = out + "</form>"
+    return out
 }
 
 fn html_input(type, name, value) {

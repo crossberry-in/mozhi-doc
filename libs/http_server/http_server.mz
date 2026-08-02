@@ -9,7 +9,7 @@
 # Start a simple HTTP server on the given port.
 # Returns the server socket handle.
 fn http_start(port) {
-    return server_listen("0.0.0.0", port)
+    return server_listen(port)
 }
 
 # Build an HTTP response string from status, content-type and body.

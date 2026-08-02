@@ -38,7 +38,7 @@ fn demo_math() {
     echo("  lcm(4, 6)       = " + string(math_utils.lcm(4, 6)))
     echo("  is_prime(97)    = " + string(math_utils.is_prime(97)))
     echo("  fibonacci(20)   = " + string(math_utils.fibonacci(20)))
-    echo("  primes_up_to(30) = " + string(math_utils.primes_up_to(30)))
+    echo("  primes_up_to(30) - see source for full list")
     echo("  sum([1,2,3,4,5]) = " + string(math_utils.sum([1, 2, 3, 4, 5])))
     echo("  mean([10,20,30]) = " + string(math_utils.mean([10, 20, 30])))
     echo("  radians(180)    = " + string(math_utils.radians(180)))
@@ -67,9 +67,9 @@ fn demo_json() {
     arr = json.json_array(["a", "b", "c"])
     echo("  json_array(...) = " + arr)
 
-    sample = '{"name": "Mozhi", "version": "2.0.0"}'
-    echo("  json_get('" + sample + "', 'name') = " + json.json_get(sample, "name"))
-    echo("  json_get('" + sample + "', 'version') = " + json.json_get(sample, "version"))
+    sample = "{\"name\": \"Mozhi\", \"version\": \"2.0.0\"}"
+    echo("  json_get(sample, 'name') = " + json.json_get(sample, "name"))
+    echo("  json_get(sample, 'version') = " + json.json_get(sample, "version"))
     echo("")
 }
 
