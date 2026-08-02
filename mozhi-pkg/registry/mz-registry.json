@@ -264,6 +264,64 @@
       "version": "1.0.0"
     },
     {
+      "category": "os",
+      "checksum_sha256": "60a2959b73bd3ba5758b18704c92716333e0209eb20cc84408fadce24ccce492",
+      "description": "Full OS control: system info, processes, filesystem, network, users, power, packages, services, cron",
+      "edition": "2024",
+      "examples": [
+        "demo.mz"
+      ],
+      "exports": {
+        "cron_daily_at": "mod.cron_daily_at",
+        "cron_list": "mod.cron_list",
+        "fs_copy": "mod.fs_copy",
+        "fs_find": "mod.fs_find",
+        "fs_mkdir": "mod.fs_mkdir",
+        "fs_walk": "mod.fs_walk",
+        "hostname": "mod.hostname",
+        "net_ping": "mod.net_ping",
+        "net_port_scan": "mod.net_port_scan",
+        "net_primary_ip": "mod.net_primary_ip",
+        "os_type": "mod.os_type",
+        "pkg_detect": "mod.pkg_detect",
+        "pkg_install": "mod.pkg_install",
+        "pkg_update": "mod.pkg_update",
+        "power_battery_status": "mod.power_battery_status",
+        "power_reboot": "mod.power_reboot",
+        "power_shutdown": "mod.power_shutdown",
+        "proc_kill": "mod.proc_kill",
+        "proc_list": "mod.proc_list",
+        "proc_spawn": "mod.proc_spawn",
+        "svc_list": "mod.svc_list",
+        "svc_restart": "mod.svc_restart",
+        "system_info": "mod.system_info",
+        "user_current": "mod.user_current",
+        "user_is_root": "mod.user_is_root"
+      },
+      "has_mod": true,
+      "install": "pkg/os/src/",
+      "license": "MIT",
+      "modules": [
+        "cron.mz",
+        "filesystem.mz",
+        "mod.mz",
+        "network.mz",
+        "package_manager.mz",
+        "power.mz",
+        "process.mz",
+        "service.mz",
+        "system.mz",
+        "user.mz"
+      ],
+      "name": "os",
+      "path": "pkg/os",
+      "source": "pkg/os/src/mod.mz",
+      "tests": [
+        "test_basic.mz"
+      ],
+      "version": "1.0.0"
+    },
+    {
       "category": "general",
       "checksum_sha256": "",
       "description": "Production-ready physics library for Mozhi: mechanics, motion, energy, gravity, fluids, thermodynamics, electricity, magnetism, waves, optics, relativity, quantum, astronomy, units",
@@ -466,6 +524,6 @@
       "version": "1.0.0"
     }
   ],
-  "updated": "2026-08-02T20:08:39Z",
+  "updated": "2026-08-02T20:19:13Z",
   "version": "1.0.0"
 }

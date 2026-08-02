@@ -1,0 +1,255 @@
+# ============================================================
+# os — Process Management (v1.0.0)
+# List, kill, spawn, signal, exec processes
+# Cross-platform: Linux, Windows, macOS, Android
+# ============================================================
+
+# ------------------------------------------------------------
+# Process Listing
+# ------------------------------------------------------------
+
+# List all processes
+fn list() {
+    t = _os_type()
+    if t == "windows" {
+        return run("tasklist 2>nul")
+    }
+    return run("ps aux 2>/dev/null || ps -ef 2>/dev/null")
+}
+
+# List processes by name
+fn list_by_name(name) {
+    t = _os_type()
+    if t == "windows" {
+        return run("tasklist /FI \"IMAGENAME eq " + name + "\" 2>nul")
+    }
+    return run("ps aux | grep '" + name + "' | grep -v grep")
+}
+
+# Get PID of a process by name (first match)
+fn pid_of(name) {
+    t = _os_type()
+    if t == "windows" {
+        result = run("tasklist /FI \"IMAGENAME eq " + name + "\" /FO CSV /NH 2>nul | head -1")
+        parts = result.split(",")
+        if parts.len() >= 2 {
+            return parts[1].replace("\"", "").trim()
+        }
+        return ""
+    }
+    result = run("pgrep -x '" + name + "' 2>/dev/null | head -1")
+    if result.trim() == "" {
+        result = run("pidof '" + name + "' 2>/dev/null | head -1")
+    }
+    return result.trim()
+}
+
+# Check if a process is running
+fn is_running(name) {
+    return pid_of(name) != ""
+}
+
+# Get process count by name
+fn count_by_name(name) {
+    t = _os_type()
+    if t == "windows" {
+        result = run("tasklist /FI \"IMAGENAME eq " + name + "\" 2>nul | wc -l")
+        return result.trim()
+    }
+    result = run("pgrep -c '" + name + "' 2>/dev/null || ps aux | grep '" + name + "' | grep -v grep | wc -l")
+    return result.trim()
+}
+
+# ------------------------------------------------------------
+# Process Info
+# ------------------------------------------------------------
+
+# Get process info by PID
+fn info(pid) {
+    t = _os_type()
+    if t == "windows" {
+        return run("tasklist /FI \"PID eq " + string(pid) + "\" 2>nul")
+    }
+    if file_exists("/proc/" + string(pid) + "/status") {
+        return read_file("/proc/" + string(pid) + "/status")
+    }
+    return run("ps -p " + string(pid) + " -o pid,ppid,user,%cpu,%mem,comm 2>/dev/null")
+}
+
+# Get process command line by PID (Linux)
+fn cmdline(pid) {
+    if file_exists("/proc/" + string(pid) + "/cmdline") {
+        content = read_file("/proc/" + string(pid) + "/cmdline")
+        return content.replace("\x00", " ").trim()
+    }
+    return run("ps -p " + string(pid) + " -o args= 2>/dev/null")
+}
+
+# Get process memory usage by PID
+fn memory(pid) {
+    if file_exists("/proc/" + string(pid) + "/status") {
+        content = read_file("/proc/" + string(pid) + "/status")
+        lines = content.split("\n")
+        for line in lines {
+            if line.contains("VmRSS:") {
+                return line.trim()
+            }
+        }
+    }
+    return run("ps -p " + string(pid) + " -o %mem,rss= 2>/dev/null")
+}
+
+# Get process CPU usage
+fn cpu_usage(pid) {
+    return run("ps -p " + string(pid) + " -o %cpu= 2>/dev/null || echo 0").trim()
+}
+
+# Get parent PID
+fn parent_pid(pid) {
+    if file_exists("/proc/" + string(pid) + "/status") {
+        content = read_file("/proc/" + string(pid) + "/status")
+        lines = content.split("\n")
+        for line in lines {
+            if line.contains("PPid:") {
+                parts = line.split(":")
+                if parts.len() >= 2 {
+                    return parts[1].trim()
+                }
+            }
+        }
+    }
+    return run("ps -p " + string(pid) + " -o ppid= 2>/dev/null || echo 0").trim()
+}
+
+# ------------------------------------------------------------
+# Process Control
+# ------------------------------------------------------------
+
+# Kill a process by PID
+fn kill(pid) {
+    t = _os_type()
+    if t == "windows" {
+        return run("taskkill /PID " + string(pid) + " /F 2>nul")
+    }
+    return run("kill " + string(pid) + " 2>/dev/null && echo 'killed' || echo 'failed'")
+}
+
+# Force kill (SIGKILL)
+fn kill_force(pid) {
+    t = _os_type()
+    if t == "windows" {
+        return run("taskkill /PID " + string(pid) + " /F 2>nul")
+    }
+    return run("kill -9 " + string(pid) + " 2>/dev/null && echo 'force killed' || echo 'failed'")
+}
+
+# Kill all processes by name
+fn kill_all(name) {
+    t = _os_type()
+    if t == "windows" {
+        return run("taskkill /IM " + name + " /F 2>nul")
+    }
+    return run("pkill -f '" + name + "' 2>/dev/null && echo 'killed all' || echo 'none found'")
+}
+
+# Send signal to process
+fn signal(pid, sig) {
+    return run("kill -" + string(sig) + " " + string(pid) + " 2>/dev/null && echo 'sent' || echo 'failed'")
+}
+
+# ------------------------------------------------------------
+# Process Spawning
+# ------------------------------------------------------------
+
+# Spawn a process in the background
+fn spawn(command) {
+    t = _os_type()
+    if t == "windows" {
+        return run("start /b " + command + " 2>nul")
+    }
+    return run("nohup " + command + " &>/dev/null & echo $!")
+}
+
+# Run a command and wait for it to finish
+fn exec(command) {
+    return run(command)
+}
+
+# Run a command with timeout (in seconds)
+fn exec_timeout(command, timeout_secs) {
+    t = _os_type()
+    if t == "windows" {
+        return run("cmd /c \"" + command + "\" 2>nul")
+    }
+    return run("timeout " + string(timeout_secs) + " " + command + " 2>/dev/null")
+}
+
+# Run a command as another user (Linux/macOS)
+fn exec_as(user, command) {
+    return run("su - " + user + " -c '" + command + "' 2>/dev/null || sudo -u " + user + " " + command)
+}
+
+# ------------------------------------------------------------
+# Process Tree
+# ------------------------------------------------------------
+
+# Get child processes of a PID
+fn children(pid) {
+    t = _os_type()
+    if t == "windows" {
+        return run("wmic process where ParentProcessId=" + string(pid) + " get ProcessId,Name 2>nul")
+    }
+    return run("pgrep -P " + string(pid) + " 2>/dev/null || ps --ppid " + string(pid) + " 2>/dev/null")
+}
+
+# Kill a process and all its children
+fn kill_tree(pid) {
+    t = _os_type()
+    if t == "windows" {
+        return run("taskkill /PID " + string(pid) + " /T /F 2>nul")
+    }
+    # Kill children first, then parent
+    run("pkill -P " + string(pid) + " 2>/dev/null")
+    return kill_force(pid)
+}
+
+# ------------------------------------------------------------
+# Top Processes
+# ------------------------------------------------------------
+
+# Top processes by CPU
+fn top_cpu(count) {
+    t = _os_type()
+    if t == "windows" {
+        return run("tasklist 2>nul | head -" + string(count))
+    }
+    return run("ps aux --sort=-%cpu 2>/dev/null | head -" + string(count + 1))
+}
+
+# Top processes by memory
+fn top_memory(count) {
+    t = _os_type()
+    if t == "windows" {
+        return run("tasklist 2>nul | head -" + string(count))
+    }
+    return run("ps aux --sort=-%mem 2>/dev/null | head -" + string(count + 1))
+}
+
+# ------------------------------------------------------------
+# Helpers
+# ------------------------------------------------------------
+
+fn _os_type() {
+    result = run("uname -s 2>/dev/null || echo Windows")
+    r = result.trim()
+    if r == "Linux" {
+        return "linux"
+    }
+    if r == "Darwin" {
+        return "macos"
+    }
+    if r.contains("Windows") or r.contains("MINGW") {
+        return "windows"
+    }
+    return "linux"
+}

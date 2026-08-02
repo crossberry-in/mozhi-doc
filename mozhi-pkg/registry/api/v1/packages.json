@@ -1,7 +1,7 @@
 {
   "name": "mozhi",
   "version": "1.0.0",
-  "updated": "2026-08-02T20:08:39Z",
+  "updated": "2026-08-02T20:19:13Z",
   "packages": [
     {
       "name": "collections",
@@ -264,6 +264,64 @@
       "has_mod": true,
       "source": "pkg/math_utils/src/mod.mz",
       "install": "pkg/math_utils/src/"
+    },
+    {
+      "name": "os",
+      "version": "1.0.0",
+      "description": "Full OS control: system info, processes, filesystem, network, users, power, packages, services, cron",
+      "category": "os",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/os",
+      "modules": [
+        "cron.mz",
+        "filesystem.mz",
+        "mod.mz",
+        "network.mz",
+        "package_manager.mz",
+        "power.mz",
+        "process.mz",
+        "service.mz",
+        "system.mz",
+        "user.mz"
+      ],
+      "exports": {
+        "os_type": "mod.os_type",
+        "system_info": "mod.system_info",
+        "hostname": "mod.hostname",
+        "proc_list": "mod.proc_list",
+        "proc_kill": "mod.proc_kill",
+        "proc_spawn": "mod.proc_spawn",
+        "fs_mkdir": "mod.fs_mkdir",
+        "fs_copy": "mod.fs_copy",
+        "fs_walk": "mod.fs_walk",
+        "fs_find": "mod.fs_find",
+        "net_primary_ip": "mod.net_primary_ip",
+        "net_ping": "mod.net_ping",
+        "net_port_scan": "mod.net_port_scan",
+        "user_current": "mod.user_current",
+        "user_is_root": "mod.user_is_root",
+        "power_shutdown": "mod.power_shutdown",
+        "power_reboot": "mod.power_reboot",
+        "power_battery_status": "mod.power_battery_status",
+        "pkg_detect": "mod.pkg_detect",
+        "pkg_install": "mod.pkg_install",
+        "pkg_update": "mod.pkg_update",
+        "svc_list": "mod.svc_list",
+        "svc_restart": "mod.svc_restart",
+        "cron_list": "mod.cron_list",
+        "cron_daily_at": "mod.cron_daily_at"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [
+        "test_basic.mz"
+      ],
+      "checksum_sha256": "60a2959b73bd3ba5758b18704c92716333e0209eb20cc84408fadce24ccce492",
+      "has_mod": true,
+      "source": "pkg/os/src/mod.mz",
+      "install": "pkg/os/src/"
     },
     {
       "name": "physics",

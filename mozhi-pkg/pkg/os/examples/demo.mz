@@ -1,0 +1,93 @@
+# OS Control Demo
+# Run: mozhi-interpreter demo.mz
+
+import system from "../src/system.mz"
+import process from "../src/process.mz"
+import filesystem from "../src/filesystem.mz"
+import network from "../src/network.mz"
+import user from "../src/user.mz"
+import power from "../src/power.mz"
+import package_manager from "../src/package_manager.mz"
+import service from "../src/service.mz"
+import cron from "../src/cron.mz"
+
+echo("=== OS Control Demo ===")
+echo("")
+
+# 1. System info
+echo("--- System ---")
+echo("OS: " + system.os_type() + " " + system.os_version())
+echo("Distro: " + system.distro())
+echo("Hostname: " + system.hostname())
+echo("Arch: " + system.arch())
+echo("CPU: " + system.cpu_model())
+echo("Cores: " + system.cpu_count())
+echo("Memory: " + system.total_memory_mb() + " MB total, " + system.free_memory_mb() + " MB free")
+echo("Uptime: " + system.uptime_formatted())
+echo("Disk: " + system.disk_usage("/"))
+echo("")
+
+# 2. Process info
+echo("--- Processes ---")
+echo("Top 5 by CPU:")
+echo(process.top_cpu(5))
+echo("")
+
+# 3. Filesystem
+echo("--- Filesystem ---")
+echo("Files in current dir:")
+echo(filesystem.list_only_files("."))
+echo("")
+echo("Dir size: " + filesystem.dir_size("."))
+echo("Disk usage:")
+echo(filesystem.disk_usage_all())
+echo("")
+
+# 4. Network
+echo("--- Network ---")
+echo("Primary IP: " + network.primary_ip())
+echo("Gateway: " + network.gateway())
+echo("DNS: " + network.dns_servers())
+echo("Listening ports:")
+echo(network.listening_ports())
+echo("")
+
+# 5. User
+echo("--- User ---")
+echo("Current user: " + user.current())
+echo("Home: " + user.home())
+echo("Shell: " + user.shell())
+echo("Is root: " + string(user.is_root()))
+echo("Groups: " + user.groups())
+echo("")
+
+# 6. Power
+echo("--- Power ---")
+echo("Battery: " + power.battery_status())
+echo("On AC: " + string(power.on_ac_power()))
+echo("Brightness: " + power.get_brightness())
+echo("")
+
+# 7. Package manager
+echo("--- Package Manager ---")
+echo("Detected: " + package_manager.detect())
+echo("Installed packages count: " + package_manager.count_installed())
+echo("")
+
+# 8. Services
+echo("--- Services ---")
+echo("Init system: " + service.init_system())
+echo("Running services:")
+echo(service.list_running())
+echo("")
+
+# 9. Cron
+echo("--- Cron ---")
+echo("Current crontab:")
+echo(cron.cron_list())
+echo("")
+
+echo("=== Demo Complete ===")
+echo("")
+echo("WARNING: power.shutdown(), power.reboot(), proc.kill() are real operations!")
+echo("         Uncomment them at your own risk.")

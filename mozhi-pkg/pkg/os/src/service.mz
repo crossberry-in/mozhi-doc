@@ -1,0 +1,222 @@
+# ============================================================
+# os — Service Management (v1.0.0)
+# systemd, launchd, init.d, Windows Services
+# Cross-platform: Linux, Windows, macOS, Android
+# ============================================================
+
+# ------------------------------------------------------------
+# Detection
+# ------------------------------------------------------------
+
+fn init_system() {
+    if file_exists("/run/systemd/system") { return "systemd" }
+    if file_exists("/sbin/init") { return "sysvinit" }
+    if file_exists("/usr/sbin/rc-service") { return "openrc" }
+    if file_exists("/System/Library/LaunchDaemons") { return "launchd" }
+    return "unknown"
+}
+
+# ------------------------------------------------------------
+# List Services
+# ------------------------------------------------------------
+
+fn list_all() {
+    init = init_system()
+    if init == "systemd" {
+        return run("systemctl list-units --type=service --all 2>/dev/null")
+    }
+    if init == "openrc" {
+        return run("rc-status 2>/dev/null")
+    }
+    if init == "launchd" {
+        return run("launchctl list 2>/dev/null")
+    }
+    t = _os_type()
+    if t == "windows" {
+        return run("sc query 2>nul")
+    }
+    return "[service] no service manager found"
+}
+
+# List only running services
+fn list_running() {
+    init = init_system()
+    if init == "systemd" {
+        return run("systemctl list-units --type=service --state=running 2>/dev/null")
+    }
+    if init == "openrc" {
+        return run("rc-status --servicelist 2>/dev/null | grep started")
+    }
+    t = _os_type()
+    if t == "windows" {
+        return run("sc query state= active 2>nul")
+    }
+    return "[service] no service manager found"
+}
+
+# List failed services
+fn list_failed() {
+    init = init_system()
+    if init == "systemd" {
+        return run("systemctl --failed 2>/dev/null")
+    }
+    return "[service] failed list not supported"
+}
+
+# ------------------------------------------------------------
+# Service Control
+# ------------------------------------------------------------
+
+fn start(name) {
+    init = init_system()
+    if init == "systemd" {
+        return run("sudo systemctl start " + name + " 2>/dev/null && echo 'started' || echo 'failed'")
+    }
+    if init == "openrc" {
+        return run("sudo rc-service " + name + " start 2>/dev/null")
+    }
+    if init == "launchd" {
+        return run("sudo launchctl start " + name + " 2>/dev/null")
+    }
+    t = _os_type()
+    if t == "windows" {
+        return run("sc start " + name + " 2>nul")
+    }
+    return run("sudo service " + name + " start 2>/dev/null")
+}
+
+fn stop(name) {
+    init = init_system()
+    if init == "systemd" {
+        return run("sudo systemctl stop " + name + " 2>/dev/null && echo 'stopped' || echo 'failed'")
+    }
+    if init == "openrc" {
+        return run("sudo rc-service " + name + " stop 2>/dev/null")
+    }
+    if init == "launchd" {
+        return run("sudo launchctl stop " + name + " 2>/dev/null")
+    }
+    t = _os_type()
+    if t == "windows" {
+        return run("sc stop " + name + " 2>nul")
+    }
+    return run("sudo service " + name + " stop 2>/dev/null")
+}
+
+fn restart(name) {
+    init = init_system()
+    if init == "systemd" {
+        return run("sudo systemctl restart " + name + " 2>/dev/null && echo 'restarted' || echo 'failed'")
+    }
+    if init == "openrc" {
+        return run("sudo rc-service " + name + " restart 2>/dev/null")
+    }
+    t = _os_type()
+    if t == "windows" {
+        return run("sc stop " + name + " 2>nul & sc start " + name + " 2>nul")
+    }
+    return run("sudo service " + name + " restart 2>/dev/null")
+}
+
+fn reload(name) {
+    init = init_system()
+    if init == "systemd" {
+        return run("sudo systemctl reload " + name + " 2>/dev/null")
+    }
+    return run("sudo service " + name + " reload 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Enable/Disable (boot persistence)
+# ------------------------------------------------------------
+
+fn enable(name) {
+    init = init_system()
+    if init == "systemd" {
+        return run("sudo systemctl enable " + name + " 2>/dev/null && echo 'enabled' || echo 'failed'")
+    }
+    return run("sudo update-rc.d " + name + " enable 2>/dev/null")
+}
+
+fn disable(name) {
+    init = init_system()
+    if init == "systemd" {
+        return run("sudo systemctl disable " + name + " 2>/dev/null && echo 'disabled' || echo 'failed'")
+    }
+    return run("sudo update-rc.d " + name + " disable 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Service Status
+# ------------------------------------------------------------
+
+fn status(name) {
+    init = init_system()
+    if init == "systemd" {
+        return run("systemctl status " + name + " 2>/dev/null")
+    }
+    if init == "openrc" {
+        return run("rc-service " + name + " status 2>/dev/null")
+    }
+    t = _os_type()
+    if t == "windows" {
+        return run("sc query " + name + " 2>nul")
+    }
+    return run("service " + name + " status 2>/dev/null")
+}
+
+fn is_active(name) {
+    init = init_system()
+    if init == "systemd" {
+        result = run("systemctl is-active " + name + " 2>/dev/null")
+        return result.trim() == "active"
+    }
+    result = run("service " + name + " status 2>/dev/null | grep running")
+    return result.trim() != ""
+}
+
+fn is_enabled(name) {
+    init = init_system()
+    if init == "systemd" {
+        result = run("systemctl is-enabled " + name + " 2>/dev/null")
+        return result.trim() == "enabled"
+    }
+    return false
+}
+
+# ------------------------------------------------------------
+# Service Logs
+# ------------------------------------------------------------
+
+fn logs(name, lines) {
+    if lines == "" { lines = "50" }
+    init = init_system()
+    if init == "systemd" {
+        return run("journalctl -u " + name + " -n " + string(lines) + " --no-pager 2>/dev/null")
+    }
+    return run("cat /var/log/" + name + ".log 2>/dev/null | tail -" + string(lines))
+}
+
+fn follow_logs(name) {
+    init = init_system()
+    if init == "systemd" {
+        return run("journalctl -u " + name + " -f 2>/dev/null")
+    }
+    return run("tail -f /var/log/" + name + ".log 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Helpers
+# ------------------------------------------------------------
+
+fn _os_type() {
+    result = run("uname -s 2>/dev/null || echo Windows")
+    r = result.trim()
+    if r == "Linux" {
+        if file_exists("/system/build.prop") { return "android" }
+        return "linux"
+    }
+    if r == "Darwin" { return "macos" }
+    if r.contains("Windows") or r.contains("MINGW") { return "windows" }
+    return "linux"
+}

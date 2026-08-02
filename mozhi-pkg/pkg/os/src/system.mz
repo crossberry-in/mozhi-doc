@@ -1,0 +1,290 @@
+# ============================================================
+# os — System Information (v1.0.0)
+# OS detection, hostname, uptime, environment variables
+# Cross-platform: Linux, Windows, macOS, Android/Termux
+# ============================================================
+
+# ------------------------------------------------------------
+# OS Detection
+# ------------------------------------------------------------
+
+# Detect the operating system
+# Returns: "linux", "windows", "macos", "android", "freebsd", "unknown"
+fn os_type() {
+    result = run("uname -s 2>/dev/null || ver 2>nul || echo Windows")
+    r = result.trim()
+    if r == "Linux" {
+        # Check for Android/Termux
+        if file_exists("/system/build.prop") or file_exists("/data/data/com.termux") {
+            return "android"
+        }
+        return "linux"
+    }
+    if r == "Darwin" {
+        return "macos"
+    }
+    if r == "FreeBSD" or r == "OpenBSD" or r == "NetBSD" {
+        return "freebsd"
+    }
+    if r.contains("Windows") or r.contains("MINGW") or r.contains("MSYS") {
+        return "windows"
+    }
+    return "unknown"
+}
+
+# Get OS version/kernel
+fn os_version() {
+    t = os_type()
+    if t == "linux" or t == "android" or t == "freebsd" or t == "macos" {
+        return run("uname -r").trim()
+    }
+    if t == "windows" {
+        return run("cmd /c ver 2>nul").trim()
+    }
+    return "unknown"
+}
+
+# Get OS release info (Linux)
+fn os_release() {
+    if file_exists("/etc/os-release") {
+        return read_file("/etc/os-release")
+    }
+    return run("uname -a").trim()
+}
+
+# Get distribution name (Linux)
+fn distro() {
+    if file_exists("/etc/os-release") {
+        content = read_file("/etc/os-release")
+        lines = content.split("\n")
+        for line in lines {
+            if line.contains("PRETTY_NAME=") {
+                return line.replace("PRETTY_NAME=", "").replace("\"", "").trim()
+            }
+        }
+    }
+    return "unknown"
+}
+
+# Check if running on specific OS
+fn is_linux() { return os_type() == "linux" }
+fn is_windows() { return os_type() == "windows" }
+fn is_macos() { return os_type() == "macos" }
+fn is_android() { return os_type() == "android" }
+fn is_termux() {
+    return file_exists("/data/data/com.termux") or is_env_set("PREFIX") and get_env("PREFIX").contains("com.termux")
+}
+
+# ------------------------------------------------------------
+# Hostname & Architecture
+# ------------------------------------------------------------
+
+fn hostname() {
+    return run("hostname 2>/dev/null || echo unknown").trim()
+}
+
+fn arch() {
+    return run("uname -m 2>/dev/null || echo x86_64").trim()
+}
+
+fn cpu_count() {
+    result = run("nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1")
+    return result.trim()
+}
+
+fn cpu_model() {
+    if file_exists("/proc/cpuinfo") {
+        content = read_file("/proc/cpuinfo")
+        lines = content.split("\n")
+        for line in lines {
+            if line.contains("model name") {
+                parts = line.split(":")
+                if parts.len() >= 2 {
+                    return parts[1].trim()
+                }
+            }
+        }
+    }
+    return run("sysctl -n machdep.cpu.brand_string 2>/dev/null || echo unknown").trim()
+}
+
+# ------------------------------------------------------------
+# Uptime & Load
+# ------------------------------------------------------------
+
+fn uptime_seconds() {
+    if file_exists("/proc/uptime") {
+        content = read_file("/proc/uptime")
+        parts = content.split(" ")
+        return parts[0].trim()
+    }
+    result = run("sysctl -n kern.boottime 2>/dev/null | awk '{print $4}' || echo 0")
+    return result.trim()
+}
+
+fn uptime_formatted() {
+    secs = uptime_seconds()
+    # Parse float to int
+    s = secs * 1
+    days = s / 86400
+    hours = (s % 86400) / 3600
+    mins = (s % 3600) / 60
+    return string(days) + "d " + string(hours) + "h " + string(mins) + "m"
+}
+
+fn load_average() {
+    if file_exists("/proc/loadavg") {
+        return read_file("/proc/loadavg").trim()
+    }
+    return run("sysctl -n vm.loadavg 2>/dev/null || echo 0 0 0").trim()
+}
+
+# ------------------------------------------------------------
+# Memory
+# ------------------------------------------------------------
+
+fn memory_info() {
+    if file_exists("/proc/meminfo") {
+        content = read_file("/proc/meminfo")
+        lines = content.split("\n")
+        result = ""
+        for line in lines {
+            if line.contains("MemTotal") or line.contains("MemFree") or line.contains("MemAvailable") or line.contains("SwapTotal") {
+                result = result + line.trim() + "\n"
+            }
+        }
+        return result.trim()
+    }
+    return run("vm_stat 2>/dev/null || echo unknown").trim()
+}
+
+fn total_memory_mb() {
+    if file_exists("/proc/meminfo") {
+        content = read_file("/proc/meminfo")
+        lines = content.split("\n")
+        for line in lines {
+            if line.contains("MemTotal:") {
+                parts = line.split(":")
+                if parts.len() >= 2 {
+                    val = parts[1].trim().replace(" kB", "")
+                    kb = val * 1
+                    return string(kb / 1024)
+                }
+            }
+        }
+    }
+    return "0"
+}
+
+fn free_memory_mb() {
+    if file_exists("/proc/meminfo") {
+        content = read_file("/proc/meminfo")
+        lines = content.split("\n")
+        for line in lines {
+            if line.contains("MemAvailable:") {
+                parts = line.split(":")
+                if parts.len() >= 2 {
+                    val = parts[1].trim().replace(" kB", "")
+                    kb = val * 1
+                    return string(kb / 1024)
+                }
+            }
+        }
+    }
+    return "0"
+}
+
+# ------------------------------------------------------------
+# Disk
+# ------------------------------------------------------------
+
+fn disk_usage(path) {
+    if path == "" {
+        path = "/"
+    }
+    return run("df -h '" + path + "' 2>/dev/null | tail -1").trim()
+}
+
+fn disk_free(path) {
+    if path == "" {
+        path = "/"
+    }
+    return run("df -h '" + path + "' 2>/dev/null | tail -1 | awk '{print $4}'").trim()
+}
+
+fn disk_total(path) {
+    if path == "" {
+        path = "/"
+    }
+    return run("df -h '" + path + "' 2>/dev/null | tail -1 | awk '{print $2}'").trim()
+}
+
+# ------------------------------------------------------------
+# Environment Variables
+# ------------------------------------------------------------
+
+fn get_env(name) {
+    result = run("echo $" + name)
+    return result.trim()
+}
+
+fn set_env(name, value) {
+    # Can't persist env vars across processes, but can export for child processes
+    return "[os] env vars are per-process; use 'export " + name + "=" + value + "' in your shell"
+}
+
+fn is_env_set(name) {
+    result = run("echo $" + name)
+    return result.trim() != ""
+}
+
+fn all_env() {
+    return run("env 2>/dev/null || set 2>/dev/null").trim()
+}
+
+fn path_separator() {
+    if is_windows() {
+        return ";"
+    }
+    return ":"
+}
+
+fn home_dir() {
+    return get_env("HOME")
+}
+
+fn temp_dir() {
+    if is_windows() {
+        return get_env("TEMP")
+    }
+    return "/tmp"
+}
+
+fn current_shell() {
+    return get_env("SHELL")
+}
+
+fn user_lang() {
+    return get_env("LANG")
+}
+
+# ------------------------------------------------------------
+# System Summary
+# ------------------------------------------------------------
+
+fn system_info() {
+    info = "=== System Information ===\n"
+    info = info + "OS: " + os_type() + " " + os_version() + "\n"
+    info = info + "Distro: " + distro() + "\n"
+    info = info + "Hostname: " + hostname() + "\n"
+    info = info + "Arch: " + arch() + "\n"
+    info = info + "CPU: " + cpu_model() + "\n"
+    info = info + "CPU cores: " + cpu_count() + "\n"
+    info = info + "Memory: " + total_memory_mb() + " MB total, " + free_memory_mb() + " MB free\n"
+    info = info + "Uptime: " + uptime_formatted() + "\n"
+    info = info + "Load: " + load_average() + "\n"
+    info = info + "Disk: " + disk_usage("/") + "\n"
+    info = info + "Shell: " + current_shell() + "\n"
+    info = info + "Home: " + home_dir()
+    return info
+}

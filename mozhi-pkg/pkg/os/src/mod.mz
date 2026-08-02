@@ -1,0 +1,152 @@
+# ============================================================
+# os — Main Module (v1.0.0)
+# Re-exports all OS control modules
+# ============================================================
+
+import system from "system.mz"
+import process from "process.mz"
+import filesystem from "filesystem.mz"
+import network from "network.mz"
+import user from "user.mz"
+import power from "power.mz"
+import package_manager from "package_manager.mz"
+import service from "service.mz"
+import cron from "cron.mz"
+
+# ------------------------------------------------------------
+# System (re-export key functions)
+# ------------------------------------------------------------
+
+fn os_type() { return system.os_type() }
+fn os_version() { return system.os_version() }
+fn distro() { return system.distro() }
+fn hostname() { return system.hostname() }
+fn arch() { return system.arch() }
+fn cpu_count() { return system.cpu_count() }
+fn cpu_model() { return system.cpu_model() }
+fn uptime_seconds() { return system.uptime_seconds() }
+fn uptime_formatted() { return system.uptime_formatted() }
+fn total_memory_mb() { return system.total_memory_mb() }
+fn free_memory_mb() { return system.free_memory_mb() }
+fn disk_usage(path) { return system.disk_usage(path) }
+fn get_env(name) { return system.get_env(name) }
+fn home_dir() { return system.home_dir() }
+fn temp_dir() { return system.temp_dir() }
+fn system_info() { return system.system_info() }
+fn is_linux() { return system.is_linux() }
+fn is_windows() { return system.is_windows() }
+fn is_macos() { return system.is_macos() }
+fn is_android() { return system.is_android() }
+
+# ------------------------------------------------------------
+# Process
+# ------------------------------------------------------------
+
+fn proc_list() { return process.list() }
+fn proc_pid_of(name) { return process.pid_of(name) }
+fn proc_kill(pid) { return process.kill(pid) }
+fn proc_kill_all(name) { return process.kill_all(name) }
+fn proc_spawn(cmd) { return process.spawn(cmd) }
+fn proc_exec(cmd) { return process.exec(cmd) }
+fn proc_top_cpu(n) { return process.top_cpu(n) }
+fn proc_top_memory(n) { return process.top_memory(n) }
+fn proc_is_running(name) { return process.is_running(name) }
+
+# ------------------------------------------------------------
+# Filesystem
+# ------------------------------------------------------------
+
+fn fs_mkdir(path) { return filesystem.mkdir(path) }
+fn fs_copy(src, dst) { return filesystem.copy(src, dst) }
+fn fs_move(src, dst) { return filesystem.move(src, dst) }
+fn fs_delete(path) { return filesystem.delete(path) }
+fn fs_walk(path) { return filesystem.walk(path) }
+fn fs_list_files(path) { return filesystem.list_only_files(path) }
+fn fs_list_dirs(path) { return filesystem.list_dirs(path) }
+fn fs_file_size(path) { return filesystem.file_size(path) }
+fn fs_chmod(path, mode) { return filesystem.chmod(path, mode) }
+fn fs_is_dir(path) { return filesystem.is_dir(path) }
+fn fs_is_file(path) { return filesystem.is_file(path) }
+fn fs_find(path, pattern) { return filesystem.find(path, pattern) }
+fn fs_dir_size(path) { return filesystem.dir_size(path) }
+fn fs_disk_usage_all() { return filesystem.disk_usage_all() }
+
+# ------------------------------------------------------------
+# Network
+# ------------------------------------------------------------
+
+fn net_interfaces() { return network.interfaces() }
+fn net_primary_ip() { return network.primary_ip() }
+fn net_mac_address(iface) { return network.mac_address(iface) }
+fn net_gateway() { return network.gateway() }
+fn net_dns_servers() { return network.dns_servers() }
+fn net_ping(host, count) { return network.ping(host, count) }
+fn net_port_open(host, port) { return network.port_open(host, port) }
+fn net_port_scan(host) { return network.port_scan(host) }
+fn net_listening_ports() { return network.listening_ports() }
+fn net_connections() { return network.connections() }
+fn net_download(url, output) { return network.download(url, output) }
+
+# ------------------------------------------------------------
+# User
+# ------------------------------------------------------------
+
+fn user_current() { return user.current() }
+fn user_home() { return user.home() }
+fn user_shell() { return user.shell() }
+fn user_is_root() { return user.is_root() }
+fn user_groups() { return user.groups() }
+fn user_list_users() { return user.list_users() }
+fn user_logged_in() { return user.logged_in() }
+
+# ------------------------------------------------------------
+# Power
+# ------------------------------------------------------------
+
+fn power_shutdown() { return power.shutdown() }
+fn power_reboot() { return power.reboot() }
+fn power_sleep() { return power.sleep() }
+fn power_hibernate() { return power.hibernate() }
+fn power_lock_screen() { return power.lock_screen() }
+fn power_battery_status() { return power.battery_status() }
+fn power_battery_percent() { return power.battery_percent() }
+fn power_on_ac() { return power.on_ac_power() }
+fn power_get_brightness() { return power.get_brightness() }
+fn power_set_brightness(pct) { return power.set_brightness(pct) }
+
+# ------------------------------------------------------------
+# Package Manager
+# ------------------------------------------------------------
+
+fn pkg_detect() { return package_manager.detect() }
+fn pkg_install(name) { return package_manager.install(name) }
+fn pkg_remove(name) { return package_manager.remove(name) }
+fn pkg_update() { return package_manager.update() }
+fn pkg_search(query) { return package_manager.search(query) }
+fn pkg_list_installed() { return package_manager.list_installed() }
+fn pkg_is_installed(name) { return package_manager.is_installed(name) }
+fn pkg_autoremove() { return package_manager.autoremove() }
+
+# ------------------------------------------------------------
+# Service
+# ------------------------------------------------------------
+
+fn svc_list() { return service.list_all() }
+fn svc_start(name) { return service.start(name) }
+fn svc_stop(name) { return service.stop(name) }
+fn svc_restart(name) { return service.restart(name) }
+fn svc_status(name) { return service.status(name) }
+fn svc_enable(name) { return service.enable(name) }
+fn svc_disable(name) { return service.disable(name) }
+fn svc_logs(name, lines) { return service.logs(name, lines) }
+
+# ------------------------------------------------------------
+# Cron
+# ------------------------------------------------------------
+
+fn cron_list() { return cron.cron_list() }
+fn cron_add(schedule, cmd) { return cron.cron_add(schedule, cmd) }
+fn cron_clear() { return cron.cron_clear() }
+fn cron_every_minutes(n, cmd) { return cron.every_minutes(n, cmd) }
+fn cron_daily_at(h, m, cmd) { return cron.daily_at(h, m, cmd) }
+fn cron_on_boot(cmd) { return cron.on_boot(cmd) }

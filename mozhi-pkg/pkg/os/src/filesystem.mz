@@ -1,0 +1,365 @@
+# ============================================================
+# os — Filesystem Operations (v1.0.0)
+# Walk, copy, move, delete, mkdir, chmod, permissions
+# Cross-platform: Linux, Windows, macOS, Android
+# ============================================================
+
+# ------------------------------------------------------------
+# Directory Operations
+# ------------------------------------------------------------
+
+# Create directory (recursive)
+fn mkdir(path) {
+    t = _os_type()
+    if t == "windows" {
+        return run("mkdir \"" + path + "\" 2>nul && echo 'created' || echo 'exists'")
+    }
+    return run("mkdir -p '" + path + "' 2>/dev/null && echo 'created' || echo 'exists'")
+}
+
+# Remove directory
+fn rmdir(path) {
+    t = _os_type()
+    if t == "windows" {
+        return run("rmdir \"" + path + "\" 2>nul && echo 'removed' || echo 'failed'")
+    }
+    return run("rmdir '" + path + "' 2>/dev/null && echo 'removed' || echo 'failed'")
+}
+
+# Remove directory recursively
+fn remove_dir_recursive(path) {
+    t = _os_type()
+    if t == "windows" {
+        return run("rmdir /s /q \"" + path + "\" 2>nul && echo 'removed' || echo 'failed'")
+    }
+    return run("rm -rf '" + path + "' 2>/dev/null && echo 'removed' || echo 'failed'")
+}
+
+# ------------------------------------------------------------
+# File Operations
+# ------------------------------------------------------------
+
+# Copy a file
+fn copy(src, dst) {
+    t = _os_type()
+    if t == "windows" {
+        return run("copy \"" + src + "\" \"" + dst + "\" 2>nul && echo 'copied' || echo 'failed'")
+    }
+    return run("cp '" + src + "' '" + dst + "' 2>/dev/null && echo 'copied' || echo 'failed'")
+}
+
+# Copy a directory recursively
+fn copy_dir(src, dst) {
+    t = _os_type()
+    if t == "windows" {
+        return run("xcopy \"" + src + "\" \"" + dst + "\" /E /I /Y 2>nul && echo 'copied' || echo 'failed'")
+    }
+    return run("cp -r '" + src + "' '" + dst + "' 2>/dev/null && echo 'copied' || echo 'failed'")
+}
+
+# Move/rename a file or directory
+fn move(src, dst) {
+    t = _os_type()
+    if t == "windows" {
+        return run("move \"" + src + "\" \"" + dst + "\" 2>nul && echo 'moved' || echo 'failed'")
+    }
+    return run("mv '" + src + "' '" + dst + "' 2>/dev/null && echo 'moved' || echo 'failed'")
+}
+
+# Delete a file
+fn delete(path) {
+    t = _os_type()
+    if t == "windows" {
+        return run("del \"" + path + "\" 2>nul && echo 'deleted' || echo 'failed'")
+    }
+    return run("rm -f '" + path + "' 2>/dev/null && echo 'deleted' || echo 'failed'")
+}
+
+# Touch a file (create if not exists, update timestamp)
+fn touch(path) {
+    t = _os_type()
+    if t == "windows" {
+        return run("type nul > \"" + path + "\" 2>nul && echo 'touched' || echo 'failed'")
+    }
+    return run("touch '" + path + "' 2>/dev/null && echo 'touched' || echo 'failed'")
+}
+
+# ------------------------------------------------------------
+# File Information
+# ------------------------------------------------------------
+
+# Get file size in bytes
+fn file_size(path) {
+    t = _os_type()
+    if t == "windows" {
+        result = run("dir \"" + path + "\" 2>nul | findstr bytes")
+        return result.trim()
+    }
+    return run("stat -c %s '" + path + "' 2>/dev/null || wc -c < '" + path + "'").trim()
+}
+
+# Get file permissions (octal, e.g. "755")
+fn file_mode(path) {
+    t = _os_type()
+    if t == "windows" {
+        return "N/A (Windows)"
+    }
+    return run("stat -c %a '" + path + "' 2>/dev/null || stat -f %Lp '" + path + "' 2>/dev/null").trim()
+}
+
+# Get file owner
+fn file_owner(path) {
+    t = _os_type()
+    if t == "windows" {
+        return "N/A (Windows)"
+    }
+    return run("stat -c %U '" + path + "' 2>/dev/null || echo unknown").trim()
+}
+
+# Get file modification time
+fn file_mtime(path) {
+    t = _os_type()
+    if t == "windows" {
+        return run("dir \"" + path + "\" 2>nul").trim()
+    }
+    return run("stat -c %y '" + path + "' 2>/dev/null || echo unknown").trim()
+}
+
+# Check if path is a directory
+fn is_dir(path) {
+    t = _os_type()
+    if t == "windows" {
+        result = run("if exist \"" + path + "\\\*\" (echo true) else (echo false)")
+        return result.trim() == "true"
+    }
+    result = run("test -d '" + path + "' && echo true || echo false")
+    return result.trim() == "true"
+}
+
+# Check if path is a file
+fn is_file(path) {
+    t = _os_type()
+    if t == "windows" {
+        result = run("if exist \"" + path + "\" (echo true) else (echo false)")
+        return result.trim() == "true"
+    }
+    result = run("test -f '" + path + "' && echo true || echo false")
+    return result.trim() == "true"
+}
+
+# Check if file is executable
+fn is_executable(path) {
+    result = run("test -x '" + path + "' && echo true || echo false")
+    return result.trim() == "true"
+}
+
+# Check if file is symlink
+fn is_symlink(path) {
+    result = run("test -L '" + path + "' && echo true || echo false")
+    return result.trim() == "true"
+}
+
+# ------------------------------------------------------------
+# Permissions
+# ------------------------------------------------------------
+
+# Change file permissions
+fn chmod(path, mode) {
+    t = _os_type()
+    if t == "windows" {
+        return "[fs] chmod not supported on Windows"
+    }
+    return run("chmod " + string(mode) + " '" + path + "' 2>/dev/null && echo 'changed' || echo 'failed'")
+}
+
+# Make file executable
+fn make_executable(path) {
+    return chmod(path, "755")
+}
+
+# Change owner (requires root)
+fn chown(path, owner, group) {
+    t = _os_type()
+    if t == "windows" {
+        return "[fs] chown not supported on Windows"
+    }
+    return run("chown " + owner + ":" + group + " '" + path + "' 2>/dev/null && echo 'changed' || echo 'failed'")
+}
+
+# ------------------------------------------------------------
+# Directory Walking
+# ------------------------------------------------------------
+
+# List files in a directory (names only)
+fn list_files(path) {
+    if path == "" { path = "." }
+    return list_dir(path)
+}
+
+# List only files (not directories) in a path
+fn list_only_files(path) {
+    if path == "" { path = "." }
+    t = _os_type()
+    if t == "windows" {
+        return run("dir /b /a-d \"" + path + "\" 2>nul")
+    }
+    return run("find '" + path + "' -maxdepth 1 -type f -exec basename {} \\; 2>/dev/null")
+}
+
+# List only subdirectories
+fn list_dirs(path) {
+    if path == "" { path = "." }
+    t = _os_type()
+    if t == "windows" {
+        return run("dir /b /ad \"" + path + "\" 2>nul")
+    }
+    return run("find '" + path + "' -maxdepth 1 -type d -exec basename {} \\; 2>/dev/null | grep -v '^\\.$'")
+}
+
+# Walk directory tree (find all files recursively)
+fn walk(path) {
+    if path == "" { path = "." }
+    t = _os_type()
+    if t == "windows" {
+        return run("dir /s /b \"" + path + "\" 2>nul")
+    }
+    return run("find '" + path + "' -type f 2>/dev/null")
+}
+
+# Walk directory tree (directories only)
+fn walk_dirs(path) {
+    if path == "" { path = "." }
+    return run("find '" + path + "' -type d 2>/dev/null")
+}
+
+# Count files in a directory tree
+fn count_files(path) {
+    if path == "" { path = "." }
+    result = run("find '" + path + "' -type f 2>/dev/null | wc -l")
+    return result.trim()
+}
+
+# Count directories in a tree
+fn count_dirs(path) {
+    if path == "" { path = "." }
+    result = run("find '" + path + "' -type d 2>/dev/null | wc -l")
+    return result.trim()
+}
+
+# ------------------------------------------------------------
+# Disk Usage
+# ------------------------------------------------------------
+
+# Directory size (du)
+fn dir_size(path) {
+    if path == "" { path = "." }
+    return run("du -sh '" + path + "' 2>/dev/null | awk '{print $1}'").trim()
+}
+
+# Disk usage of all mounted filesystems
+fn disk_usage_all() {
+    t = _os_type()
+    if t == "windows" {
+        return run("wmic logicaldisk get size,freespace,caption 2>nul")
+    }
+    return run("df -h 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Path Operations
+# ------------------------------------------------------------
+
+# Get absolute path
+fn abs_path(path) {
+    t = _os_type()
+    if t == "windows" {
+        return run("cd \"" + path + "\" && cd").trim()
+    }
+    return run("cd '" + path + "' 2>/dev/null && pwd || realpath '" + path + "' 2>/dev/null").trim()
+}
+
+# Get parent directory
+fn dirname(path) {
+    return run("dirname '" + path + "' 2>/dev/null").trim()
+}
+
+# Get filename from path
+fn basename(path) {
+    return run("basename '" + path + "' 2>/dev/null").trim()
+}
+
+# Get file extension
+fn extension(path) {
+    result = run("echo '" + path + "' | sed 's/.*\\.//'")
+    r = result.trim()
+    if r == path {
+        return ""
+    }
+    return r
+}
+
+# Join path components
+fn join(a, b) {
+    t = _os_type()
+    sep = "/"
+    if t == "windows" {
+        sep = "\\"
+    }
+    if a == "" { return b }
+    if b == "" { return a }
+    if a.ends_with(sep) {
+        return a + b
+    }
+    return a + sep + b
+}
+
+# ------------------------------------------------------------
+# Symlinks
+# ------------------------------------------------------------
+
+fn symlink(target, link_name) {
+    t = _os_type()
+    if t == "windows" {
+        return "[fs] symlink not supported on Windows (use mklink)"
+    }
+    return run("ln -s '" + target + "' '" + link_name + "' 2>/dev/null && echo 'linked' || echo 'failed'")
+}
+
+fn readlink(path) {
+    return run("readlink -f '" + path + "' 2>/dev/null").trim()
+}
+
+# ------------------------------------------------------------
+# Search
+# ------------------------------------------------------------
+
+# Find files by name pattern
+fn find(path, pattern) {
+    if path == "" { path = "." }
+    return run("find '" + path + "' -name '" + pattern + "' -type f 2>/dev/null")
+}
+
+# Find files modified in last N days
+fn find_recent(path, days) {
+    if path == "" { path = "." }
+    return run("find '" + path + "' -type f -mtime -" + string(days) + " 2>/dev/null")
+}
+
+# Find large files (> size MB)
+fn find_large(path, size_mb) {
+    if path == "" { path = "." }
+    return run("find '" + path + "' -type f -size +" + string(size_mb) + "M 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Helpers
+# ------------------------------------------------------------
+
+fn _os_type() {
+    result = run("uname -s 2>/dev/null || echo Windows")
+    r = result.trim()
+    if r == "Linux" { return "linux" }
+    if r == "Darwin" { return "macos" }
+    if r.contains("Windows") or r.contains("MINGW") { return "windows" }
+    return "linux"
+}

@@ -1,0 +1,369 @@
+# ============================================================
+# os — Package Manager (v1.0.0)
+# Detect and control system package managers
+# Linux: apt, dnf, pacman, zypper, apk, emerge
+# macOS: brew, ports
+# Windows: winget, choco, scoop
+# Android: pkg (Termux), pm
+# ============================================================
+
+# ------------------------------------------------------------
+# Detection
+# ------------------------------------------------------------
+
+# Detect the system package manager
+fn detect() {
+    # Linux
+    if file_exists("/usr/bin/apt") or file_exists("/usr/bin/apt-get") { return "apt" }
+    if file_exists("/usr/bin/dnf") { return "dnf" }
+    if file_exists("/usr/bin/yum") { return "yum" }
+    if file_exists("/usr/bin/pacman") { return "pacman" }
+    if file_exists("/usr/bin/zypper") { return "zypper" }
+    if file_exists("/sbin/apk") or file_exists("/usr/sbin/apk") { return "apk" }
+    if file_exists("/usr/bin/emerge") { return "portage" }
+    if file_exists("/usr/bin/xbps-install") { return "xbps" }
+    if file_exists("/usr/bin/slackpkg") { return "slackpkg" }
+    # macOS
+    if file_exists("/usr/local/bin/brew") or file_exists("/opt/homebrew/bin/brew") { return "brew" }
+    if file_exists("/opt/local/bin/port") { return "ports" }
+    # Windows
+    result = run("where winget 2>nul")
+    if result.trim() != "" { return "winget" }
+    result = run("where choco 2>nul")
+    if result.trim() != "" { return "choco" }
+    result = run("where scoop 2>nul")
+    if result.trim() != "" { return "scoop" }
+    # Android/Termux
+    if file_exists("/data/data/com.termux/files/usr/bin/pkg") { return "pkg" }
+    return "unknown"
+}
+
+# Check if a package manager is available
+fn has(name) {
+    result = run("which " + name + " 2>/dev/null || where " + name + " 2>nul")
+    return result.trim() != ""
+}
+
+# ------------------------------------------------------------
+# Install
+# ------------------------------------------------------------
+
+fn install(pkg_name) {
+    pm = detect()
+    if pm == "apt" {
+        return run("sudo apt-get install -y " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "dnf" {
+        return run("sudo dnf install -y " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "yum" {
+        return run("sudo yum install -y " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "pacman" {
+        return run("sudo pacman -S --noconfirm " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "zypper" {
+        return run("sudo zypper install -y " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "apk" {
+        return run("sudo apk add " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "brew" {
+        return run("brew install " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "winget" {
+        return run("winget install " + pkg_name + " 2>nul")
+    }
+    if pm == "choco" {
+        return run("choco install " + pkg_name + " -y 2>nul")
+    }
+    if pm == "scoop" {
+        return run("scoop install " + pkg_name + " 2>nul")
+    }
+    if pm == "pkg" {
+        return run("pkg install -y " + pkg_name + " 2>/dev/null")
+    }
+    return "[pkg] unknown package manager"
+}
+
+# Install multiple packages
+fn install_many(pkg_names) {
+    pm = detect()
+    joined = ""
+    for p in pkg_names {
+        joined = joined + p + " "
+    }
+    return install(joined.trim())
+}
+
+# ------------------------------------------------------------
+# Remove
+# ------------------------------------------------------------
+
+fn remove(pkg_name) {
+    pm = detect()
+    if pm == "apt" {
+        return run("sudo apt-get remove -y " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "dnf" or pm == "yum" {
+        return run("sudo dnf remove -y " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "pacman" {
+        return run("sudo pacman -R --noconfirm " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "zypper" {
+        return run("sudo zypper remove -y " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "apk" {
+        return run("sudo apk del " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "brew" {
+        return run("brew uninstall " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "winget" {
+        return run("winget uninstall " + pkg_name + " 2>nul")
+    }
+    if pm == "choco" {
+        return run("choco uninstall " + pkg_name + " -y 2>nul")
+    }
+    if pm == "pkg" {
+        return run("pkg uninstall -y " + pkg_name + " 2>/dev/null")
+    }
+    return "[pkg] unknown package manager"
+}
+
+# ------------------------------------------------------------
+# Update
+# ------------------------------------------------------------
+
+fn update() {
+    pm = detect()
+    if pm == "apt" {
+        return run("sudo apt-get update 2>/dev/null && sudo apt-get upgrade -y 2>/dev/null")
+    }
+    if pm == "dnf" {
+        return run("sudo dnf upgrade -y 2>/dev/null")
+    }
+    if pm == "yum" {
+        return run("sudo yum update -y 2>/dev/null")
+    }
+    if pm == "pacman" {
+        return run("sudo pacman -Syu --noconfirm 2>/dev/null")
+    }
+    if pm == "zypper" {
+        return run("sudo zypper update -y 2>/dev/null")
+    }
+    if pm == "apk" {
+        return run("sudo apk update 2>/dev/null && sudo apk upgrade 2>/dev/null")
+    }
+    if pm == "brew" {
+        return run("brew update 2>/dev/null && brew upgrade 2>/dev/null")
+    }
+    if pm == "winget" {
+        return run("winget upgrade --all 2>nul")
+    }
+    if pm == "choco" {
+        return run("choco upgrade all -y 2>nul")
+    }
+    if pm == "pkg" {
+        return run("pkg update -y 2>/dev/null && pkg upgrade -y 2>/dev/null")
+    }
+    return "[pkg] unknown package manager"
+}
+
+# Refresh package lists only (no upgrade)
+fn refresh() {
+    pm = detect()
+    if pm == "apt" {
+        return run("sudo apt-get update 2>/dev/null")
+    }
+    if pm == "dnf" or pm == "yum" {
+        return run("sudo dnf makecache 2>/dev/null")
+    }
+    if pm == "pacman" {
+        return run("sudo pacman -Sy 2>/dev/null")
+    }
+    if pm == "apk" {
+        return run("sudo apk update 2>/dev/null")
+    }
+    if pm == "brew" {
+        return run("brew update 2>/dev/null")
+    }
+    return "[pkg] refresh not supported for " + pm
+}
+
+# ------------------------------------------------------------
+# Search
+# ------------------------------------------------------------
+
+fn search(query) {
+    pm = detect()
+    if pm == "apt" {
+        return run("apt-cache search " + query + " 2>/dev/null")
+    }
+    if pm == "dnf" {
+        return run("dnf search " + query + " 2>/dev/null")
+    }
+    if pm == "pacman" {
+        return run("pacman -Ss " + query + " 2>/dev/null")
+    }
+    if pm == "zypper" {
+        return run("zypper search " + query + " 2>/dev/null")
+    }
+    if pm == "apk" {
+        return run("apk search " + query + " 2>/dev/null")
+    }
+    if pm == "brew" {
+        return run("brew search " + query + " 2>/dev/null")
+    }
+    if pm == "winget" {
+        return run("winget search " + query + " 2>nul")
+    }
+    if pm == "choco" {
+        return run("choco search " + query + " 2>nul")
+    }
+    if pm == "pkg" {
+        return run("pkg search " + query + " 2>/dev/null")
+    }
+    return "[pkg] search not supported for " + pm
+}
+
+# ------------------------------------------------------------
+# Package Info
+# ------------------------------------------------------------
+
+fn info(pkg_name) {
+    pm = detect()
+    if pm == "apt" {
+        return run("apt-cache show " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "dnf" {
+        return run("dnf info " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "pacman" {
+        return run("pacman -Si " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "apk" {
+        return run("apk info " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "brew" {
+        return run("brew info " + pkg_name + " 2>/dev/null")
+    }
+    if pm == "winget" {
+        return run("winget show " + pkg_name + " 2>nul")
+    }
+    return "[pkg] info not supported for " + pm
+}
+
+# ------------------------------------------------------------
+# List
+# ------------------------------------------------------------
+
+# List installed packages
+fn list_installed() {
+    pm = detect()
+    if pm == "apt" {
+        return run("dpkg -l 2>/dev/null | tail -n +6 | awk '{print $2, $3}'")
+    }
+    if pm == "dnf" or pm == "yum" {
+        return run("rpm -qa --queryformat '%{NAME} %{VERSION}\\n' 2>/dev/null")
+    }
+    if pm == "pacman" {
+        return run("pacman -Q 2>/dev/null")
+    }
+    if pm == "apk" {
+        return run("apk list --installed 2>/dev/null")
+    }
+    if pm == "brew" {
+        return run("brew list --versions 2>/dev/null")
+    }
+    if pm == "winget" {
+        return run("winget list 2>nul")
+    }
+    if pm == "choco" {
+        return run("choco list 2>nul")
+    }
+    if pm == "pkg" {
+        return run("pkg list-installed 2>/dev/null")
+    }
+    return "[pkg] list not supported for " + pm
+}
+
+# Check if a package is installed
+fn is_installed(pkg_name) {
+    pm = detect()
+    if pm == "apt" {
+        result = run("dpkg -s " + pkg_name + " 2>/dev/null | grep 'Status: install'")
+        return result.trim() != ""
+    }
+    if pm == "dnf" or pm == "yum" {
+        result = run("rpm -q " + pkg_name + " 2>/dev/null")
+        return not result.contains("not installed")
+    }
+    if pm == "pacman" {
+        result = run("pacman -Q " + pkg_name + " 2>/dev/null")
+        return result.trim() != ""
+    }
+    if pm == "brew" {
+        result = run("brew list " + pkg_name + " 2>/dev/null")
+        return result.trim() != ""
+    }
+    if pm == "pkg" {
+        result = run("pkg list-installed 2>/dev/null | grep '" + pkg_name + "'")
+        return result.trim() != ""
+    }
+    # Generic: search list
+    result = list_installed()
+    return result.contains(pkg_name)
+}
+
+# Count installed packages
+fn count_installed() {
+    result = list_installed()
+    lines = result.split("\n")
+    return string(lines.len())
+}
+
+# ------------------------------------------------------------
+# Cleanup
+# ------------------------------------------------------------
+
+fn autoremove() {
+    pm = detect()
+    if pm == "apt" {
+        return run("sudo apt-get autoremove -y 2>/dev/null")
+    }
+    if pm == "dnf" {
+        return run("sudo dnf autoremove -y 2>/dev/null")
+    }
+    if pm == "pacman" {
+        return run("sudo pacman -Rns $(pacman -Qdtq) 2>/dev/null")
+    }
+    if pm == "apk" {
+        return run("sudo apk cache clean 2>/dev/null")
+    }
+    if pm == "brew" {
+        return run("brew cleanup 2>/dev/null")
+    }
+    return "[pkg] autoremove not supported for " + pm
+}
+
+fn clean_cache() {
+    pm = detect()
+    if pm == "apt" {
+        return run("sudo apt-get clean 2>/dev/null && sudo apt-get autoclean 2>/dev/null")
+    }
+    if pm == "dnf" {
+        return run("sudo dnf clean all 2>/dev/null")
+    }
+    if pm == "pacman" {
+        return run("sudo pacman -Sc --noconfirm 2>/dev/null")
+    }
+    if pm == "apk" {
+        return run("sudo apk cache clean 2>/dev/null")
+    }
+    if pm == "brew" {
+        return run("brew cleanup -s 2>/dev/null")
+    }
+    return "[pkg] clean not supported for " + pm
+}

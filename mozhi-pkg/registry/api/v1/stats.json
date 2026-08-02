@@ -1,7 +1,7 @@
 {
-  "total_packages": 13,
-  "total_modules": 17,
-  "total_exports": 173,
+  "total_packages": 14,
+  "total_modules": 27,
+  "total_exports": 198,
   "categories": {
     "data": 2,
     "crypto": 1,
@@ -9,7 +9,8 @@
     "science": 1,
     "web": 3,
     "math": 1,
+    "os": 1,
     "text": 2
   },
-  "updated": "2026-08-02T20:08:39Z"
+  "updated": "2026-08-02T20:19:13Z"
 }

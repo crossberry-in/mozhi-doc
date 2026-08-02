@@ -1,0 +1,175 @@
+# ============================================================
+# os — Scheduled Tasks / Cron (v1.0.0)
+# Crontab, at jobs, systemd timers, Windows Task Scheduler
+# Cross-platform: Linux, Windows, macOS
+# ============================================================
+
+# ------------------------------------------------------------
+# Cron Jobs (Linux/macOS)
+# ------------------------------------------------------------
+
+# List current user's crontab
+fn cron_list() {
+    return run("crontab -l 2>/dev/null || echo 'no crontab'")
+}
+
+# Add a cron job
+# schedule format: "*/5 * * * *" (minute hour day month weekday)
+fn cron_add(schedule, command) {
+    # Append to existing crontab
+    existing = run("crontab -l 2>/dev/null")
+    new_entry = schedule + " " + command
+    # Write to temp file
+    write_file("/tmp/.mozhi_crontab", existing + new_entry + "\n")
+    return run("crontab /tmp/.mozhi_crontab 2>/dev/null && echo 'added' || echo 'failed'")
+}
+
+# Remove all cron jobs
+fn cron_clear() {
+    return run("crontab -r 2>/dev/null && echo 'cleared' || echo 'no crontab'")
+}
+
+# Remove a specific cron job (by matching command)
+fn cron_remove(command) {
+    existing = run("crontab -l 2>/dev/null")
+    lines = existing.split("\n")
+    new_lines = ""
+    for line in lines {
+        if not line.contains(command) {
+            new_lines = new_lines + line + "\n"
+        }
+    }
+    write_file("/tmp/.mozhi_crontab", new_lines)
+    return run("crontab /tmp/.mozhi_crontab 2>/dev/null && echo 'removed' || echo 'failed'")
+}
+
+# ------------------------------------------------------------
+# AT Jobs (one-time scheduled commands)
+# ------------------------------------------------------------
+
+# Schedule a command to run at a specific time
+# time format: "now + 5 min", "10:30", "tomorrow"
+fn at(command, time_str) {
+    return run("echo '" + command + "' | at " + time_str + " 2>/dev/null && echo 'scheduled' || echo 'at not available'")
+}
+
+# List pending at jobs
+fn at_list() {
+    return run("atq 2>/dev/null || echo 'no at jobs'")
+}
+
+# Cancel an at job by ID
+fn at_remove(job_id) {
+    return run("atrm " + string(job_id) + " 2>/dev/null && echo 'removed' || echo 'failed'")
+}
+
+# ------------------------------------------------------------
+# Systemd Timers (Linux with systemd)
+# ------------------------------------------------------------
+
+fn timer_list() {
+    if file_exists("/run/systemd/system") {
+        return run("systemctl list-timers --all 2>/dev/null")
+    }
+    return "[cron] systemd not available"
+}
+
+fn timer_start(name) {
+    return run("sudo systemctl start " + name + ".timer 2>/dev/null && echo 'started' || echo 'failed'")
+}
+
+fn timer_enable(name) {
+    return run("sudo systemctl enable " + name + ".timer 2>/dev/null && echo 'enabled' || echo 'failed'")
+}
+
+fn timer_status(name) {
+    return run("systemctl status " + name + ".timer 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Windows Task Scheduler
+# ------------------------------------------------------------
+
+fn task_create(name, command, schedule) {
+    t = _os_type()
+    if t == "windows" {
+        return run("schtasks /create /tn \"" + name + "\" /tr \"" + command + "\" /sc " + schedule + " /f 2>nul")
+    }
+    return "[cron] Windows task scheduler not available on this OS"
+}
+
+fn task_delete(name) {
+    t = _os_type()
+    if t == "windows" {
+        return run("schtasks /delete /tn \"" + name + "\" /f 2>nul")
+    }
+    return "[cron] not available"
+}
+
+fn task_list() {
+    t = _os_type()
+    if t == "windows" {
+        return run("schtasks /query 2>nul")
+    }
+    return cron_list()
+}
+
+fn task_run(name) {
+    t = _os_type()
+    if t == "windows" {
+        return run("schtasks /run /tn \"" + name + "\" 2>nul")
+    }
+    return "[cron] not available"
+}
+
+# ------------------------------------------------------------
+# Common Schedule Helpers
+# ------------------------------------------------------------
+
+# Run every N minutes
+fn every_minutes(n, command) {
+    return cron_add("*/" + string(n) + " * * * *", command)
+}
+
+# Run every N hours
+fn every_hours(n, command) {
+    return cron_add("0 */" + string(n) + " * * *", command)
+}
+
+# Run daily at a specific time
+fn daily_at(hour, minute, command) {
+    return cron_add(string(minute) + " " + string(hour) + " * * *", command)
+}
+
+# Run weekly on a specific day (0=Sunday, 1=Monday, ...)
+fn weekly_on(day, hour, minute, command) {
+    return cron_add(string(minute) + " " + string(hour) + " * * " + string(day), command)
+}
+
+# Run monthly on day 1
+fn monthly_at(hour, minute, command) {
+    return cron_add(string(minute) + " " + string(hour) + " 1 * *", command)
+}
+
+# Run on boot
+fn on_boot(command) {
+    t = _os_type()
+    if t == "linux" and file_exists("/run/systemd/system") {
+        # Use systemd for boot-time execution
+        return run("echo '" + command + "' | sudo tee /etc/rc.local 2>/dev/null && sudo chmod +x /etc/rc.local && echo 'added to rc.local'")
+    }
+    return cron_add("@reboot", command)
+}
+
+# ------------------------------------------------------------
+# Helpers
+# ------------------------------------------------------------
+
+fn _os_type() {
+    result = run("uname -s 2>/dev/null || echo Windows")
+    r = result.trim()
+    if r == "Linux" { return "linux" }
+    if r == "Darwin" { return "macos" }
+    if r.contains("Windows") or r.contains("MINGW") { return "windows" }
+    return "linux"
+}

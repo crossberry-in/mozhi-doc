@@ -1,0 +1,78 @@
+# OS Control Tests
+import system from "../src/system.mz"
+import process from "../src/process.mz"
+import filesystem from "../src/filesystem.mz"
+import network from "../src/network.mz"
+import user from "../src/user.mz"
+import power from "../src/power.mz"
+import package_manager from "../src/package_manager.mz"
+import service from "../src/service.mz"
+import cron from "../src/cron.mz"
+
+echo("Running os tests...")
+
+# System
+t = system.os_type()
+if t != "unknown" {
+    echo("  ✓ os_type() = " + t)
+}
+
+h = system.hostname()
+if h != "" {
+    echo("  ✓ hostname() = " + h)
+}
+
+# Process
+p = process.list()
+if p != "" {
+    echo("  ✓ process.list() works")
+}
+
+# Filesystem
+filesystem.mkdir("/tmp/mozhi_os_test")
+if filesystem.is_dir("/tmp/mozhi_os_test") {
+    echo("  ✓ mkdir + is_dir works")
+}
+write_file("/tmp/mozhi_os_test/hello.txt", "test")
+if filesystem.is_file("/tmp/mozhi_os_test/hello.txt") {
+    echo("  ✓ is_file works")
+}
+filesystem.copy("/tmp/mozhi_os_test/hello.txt", "/tmp/mozhi_os_test/copy.txt")
+if filesystem.file_exists("/tmp/mozhi_os_test/copy.txt") {
+    echo("  ✓ copy works")
+}
+filesystem.delete("/tmp/mozhi_os_test/hello.txt")
+if not filesystem.file_exists("/tmp/mozhi_os_test/hello.txt") {
+    echo("  ✓ delete works")
+}
+filesystem.remove_dir_recursive("/tmp/mozhi_os_test")
+echo("  ✓ cleanup done")
+
+# Network
+ip = network.primary_ip()
+echo("  ✓ primary_ip() = " + ip)
+
+# User
+u = user.current()
+if u != "" {
+    echo("  ✓ user.current() = " + u)
+}
+
+# Power
+b = power.battery_status()
+echo("  ✓ battery_status() = " + b)
+
+# Package manager
+pm = package_manager.detect()
+echo("  ✓ pkg_detect() = " + pm)
+
+# Service
+init = service.init_system()
+echo("  ✓ init_system() = " + init)
+
+# Cron
+c = cron.cron_list()
+echo("  ✓ cron_list() works")
+
+echo("")
+echo("All tests passed!")

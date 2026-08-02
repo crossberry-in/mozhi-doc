@@ -1,0 +1,202 @@
+# ============================================================
+# os — Power Management (v1.0.0)
+# Shutdown, reboot, sleep, hibernate, lock screen
+# Cross-platform: Linux, Windows, macOS, Android
+# ============================================================
+
+# ------------------------------------------------------------
+# Shutdown
+# ------------------------------------------------------------
+
+# Shutdown immediately
+fn shutdown() {
+    t = _os_type()
+    if t == "windows" {
+        return run("shutdown /s /t 0 2>nul")
+    }
+    if t == "macos" {
+        return run("sudo shutdown -h now 2>/dev/null")
+    }
+    return run("sudo poweroff 2>/dev/null || sudo shutdown -h now 2>/dev/null")
+}
+
+# Shutdown after delay (seconds)
+fn shutdown_delay(seconds) {
+    t = _os_type()
+    if t == "windows" {
+        return run("shutdown /s /t " + string(seconds) + " 2>nul")
+    }
+    return run("sudo shutdown -h +" + string(seconds / 60) + " 2>/dev/null")
+}
+
+# Cancel scheduled shutdown
+fn shutdown_cancel() {
+    t = _os_type()
+    if t == "windows" {
+        return run("shutdown /a 2>nul")
+    }
+    return run("sudo shutdown -c 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Reboot
+# ------------------------------------------------------------
+
+fn reboot() {
+    t = _os_type()
+    if t == "windows" {
+        return run("shutdown /r /t 0 2>nul")
+    }
+    if t == "macos" {
+        return run("sudo shutdown -r now 2>/dev/null")
+    }
+    return run("sudo reboot 2>/dev/null || sudo shutdown -r now 2>/dev/null")
+}
+
+fn reboot_delay(seconds) {
+    t = _os_type()
+    if t == "windows" {
+        return run("shutdown /r /t " + string(seconds) + " 2>nul")
+    }
+    return run("sudo shutdown -r +" + string(seconds / 60) + " 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Sleep / Hibernate
+# ------------------------------------------------------------
+
+fn sleep() {
+    t = _os_type()
+    if t == "windows" {
+        return run("rundll32.exe powrprof.dll,SetSuspendState 0,1,0 2>nul")
+    }
+    if t == "macos" {
+        return run("pmset sleepnow 2>/dev/null")
+    }
+    return run("sudo systemctl suspend 2>/dev/null || sudo pm-suspend 2>/dev/null")
+}
+
+fn hibernate() {
+    t = _os_type()
+    if t == "windows" {
+        return run("shutdown /h 2>nul")
+    }
+    if t == "macos" {
+        return run("sudo pmset hibernatemode 1 2>/dev/null && pmset sleepnow 2>/dev/null")
+    }
+    return run("sudo systemctl hibernate 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Lock Screen
+# ------------------------------------------------------------
+
+fn lock_screen() {
+    t = _os_type()
+    if t == "windows" {
+        return run("rundll32.exe user32.dll,LockWorkStation 2>nul")
+    }
+    if t == "macos" {
+        return run("/System/Library/CoreServices/Menu\\ Extras/User.menu/Contents/Resources/CGSession -suspend 2>/dev/null")
+    }
+    # Try various Linux lock screen commands
+    return run("loginctl lock-session 2>/dev/null || gnome-screensaver-command -l 2>/dev/null || i3lock 2>/dev/null || xscreensaver-command -lock 2>/dev/null || echo 'lock: no method found'")
+}
+
+# ------------------------------------------------------------
+# Battery / Power
+# ------------------------------------------------------------
+
+# Get battery status
+fn battery_status() {
+    t = _os_type()
+    if t == "windows" {
+        return run("wmic path win32_battery get estimatedchargeremaining,batterystatus 2>nul")
+    }
+    if t == "macos" {
+        return run("pmset -g batt 2>/dev/null")
+    }
+    # Linux: check /sys/class/power_supply or /proc/acpi
+    if file_exists("/sys/class/power_supply/BAT0/capacity") {
+        cap = read_file("/sys/class/power_supply/BAT0/capacity").trim()
+        status = read_file("/sys/class/power_supply/BAT0/status").trim()
+        return cap + "% (" + status + ")"
+    }
+    if file_exists("/sys/class/power_supply/battery/capacity") {
+        cap = read_file("/sys/class/power_supply/battery/capacity").trim()
+        return cap + "%"
+    }
+    return run("acpi 2>/dev/null || echo 'no battery'")
+}
+
+# Get battery percentage (returns number 0-100)
+fn battery_percent() {
+    t = _os_type()
+    if t == "linux" {
+        if file_exists("/sys/class/power_supply/BAT0/capacity") {
+            return read_file("/sys/class/power_supply/BAT0/capacity").trim()
+        }
+        if file_exists("/sys/class/power_supply/battery/capacity") {
+            return read_file("/sys/class/power_supply/battery/capacity").trim()
+        }
+    }
+    result = battery_status()
+    if result.contains("%") {
+        # Extract percentage
+        parts = result.split("%")
+        return parts[0].trim()
+    }
+    return "unknown"
+}
+
+# Check if on AC power
+fn on_ac_power() {
+    if file_exists("/sys/class/power_supply/AC/online") {
+        result = read_file("/sys/class/power_supply/AC/online").trim()
+        return result == "1"
+    }
+    return false
+}
+
+# ------------------------------------------------------------
+# Brightness (mobile/laptop)
+# ------------------------------------------------------------
+
+fn get_brightness() {
+    t = _os_type()
+    if t == "linux" {
+        if file_exists("/sys/class/backlight/intel_backlight/brightness") {
+            bright = read_file("/sys/class/backlight/intel_backlight/brightness").trim()
+            max_val = read_file("/sys/class/backlight/intel_backlight/max_brightness").trim()
+            if max_val * 1 > 0 {
+                pct = bright * 100 / (max_val * 1)
+                return string(pct)
+            }
+        }
+    }
+    return run("brightnessctl info 2>/dev/null | grep -o '[0-9]*%' | head -1").trim()
+}
+
+fn set_brightness(percent) {
+    t = _os_type()
+    if t == "linux" {
+        return run("brightnessctl set " + string(percent) + "% 2>/dev/null && echo 'set' || echo 'failed'")
+    }
+    return "[power] brightness control not available"
+}
+
+# ------------------------------------------------------------
+# Helpers
+# ------------------------------------------------------------
+
+fn _os_type() {
+    result = run("uname -s 2>/dev/null || echo Windows")
+    r = result.trim()
+    if r == "Linux" {
+        if file_exists("/system/build.prop") { return "android" }
+        return "linux"
+    }
+    if r == "Darwin" { return "macos" }
+    if r.contains("Windows") or r.contains("MINGW") { return "windows" }
+    return "linux"
+}

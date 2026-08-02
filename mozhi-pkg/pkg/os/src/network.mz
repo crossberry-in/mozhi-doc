@@ -1,0 +1,244 @@
+# ============================================================
+# os — Network Operations (v1.0.0)
+# Interfaces, hostname, ping, port scan, connections
+# Cross-platform: Linux, Windows, macOS, Android
+# ============================================================
+
+# ------------------------------------------------------------
+# Network Interfaces
+# ------------------------------------------------------------
+
+# List all network interfaces
+fn interfaces() {
+    t = _os_type()
+    if t == "windows" {
+        return run("ipconfig 2>nul")
+    }
+    return run("ip addr show 2>/dev/null || ifconfig 2>/dev/null")
+}
+
+# Get IP address of an interface
+fn ip_address(interface) {
+    if interface == "" { interface = "eth0" }
+    t = _os_type()
+    if t == "windows" {
+        return run("ipconfig 2>nul | findstr IPv4").trim()
+    }
+    return run("ip addr show " + interface + " 2>/dev/null | grep 'inet ' | awk '{print $2}' | head -1").trim()
+}
+
+# Get primary IP address (first non-loopback)
+fn primary_ip() {
+    t = _os_type()
+    if t == "windows" {
+        return run("ipconfig 2>nul | findstr IPv4 | head -1").trim()
+    }
+    return run("hostname -I 2>/dev/null | awk '{print $1}' || ip addr show 2>/dev/null | grep 'inet ' | grep -v 127 | awk '{print $2}' | head -1").trim()
+}
+
+# Get MAC address
+fn mac_address(interface) {
+    if interface == "" { interface = "eth0" }
+    t = _os_type()
+    if t == "windows" {
+        return run("ipconfig /all 2>nul | findstr \"Physical Address\" | head -1").trim()
+    }
+    return run("ip addr show " + interface + " 2>/dev/null | grep 'link/ether' | awk '{print $2}' | head -1").trim()
+}
+
+# Get default gateway
+fn gateway() {
+    t = _os_type()
+    if t == "windows" {
+        return run("ipconfig 2>nul | findstr \"Default Gateway\" | head -1").trim()
+    }
+    return run("ip route 2>/dev/null | grep default | awk '{print $3}' | head -1").trim()
+}
+
+# Get DNS servers
+fn dns_servers() {
+    t = _os_type()
+    if t == "windows" {
+        return run("ipconfig /all 2>nul | findstr \"DNS Servers\"").trim()
+    }
+    if file_exists("/etc/resolv.conf") {
+        return run("grep nameserver /etc/resolv.conf 2>/dev/null")
+    }
+    return "unknown"
+}
+
+# ------------------------------------------------------------
+# Hostname & DNS
+# ------------------------------------------------------------
+
+fn hostname() {
+    return run("hostname 2>/dev/null || echo unknown").trim()
+}
+
+fn set_hostname(name) {
+    t = _os_type()
+    if t == "windows" {
+        return "[net] use System Properties to change hostname on Windows"
+    }
+    return run("sudo hostnamectl set-hostname " + name + " 2>/dev/null || sudo hostname " + name + " 2>/dev/null")
+}
+
+# DNS lookup
+fn resolve(hostname_val) {
+    return run("getent hosts " + hostname_val + " 2>/dev/null || nslookup " + hostname_val + " 2>/dev/null | grep Address | tail -1").trim()
+}
+
+# Reverse DNS lookup
+fn reverse_dns(ip) {
+    return run("host " + ip + " 2>/dev/null || nslookup " + ip + " 2>/dev/null").trim()
+}
+
+# ------------------------------------------------------------
+# Ping
+# ------------------------------------------------------------
+
+# Ping a host (returns true/false)
+fn ping(host, count) {
+    if count == "" { count = "1" }
+    t = _os_type()
+    if t == "windows" {
+        result = run("ping -n " + count + " " + host + " 2>nul | findstr \"Reply\"")
+        return result.trim() != ""
+    }
+    result = run("ping -c " + count + " " + host + " 2>/dev/null | grep 'bytes from'")
+    return result.trim() != ""
+}
+
+# Ping with details
+fn ping_detail(host, count) {
+    if count == "" { count = "4" }
+    t = _os_type()
+    if t == "windows" {
+        return run("ping -n " + count + " " + host + " 2>nul")
+    }
+    return run("ping -c " + count + " " + host + " 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Port Operations
+# ------------------------------------------------------------
+
+# Check if a port is open
+fn port_open(host, port) {
+    t = _os_type()
+    if t == "windows" {
+        result = run("powershell -c \"Test-NetConnection -ComputerName " + host + " -Port " + string(port) + " -InformationLevel Quiet\" 2>nul")
+        return result.trim() == "True"
+    }
+    result = run("nc -z -w2 " + host + " " + string(port) + " 2>/dev/null && echo true || echo false")
+    return result.trim() == "true"
+}
+
+# Scan common ports on a host
+fn port_scan(host) {
+    ports = [21, 22, 23, 25, 53, 80, 110, 143, 443, 993, 995, 3306, 5432, 6379, 8080, 8443, 9090]
+    result = ""
+    for p in ports {
+        if port_open(host, p) {
+            result = result + string(p) + " OPEN\n"
+        }
+    }
+    return result.trim()
+}
+
+# List listening ports
+fn listening_ports() {
+    t = _os_type()
+    if t == "windows" {
+        return run("netstat -an 2>nul | findstr LISTENING")
+    }
+    return run("ss -tlnp 2>/dev/null || netstat -tlnp 2>/dev/null")
+}
+
+# Get process using a port
+fn port_process(port) {
+    t = _os_type()
+    if t == "windows" {
+        return run("netstat -ano 2>nul | findstr :" + string(port) + " | findstr LISTENING")
+    }
+    return run("ss -tlnp 'sport = :" + string(port) + "' 2>/dev/null || lsof -i :" + string(port) + " 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Connections
+# ------------------------------------------------------------
+
+# List all active connections
+fn connections() {
+    t = _os_type()
+    if t == "windows" {
+        return run("netstat -an 2>nul")
+    }
+    return run("ss -tunap 2>/dev/null || netstat -tunap 2>/dev/null")
+}
+
+# List established connections only
+fn established_connections() {
+    t = _os_type()
+    if t == "windows" {
+        return run("netstat -an 2>nul | findstr ESTABLISHED")
+    }
+    return run("ss -tunap state established 2>/dev/null || netstat -tunap 2>/dev/null | grep ESTABLISHED")
+}
+
+# ------------------------------------------------------------
+# Download
+# ------------------------------------------------------------
+
+# Download a file via curl
+fn download(url, output) {
+    return run("curl -fsSL '" + url + "' -o '" + output + "' 2>/dev/null && echo 'downloaded' || echo 'failed'")
+}
+
+# Download via wget (fallback)
+fn wget(url, output) {
+    return run("wget -q '" + url + "' -O '" + output + "' 2>/dev/null && echo 'downloaded' || echo 'failed'")
+}
+
+# ------------------------------------------------------------
+# Firewall (Linux)
+# ------------------------------------------------------------
+
+# List firewall rules (iptables)
+fn firewall_rules() {
+    return run("sudo iptables -L -n 2>/dev/null || echo 'requires root'")
+}
+
+# Check if firewall is active
+fn firewall_active() {
+    result = run("sudo ufw status 2>/dev/null || echo 'inactive'")
+    return result.trim().contains("active")
+}
+
+# ------------------------------------------------------------
+# Network Stats
+# ------------------------------------------------------------
+
+fn network_stats() {
+    t = _os_type()
+    if t == "windows" {
+        return run("netstat -e 2>nul")
+    }
+    if file_exists("/proc/net/dev") {
+        return read_file("/proc/net/dev")
+    }
+    return run("netstat -i 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Helpers
+# ------------------------------------------------------------
+
+fn _os_type() {
+    result = run("uname -s 2>/dev/null || echo Windows")
+    r = result.trim()
+    if r == "Linux" { return "linux" }
+    if r == "Darwin" { return "macos" }
+    if r.contains("Windows") or r.contains("MINGW") { return "windows" }
+    return "linux"
+}

@@ -1,0 +1,221 @@
+# ============================================================
+# os — User Management (v1.0.0)
+# Current user, groups, home, shell, sudo check
+# Cross-platform: Linux, Windows, macOS, Android
+# ============================================================
+
+# ------------------------------------------------------------
+# Current User
+# ------------------------------------------------------------
+
+# Get current username
+fn current() {
+    t = _os_type()
+    if t == "windows" {
+        return run("whoami 2>nul").trim()
+    }
+    return run("whoami 2>/dev/null || echo $USER").trim()
+}
+
+# Get user ID (uid)
+fn uid() {
+    t = _os_type()
+    if t == "windows" {
+        return "N/A (Windows)"
+    }
+    return run("id -u 2>/dev/null").trim()
+}
+
+# Get group ID (gid)
+fn gid() {
+    t = _os_type()
+    if t == "windows" {
+        return "N/A (Windows)"
+    }
+    return run("id -g 2>/dev/null").trim()
+}
+
+# Get real name (GECOS field)
+fn real_name() {
+    t = _os_type()
+    if t == "windows" {
+        return run("whoami /upn 2>nul").trim()
+    }
+    return run("getent passwd $(whoami) 2>/dev/null | cut -d: -f5").trim()
+}
+
+# ------------------------------------------------------------
+# Home & Shell
+# ------------------------------------------------------------
+
+fn home() {
+    t = _os_type()
+    if t == "windows" {
+        return run("echo %USERPROFILE% 2>nul").trim()
+    }
+    return run("echo $HOME 2>/dev/null").trim()
+}
+
+fn shell() {
+    return run("echo $SHELL 2>/dev/null").trim()
+}
+
+fn config_dir() {
+    t = _os_type()
+    if t == "windows" {
+        return run("echo %APPDATA% 2>nul").trim()
+    }
+    return run("echo $XDG_CONFIG_HOME 2>/dev/null || echo $HOME/.config").trim()
+}
+
+# ------------------------------------------------------------
+# Privileges
+# ------------------------------------------------------------
+
+# Check if current user is root/admin
+fn is_root() {
+    t = _os_type()
+    if t == "windows" {
+        result = run("net session 2>nul && echo true || echo false")
+        return result.trim() == "true"
+    }
+    result = run("test $(id -u) -eq 0 && echo true || echo false")
+    return result.trim() == "true"
+}
+
+# Check if sudo is available
+fn has_sudo() {
+    result = run("which sudo 2>/dev/null && echo true || echo false")
+    return result.trim().contains("true")
+}
+
+# Run command with sudo
+fn sudo(command) {
+    if is_root() {
+        return run(command)
+    }
+    return run("sudo " + command + " 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# Groups
+# ------------------------------------------------------------
+
+# List groups of current user
+fn groups() {
+    t = _os_type()
+    if t == "windows" {
+        return run("whoami /groups 2>nul")
+    }
+    return run("groups 2>/dev/null").trim()
+}
+
+# List all groups on the system
+fn all_groups() {
+    t = _os_type()
+    if t == "windows" {
+        return "N/A (Windows)"
+    }
+    return run("cat /etc/group 2>/dev/null | cut -d: -f1")
+}
+
+# Check if user is in a group
+fn in_group(group_name) {
+    result = run("groups 2>/dev/null | grep -w '" + group_name + "' && echo true || echo false")
+    return result.trim().contains("true")
+}
+
+# ------------------------------------------------------------
+# User List (Linux/macOS)
+# ------------------------------------------------------------
+
+# List all users
+fn list_users() {
+    t = _os_type()
+    if t == "windows" {
+        return run("net user 2>nul")
+    }
+    if file_exists("/etc/passwd") {
+        return run("cut -d: -f1 /etc/passwd 2>/dev/null")
+    }
+    return run("dscl . list /Users 2>/dev/null")
+}
+
+# Get user info
+fn user_info(username) {
+    t = _os_type()
+    if t == "windows" {
+        return run("net user " + username + " 2>nul")
+    }
+    return run("getent passwd " + username + " 2>/dev/null || id " + username + " 2>/dev/null")
+}
+
+# Check if user exists
+fn user_exists(username) {
+    t = _os_type()
+    if t == "windows" {
+        result = run("net user " + username + " 2>nul && echo true || echo false")
+        return result.trim() == "true"
+    }
+    result = run("id " + username + " 2>/dev/null && echo true || echo false")
+    return result.trim() == "true"
+}
+
+# ------------------------------------------------------------
+# Logged-in Users
+# ------------------------------------------------------------
+
+# List logged-in users
+fn logged_in() {
+    return run("who 2>/dev/null || query user 2>nul")
+}
+
+# List login history
+fn login_history() {
+    t = _os_type()
+    if t == "windows" {
+        return "N/A (Windows)"
+    }
+    return run("last -10 2>/dev/null")
+}
+
+# ------------------------------------------------------------
+# User Management (requires root)
+# ------------------------------------------------------------
+
+fn add_user(username) {
+    t = _os_type()
+    if t == "windows" {
+        return run("net user " + username + " /add 2>nul")
+    }
+    return run("sudo useradd -m " + username + " 2>/dev/null && echo 'created' || echo 'failed'")
+}
+
+fn delete_user(username) {
+    t = _os_type()
+    if t == "windows" {
+        return run("net user " + username + " /delete 2>nul")
+    }
+    return run("sudo userdel -r " + username + " 2>/dev/null && echo 'deleted' || echo 'failed'")
+}
+
+fn set_password(username, password) {
+    t = _os_type()
+    if t == "windows" {
+        return run("net user " + username + " " + password + " 2>nul")
+    }
+    return run("echo '" + username + ":" + password + "' | sudo chpasswd 2>/dev/null && echo 'set' || echo 'failed'")
+}
+
+# ------------------------------------------------------------
+# Helpers
+# ------------------------------------------------------------
+
+fn _os_type() {
+    result = run("uname -s 2>/dev/null || echo Windows")
+    r = result.trim()
+    if r == "Linux" { return "linux" }
+    if r == "Darwin" { return "macos" }
+    if r.contains("Windows") or r.contains("MINGW") { return "windows" }
+    return "linux"
+}
