@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -e
-REPO="crossberry-in/mozhi"
+# Download from the PUBLIC doc repo (mozhi-doc) — works even if the
+# source repo (mozhi) is private.
+DOC_REPO="crossberry-in/mozhi-doc"
+SRC_REPO="crossberry-in/mozhi"
 BINARY_NAME="mozhi"
+VERSION="v2.3.0"
 
 info()    { printf "\033[1;34m[info]\033[0m  %s\n"  "$*" >&2; }
 success() { printf "\033[1;32m[ok]\033[0m    %s\n"  "$*" >&2; }
@@ -17,12 +21,22 @@ install_dir="/usr/local/bin"
 
 asset_name="mozhi-tui-${os}-${arch}"
 [ "$os" = "windows" ] && asset_name="${asset_name}.exe"
-url="https://github.com/${REPO}/releases/download/v2.1.0/${asset_name}"
 tmp_file="${TMPDIR:-/tmp}/${asset_name}"
 
-info "Downloading ${asset_name}..."
-if ! curl -fSL --progress-bar --max-time 60 -o "$tmp_file" "$url"; then
-    error "Download failed. URL: $url"
+# URL 1: Public doc repo release
+url_doc="https://github.com/${DOC_REPO}/releases/download/${VERSION}/${asset_name}"
+# URL 2: Source repo release
+url_src="https://github.com/${SRC_REPO}/releases/download/${VERSION}/${asset_name}"
+
+info "Downloading ${asset_name} ${VERSION}..."
+
+if curl -fSL --progress-bar --max-time 60 -o "$tmp_file" "$url_doc" 2>&1; then
+    success "Downloaded from public doc repo"
+elif curl -fSL --progress-bar --max-time 60 -o "$tmp_file" "$url_src" 2>&1; then
+    success "Downloaded from source repo"
+else
+    error "Download failed. Try manually:"
+    error "  $url_doc"
     exit 1
 fi
 chmod +x "$tmp_file"
@@ -36,7 +50,7 @@ fi
 
 info "Verifying..."
 "$install_dir/$BINARY_NAME" version 2>/dev/null && \
-    success "Mozhi TUI CLI installed!" || \
+    success "Mozhi TUI CLI ${VERSION} installed!" || \
     success "Installed at: $install_dir/$BINARY_NAME"
 
 printf '\n' >&2
