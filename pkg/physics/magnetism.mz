@@ -1,0 +1,174 @@
+# ============================================================
+# Mozhi Physics Library — Magnetism (v1.0.0)
+# Magnetic force, magnetic flux, related helpers
+# All inputs/outputs in SI units (T, Wb, A, m, N, C, V)
+# ============================================================
+
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+
+fn _abs(n) {
+    if n < 0 {
+        return -n
+    }
+    return n
+}
+
+# ------------------------------------------------------------
+# Magnetic Force
+# ------------------------------------------------------------
+
+# Force on a current-carrying wire: F = B · I · L · sin(θ)
+# field (T), current (A), length (m), angle (deg) → force (N)
+fn magneticForce(field, current, length, angle_deg) {
+    if length < 0 {
+        return errors.err_negative("length")
+    }
+    angle_rad = angle_deg * constants.PI / 180.0
+    return field * current * length * sin(angle_rad)
+}
+
+# Force on a moving charge (Lorentz force magnitude): F = q · v · B · sin(θ)
+# charge (C), velocity (m/s), field (T), angle (deg) → force (N)
+fn lorentz_force(charge, velocity, field, angle_deg) {
+    angle_rad = angle_deg * constants.PI / 180.0
+    return charge * velocity * field * sin(angle_rad)
+}
+
+# Force on charge moving perpendicular to field (θ = 90°): F = q · v · B
+# charge (C), velocity (m/s), field (T) → force (N)
+fn lorentz_force_perpendicular(charge, velocity, field) {
+    return charge * velocity * field
+}
+
+# ------------------------------------------------------------
+# Magnetic Flux
+# ------------------------------------------------------------
+
+# Magnetic flux: Φ = B · A · cos(θ)
+# field (T), area (m²), angle (deg, between B and normal to surface) → flux (Wb)
+fn magneticFlux(field, area, angle_deg) {
+    if area < 0 {
+        return errors.err_negative("area")
+    }
+    angle_rad = angle_deg * constants.PI / 180.0
+    return field * area * cos(angle_rad)
+}
+
+# Flux when field is perpendicular to surface (θ = 0): Φ = B · A
+# field (T), area (m²) → flux (Wb)
+fn magnetic_flux_perpendicular(field, area) {
+    if area < 0 {
+        return errors.err_negative("area")
+    }
+    return field * area
+}
+
+# ------------------------------------------------------------
+# Faraday's Law (EMF)
+# ------------------------------------------------------------
+
+# Induced EMF (Faraday's law): ε = -N · ΔΦ / Δt
+# turns (count), delta_flux (Wb), delta_t (s) → emf (V)
+fn induced_emf(turns, delta_flux, delta_t) {
+    if delta_t == 0 {
+        return errors.err_zero("delta_t")
+    }
+    if delta_t < 0 {
+        return errors.err_negative("delta_t")
+    }
+    return -(turns * delta_flux / delta_t)
+}
+
+# Motional EMF (conductor moving in field): ε = B · L · v
+# field (T), length (m), velocity (m/s) → emf (V)
+fn motional_emf(field, length, velocity) {
+    if length < 0 {
+        return errors.err_negative("length")
+    }
+    return field * length * velocity
+}
+
+# ------------------------------------------------------------
+# Magnetic Field Sources
+# ------------------------------------------------------------
+
+# Magnetic field around a long straight wire: B = μ₀ · I / (2π · r)
+# current (A), distance (m) → field (T)
+fn field_from_wire(current, distance) {
+    if distance == 0 {
+        return errors.err_zero("distance")
+    }
+    if distance < 0 {
+        return errors.err_negative("distance")
+    }
+    return constants.VACUUM_PERMEABILITY * current / (2.0 * constants.PI * distance)
+}
+
+# Magnetic field at center of a circular loop: B = μ₀ · I / (2 · R)
+# current (A), radius (m) → field (T)
+fn field_from_loop(current, radius) {
+    if radius == 0 {
+        return errors.err_zero("radius")
+    }
+    if radius < 0 {
+        return errors.err_negative("radius")
+    }
+    return constants.VACUUM_PERMEABILITY * current / (2.0 * radius)
+}
+
+# Magnetic field inside a solenoid: B = μ₀ · n · I
+# turns_per_length (1/m), current (A) → field (T)
+fn field_from_solenoid(turns_per_length, current) {
+    return constants.VACUUM_PERMEABILITY * turns_per_length * current
+}
+
+# ------------------------------------------------------------
+# Cyclotron Motion
+# ------------------------------------------------------------
+
+# Cyclotron radius: r = m · v / (q · B)
+# mass (kg), velocity (m/s), charge (C), field (T) → radius (m)
+fn cyclotron_radius(mass, velocity, charge, field) {
+    if charge == 0 {
+        return errors.err_zero("charge")
+    }
+    if field == 0 {
+        return errors.err_zero("field")
+    }
+    return mass * velocity / (charge * field)
+}
+
+# Cyclotron frequency: f = q · B / (2π · m)
+# charge (C), field (T), mass (kg) → frequency (Hz)
+fn cyclotron_frequency(charge, field, mass) {
+    if mass == 0 {
+        return errors.err_zero("mass")
+    }
+    return charge * field / (2.0 * constants.PI * mass)
+}
+
+# ------------------------------------------------------------
+# Magnetic Energy
+# ------------------------------------------------------------
+
+# Energy stored in an inductor: U = ½ · L · I²
+# inductance (H), current (A) → energy (J)
+fn inductor_energy(inductance, current) {
+    if inductance < 0 {
+        return errors.err_negative("inductance")
+    }
+    return 0.5 * inductance * current * current
+}
+
+# ------------------------------------------------------------
+# Ampère's Law (straight wire)
+# ------------------------------------------------------------
+
+# Ampère's law for a long wire: ∮B·dl = μ₀·I_enc
+# For a circular path of radius r around a wire carrying I:
+# B · 2π·r = μ₀·I  →  B = μ₀·I / (2π·r)  (same as field_from_wire)
+# current (A), radius (m) → field (T)
+fn amperes_law_wire(current, radius) {
+    return field_from_wire(current, radius)
+}

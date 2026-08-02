@@ -1,0 +1,66 @@
+# ============================================================
+# Mozhi Physics Library — Errors (v1.0.0)
+# Error handling helpers for invalid inputs
+# ============================================================
+
+import constants from "physics/constants.mz"
+
+# ------------------------------------------------------------
+# Error message builders
+# ------------------------------------------------------------
+
+fn err_negative(name) {
+    return "[physics] '" + name + "' must be non-negative"
+}
+
+fn err_zero(name) {
+    return "[physics] '" + name + "' must be non-zero"
+}
+
+fn err_positive(name) {
+    return "[physics] '" + name + "' must be strictly positive"
+}
+
+fn err_range(name, lo, hi) {
+    return "[physics] '" + name + "' must be in [" + string(lo) + ", " + string(hi) + "]"
+}
+
+fn err_units(name, expected) {
+    return "[physics] '" + name + "' must be in " + expected + " units"
+}
+
+fn err_custom(msg) {
+    return "[physics] " + msg
+}
+
+# ------------------------------------------------------------
+# Validation guards (return error string or empty string)
+# ------------------------------------------------------------
+
+fn require_non_negative(name, value) {
+    if value < 0 {
+        return err_negative(name)
+    }
+    return ""
+}
+
+fn require_positive(name, value) {
+    if value <= 0 {
+        return err_positive(name)
+    }
+    return ""
+}
+
+fn require_non_zero(name, value) {
+    if value == 0 {
+        return err_zero(name)
+    }
+    return ""
+}
+
+fn require_range(name, value, lo, hi) {
+    if value < lo or value > hi {
+        return err_range(name, lo, hi)
+    }
+    return ""
+}

@@ -1,0 +1,134 @@
+# ============================================================
+# Mozhi Physics Library — Gravity (v1.0.0)
+# Newtonian gravitation: force, escape velocity, orbital velocity
+# All inputs/outputs in SI units
+# ============================================================
+
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+
+fn _sqrt(n) {
+    if n <= 0 {
+        return 0.0
+    }
+    x = n
+    prev = 0.0
+    while abs(x - prev) > 0.0000000001 {
+        prev = x
+        x = (x + n / x) / 2.0
+    }
+    return x
+}
+
+# ------------------------------------------------------------
+# Gravitational Force
+# ------------------------------------------------------------
+
+# Newton's law of universal gravitation: F = G·m₁·m₂ / r²
+# mass1 (kg), mass2 (kg), distance (m) → force (N)
+fn gravitationalForce(mass1, mass2, distance) {
+    if distance == 0 {
+        return errors.err_zero("distance")
+    }
+    if distance < 0 {
+        return errors.err_negative("distance")
+    }
+    if mass1 < 0 {
+        return errors.err_negative("mass1")
+    }
+    if mass2 < 0 {
+        return errors.err_negative("mass2")
+    }
+    return constants.GRAVITATIONAL_CONSTANT * mass1 * mass2 / (distance * distance)
+}
+
+# Earth-surface gravity (uses Earth mass and radius)
+# mass (kg) → force (N)
+fn earth_gravity_force(mass) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return constants.GRAVITATIONAL_CONSTANT * mass * constants.EARTH_MASS / (constants.EARTH_RADIUS * constants.EARTH_RADIUS)
+}
+
+# ------------------------------------------------------------
+# Escape Velocity
+# ------------------------------------------------------------
+
+# Escape velocity: v_e = √(2·G·M / r)
+# mass (kg of body), radius (m) → velocity (m/s)
+fn escapeVelocity(mass, radius) {
+    if radius == 0 {
+        return errors.err_zero("radius")
+    }
+    if radius < 0 {
+        return errors.err_negative("radius")
+    }
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return _sqrt(2.0 * constants.GRAVITATIONAL_CONSTANT * mass / radius)
+}
+
+# Earth escape velocity (precomputed constants)
+# → velocity (m/s)
+fn earth_escape_velocity() {
+    return escapeVelocity(constants.EARTH_MASS, constants.EARTH_RADIUS)
+}
+
+# ------------------------------------------------------------
+# Orbital Velocity
+# ------------------------------------------------------------
+
+# Circular orbital velocity: v = √(G·M / r)
+# central_mass (kg), orbital_radius (m) → velocity (m/s)
+fn orbitalVelocity(central_mass, orbital_radius) {
+    if orbital_radius == 0 {
+        return errors.err_zero("orbital_radius")
+    }
+    if orbital_radius < 0 {
+        return errors.err_negative("orbital_radius")
+    }
+    if central_mass < 0 {
+        return errors.err_negative("central_mass")
+    }
+    return _sqrt(constants.GRAVITATIONAL_CONSTANT * central_mass / orbital_radius)
+}
+
+# Orbital velocity at Earth surface (theoretical)
+# → velocity (m/s)
+fn earth_orbital_velocity() {
+    return orbitalVelocity(constants.EARTH_MASS, constants.EARTH_RADIUS)
+}
+
+# ------------------------------------------------------------
+# Gravitational Potential Energy (general)
+# ------------------------------------------------------------
+
+# Gravitational PE (two-body, zero at infinity): U = -G·m₁·m₂ / r
+# mass1 (kg), mass2 (kg), distance (m) → energy (J, negative)
+fn gravitational_potential_energy(mass1, mass2, distance) {
+    if distance == 0 {
+        return errors.err_zero("distance")
+    }
+    if distance < 0 {
+        return errors.err_negative("distance")
+    }
+    return -(constants.GRAVITATIONAL_CONSTANT * mass1 * mass2 / distance)
+}
+
+# ------------------------------------------------------------
+# Gravitational Field Strength
+# ------------------------------------------------------------
+
+# g = G·M / r²
+# mass (kg), distance (m) → field (m/s² or N/kg)
+fn gravitational_field(mass, distance) {
+    if distance == 0 {
+        return errors.err_zero("distance")
+    }
+    if distance < 0 {
+        return errors.err_negative("distance")
+    }
+    return constants.GRAVITATIONAL_CONSTANT * mass / (distance * distance)
+}

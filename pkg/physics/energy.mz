@@ -1,0 +1,147 @@
+# ============================================================
+# Mozhi Physics Library — Energy (v1.0.0)
+# Work, power, kinetic energy, potential energy, spring energy
+# All inputs/outputs in SI units (J, W, N, m, kg, m/s)
+# ============================================================
+
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+
+# Local sqrt to avoid cross-module dependency issues
+fn _sqrt(n) {
+    if n <= 0 {
+        return 0.0
+    }
+    x = n
+    prev = 0.0
+    while abs(x - prev) > 0.0000000001 {
+        prev = x
+        x = (x + n / x) / 2.0
+    }
+    return x
+}
+
+fn _abs(n) {
+    if n < 0 {
+        return -n
+    }
+    return n
+}
+
+# ------------------------------------------------------------
+# Work
+# ------------------------------------------------------------
+
+# Work (constant force along displacement): W = F · d · cos(θ)
+# force (N), displacement (m), angle (deg) → work (J)
+fn work(force_val, displacement, angle_deg) {
+    if displacement < 0 {
+        return errors.err_negative("displacement")
+    }
+    angle_rad = angle_deg * constants.PI / 180.0
+    return force_val * displacement * cos(angle_rad)
+}
+
+# Work (force aligned with displacement, θ = 0): W = F × d
+# force (N), displacement (m) → work (J)
+fn work_aligned(force_val, displacement) {
+    if displacement < 0 {
+        return errors.err_negative("displacement")
+    }
+    return force_val * displacement
+}
+
+# ------------------------------------------------------------
+# Power
+# ------------------------------------------------------------
+
+# Power: P = W / t
+# work (J), time (s) → power (W)
+fn power(work_val, time) {
+    if time == 0 {
+        return errors.err_zero("time")
+    }
+    if time < 0 {
+        return errors.err_negative("time")
+    }
+    return work_val / time
+}
+
+# Power (mechanical): P = F × v
+# force (N), velocity (m/s) → power (W)
+fn power_mechanical(force_val, velocity_val) {
+    return force_val * velocity_val
+}
+
+# ------------------------------------------------------------
+# Kinetic Energy
+# ------------------------------------------------------------
+
+# Kinetic energy: KE = ½·m·v²
+# mass (kg), velocity (m/s) → energy (J)
+fn kineticEnergy(mass, velocity_val) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return 0.5 * mass * velocity_val * velocity_val
+}
+
+# ------------------------------------------------------------
+# Potential Energy
+# ------------------------------------------------------------
+
+# Gravitational PE (near Earth): PE = m·g·h
+# mass (kg), height (m), gravity (m/s², default 9.81) → energy (J)
+fn potentialEnergy(mass, height, gravity) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    if height < 0 {
+        return errors.err_negative("height")
+    }
+    return mass * gravity * height
+}
+
+# Gravitational PE with standard gravity (9.80665 m/s²)
+# mass (kg), height (m) → energy (J)
+fn potential_energy_standard(mass, height) {
+    return potentialEnergy(mass, height, constants.STANDARD_GRAVITY)
+}
+
+# ------------------------------------------------------------
+# Spring Energy (Elastic PE)
+# ------------------------------------------------------------
+
+# Elastic PE: PE = ½·k·x²
+# spring_constant (N/m), displacement (m) → energy (J)
+fn springEnergy(spring_constant, displacement) {
+    if spring_constant < 0 {
+        return errors.err_negative("spring_constant")
+    }
+    return 0.5 * spring_constant * displacement * displacement
+}
+
+# ------------------------------------------------------------
+# Conservation helpers
+# ------------------------------------------------------------
+
+# Total mechanical energy: KE + PE
+# mass (kg), velocity (m/s), height (m), gravity (m/s²) → energy (J)
+fn total_mechanical_energy(mass, velocity_val, height, gravity) {
+    ke = kineticEnergy(mass, velocity_val)
+    pe = potentialEnergy(mass, height, gravity)
+    return ke + pe
+}
+
+# ------------------------------------------------------------
+# Work-Energy Theorem
+# ------------------------------------------------------------
+
+# Net work = ΔKE = ½·m·(v² - u²)
+# mass (kg), initial_v (m/s), final_v (m/s) → work (J)
+fn work_energy(mass, initial_v, final_v) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return 0.5 * mass * (final_v * final_v - initial_v * initial_v)
+}

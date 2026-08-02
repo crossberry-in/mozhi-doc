@@ -1,0 +1,225 @@
+# ============================================================
+# Mozhi Physics Library — Quantum Mechanics (v1.0.0)
+# Photon energy, de Broglie wavelength, related helpers
+# All inputs/outputs in SI units (J, m, Hz, kg, m/s)
+# ============================================================
+
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+
+fn _sqrt(n) {
+    if n <= 0 {
+        return 0.0
+    }
+    x = n
+    prev = 0.0
+    while abs(x - prev) > 0.0000000001 {
+        prev = x
+        x = (x + n / x) / 2.0
+    }
+    return x
+}
+
+# ------------------------------------------------------------
+# Photon Energy
+# ------------------------------------------------------------
+
+# Photon energy: E = h · f
+# frequency (Hz) → energy (J)
+fn photonEnergy(frequency) {
+    if frequency < 0 {
+        return errors.err_negative("frequency")
+    }
+    return constants.PLANCK_CONSTANT * frequency
+}
+
+# Photon energy from wavelength: E = h · c / λ
+# wavelength (m) → energy (J)
+fn photonEnergy_wavelength(wavelength) {
+    if wavelength == 0 {
+        return errors.err_zero("wavelength")
+    }
+    if wavelength < 0 {
+        return errors.err_negative("wavelength")
+    }
+    return constants.PLANCK_CONSTANT * constants.SPEED_OF_LIGHT / wavelength
+}
+
+# Photon frequency from energy: f = E / h
+# energy (J) → frequency (Hz)
+fn photon_frequency(energy) {
+    if energy < 0 {
+        return errors.err_negative("energy")
+    }
+    return energy / constants.PLANCK_CONSTANT
+}
+
+# Photon wavelength from energy: λ = h · c / E
+# energy (J) → wavelength (m)
+fn photon_wavelength(energy) {
+    if energy == 0 {
+        return errors.err_zero("energy")
+    }
+    if energy < 0 {
+        return errors.err_negative("energy")
+    }
+    return constants.PLANCK_CONSTANT * constants.SPEED_OF_LIGHT / energy
+}
+
+# ------------------------------------------------------------
+# de Broglie Wavelength
+# ------------------------------------------------------------
+
+# de Broglie wavelength: λ = h / p  (p = m·v for massive particles)
+# mass (kg), velocity (m/s) → wavelength (m)
+fn deBroglieWavelength(mass, velocity) {
+    if mass == 0 {
+        return errors.err_zero("mass")
+    }
+    if velocity == 0 {
+        return errors.err_zero("velocity")
+    }
+    momentum = mass * velocity
+    if momentum == 0 {
+        return errors.err_zero("momentum")
+    }
+    return constants.PLANCK_CONSTANT / momentum
+}
+
+# de Broglie wavelength from momentum directly: λ = h / p
+# momentum (kg·m/s) → wavelength (m)
+fn deBroglieWavelength_momentum(momentum_val) {
+    if momentum_val == 0 {
+        return errors.err_zero("momentum")
+    }
+    return constants.PLANCK_CONSTANT / momentum_val
+}
+
+# ------------------------------------------------------------
+# Photoelectric Effect
+# ------------------------------------------------------------
+
+# Photoelectric: KE_max = h·f - φ  (work function φ)
+# frequency (Hz), work_function (J) → max kinetic energy (J)
+fn photoelectric_ke(frequency, work_function) {
+    if frequency < 0 {
+        return errors.err_negative("frequency")
+    }
+    if work_function < 0 {
+        return errors.err_negative("work_function")
+    }
+    return constants.PLANCK_CONSTANT * frequency - work_function
+}
+
+# Threshold frequency for photoelectric effect: f₀ = φ / h
+# work_function (J) → threshold frequency (Hz)
+fn threshold_frequency(work_function) {
+    if work_function < 0 {
+        return errors.err_negative("work_function")
+    }
+    return work_function / constants.PLANCK_CONSTANT
+}
+
+# Stopping potential: V_s = KE_max / e
+# ke_max (J) → voltage (V)
+fn stopping_potential(ke_max) {
+    return ke_max / constants.ELEMENTARY_CHARGE
+}
+
+# ------------------------------------------------------------
+# Bohr Model
+# ------------------------------------------------------------
+
+# Bohr radius: a₀ = 4πε₀·ħ² / (m_e·e²)
+# → radius (m)
+fn bohr_radius() {
+    return 0.0000000000529177210903
+}
+
+# Energy levels of hydrogen (Bohr): E_n = -13.6 / n²  (eV)
+# Convert to Joules: E_n = -13.6 / n² · 1.602e-19
+# n (principal quantum number) → energy (J, negative)
+fn hydrogen_energy_level(n) {
+    if n <= 0 {
+        return errors.err_positive("n")
+    }
+    e_v = -13.6 / (n * n)
+    return e_v * constants.ELEMENTARY_CHARGE
+}
+
+# Photon wavelength for transition between levels: 1/λ = R·(1/n_f² - 1/n_i²)
+# R = Rydberg constant ≈ 1.097e7 m⁻¹
+# n_initial, n_final → wavelength (m)
+fn hydrogen_transition_wavelength(n_initial, n_final) {
+    if n_initial <= 0 {
+        return errors.err_positive("n_initial")
+    }
+    if n_final <= 0 {
+        return errors.err_positive("n_final")
+    }
+    if n_initial <= n_final {
+        return errors.err_custom("n_initial must be greater than n_final (emission)")
+    }
+    R = 10973731.56799999997019767761
+    inv_lambda = R * (1.0 / (n_final * n_final) - 1.0 / (n_initial * n_initial))
+    if inv_lambda == 0 {
+        return errors.err_zero("inv_lambda")
+    }
+    return 1.0 / inv_lambda
+}
+
+# ------------------------------------------------------------
+# Heisenberg Uncertainty Principle
+# ------------------------------------------------------------
+
+# Position-momentum uncertainty: Δx · Δp ≥ ħ/2
+# Returns the minimum Δp for a given Δx: Δp_min = ħ / (2·Δx)
+# delta_x (m) → min delta_p (kg·m/s)
+fn uncertainty_momentum(delta_x) {
+    if delta_x == 0 {
+        return errors.err_zero("delta_x")
+    }
+    if delta_x < 0 {
+        return errors.err_negative("delta_x")
+    }
+    return constants.REDUCED_PLANCK / (2.0 * delta_x)
+}
+
+# Energy-time uncertainty: ΔE · Δt ≥ ħ/2
+# Returns the minimum ΔE for a given Δt: ΔE_min = ħ / (2·Δt)
+# delta_t (s) → min delta_E (J)
+fn uncertainty_energy(delta_t) {
+    if delta_t == 0 {
+        return errors.err_zero("delta_t")
+    }
+    if delta_t < 0 {
+        return errors.err_negative("delta_t")
+    }
+    return constants.REDUCED_PLANCK / (2.0 * delta_t)
+}
+
+# ------------------------------------------------------------
+# Wave-Particle Duality
+# ------------------------------------------------------------
+
+# Kinetic energy of an electron (non-relativistic): KE = p² / (2m)
+# momentum (kg·m/s) → energy (J)
+fn electron_kinetic_energy(momentum_val) {
+    return (momentum_val * momentum_val) / (2.0 * constants.ELECTRON_MASS)
+}
+
+# ------------------------------------------------------------
+# Blackbody Radiation (Wien's Law)
+# ------------------------------------------------------------
+
+# Wien's displacement law: λ_max = b / T
+# temperature (K) → peak wavelength (m)
+fn wien_wavelength(temperature) {
+    if temperature == 0 {
+        return errors.err_zero("temperature")
+    }
+    if temperature < 0 {
+        return errors.err_negative("temperature")
+    }
+    return constants.WIEN_CONSTANT / temperature
+}

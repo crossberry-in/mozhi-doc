@@ -1,0 +1,127 @@
+# ============================================================
+# Mozhi Physics Library — Physical Constants (v1.0.0)
+# All values in SI units unless otherwise noted.
+# Sources: CODATA 2018 / NIST
+# ============================================================
+
+# ------------------------------------------------------------
+# Mathematical Constants
+# ------------------------------------------------------------
+
+const PI = 3.14159265358979323846
+const E = 2.71828182845904523536
+
+# ------------------------------------------------------------
+# Universal Constants
+# ------------------------------------------------------------
+
+# Speed of light in vacuum (m/s)
+const SPEED_OF_LIGHT = 299792458.0
+
+# Newtonian gravitational constant (m^3 kg^-1 s^-2)
+const GRAVITATIONAL_CONSTANT = 0.000000000066743
+
+# Planck constant (J·s)
+const PLANCK_CONSTANT = 0.
+
+# Reduced Planck constant (J·s)  ħ = h / (2π)
+const REDUCED_PLANCK = 0.
+
+# Boltzmann constant (J/K)
+const BOLTZMANN_CONSTANT = 0.0000000000000000000000138
+
+# Avogadro constant (mol^-1)
+const AVOGADRO_CONSTANT = 602214075999999987023872.0
+
+# ------------------------------------------------------------
+# Atomic & Particle Physics
+# ------------------------------------------------------------
+
+# Elementary charge (C)
+const ELEMENTARY_CHARGE = 0.0000000000000000001602177
+
+# Electron rest mass (kg)
+const ELECTRON_MASS = 0.
+
+# Proton rest mass (kg)
+const PROTON_MASS = 0.
+
+# Neutron rest mass (kg)
+const NEUTRON_MASS = 0.
+
+# Atomic mass unit (kg)
+const ATOMIC_MASS_UNIT = 0.
+
+# ------------------------------------------------------------
+# Earth & Environment
+# ------------------------------------------------------------
+
+# Standard gravity acceleration (m/s^2)
+const STANDARD_GRAVITY = 9.80665
+
+# Earth mass (kg)
+const EARTH_MASS = 5972169999999999649251328.0
+
+# Earth equatorial radius (m)
+const EARTH_RADIUS = 6378137.0
+
+# ------------------------------------------------------------
+# Electromagnetism
+# ------------------------------------------------------------
+
+# Vacuum electric permittivity ε₀ (F/m)
+const VACUUM_PERMITTIVITY = 0.0000000000088541878128
+
+# Vacuum magnetic permeability μ₀ (N/A^2 or H/m)
+const VACUUM_PERMEABILITY = 0.0000012566370621199999432
+
+# Coulomb constant (N·m²/C²)  k = 1/(4πε₀)
+const COULOMB_CONSTANT = 8987551792.299999237060546875
+
+# ------------------------------------------------------------
+# Thermodynamics
+# ------------------------------------------------------------
+
+# Molar gas constant (J/(mol·K))
+const GAS_CONSTANT = 8.314462618
+
+# Stefan–Boltzmann constant (W/(m^2·K^4))
+const STEFAN_BOLTZMANN = 0.0000000567037441899999991
+
+# Wien displacement constant (m·K)
+const WIEN_CONSTANT = 0.0028977719550000000277301
+
+# ------------------------------------------------------------
+# Astronomical
+# ------------------------------------------------------------
+
+# Astronomical unit (m) — mean Earth-Sun distance
+const ASTRONOMICAL_UNIT = 149597870700.0
+
+# Solar mass (kg)
+const SOLAR_MASS = 1988469999999999976638766907392.0
+
+# Solar luminosity (W)
+const SOLAR_LUMINOSITY = 382800000000000008824815616.0
+
+# Parsec (m)
+const PARSEC = 30856775814913672.0
+
+# ------------------------------------------------------------
+# Derived / Convenience
+# ------------------------------------------------------------
+
+# Fine-structure constant (dimensionless)
+const FINE_STRUCTURE = 0.0072973525693000003758404
+
+# Planck length (m)
+const PLANCK_LENGTH = 0.
+
+# Planck mass (kg)
+const PLANCK_MASS = 0.0000000217643400000000014
+
+# Planck time (s)
+const PLANCK_TIME = 0.
+
+# Absolute zero in Celsius (°C)
+const ABSOLUTE_ZERO_C = -273.15

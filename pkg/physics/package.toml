@@ -1,0 +1,114 @@
+[package]
+name = "physics"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+description = "Production-ready physics library for Mozhi: mechanics, motion, energy, gravity, fluids, thermodynamics, electricity, magnetism, waves, optics, relativity, quantum, astronomy, units"
+authors = ["Mozhi Project"]
+
+[modules]
+constants = "Physical constants (SI units)"
+mechanics = "Force, weight, momentum, impulse, torque, pressure, density"
+motion = "Velocity, acceleration, displacement, distance, free fall"
+energy = "Work, power, kinetic/potential/spring energy"
+gravity = "Gravitational force, escape velocity, orbital velocity"
+fluids = "Buoyancy, continuity, Bernoulli, viscosity, surface tension"
+thermodynamics = "Heat, specific heat, ideal gas law, efficiency, conduction, radiation"
+electricity = "Voltage, current, resistance, power, capacitance, electric field"
+magnetism = "Magnetic force, flux, Faraday, solenoid, cyclotron"
+waves = "Frequency, wavelength, speed, period, Doppler, SHM"
+optics = "Refractive index, Snell, focal length, magnification, diffraction"
+relativity = "Mass-energy, time dilation, length contraction, velocity addition"
+quantum = "Photon energy, de Broglie, photoelectric, Bohr, uncertainty"
+astronomy = "Orbital period, luminosity, stellar mass, Schwarzschild radius"
+units = "19+ SI unit constants and 80+ conversion functions"
+errors = "Error handling helpers"
+
+[dependencies]
+mozhi-math-utils = ">=1.0.0"
+
+[exports]
+# Constants
+PI = "constants.PI"
+E = "constants.E"
+SPEED_OF_LIGHT = "constants.SPEED_OF_LIGHT"
+GRAVITATIONAL_CONSTANT = "constants.GRAVITATIONAL_CONSTANT"
+PLANCK_CONSTANT = "constants.PLANCK_CONSTANT"
+BOLTZMANN_CONSTANT = "constants.BOLTZMANN_CONSTANT"
+AVOGADRO_CONSTANT = "constants.AVOGADRO_CONSTANT"
+ELEMENTARY_CHARGE = "constants.ELEMENTARY_CHARGE"
+ELECTRON_MASS = "constants.ELECTRON_MASS"
+PROTON_MASS = "constants.PROTON_MASS"
+NEUTRON_MASS = "constants.NEUTRON_MASS"
+STANDARD_GRAVITY = "constants.STANDARD_GRAVITY"
+VACUUM_PERMITTIVITY = "constants.VACUUM_PERMITTIVITY"
+VACUUM_PERMEABILITY = "constants.VACUUM_PERMEABILITY"
+
+# Mechanics
+force = "mechanics.force"
+weight = "mechanics.weight"
+momentum = "mechanics.momentum"
+impulse = "mechanics.impulse"
+torque = "mechanics.torque"
+pressure = "mechanics.pressure"
+density = "mechanics.density"
+
+# Motion
+velocity = "motion.velocity"
+acceleration = "motion.acceleration"
+averageSpeed = "motion.averageSpeed"
+displacement = "motion.displacement"
+
+# Energy
+work = "energy.work"
+power = "energy.power"
+kineticEnergy = "energy.kineticEnergy"
+potentialEnergy = "energy.potentialEnergy"
+springEnergy = "energy.springEnergy"
+
+# Gravity
+gravitationalForce = "gravity.gravitationalForce"
+escapeVelocity = "gravity.escapeVelocity"
+orbitalVelocity = "gravity.orbitalVelocity"
+
+# Electricity
+voltage = "electricity.voltage"
+current = "electricity.current"
+resistance = "electricity.resistance"
+capacitance = "electricity.capacitance"
+electricField = "electricity.electricField"
+
+# Magnetism
+magneticForce = "magnetism.magneticForce"
+magneticFlux = "magnetism.magneticFlux"
+
+# Waves
+frequency = "waves.frequency"
+wavelength = "waves.wavelength"
+waveSpeed = "waves.waveSpeed"
+period = "waves.period"
+
+# Optics
+refractiveIndex = "optics.refractiveIndex"
+focalLength = "optics.focalLength"
+magnification = "optics.magnification"
+
+# Thermodynamics
+heat = "thermodynamics.heat"
+specificHeat = "thermodynamics.specificHeat"
+idealGasLaw = "thermodynamics.idealGasLaw"
+efficiency = "thermodynamics.efficiency"
+
+# Relativity
+massEnergy = "relativity.massEnergy"
+timeDilation = "relativity.timeDilation"
+lengthContraction = "relativity.lengthContraction"
+
+# Quantum
+photonEnergy = "quantum.photonEnergy"
+deBroglieWavelength = "quantum.deBroglieWavelength"
+
+# Astronomy
+orbitalPeriod = "astronomy.orbitalPeriod"
+luminosity = "astronomy.luminosity"
+stellarMass = "astronomy.stellarMass"
