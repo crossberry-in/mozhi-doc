@@ -1,0 +1,366 @@
+# ============================================================
+# gravity_simulation — Physics Simulation Core (v1.0.0)
+# N-body gravity, spring, electrostatic, collision
+# Velocity-Verlet integration for stability
+# ============================================================
+
+# ------------------------------------------------------------
+# Body Type
+# ------------------------------------------------------------
+# A body is represented as an array of 7 values:
+#   [name, x, y, vx, vy, mass, radius]
+# All positions in meters, velocities in m/s, mass in kg.
+
+# Create a body
+fn body(name, x, y, vx, vy, mass, radius) {
+    return [name, x, y, vx, vy, mass, radius]
+}
+
+# Accessors
+fn body_name(b) { return b[0] }
+fn body_x(b) { return b[1] }
+fn body_y(b) { return b[2] }
+fn body_vx(b) { return b[3] }
+fn body_vy(b) { return b[4] }
+fn body_mass(b) { return b[5] }
+fn body_radius(b) { return b[6] }
+
+# Setters (return new body — immutable style)
+fn body_set_x(b, val) { b[1] = val; return b }
+fn body_set_y(b, val) { b[2] = val; return b }
+fn body_set_vx(b, val) { b[3] = val; return b }
+fn body_set_vy(b, val) { b[4] = val; return b }
+
+# ------------------------------------------------------------
+# World Type
+# ------------------------------------------------------------
+# A world is: [bodies, dt, gravity_constant, bounds_w, bounds_h, forces_enabled]
+# forces_enabled is a string like "gravity" or "gravity spring electrostatic"
+
+fn world(bodies, dt, g, w, h, forces) {
+    return [bodies, dt, g, w, h, forces]
+}
+
+fn world_bodies(w) { return w[0] }
+fn world_dt(w) { return w[1] }
+fn world_g(w) { return w[2] }
+fn world_width(w) { return w[3] }
+fn world_height(w) { return w[4] }
+fn world_forces(w) { return w[5] }
+
+# ------------------------------------------------------------
+# Math Helpers
+# ------------------------------------------------------------
+fn _sqrt(n) {
+    if n <= 0 { return 0.0 }
+    x = n
+    prev = 0.0
+    while abs(x - prev) > 1e-10 {
+        prev = x
+        x = (x + n / x) / 2.0
+    }
+    return x
+}
+
+fn _abs(n) {
+    if n < 0 { return -n }
+    return n
+}
+
+# ------------------------------------------------------------
+# Force Calculations
+# ------------------------------------------------------------
+
+# Gravitational force between two bodies
+# Returns [fx, fy] as array
+fn _gravity_force(b1, b2, g) {
+    dx = b2[1] - b1[1]
+    dy = b2[2] - b1[2]
+    dist_sq = dx * dx + dy * dy
+    if dist_sq < 1.0 {
+        dist_sq = 1.0
+    }
+    dist = _sqrt(dist_sq)
+    # F = G * m1 * m2 / r^2
+    f = g * b1[5] * b2[5] / dist_sq
+    fx = f * dx / dist
+    fy = f * dy / dist
+    return [fx, fy]
+}
+
+# Spring force (Hooke's law) between two bodies
+# k = spring constant, rest = rest length
+fn _spring_force(b1, b2, k, rest_length) {
+    dx = b2[1] - b1[1]
+    dy = b2[2] - b1[2]
+    dist = _sqrt(dx * dx + dy * dy)
+    if dist == 0 { return [0.0, 0.0] }
+    # F = -k * (dist - rest)
+    f = -k * (dist - rest_length)
+    fx = f * dx / dist
+    fy = f * dy / dist
+    return [fx, fy]
+}
+
+# Electrostatic (Coulomb) force between two charged bodies
+# charge is stored in body as mass field (simplified)
+fn _electrostatic_force(b1, b2, k) {
+    dx = b2[1] - b1[1]
+    dy = b2[2] - b1[2]
+    dist_sq = dx * dx + dy * dy
+    if dist_sq < 1.0 { dist_sq = 1.0 }
+    dist = _sqrt(dist_sq)
+    # F = k * q1 * q2 / r^2
+    f = k * b1[5] * b2[5] / dist_sq
+    fx = f * dx / dist
+    fy = f * dy / dist
+    return [fx, fy]
+}
+
+# ------------------------------------------------------------
+# Collision Detection
+# ------------------------------------------------------------
+
+# Check if two bodies are colliding
+fn _colliding(b1, b2) {
+    dx = b2[1] - b1[1]
+    dy = b2[2] - b1[2]
+    dist = _sqrt(dx * dx + dy * dy)
+    return dist < (b1[6] + b2[6])
+}
+
+# Elastic collision response — updates velocities
+fn _resolve_collision(b1, b2) {
+    dx = b2[1] - b1[1]
+    dy = b2[2] - b1[2]
+    dist = _sqrt(dx * dx + dy * dy)
+    if dist == 0 { return }
+    # Normal vector
+    nx = dx / dist
+    ny = dy / dist
+    # Relative velocity
+    rvx = b2[3] - b1[3]
+    rvy = b2[4] - b1[4]
+    # Velocity along normal
+    vdotn = rvx * nx + rvy * ny
+    if vdotn > 0 { return }  # separating
+    # Masses
+    m1 = b1[5]
+    m2 = b2[5]
+    # Impulse
+    impulse = -2.0 * vdotn / (1.0 / m1 + 1.0 / m2)
+    b1[3] = b1[3] - impulse * nx / m1
+    b1[4] = b1[4] - impulse * ny / m1
+    b2[3] = b2[3] + impulse * nx / m2
+    b2[4] = b2[4] + impulse * ny / m2
+    # Separate bodies
+    overlap = (b1[6] + b2[6]) - dist
+    b1[1] = b1[1] - nx * overlap * 0.5
+    b1[2] = b1[2] - ny * overlap * 0.5
+    b2[1] = b2[1] + nx * overlap * 0.5
+    b2[2] = b2[2] + ny * overlap * 0.5
+}
+
+# ------------------------------------------------------------
+# Integration (Velocity-Verlet)
+# ------------------------------------------------------------
+
+# Compute acceleration for a single body from all forces
+fn _compute_accel(body_idx, w) {
+    bodies = w[0]
+    g = w[2]
+    forces = w[5]
+    b1 = bodies[body_idx]
+    ax = 0.0
+    ay = 0.0
+    i = 0
+    while i < bodies.len() {
+        if i == body_idx {
+            i = i + 1
+        }
+        if i >= bodies.len() { break }
+        b2 = bodies[i]
+        # Gravity
+        if forces.contains("gravity") {
+            gf = _gravity_force(b1, b2, g)
+            ax = ax + gf[0] / b1[5]
+            ay = ay + gf[1] / b1[5]
+        }
+        # Electrostatic
+        if forces.contains("electrostatic") {
+            ef = _electrostatic_force(b1, b2, 8.99e9)
+            ax = ax + ef[0] / b1[5]
+            ay = ay + ef[1] / b1[5]
+        }
+        i = i + 1
+    }
+    return [ax, ay]
+}
+
+# Step the simulation forward by dt
+# Returns updated world
+fn step(w) {
+    bodies = w[0]
+    dt = w[1]
+    g = w[2]
+    width = w[3]
+    height = w[4]
+    forces = w[5]
+    n = bodies.len()
+
+    # 1. Compute accelerations
+    accels = []
+    i = 0
+    while i < n {
+        a = _compute_accel(i, w)
+        accels.push(a)
+        i = i + 1
+    }
+
+    # 2. Update positions: x = x + v*dt + 0.5*a*dt^2
+    i = 0
+    while i < n {
+        b = bodies[i]
+        a = accels[i]
+        b[1] = b[1] + b[3] * dt + 0.5 * a[0] * dt * dt
+        b[2] = b[2] + b[4] * dt + 0.5 * a[1] * dt * dt
+        i = i + 1
+    }
+
+    # 3. Compute new accelerations
+    new_accels = []
+    i = 0
+    while i < n {
+        a = _compute_accel(i, w)
+        new_accels.push(a)
+        i = i + 1
+    }
+
+    # 4. Update velocities: v = v + 0.5*(a_old + a_new)*dt
+    i = 0
+    while i < n {
+        b = bodies[i]
+        a_old = accels[i]
+        a_new = new_accels[i]
+        b[3] = b[3] + 0.5 * (a_old[0] + a_new[0]) * dt
+        b[4] = b[4] + 0.5 * (a_old[1] + a_new[1]) * dt
+        i = i + 1
+    }
+
+    # 5. Handle collisions
+    i = 0
+    while i < n {
+        j = i + 1
+        while j < n {
+            if _colliding(bodies[i], bodies[j]) {
+                _resolve_collision(bodies[i], bodies[j])
+            }
+            j = j + 1
+        }
+        i = i + 1
+    }
+
+    # 6. Boundary check (bounce off walls)
+    i = 0
+    while i < n {
+        b = bodies[i]
+        r = b[6]
+        if b[1] < r {
+            b[1] = r
+            b[3] = -b[3] * 0.8
+        }
+        if b[1] > width - r {
+            b[1] = width - r
+            b[3] = -b[3] * 0.8
+        }
+        if b[2] < r {
+            b[2] = r
+            b[4] = -b[4] * 0.8
+        }
+        if b[2] > height - r {
+            b[2] = height - r
+            b[4] = -b[4] * 0.8
+        }
+        i = i + 1
+    }
+
+    return w
+}
+
+# Run multiple steps
+fn run_steps(w, count) {
+    i = 0
+    while i < count {
+        w = step(w)
+        i = i + 1
+    }
+    return w
+}
+
+# ------------------------------------------------------------
+# Simulation State (for animation)
+# ------------------------------------------------------------
+
+# Track positions over time for trajectory rendering
+fn simulate_trajectory(w, steps) {
+    positions = []
+    i = 0
+    while i < steps {
+        w = step(w)
+        bodies = w[0]
+        frame = []
+        j = 0
+        while j < bodies.len() {
+            b = bodies[j]
+            frame.push([b[1], b[2]])
+            j = j + 1
+        }
+        positions.push(frame)
+        i = i + 1
+    }
+    return positions
+}
+
+# ------------------------------------------------------------
+# Energy Calculations
+# ------------------------------------------------------------
+
+# Total kinetic energy of all bodies
+fn kinetic_energy(w) {
+    bodies = w[0]
+    total = 0.0
+    for b in bodies {
+        v_sq = b[3] * b[3] + b[4] * b[4]
+        total = total + 0.5 * b[5] * v_sq
+    }
+    return total
+}
+
+# Total gravitational potential energy
+fn potential_energy(w) {
+    bodies = w[0]
+    g = w[2]
+    total = 0.0
+    i = 0
+    while i < bodies.len() {
+        j = i + 1
+        while j < bodies.len() {
+            b1 = bodies[i]
+            b2 = bodies[j]
+            dx = b2[1] - b1[1]
+            dy = b2[2] - b1[2]
+            dist = _sqrt(dx * dx + dy * dy)
+            if dist > 0 {
+                total = total - g * b1[5] * b2[5] / dist
+            }
+            j = j + 1
+        }
+        i = i + 1
+    }
+    return total
+}
+
+# Total energy (should be conserved in a closed system)
+fn total_energy(w) {
+    return kinetic_energy(w) + potential_energy(w)
+}

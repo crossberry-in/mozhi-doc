@@ -1,0 +1,147 @@
+# ============================================================
+# gravity_simulation — Presets (v1.0.0)
+# Pre-configured simulation scenarios
+# ============================================================
+
+import mod from "mod.mz"
+
+# ------------------------------------------------------------
+# Solar System Preset
+# ------------------------------------------------------------
+# Scaled-down solar system with Sun + 4 inner planets.
+# Units are arbitrary (not real AU) for visualization.
+
+fn solar_system() {
+    bodies = []
+    # Sun (large mass at center, stationary)
+    bodies.push(mod.body("Sun", 400.0, 300.0, 0.0, 0.0, 10000.0, 20.0))
+    # Mercury (close, fast)
+    bodies.push(mod.body("Mercury", 450.0, 300.0, 0.0, 45.0, 1.0, 3.0))
+    # Venus
+    bodies.push(mod.body("Venus", 500.0, 300.0, 0.0, 38.0, 5.0, 5.0))
+    # Earth
+    bodies.push(mod.body("Earth", 560.0, 300.0, 0.0, 32.0, 6.0, 6.0))
+    # Mars
+    bodies.push(mod.body("Mars", 630.0, 300.0, 0.0, 27.0, 2.0, 4.0))
+
+    return mod.world(bodies, 0.05, 50.0, 800.0, 600.0, "gravity")
+}
+
+# ------------------------------------------------------------
+# Binary Star System
+# ------------------------------------------------------------
+
+fn binary_stars() {
+    bodies = []
+    # Two equal-mass stars orbiting each other
+    bodies.push(mod.body("Star A", 350.0, 300.0, 0.0, -20.0, 5000.0, 15.0))
+    bodies.push(mod.body("Star B", 450.0, 300.0, 0.0, 20.0, 5000.0, 15.0))
+    # Small planet
+    bodies.push(mod.body("Planet", 400.0, 200.0, 40.0, 0.0, 1.0, 4.0))
+
+    return mod.world(bodies, 0.05, 30.0, 800.0, 600.0, "gravity")
+}
+
+# ------------------------------------------------------------
+# Pendulum (single, using spring constraint)
+# ------------------------------------------------------------
+
+fn pendulum() {
+    bodies = []
+    # Pivot point (fixed — very high mass)
+    bodies.push(mod.body("Pivot", 400.0, 100.0, 0.0, 0.0, 1000000.0, 5.0))
+    # Bob (swinging mass)
+    bodies.push(mod.body("Bob", 400.0, 250.0, 30.0, 0.0, 10.0, 10.0))
+
+    # Use gravity + spring to simulate pendulum
+    return mod.world(bodies, 0.02, 9.81, 800.0, 600.0, "gravity spring")
+}
+
+# ------------------------------------------------------------
+# Double Pendulum
+# ------------------------------------------------------------
+
+fn double_pendulum() {
+    bodies = []
+    # Fixed pivot
+    bodies.push(mod.body("Pivot", 400.0, 100.0, 0.0, 0.0, 1000000.0, 5.0))
+    # First bob
+    bodies.push(mod.body("Bob1", 350.0, 200.0, 20.0, 0.0, 10.0, 8.0))
+    # Second bob
+    bodies.push(mod.body("Bob2", 300.0, 300.0, 15.0, 0.0, 5.0, 6.0))
+
+    return mod.world(bodies, 0.01, 9.81, 800.0, 600.0, "gravity spring")
+}
+
+# ------------------------------------------------------------
+# Three-Body Problem
+# ------------------------------------------------------------
+
+fn three_body() {
+    bodies = []
+    bodies.push(mod.body("Body A", 300.0, 300.0, 0.0, 15.0, 1000.0, 10.0))
+    bodies.push(mod.body("Body B", 500.0, 300.0, 0.0, -15.0, 1000.0, 10.0))
+    bodies.push(mod.body("Body C", 400.0, 200.0, -13.0, 0.0, 1000.0, 10.0))
+
+    return mod.world(bodies, 0.02, 20.0, 800.0, 600.0, "gravity")
+}
+
+# ------------------------------------------------------------
+# Bouncing Balls (collision demo)
+# ------------------------------------------------------------
+
+fn bouncing_balls() {
+    bodies = []
+    bodies.push(mod.body("Ball 1", 200.0, 100.0, 50.0, 0.0, 5.0, 15.0))
+    bodies.push(mod.body("Ball 2", 400.0, 100.0, -30.0, 0.0, 3.0, 12.0))
+    bodies.push(mod.body("Ball 3", 600.0, 200.0, -50.0, 20.0, 8.0, 18.0))
+    bodies.push(mod.body("Ball 4", 300.0, 300.0, 40.0, -20.0, 4.0, 10.0))
+
+    # Gravity pulls down, walls bounce
+    return mod.world(bodies, 0.05, 0.5, 800.0, 600.0, "gravity")
+}
+
+# ------------------------------------------------------------
+# Electrostatic Repulsion
+# ------------------------------------------------------------
+
+fn electrostatic_charges() {
+    bodies = []
+    # Positive charges (repel each other)
+    bodies.push(mod.body("Q1", 400.0, 300.0, 0.0, 0.0, 1.0, 8.0))
+    bodies.push(mod.body("Q2", 350.0, 250.0, 0.0, 0.0, 1.0, 8.0))
+    bodies.push(mod.body("Q3", 450.0, 250.0, 0.0, 0.0, 1.0, 8.0))
+    bodies.push(mod.body("Q4", 350.0, 350.0, 0.0, 0.0, 1.0, 8.0))
+    bodies.push(mod.body("Q5", 450.0, 350.0, 0.0, 0.0, 1.0, 8.0))
+
+    return mod.world(bodies, 0.01, 0.0, 800.0, 600.0, "electrostatic")
+}
+
+# ------------------------------------------------------------
+# Projectile Motion
+# ------------------------------------------------------------
+
+fn projectile() {
+    bodies = []
+    # Projectile launched at angle
+    bodies.push(mod.body("Projectile", 50.0, 500.0, 40.0, -35.0, 2.0, 5.0))
+
+    return mod.world(bodies, 0.05, 9.81, 800.0, 600.0, "gravity")
+}
+
+# ------------------------------------------------------------
+# List all available presets
+# ------------------------------------------------------------
+
+fn presets() {
+    return [
+        ["solar_system", "Sun + 4 planets orbiting"],
+        ["binary_stars", "Two stars + planet"],
+        ["pendulum", "Simple pendulum (spring)"],
+        ["double_pendulum", "Chaotic double pendulum"],
+        ["three_body", "Classic three-body problem"],
+        ["bouncing_balls", "Bouncing balls with collisions"],
+        ["electrostatic", "Repelling electric charges"],
+        ["projectile", "Projectile motion under gravity"]
+    ]
+}

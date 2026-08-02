@@ -1,0 +1,80 @@
+# Gravity Simulation — Example
+# Run: mozhi-interpreter demo.mz
+
+import mod from "../src/mod.mz"
+import presets from "../src/presets.mz"
+import renderer from "../src/renderer.mz"
+
+echo("=== Gravity Simulation Demo ===")
+echo("")
+
+# 1. Solar System
+echo("--- Solar System ---")
+w = presets.solar_system()
+echo("Bodies: " + string(mod.world_bodies(w).len()))
+w = mod.run_steps(w, 50)
+echo("After 50 steps:")
+echo(renderer.render_ascii(w))
+echo("")
+
+# 2. Generate HTML animation
+echo("--- Generating HTML Animations ---")
+
+# Solar system
+write_file("solar_system.html", renderer.render_html(presets.solar_system(), 300))
+echo("  ✓ solar_system.html (300 frames)")
+
+# Three-body
+write_file("three_body.html", renderer.render_html(presets.three_body(), 500))
+echo("  ✓ three_body.html (500 frames)")
+
+# Bouncing balls
+write_file("bouncing_balls.html", renderer.render_html(presets.bouncing_balls(), 200))
+echo("  ✓ bouncing_balls.html (200 frames)")
+
+# Pendulum
+write_file("pendulum.html", renderer.render_html(presets.pendulum(), 400))
+echo("  ✓ pendulum.html (400 frames)")
+
+echo("")
+
+# 3. Energy conservation check
+echo("--- Energy Conservation ---")
+w = presets.solar_system()
+e0 = mod.total_energy(w)
+w = mod.run_steps(w, 100)
+e1 = mod.total_energy(w)
+echo("Initial energy: " + string(e0))
+echo("After 100 steps: " + string(e1))
+echo("Drift: " + string(e1 - e0))
+echo("")
+
+# 4. Custom simulation
+echo("--- Custom Simulation ---")
+bodies = []
+bodies.push(mod.body("Sun", 400.0, 300.0, 0.0, 0.0, 10000.0, 20.0))
+bodies.push(mod.body("Planet", 500.0, 300.0, 0.0, 40.0, 5.0, 8.0))
+bodies.push(mod.body("Moon", 520.0, 300.0, 0.0, 50.0, 0.5, 3.0))
+
+w = mod.world(bodies, 0.05, 50.0, 800.0, 600.0, "gravity")
+echo("Custom: Sun + Planet + Moon")
+
+write_file("custom.html", renderer.render_html(w, 400))
+echo("  ✓ custom.html (400 frames)")
+echo("")
+
+# 5. Export JSON
+echo("--- JSON Export ---")
+json = renderer.export_json(presets.binary_stars(), 100)
+write_file("simulation.json", json)
+echo("  ✓ simulation.json (100 frames)")
+echo("")
+
+# 6. List all presets
+echo("--- Available Presets ---")
+for p in presets.presets() {
+    echo("  " + p[0] + " — " + p[1])
+}
+echo("")
+
+echo("=== Done! Open the .html files in your browser. ===")

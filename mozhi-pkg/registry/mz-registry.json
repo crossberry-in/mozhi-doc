@@ -94,6 +94,52 @@
       "version": "1.0.0"
     },
     {
+      "category": "science",
+      "checksum_sha256": "3a58f79d4eb2add897342b8bec51888e16611f31e9b2d6e07f70c3ff8be87320",
+      "description": "N-body physics simulation: gravity, springs, electrostatics, collisions, with SVG/HTML rendering",
+      "edition": "2024",
+      "examples": [
+        "demo.mz"
+      ],
+      "exports": {
+        "binary_stars": "presets.binary_stars",
+        "body": "mod.body",
+        "bouncing_balls": "presets.bouncing_balls",
+        "double_pendulum": "presets.double_pendulum",
+        "electrostatic_charges": "presets.electrostatic_charges",
+        "export_json": "renderer.export_json",
+        "kinetic_energy": "mod.kinetic_energy",
+        "pendulum": "presets.pendulum",
+        "potential_energy": "mod.potential_energy",
+        "projectile": "presets.projectile",
+        "render_ascii": "renderer.render_ascii",
+        "render_html": "renderer.render_html",
+        "render_svg": "renderer.render_svg",
+        "run_steps": "mod.run_steps",
+        "simulate_trajectory": "mod.simulate_trajectory",
+        "solar_system": "presets.solar_system",
+        "step": "mod.step",
+        "three_body": "presets.three_body",
+        "total_energy": "mod.total_energy",
+        "world": "mod.world"
+      },
+      "has_mod": true,
+      "install": "pkg/gravity_simulation/src/",
+      "license": "MIT",
+      "modules": [
+        "mod.mz",
+        "presets.mz",
+        "renderer.mz"
+      ],
+      "name": "gravity_simulation",
+      "path": "pkg/gravity_simulation",
+      "source": "pkg/gravity_simulation/src/mod.mz",
+      "tests": [
+        "test_basic.mz"
+      ],
+      "version": "1.0.0"
+    },
+    {
       "category": "web",
       "checksum_sha256": "41b9314663131bcb389eecddae1aed736a954760e7ea1db652e1e89750911809",
       "description": "HTML element generation utilities \u2014 38 functions for building web pages",
@@ -420,6 +466,6 @@
       "version": "1.0.0"
     }
   ],
-  "updated": "2026-08-02T19:56:03Z",
+  "updated": "2026-08-02T20:08:39Z",
   "version": "1.0.0"
 }

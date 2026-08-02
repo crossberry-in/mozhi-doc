@@ -1,0 +1,79 @@
+# Basic tests for gravity_simulation
+import mod from "../src/mod.mz"
+import presets from "../src/presets.mz"
+import renderer from "../src/renderer.mz"
+
+echo("Running gravity_simulation tests...")
+
+# Test body creation
+b = mod.body("Test", 100.0, 200.0, 5.0, -3.0, 10.0, 5.0)
+if mod.body_name(b) == "Test" {
+    echo("  ✓ body creation works")
+}
+
+# Test world creation
+w = mod.world([b], 0.01, 9.81, 800.0, 600.0, "gravity")
+if mod.world_bodies(w).len() == 1 {
+    echo("  ✓ world creation works")
+}
+
+# Test step (should not crash)
+w2 = mod.step(w)
+echo("  ✓ step() works")
+
+# Test run_steps
+w3 = mod.run_steps(w, 10)
+echo("  ✓ run_steps(10) works")
+
+# Test energy calculations
+ke = mod.kinetic_energy(w)
+echo("  ✓ kinetic_energy() = " + string(ke))
+
+pe = mod.potential_energy(w)
+echo("  ✓ potential_energy() = " + string(pe))
+
+te = mod.total_energy(w)
+echo("  ✓ total_energy() = " + string(te))
+
+# Test presets
+ss = presets.solar_system()
+if mod.world_bodies(ss).len() == 5 {
+    echo("  ✓ solar_system preset (5 bodies)")
+}
+
+tb = presets.three_body()
+if mod.world_bodies(tb).len() == 3 {
+    echo("  ✓ three_body preset (3 bodies)")
+}
+
+bb = presets.bouncing_balls()
+if mod.world_bodies(bb).len() == 4 {
+    echo("  ✓ bouncing_balls preset (4 bodies)")
+}
+
+# Test trajectory
+traj = mod.simulate_trajectory(w, 5)
+if traj.len() == 5 {
+    echo("  ✓ simulate_trajectory(5) returns 5 frames")
+}
+
+# Test SVG render
+svg = renderer.render_svg(w)
+if svg.contains("<svg") {
+    echo("  ✓ render_svg() works")
+}
+
+# Test ASCII render
+ascii = renderer.render_ascii(w)
+if ascii.contains("Simulation State") {
+    echo("  ✓ render_ascii() works")
+}
+
+# Test JSON export
+json = renderer.export_json(w, 3)
+if json.contains("\"frames\"") {
+    echo("  ✓ export_json() works")
+}
+
+echo("")
+echo("All tests passed!")

@@ -1,0 +1,247 @@
+# ============================================================
+# gravity_simulation — Renderer (v1.0.0)
+# Generate HTML/SVG visualizations of simulations
+# ============================================================
+
+import mod from "mod.mz"
+
+# ------------------------------------------------------------
+# SVG Frame Renderer
+# ------------------------------------------------------------
+
+# Render a single frame as SVG
+# w = world, return SVG string
+fn render_svg(w) {
+    bodies = mod.world_bodies(w)
+    width = mod.world_width(w)
+    height = mod.world_height(w)
+
+    svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + string(width) + "\" height=\"" + string(height) + "\" style=\"background:#0d1117;\">"
+
+    # Draw bodies
+    for b in bodies {
+        cx = string(b[1])
+        cy = string(b[2])
+        r = string(b[6])
+        name = b[0]
+        svg = svg + "<circle cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"" + r + "\" fill=\"#58a6ff\" stroke=\"#1f6feb\" stroke-width=\"2\"/>"
+        svg = svg + "<text x=\"" + cx + "\" y=\"" + string(b[2] - b[6] - 5) + "\" fill=\"#c9d1d9\" font-size=\"12\" text-anchor=\"middle\">" + name + "</text>"
+    }
+
+    svg = svg + "</svg>"
+    return svg
+}
+
+# ------------------------------------------------------------
+# HTML Canvas Animation
+# ------------------------------------------------------------
+
+# Generate a full HTML page with animated canvas simulation
+# w = world, steps = number of frames to simulate
+# Returns full HTML document string
+fn render_html(w, steps) {
+    width = mod.world_width(w)
+    height = mod.world_height(w)
+
+    # Pre-compute all frames
+    positions = mod.simulate_trajectory(w, steps)
+
+    # Build JavaScript array of positions
+    js_frames = ""
+    i = 0
+    while i < positions.len() {
+        frame = positions[i]
+        if i > 0 { js_frames = js_frames + ",\n" }
+        js_frames = js_frames + "  ["
+        j = 0
+        while j < frame.len() {
+            if j > 0 { js_frames = js_frames + "," }
+            pos = frame[j]
+            js_frames = js_frames + "{\"x\":" + string(pos[0]) + ",\"y\":" + string(pos[1]) + "}"
+            j = j + 1
+        }
+        js_frames = js_frames + "]"
+        i = i + 1
+    }
+
+    # Get body info for rendering
+    bodies = mod.world_bodies(w)
+    body_info = ""
+    i = 0
+    while i < bodies.len() {
+        if i > 0 { body_info = body_info + "," }
+        b = bodies[i]
+        body_info = body_info + "{\"name\":\"" + b[0] + "\",\"r\":" + string(b[6]) + "}"
+        i = i + 1
+    }
+
+    html = "<!DOCTYPE html>\n"
+    html = html + "<html lang=\"en\">\n"
+    html = html + "<head>\n"
+    html = html + "  <meta charset=\"UTF-8\">\n"
+    html = html + "  <title>Gravity Simulation</title>\n"
+    html = html + "  <style>\n"
+    html = html + "    body { margin:0; background:#0d1117; display:flex; flex-direction:column; align-items:center; }\n"
+    html = html + "    canvas { border:1px solid #30363d; border-radius:8px; }\n"
+    html = html + "    .controls { margin:1rem; display:flex; gap:1rem; align-items:center; }\n"
+    html = html + "    button { background:#238636; color:white; border:none; padding:0.5rem 1rem; border-radius:6px; cursor:pointer; }\n"
+    html = html + "    button:hover { background:#2ea043; }\n"
+    html = html + "    .info { color:#8b949e; font-family:monospace; }\n"
+    html = html + "  </style>\n"
+    html = html + "</head>\n"
+    html = html + "<body>\n"
+    html = html + "  <div class=\"controls\">\n"
+    html = html + "    <button id=\"play\">▶ Play</button>\n"
+    html = html + "    <button id=\"reset\">↺ Reset</button>\n"
+    html = html + "    <span class=\"info\" id=\"frame-info\">Frame 0 / " + string(steps) + "</span>\n"
+    html = html + "  </div>\n"
+    html = html + "  <canvas id=\"canvas\" width=\"" + string(width) + "\" height=\"" + string(height) + "\"></canvas>\n"
+    html = html + "  <script>\n"
+    html = html + "    const frames = [\n" + js_frames + "\n    ];\n"
+    html = html + "    const bodies = [" + body_info + "];\n"
+    html = html + "    const canvas = document.getElementById('canvas');\n"
+    html = html + "    const ctx = canvas.getContext('2d');\n"
+    html = html + "    const colors = ['#58a6ff','#f85149','#3fb950','#d29922','#bc8cff','#ff7b72','#79c0ff','#ffa657'];\n"
+    html = html + "    let frame = 0;\n"
+    html = html + "    let playing = false;\n"
+    html = html + "    let interval = null;\n"
+    html = html + "    let trails = bodies.map(() => []);\n"
+    html = html + "    function draw() {\n"
+    html = html + "      ctx.fillStyle = '#0d1117';\n"
+    html = html + "      ctx.fillRect(0, 0, " + string(width) + ", " + string(height) + ");\n"
+    html = html + "      const f = frames[frame];\n"
+    html = html + "      if (!f) return;\n"
+    html = html + "      for (let i = 0; i < f.length; i++) {\n"
+    html = html + "        const pos = f[i];\n"
+    html = html + "        const b = bodies[i];\n"
+    html = html + "        trails[i].push({x:pos.x, y:pos.y});\n"
+    html = html + "        if (trails[i].length > 50) trails[i].shift();\n"
+    html = html + "        // Draw trail\n"
+    html = html + "        ctx.strokeStyle = colors[i % colors.length] + '40';\n"
+    html = html + "        ctx.lineWidth = 1;\n"
+    html = html + "        ctx.beginPath();\n"
+    html = html + "        for (let j = 0; j < trails[i].length; j++) {\n"
+    html = html + "          if (j === 0) ctx.moveTo(trails[i][j].x, trails[i][j].y);\n"
+    html = html + "          else ctx.lineTo(trails[i][j].x, trails[i][j].y);\n"
+    html = html + "        }\n"
+    html = html + "        ctx.stroke();\n"
+    html = html + "        // Draw body\n"
+    html = html + "        ctx.fillStyle = colors[i % colors.length];\n"
+    html = html + "        ctx.beginPath();\n"
+    html = html + "        ctx.arc(pos.x, pos.y, b.r, 0, Math.PI * 2);\n"
+    html = html + "        ctx.fill();\n"
+    html = html + "        ctx.strokeStyle = colors[i % colors.length];\n"
+    html = html + "        ctx.stroke();\n"
+    html = html + "        // Draw label\n"
+    html = html + "        ctx.fillStyle = '#c9d1d9';\n"
+    html = html + "        ctx.font = '11px monospace';\n"
+    html = html + "        ctx.fillText(b.name, pos.x + b.r + 3, pos.y - b.r - 3);\n"
+    html = html + "      }\n"
+    html = html + "      document.getElementById('frame-info').textContent = 'Frame ' + frame + ' / ' + frames.length;\n"
+    html = html + "    }\n"
+    html = html + "    document.getElementById('play').onclick = function() {\n"
+    html = html + "      if (playing) {\n"
+    html = html + "        clearInterval(interval);\n"
+    html = html + "        playing = false;\n"
+    html = html + "        this.textContent = '▶ Play';\n"
+    html = html + "      } else {\n"
+    html = html + "        playing = true;\n"
+    html = html + "        this.textContent = '⏸ Pause';\n"
+    html = html + "        interval = setInterval(function() {\n"
+    html = html + "          frame++;\n"
+    html = html + "          if (frame >= frames.length) frame = 0;\n"
+    html = html + "          draw();\n"
+    html = html + "        }, 33);\n"
+    html = html + "      }\n"
+    html = html + "    };\n"
+    html = html + "    document.getElementById('reset').onclick = function() {\n"
+    html = html + "      frame = 0;\n"
+    html = html + "      trails = bodies.map(() => []);\n"
+    html = html + "      draw();\n"
+    html = html + "    };\n"
+    html = html + "    draw();\n"
+    html = html + "  </script>\n"
+    html = html + "</body>\n"
+    html = html + "</html>"
+
+    return html
+}
+
+# ------------------------------------------------------------
+# Console Output (text-based rendering)
+# ------------------------------------------------------------
+
+# Render a simple ASCII representation
+fn render_ascii(w) {
+    bodies = mod.world_bodies(w)
+    width = mod.world_width(w)
+    height = mod.world_height(w)
+
+    # Scale to 40x20 grid
+    cols = 40
+    rows = 15
+    grid = ""
+    r = 0
+    while r < rows {
+        c = 0
+        while c < cols {
+            grid = grid + "."
+            c = c + 1
+        }
+        grid = grid + "\n"
+        r = r + 1
+    }
+
+    # Place bodies (simplified — just print positions)
+    result = "Simulation State:\n"
+    result = result + "  Width: " + string(width) + " x Height: " + string(height) + "\n\n"
+    result = result + "  Bodies:\n"
+    for b in bodies {
+        result = result + "    " + b[0] + " at (" + string(b[1]) + ", " + string(b[2]) + ")"
+        result = result + " v=(" + string(b[3]) + ", " + string(b[4]) + ")"
+        result = result + " m=" + string(b[5]) + " r=" + string(b[6]) + "\n"
+    }
+    result = result + "\n  KE = " + string(mod.kinetic_energy(w))
+    result = result + "  PE = " + string(mod.potential_energy(w))
+    result = result + "  Total = " + string(mod.total_energy(w))
+
+    return result
+}
+
+# ------------------------------------------------------------
+# Trajectory Data Export
+# ------------------------------------------------------------
+
+# Export trajectory as JSON for external visualization
+fn export_json(w, steps) {
+    positions = mod.simulate_trajectory(w, steps)
+    bodies = mod.world_bodies(w)
+
+    json = "{\"bodies\":["
+    i = 0
+    while i < bodies.len() {
+        if i > 0 { json = json + "," }
+        b = bodies[i]
+        json = json + "{\"name\":\"" + b[0] + "\",\"mass\":" + string(b[5]) + ",\"radius\":" + string(b[6]) + "}"
+        i = i + 1
+    }
+    json = json + "],\"frames\":["
+    i = 0
+    while i < positions.len() {
+        if i > 0 { json = json + "," }
+        frame = positions[i]
+        json = json + "["
+        j = 0
+        while j < frame.len() {
+            if j > 0 { json = json + "," }
+            pos = frame[j]
+            json = json + "{\"x\":" + string(pos[0]) + ",\"y\":" + string(pos[1]) + "}"
+            j = j + 1
+        }
+        json = json + "]"
+        i = i + 1
+    }
+    json = json + "]}"
+
+    return json
+}

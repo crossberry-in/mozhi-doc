@@ -12,6 +12,9 @@
       "physics",
       "random"
     ],
+    "science": [
+      "gravity_simulation"
+    ],
     "web": [
       "html",
       "http",

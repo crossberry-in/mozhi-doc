@@ -1,7 +1,7 @@
 {
   "name": "mozhi",
   "version": "1.0.0",
-  "updated": "2026-08-02T19:56:03Z",
+  "updated": "2026-08-02T20:08:39Z",
   "packages": [
     {
       "name": "collections",
@@ -94,6 +94,52 @@
       "has_mod": true,
       "source": "pkg/datetime/src/mod.mz",
       "install": "pkg/datetime/src/"
+    },
+    {
+      "name": "gravity_simulation",
+      "version": "1.0.0",
+      "description": "N-body physics simulation: gravity, springs, electrostatics, collisions, with SVG/HTML rendering",
+      "category": "science",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/gravity_simulation",
+      "modules": [
+        "mod.mz",
+        "presets.mz",
+        "renderer.mz"
+      ],
+      "exports": {
+        "body": "mod.body",
+        "world": "mod.world",
+        "step": "mod.step",
+        "run_steps": "mod.run_steps",
+        "kinetic_energy": "mod.kinetic_energy",
+        "potential_energy": "mod.potential_energy",
+        "total_energy": "mod.total_energy",
+        "simulate_trajectory": "mod.simulate_trajectory",
+        "render_svg": "renderer.render_svg",
+        "render_html": "renderer.render_html",
+        "render_ascii": "renderer.render_ascii",
+        "export_json": "renderer.export_json",
+        "solar_system": "presets.solar_system",
+        "binary_stars": "presets.binary_stars",
+        "pendulum": "presets.pendulum",
+        "double_pendulum": "presets.double_pendulum",
+        "three_body": "presets.three_body",
+        "bouncing_balls": "presets.bouncing_balls",
+        "electrostatic_charges": "presets.electrostatic_charges",
+        "projectile": "presets.projectile"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [
+        "test_basic.mz"
+      ],
+      "checksum_sha256": "3a58f79d4eb2add897342b8bec51888e16611f31e9b2d6e07f70c3ff8be87320",
+      "has_mod": true,
+      "source": "pkg/gravity_simulation/src/mod.mz",
+      "install": "pkg/gravity_simulation/src/"
     },
     {
       "name": "html",
