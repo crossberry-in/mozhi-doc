@@ -1,0 +1,29 @@
+import mod from "../src/mod.mz"
+
+echo("Running math_utils tests...")
+
+if mod.abs(-5) == 5 {
+    echo("  ✓ abs(-5) = 5")
+}
+
+if mod.factorial(5) == 120 {
+    echo("  ✓ factorial(5) = 120")
+}
+
+if mod.gcd(48, 36) == 12 {
+    echo("  ✓ gcd(48, 36) = 12")
+}
+
+if mod.is_prime(97) {
+    echo("  ✓ is_prime(97) = true")
+}
+
+if mod.fibonacci(10) == 55 {
+    echo("  ✓ fibonacci(10) = 55")
+}
+
+if mod.sqrt(144) == 12 {
+    echo("  ✓ sqrt(144) = 12")
+}
+
+echo("Tests complete.")

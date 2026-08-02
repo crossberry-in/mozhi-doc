@@ -1,0 +1,140 @@
+# ============================================================
+# Mozhi Physics Library — Mechanics (v1.0.0)
+# Newtonian mechanics: force, weight, momentum, impulse,
+# torque, pressure, density.
+# All inputs/outputs in SI units unless stated otherwise.
+# ============================================================
+
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+
+# ------------------------------------------------------------
+# Force
+# ------------------------------------------------------------
+
+# Newton's second law: F = m × a
+# mass (kg), acceleration (m/s²) → force (N)
+fn force(mass, acceleration) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return mass * acceleration
+}
+
+# Weight under standard gravity: W = m × g
+# mass (kg) → weight (N)  [uses STANDARD_GRAVITY]
+fn weight(mass) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return mass * constants.STANDARD_GRAVITY
+}
+
+# Weight under arbitrary gravity: W = m × g
+# mass (kg), gravity (m/s²) → weight (N)
+fn weight_at(mass, gravity) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return mass * gravity
+}
+
+# ------------------------------------------------------------
+# Momentum & Impulse
+# ------------------------------------------------------------
+
+# Linear momentum: p = m × v
+# mass (kg), velocity (m/s) → momentum (kg·m/s)
+fn momentum(mass, velocity) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return mass * velocity
+}
+
+# Impulse: J = F × Δt  (also equals Δp)
+# force (N), time (s) → impulse (N·s)
+fn impulse(force_val, time) {
+    if time < 0 {
+        return errors.err_negative("time")
+    }
+    return force_val * time
+}
+
+# ------------------------------------------------------------
+# Torque
+# ------------------------------------------------------------
+
+# Torque (magnitude): τ = r × F × sin(θ)
+# radius (m), force (N), angle (degrees) → torque (N·m)
+fn torque(radius, force_val, angle_deg) {
+    if radius < 0 {
+        return errors.err_negative("radius")
+    }
+    angle_rad = angle_deg * constants.PI / 180.0
+    return radius * force_val * sin(angle_rad)
+}
+
+# Torque at 90° (maximum): τ = r × F
+# radius (m), force (N) → torque (N·m)
+fn torque_perpendicular(radius, force_val) {
+    if radius < 0 {
+        return errors.err_negative("radius")
+    }
+    return radius * force_val
+}
+
+# ------------------------------------------------------------
+# Pressure
+# ------------------------------------------------------------
+
+# Pressure: P = F / A
+# force (N), area (m²) → pressure (Pa)
+fn pressure(force_val, area) {
+    if area == 0 {
+        return errors.err_zero("area")
+    }
+    if area < 0 {
+        return errors.err_negative("area")
+    }
+    return force_val / area
+}
+
+# Hydrostatic pressure: P = ρ × g × h
+# density (kg/m³), gravity (m/s²), depth (m) → pressure (Pa)
+fn hydrostatic_pressure(density, gravity, depth) {
+    if density < 0 {
+        return errors.err_negative("density")
+    }
+    if depth < 0 {
+        return errors.err_negative("depth")
+    }
+    return density * gravity * depth
+}
+
+# ------------------------------------------------------------
+# Density
+# ------------------------------------------------------------
+
+# Density: ρ = m / V
+# mass (kg), volume (m³) → density (kg/m³)
+fn density(mass, volume) {
+    if volume == 0 {
+        return errors.err_zero("volume")
+    }
+    if volume < 0 {
+        return errors.err_negative("volume")
+    }
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return mass / volume
+}
+
+# Specific gravity (relative density): ρ_sample / ρ_water
+# sample_density (kg/m³) → dimensionless ratio
+const WATER_DENSITY = 1000.0
+
+fn specific_gravity(sample_density) {
+    return sample_density / WATER_DENSITY
+}

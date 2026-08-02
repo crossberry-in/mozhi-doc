@@ -1,0 +1,168 @@
+# ============================================================
+# Mozhi Physics Library — Fluids (v1.0.0)
+# Fluid mechanics: buoyancy, continuity, Bernoulli, viscosity
+# All inputs/outputs in SI units
+# ============================================================
+
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+
+fn _abs(n) {
+    if n < 0 {
+        return -n
+    }
+    return n
+}
+
+# ------------------------------------------------------------
+# Buoyancy (Archimedes)
+# ------------------------------------------------------------
+
+# Buoyant force: F_b = ρ_fluid · g · V_displaced
+# fluid_density (kg/m³), gravity (m/s²), volume (m³) → force (N)
+fn buoyant_force(fluid_density, gravity, volume) {
+    if fluid_density < 0 {
+        return errors.err_negative("fluid_density")
+    }
+    if volume < 0 {
+        return errors.err_negative("volume")
+    }
+    return fluid_density * gravity * volume
+}
+
+# Apparent weight in fluid: W_app = m·g - ρ_f·g·V
+# mass (kg), gravity (m/s²), fluid_density (kg/m³), volume (m³) → force (N)
+fn apparent_weight(mass, gravity, fluid_density, volume) {
+    real_weight = mass * gravity
+    buoyancy = buoyant_force(fluid_density, gravity, volume)
+    return real_weight - buoyancy
+}
+
+# ------------------------------------------------------------
+# Continuity Equation
+# ------------------------------------------------------------
+
+# A₁·v₁ = A₂·v₂  →  v₂ = A₁·v₁ / A₂
+# area1 (m²), velocity1 (m/s), area2 (m²) → velocity2 (m/s)
+fn continuity_velocity(area1, velocity1, area2) {
+    if area2 == 0 {
+        return errors.err_zero("area2")
+    }
+    if area1 < 0 or area2 < 0 {
+        return errors.err_negative("area")
+    }
+    return area1 * velocity1 / area2
+}
+
+# Volume flow rate: Q = A · v
+# area (m²), velocity (m/s) → flow rate (m³/s)
+fn volume_flow_rate(area, velocity) {
+    if area < 0 {
+        return errors.err_negative("area")
+    }
+    return area * velocity
+}
+
+# ------------------------------------------------------------
+# Bernoulli's Equation
+# ------------------------------------------------------------
+
+# Bernoulli (pressure difference from velocity):
+#   P₁ + ½ρv₁² + ρgh₁ = P₂ + ½ρv₂² + ρgh₂
+# Returns pressure at point 2:
+#   P₂ = P₁ + ½ρ(v₁² - v₂²) + ρg(h₁ - h₂)
+# density (kg/m³), v1, v2 (m/s), h1, h2 (m), P1 (Pa), g (m/s²) → P2 (Pa)
+fn bernoulli_pressure(density, v1, v2, h1, h2, p1, gravity) {
+    return p1 + 0.5 * density * (v1 * v1 - v2 * v2) + density * gravity * (h1 - h2)
+}
+
+# Simplified Bernoulli (horizontal flow, same height):
+#   P₂ = P₁ + ½ρ(v₁² - v₂²)
+fn bernoulli_horizontal(density, v1, v2, p1) {
+    return p1 + 0.5 * density * (v1 * v1 - v2 * v2)
+}
+
+# ------------------------------------------------------------
+# Viscosity
+# ------------------------------------------------------------
+
+# Stokes' drag force on a sphere: F = 6π·η·r·v
+# viscosity (Pa·s), radius (m), velocity (m/s) → force (N)
+fn stokes_drag(viscosity, radius, velocity) {
+    if radius < 0 {
+        return errors.err_negative("radius")
+    }
+    return 6.0 * constants.PI * viscosity * radius * velocity
+}
+
+# Terminal velocity (Stokes): v_t = (2/9) · (ρ_p - ρ_f) · g · r² / η
+# particle_density, fluid_density (kg/m³), gravity (m/s²), radius (m), viscosity (Pa·s) → velocity (m/s)
+fn terminal_velocity(particle_density, fluid_density, gravity, radius, viscosity) {
+    if viscosity == 0 {
+        return errors.err_zero("viscosity")
+    }
+    if viscosity < 0 {
+        return errors.err_negative("viscosity")
+    }
+    if radius < 0 {
+        return errors.err_negative("radius")
+    }
+    return (2.0 / 9.0) * (particle_density - fluid_density) * gravity * radius * radius / viscosity
+}
+
+# ------------------------------------------------------------
+# Surface Tension
+# ------------------------------------------------------------
+
+# Pressure inside a spherical droplet (Laplace): ΔP = 2σ / r
+# surface_tension (N/m), radius (m) → pressure (Pa)
+fn laplace_pressure_droplet(surface_tension, radius) {
+    if radius == 0 {
+        return errors.err_zero("radius")
+    }
+    if radius < 0 {
+        return errors.err_negative("radius")
+    }
+    return 2.0 * surface_tension / radius
+}
+
+# Pressure inside a soap bubble (two surfaces): ΔP = 4σ / r
+# surface_tension (N/m), radius (m) → pressure (Pa)
+fn laplace_pressure_bubble(surface_tension, radius) {
+    if radius == 0 {
+        return errors.err_zero("radius")
+    }
+    if radius < 0 {
+        return errors.err_negative("radius")
+    }
+    return 4.0 * surface_tension / radius
+}
+
+# Capillary rise (Jurin's law): h = 2σ·cos(θ) / (ρ·g·r)
+# surface_tension (N/m), contact_angle (deg), density (kg/m³), gravity (m/s²), radius (m) → height (m)
+fn capillary_rise(surface_tension, contact_angle_deg, density, gravity, radius) {
+    if density == 0 {
+        return errors.err_zero("density")
+    }
+    if gravity == 0 {
+        return errors.err_zero("gravity")
+    }
+    if radius == 0 {
+        return errors.err_zero("radius")
+    }
+    angle_rad = contact_angle_deg * constants.PI / 180.0
+    return 2.0 * surface_tension * cos(angle_rad) / (density * gravity * radius)
+}
+
+# ------------------------------------------------------------
+# Reynolds Number
+# ------------------------------------------------------------
+
+# Reynolds number: Re = ρ·v·L / η
+# density (kg/m³), velocity (m/s), length (m), viscosity (Pa·s) → dimensionless
+fn reynolds_number(density, velocity, length, viscosity) {
+    if viscosity == 0 {
+        return errors.err_zero("viscosity")
+    }
+    return density * velocity * length / viscosity
+}

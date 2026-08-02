@@ -1,0 +1,131 @@
+# ============================================================
+# Mozhi Physics Library — Motion (v1.0.0)
+# Kinematics: velocity, acceleration, displacement, distance
+# All inputs/outputs in SI units (m, s, m/s, m/s²)
+# ============================================================
+
+import errors from "physics/errors.mz"
+
+# ------------------------------------------------------------
+# Velocity
+# ------------------------------------------------------------
+
+# Velocity: v = Δx / Δt
+# displacement (m), time (s) → velocity (m/s)
+fn velocity(displacement, time) {
+    if time == 0 {
+        return errors.err_zero("time")
+    }
+    if time < 0 {
+        return errors.err_negative("time")
+    }
+    return displacement / time
+}
+
+# Final velocity (uniform acceleration): v = u + a·t
+# initial (m/s), acceleration (m/s²), time (s) → velocity (m/s)
+fn final_velocity(initial, accel, time) {
+    return initial + accel * time
+}
+
+# Velocity from v² = u² + 2·a·s
+# initial (m/s), acceleration (m/s²), displacement (m) → velocity (m/s)
+fn velocity_from_displacement(initial, accel, displacement) {
+    v_sq = initial * initial + 2.0 * accel * displacement
+    if v_sq < 0 {
+        return 0.0
+    }
+    # Square root via Newton-Raphson
+    if v_sq == 0 {
+        return 0.0
+    }
+    x = v_sq
+    prev = 0.0
+    while abs(x - prev) > 0.0000000001 {
+        prev = x
+        x = (x + v_sq / x) / 2.0
+    }
+    return x
+}
+
+# ------------------------------------------------------------
+# Acceleration
+# ------------------------------------------------------------
+
+# Acceleration: a = Δv / Δt
+# delta_v (m/s), time (s) → acceleration (m/s²)
+fn acceleration(delta_v, time) {
+    if time == 0 {
+        return errors.err_zero("time")
+    }
+    if time < 0 {
+        return errors.err_negative("time")
+    }
+    return delta_v / time
+}
+
+# ------------------------------------------------------------
+# Average Speed
+# ------------------------------------------------------------
+
+# Average speed: s_total / t_total  (always non-negative)
+# total_distance (m), total_time (s) → speed (m/s)
+fn averageSpeed(total_distance, total_time) {
+    if total_time == 0 {
+        return errors.err_zero("total_time")
+    }
+    if total_time < 0 {
+        return errors.err_negative("total_time")
+    }
+    if total_distance < 0 {
+        return errors.err_negative("total_distance")
+    }
+    return total_distance / total_time
+}
+
+# ------------------------------------------------------------
+# Displacement
+# ------------------------------------------------------------
+
+# Displacement (uniform acceleration): s = u·t + ½·a·t²
+# initial (m/s), accel (m/s²), time (s) → displacement (m)
+fn displacement(initial, accel, time) {
+    if time < 0 {
+        return errors.err_negative("time")
+    }
+    return initial * time + 0.5 * accel * time * time
+}
+
+# Displacement from average velocity: s = ((u + v) / 2) × t
+# initial (m/s), final (m/s), time (s) → displacement (m)
+fn displacement_avg(initial, final_v, time) {
+    if time < 0 {
+        return errors.err_negative("time")
+    }
+    return (initial + final_v) / 2.0 * time
+}
+
+# ------------------------------------------------------------
+# Distance
+# ------------------------------------------------------------
+
+# Free-fall distance: h = ½·g·t²  (no air resistance, from rest)
+# gravity (m/s²), time (s) → distance (m)
+fn free_fall_distance(gravity, time) {
+    if time < 0 {
+        return errors.err_negative("time")
+    }
+    return 0.5 * gravity * time * time
+}
+
+# Braking distance: d = v² / (2·a)  (deceleration, a > 0)
+# velocity (m/s), deceleration (m/s²) → distance (m)
+fn braking_distance(velocity_val, deceleration) {
+    if deceleration == 0 {
+        return errors.err_zero("deceleration")
+    }
+    if deceleration < 0 {
+        return errors.err_negative("deceleration")
+    }
+    return (velocity_val * velocity_val) / (2.0 * deceleration)
+}

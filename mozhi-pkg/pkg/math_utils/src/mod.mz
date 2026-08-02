@@ -1,0 +1,169 @@
+# ============================================================
+# math_utils — Extended Math Helpers (v1.0.0)
+# ============================================================
+
+const PI = 3.141592653589793
+const E = 2.718281828459045
+
+fn abs(n) {
+    if n < 0 {
+        return -n
+    }
+    return n
+}
+
+fn sqrt(n) {
+    if n < 0 {
+        return 0
+    }
+    if n == 0 {
+        return 0
+    }
+    x = n
+    prev = 0
+    while abs(x - prev) > 1e-10 {
+        prev = x
+        x = (x + n / x) / 2.0
+    }
+    return x
+}
+
+fn factorial(n) {
+    if n <= 1 {
+        return 1
+    }
+    result = 1
+    i = 2
+    while i <= n {
+        result = result * i
+        i = i + 1
+    }
+    return result
+}
+
+fn gcd(a, b) {
+    while b != 0 {
+        t = b
+        b = a % b
+        a = t
+    }
+    return a
+}
+
+fn lcm(a, b) {
+    if a == 0 or b == 0 {
+        return 0
+    }
+    return abs(a * b) / gcd(a, b)
+}
+
+fn is_prime(n) {
+    if n < 2 {
+        return false
+    }
+    if n == 2 {
+        return true
+    }
+    if n % 2 == 0 {
+        return false
+    }
+    i = 3
+    while i * i <= n {
+        if n % i == 0 {
+            return false
+        }
+        i = i + 2
+    }
+    return true
+}
+
+fn fibonacci(n) {
+    if n <= 0 {
+        return 0
+    }
+    if n == 1 {
+        return 1
+    }
+    a = 0
+    b = 1
+    i = 2
+    while i <= n {
+        c = a + b
+        a = b
+        b = c
+        i = i + 1
+    }
+    return b
+}
+
+fn square(n) {
+    return n * n
+}
+
+fn cube(n) {
+    return n * n * n
+}
+
+fn pow_int(base, exp) {
+    if exp == 0 {
+        return 1
+    }
+    result = 1
+    i = 0
+    while i < exp {
+        result = result * base
+        i = i + 1
+    }
+    return result
+}
+
+fn clamp(n, lo, hi) {
+    if n < lo {
+        return lo
+    }
+    if n > hi {
+        return hi
+    }
+    return n
+}
+
+fn lerp(a, b, t) {
+    return a + (b - a) * t
+}
+
+fn radians(deg) {
+    return deg * PI / 180.0
+}
+
+fn degrees(rad) {
+    return rad * 180.0 / PI
+}
+
+fn max_val(a, b) {
+    if a > b {
+        return a
+    }
+    return b
+}
+
+fn min_val(a, b) {
+    if a < b {
+        return a
+    }
+    return b
+}
+
+fn sum_list(arr) {
+    total = 0
+    for x in arr {
+        total = total + x
+    }
+    return total
+}
+
+fn mean_list(arr) {
+    if arr.len() == 0 {
+        return 0
+    }
+    return sum_list(arr) * 1.0 / arr.len()
+}

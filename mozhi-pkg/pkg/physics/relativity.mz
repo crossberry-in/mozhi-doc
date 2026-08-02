@@ -1,0 +1,224 @@
+# ============================================================
+# Mozhi Physics Library — Relativity (v1.0.0)
+# Mass-energy equivalence, time dilation, length contraction
+# All inputs/outputs in SI units (J, kg, s, m, m/s)
+# ============================================================
+
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+
+fn _sqrt(n) {
+    if n <= 0 {
+        return 0.0
+    }
+    x = n
+    prev = 0.0
+    while abs(x - prev) > 0.0000000001 {
+        prev = x
+        x = (x + n / x) / 2.0
+    }
+    return x
+}
+
+fn _abs(n) {
+    if n < 0 {
+        return -n
+    }
+    return n
+}
+
+# ------------------------------------------------------------
+# Mass-Energy Equivalence
+# ------------------------------------------------------------
+
+# Einstein's mass-energy equivalence: E = m · c²
+# mass (kg) → energy (J)
+fn massEnergy(mass) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return mass * constants.SPEED_OF_LIGHT * constants.SPEED_OF_LIGHT
+}
+
+# Rest energy of an electron (precomputed)
+# → energy (J)
+fn electron_rest_energy() {
+    return constants.ELECTRON_MASS * constants.SPEED_OF_LIGHT * constants.SPEED_OF_LIGHT
+}
+
+# Rest energy of a proton (precomputed)
+# → energy (J)
+fn proton_rest_energy() {
+    return constants.PROTON_MASS * constants.SPEED_OF_LIGHT * constants.SPEED_OF_LIGHT
+}
+
+# ------------------------------------------------------------
+# Lorentz Factor
+# ------------------------------------------------------------
+
+# Lorentz factor: γ = 1 / √(1 - v²/c²)
+# velocity (m/s) → gamma (dimensionless, ≥ 1)
+fn lorentz_factor(velocity) {
+    if velocity < 0 {
+        velocity = -velocity
+    }
+    if velocity >= constants.SPEED_OF_LIGHT {
+        return errors.err_custom("velocity must be less than c (speed of light)")
+    }
+    beta_sq = (velocity * velocity) / (constants.SPEED_OF_LIGHT * constants.SPEED_OF_LIGHT)
+    return 1.0 / _sqrt(1.0 - beta_sq)
+}
+
+# Beta (v/c): ratio of velocity to speed of light
+# velocity (m/s) → beta (dimensionless, 0..1)
+fn beta(velocity) {
+    if velocity < 0 {
+        velocity = -velocity
+    }
+    return velocity / constants.SPEED_OF_LIGHT
+}
+
+# ------------------------------------------------------------
+# Time Dilation
+# ------------------------------------------------------------
+
+# Time dilation: Δt' = γ · Δt₀  (proper time Δt₀ → observed Δt')
+# proper_time (s), velocity (m/s) → dilated_time (s)
+fn timeDilation(proper_time, velocity) {
+    if proper_time < 0 {
+        return errors.err_negative("proper_time")
+    }
+    gamma = lorentz_factor(velocity)
+    if gamma < 0 {
+        return gamma
+    }
+    return gamma * proper_time
+}
+
+# Inverse: proper time from dilated time: Δt₀ = Δt' / γ
+# observed_time (s), velocity (m/s) → proper_time (s)
+fn proper_time(observed_time, velocity) {
+    gamma = lorentz_factor(velocity)
+    if gamma < 0 {
+        return gamma
+    }
+    if gamma == 0 {
+        return errors.err_zero("gamma")
+    }
+    return observed_time / gamma
+}
+
+# ------------------------------------------------------------
+# Length Contraction
+# ------------------------------------------------------------
+
+# Length contraction: L' = L₀ / γ  (proper length L₀ → observed L')
+# proper_length (m), velocity (m/s) → contracted_length (m)
+fn lengthContraction(proper_length, velocity) {
+    if proper_length < 0 {
+        return errors.err_negative("proper_length")
+    }
+    gamma = lorentz_factor(velocity)
+    if gamma < 0 {
+        return gamma
+    }
+    if gamma == 0 {
+        return errors.err_zero("gamma")
+    }
+    return proper_length / gamma
+}
+
+# Inverse: proper length from contracted length: L₀ = L' · γ
+# observed_length (m), velocity (m/s) → proper_length (m)
+fn proper_length(observed_length, velocity) {
+    gamma = lorentz_factor(velocity)
+    if gamma < 0 {
+        return gamma
+    }
+    return gamma * observed_length
+}
+
+# ------------------------------------------------------------
+# Relativistic Momentum
+# ------------------------------------------------------------
+
+# Relativistic momentum: p = γ · m · v
+# mass (kg), velocity (m/s) → momentum (kg·m/s)
+fn relativistic_momentum(mass, velocity) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    gamma = lorentz_factor(velocity)
+    if gamma < 0 {
+        return gamma
+    }
+    return gamma * mass * velocity
+}
+
+# ------------------------------------------------------------
+# Relativistic Kinetic Energy
+# ------------------------------------------------------------
+
+# Relativistic KE: K = (γ - 1) · m · c²
+# mass (kg), velocity (m/s) → kinetic energy (J)
+fn relativistic_kinetic_energy(mass, velocity) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    gamma = lorentz_factor(velocity)
+    if gamma < 0 {
+        return gamma
+    }
+    return (gamma - 1.0) * mass * constants.SPEED_OF_LIGHT * constants.SPEED_OF_LIGHT
+}
+
+# Total relativistic energy: E = γ · m · c²
+# mass (kg), velocity (m/s) → total energy (J)
+fn relativistic_total_energy(mass, velocity) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    gamma = lorentz_factor(velocity)
+    if gamma < 0 {
+        return gamma
+    }
+    return gamma * mass * constants.SPEED_OF_LIGHT * constants.SPEED_OF_LIGHT
+}
+
+# ------------------------------------------------------------
+# Relativistic Doppler Effect
+# ------------------------------------------------------------
+
+# Relativistic Doppler (source approaching/receding):
+# f' = f · √((1 ± β) / (1 ∓ β))   (+ for approaching, - for receding)
+# source_freq (Hz), velocity (m/s), approaching (bool) → observed freq (Hz)
+fn relativistic_doppler(source_freq, velocity, approaching) {
+    if velocity < 0 {
+        velocity = -velocity
+    }
+    if velocity >= constants.SPEED_OF_LIGHT {
+        return errors.err_custom("velocity must be less than c")
+    }
+    b = velocity / constants.SPEED_OF_LIGHT
+    if approaching {
+        # f' = f · √((1 + β) / (1 - β))
+        return source_freq * _sqrt((1.0 + b) / (1.0 - b))
+    }
+    # f' = f · √((1 - β) / (1 + β))
+    return source_freq * _sqrt((1.0 - b) / (1.0 + b))
+}
+
+# ------------------------------------------------------------
+# Relativistic Velocity Addition
+# ------------------------------------------------------------
+
+# Velocity addition: u = (v + u') / (1 + v·u'/c²)
+# v (frame velocity, m/s), u_prime (object velocity in frame, m/s) → u (m/s)
+fn velocity_addition(v, u_prime) {
+    c_sq = constants.SPEED_OF_LIGHT * constants.SPEED_OF_LIGHT
+    denominator = 1.0 + v * u_prime / c_sq
+    if denominator == 0 {
+        return errors.err_zero("denominator")
+    }
+    return (v + u_prime) / denominator
+}

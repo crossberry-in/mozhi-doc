@@ -1,0 +1,305 @@
+# ============================================================
+# Mozhi Physics Library — Units (v1.0.0)
+# Unit constants and conversion functions
+# All base units are SI
+# ============================================================
+
+# ------------------------------------------------------------
+# Unit Constants (as documentation symbols; values are 1.0 in SI)
+# ------------------------------------------------------------
+
+# Length
+const meter = 1.0
+const kilometer = 1000.0
+const centimeter = 0.01
+const millimeter = 0.001
+const micrometer = 0.0000009999999999999999547
+const nanometer = 0.0000000010000000000000001
+const mile = 1609.344
+const yard = 0.9144
+const foot = 0.3048
+const inch = 0.0254
+const nautical_mile = 1852.0
+const light_year = 9460730472580800.0
+const astronomical_unit = 149597870700.0
+
+# Mass
+const kilogram = 1.0
+const gram = 0.001
+const milligram = 0.0000009999999999999999547
+const microgram = 0.0000000010000000000000001
+const tonne = 1000.0
+const pound_mass = 0.45359237
+const ounce_mass = 0.028349523125
+const slug = 14.5939029372
+
+# Time
+const second = 1.0
+const millisecond = 0.001
+const microsecond = 0.0000009999999999999999547
+const nanosecond = 0.0000000010000000000000001
+const minute = 60.0
+const hour = 3600.0
+const day = 86400.0
+const week = 604800.0
+const year = 31557600.0
+
+# Force
+const newton = 1.0
+const dyne = 0.000010000000000000000818
+const pound_force = 4.4482216152605
+
+# Energy
+const joule = 1.0
+const kilojoule = 1000.0
+const megajoule = 1000000.0
+const calorie = 4.184
+const kilocalorie = 4184.0
+const electronvolt = 0.0000000000000000001602177
+const kilowatt_hour = 3600000.0
+const btu = 1055.05585262
+
+# Power
+const watt = 1.0
+const kilowatt = 1000.0
+const megawatt = 1000000.0
+const horsepower = 745.69987158227
+
+# Pressure
+const pascal = 1.0
+const kilopascal = 1000.0
+const megapascal = 1000000.0
+const bar = 100000.0
+const atmosphere = 101325.0
+const torr = 133.3223684211
+const psi = 6894.7572931684
+
+# Electric
+const volt = 1.0
+const ampere = 1.0
+const ohm = 1.0
+const farad = 1.0
+const coulomb = 1.0
+const henry = 1.0
+const siemens = 1.0
+
+# Magnetic
+const tesla = 1.0
+const gauss = 0.0001000000000000000047922
+const weber = 1.0
+
+# Temperature (base unit: Kelvin)
+const kelvin = 1.0
+
+# Frequency
+const hertz = 1.0
+const kilohertz = 1000.0
+const megahertz = 1000000.0
+const gigahertz = 1000000000.0
+
+# Angle
+const radian = 1.0
+const degree = 0.017453292519943295
+const arcminute = 0.0002908882086657215803975
+const arcsecond = 0.0000048481368110953598427
+
+# Area
+const hectare = 10000.0
+const acre = 4046.8564224
+
+# Volume
+const liter = 0.001
+const milliliter = 0.0000009999999999999999547
+const gallon_us = 0.003785411784
+const gallon_uk = 0.00454609
+const cubic_foot = 0.028316846592
+
+# Velocity
+const meter_per_second = 1.0
+const kilometer_per_hour = 0.2777777777778
+const mile_per_hour = 0.44704
+const knot = 0.5144444444444
+
+# ------------------------------------------------------------
+# Conversion Functions
+# ------------------------------------------------------------
+
+# ===== Length =====
+fn km_to_m(km) { return km * 1000.0 }
+fn m_to_km(m) { return m / 1000.0 }
+fn cm_to_m(cm) { return cm * 0.01 }
+fn m_to_cm(m) { return m * 100.0 }
+fn mm_to_m(mm) { return mm * 0.001 }
+fn m_to_mm(m) { return m * 1000.0 }
+fn miles_to_m(mi) { return mi * 1609.344 }
+fn m_to_miles(m) { return m / 1609.344 }
+fn feet_to_m(ft) { return ft * 0.3048 }
+fn m_to_feet(m) { return m / 0.3048 }
+fn inches_to_m(inch_val) { return inch_val * 0.0254 }
+fn m_to_inches(m) { return m / 0.0254 }
+fn ly_to_m(ly) { return ly * 9460730472580800.0 }
+fn m_to_ly(m) { return m / 9460730472580800.0 }
+fn au_to_m(au) { return au * 149597870700.0 }
+fn m_to_au(m) { return m / 149597870700.0 }
+
+# ===== Mass =====
+fn kg_to_g(kg) { return kg * 1000.0 }
+fn g_to_kg(g) { return g * 0.001 }
+fn mg_to_kg(mg) { return mg * 0.0000009999999999999999547 }
+fn kg_to_mg(kg) { return kg * 1000000.0 }
+fn tonnes_to_kg(t) { return t * 1000.0 }
+fn kg_to_tonnes(kg) { return kg / 1000.0 }
+fn lb_to_kg(lb) { return lb * 0.45359237 }
+fn kg_to_lb(kg) { return kg / 0.45359237 }
+fn oz_to_kg(oz) { return oz * 0.028349523125 }
+fn kg_to_oz(kg) { return kg / 0.028349523125 }
+
+# ===== Time =====
+fn ms_to_s(ms) { return ms * 0.001 }
+fn s_to_ms(s) { return s * 1000.0 }
+fn min_to_s(m) { return m * 60.0 }
+fn s_to_min(s) { return s / 60.0 }
+fn h_to_s(h) { return h * 3600.0 }
+fn s_to_h(s) { return s / 3600.0 }
+fn days_to_s(d) { return d * 86400.0 }
+fn s_to_days(s) { return s / 86400.0 }
+fn years_to_s(y) { return y * 31557600.0 }
+fn s_to_years(s) { return s / 31557600.0 }
+
+# ===== Velocity =====
+fn kmh_to_ms(kmh) { return kmh / 3.6 }
+fn ms_to_kmh(ms) { return ms * 3.6 }
+fn mph_to_ms(mph) { return mph * 0.44704 }
+fn ms_to_mph(ms) { return ms / 0.44704 }
+fn knot_to_ms(kn) { return kn * 0.5144444444444 }
+fn ms_to_knot(ms) { return ms / 0.5144444444444 }
+
+# ===== Force =====
+fn n_to_dyn(n) { return n / 0.000010000000000000000818 }
+fn dyn_to_n(dyn) { return dyn * 0.000010000000000000000818 }
+fn n_to_lbf(n) { return n / 4.4482216152605 }
+fn lbf_to_n(lbf) { return lbf * 4.4482216152605 }
+
+# ===== Energy =====
+fn j_to_kj(j) { return j / 1000.0 }
+fn kj_to_j(kj) { return kj * 1000.0 }
+fn j_to_cal(j) { return j / 4.184 }
+fn cal_to_j(cal) { return cal * 4.184 }
+fn j_to_kcal(j) { return j / 4184.0 }
+fn kcal_to_j(kcal) { return kcal * 4184.0 }
+fn ev_to_j(ev) { return ev * 0.0000000000000000001602177 }
+fn j_to_ev(j) { return j / 0.0000000000000000001602177 }
+fn kwh_to_j(kwh) { return kwh * 3600000.0 }
+fn j_to_kwh(j) { return j / 3600000.0 }
+fn btu_to_j(btu_val) { return btu_val * 1055.05585262 }
+fn j_to_btu(j) { return j / 1055.05585262 }
+
+# ===== Power =====
+fn w_to_kw(w) { return w / 1000.0 }
+fn kw_to_w(kw) { return kw * 1000.0 }
+fn w_to_hp(w) { return w / 745.69987158227 }
+fn hp_to_w(hp) { return hp * 745.69987158227 }
+
+# ===== Pressure =====
+fn pa_to_kpa(pa) { return pa / 1000.0 }
+fn kpa_to_pa(kpa) { return kpa * 1000.0 }
+fn pa_to_bar(pa) { return pa / 100000.0 }
+fn bar_to_pa(bar_val) { return bar_val * 100000.0 }
+fn pa_to_atm(pa) { return pa / 101325.0 }
+fn atm_to_pa(atm) { return atm * 101325.0 }
+fn pa_to_psi(pa) { return pa / 6894.7572931684 }
+fn psi_to_pa(psi_val) { return psi_val * 6894.7572931684 }
+fn pa_to_torr(pa) { return pa / 133.3223684211 }
+fn torr_to_pa(torr_val) { return torr_val * 133.3223684211 }
+
+# ===== Temperature =====
+fn c_to_k(c) { return c + 273.15 }
+fn k_to_c(k) { return k - 273.15 }
+fn c_to_f(c) { return c * 9.0 / 5.0 + 32.0 }
+fn f_to_c(f) { return (f - 32.0) * 5.0 / 9.0 }
+fn k_to_f(k) { return k * 9.0 / 5.0 - 459.67 }
+fn f_to_k(f) { return (f + 459.67) * 5.0 / 9.0 }
+
+# ===== Frequency =====
+fn hz_to_khz(hz) { return hz / 1000.0 }
+fn khz_to_hz(khz) { return khz * 1000.0 }
+fn hz_to_mhz(hz) { return hz / 1000000.0 }
+fn mhz_to_hz(mhz) { return mhz * 1000000.0 }
+fn hz_to_ghz(hz) { return hz / 1000000000.0 }
+fn ghz_to_hz(ghz) { return ghz * 1000000000.0 }
+
+# ===== Angle =====
+fn deg_to_rad(deg) { return deg * 0.017453292519943295 }
+fn rad_to_deg(rad) { return rad * 57.29577951308232 }
+
+# ===== Volume =====
+fn l_to_m3(l) { return l * 0.001 }
+fn m3_to_l(m3) { return m3 * 1000.0 }
+fn ml_to_m3(ml) { return ml * 0.0000009999999999999999547 }
+fn m3_to_ml(m3) { return m3 * 1000000.0 }
+fn gal_us_to_m3(gal) { return gal * 0.003785411784 }
+fn m3_to_gal_us(m3) { return m3 / 0.003785411784 }
+
+# ===== Area =====
+fn ha_to_m2(ha) { return ha * 10000.0 }
+fn m2_to_ha(m2) { return m2 / 10000.0 }
+fn acre_to_m2(acre_val) { return acre_val * 4046.8564224 }
+fn m2_to_acre(m2) { return m2 / 4046.8564224 }
+
+# ===== Magnetic =====
+fn t_to_g(t) { return t * 10000.0 }
+fn g_to_t(g_val) { return g_val * 0.0001000000000000000047922 }
+
+# ------------------------------------------------------------
+# Compound Conversions
+# ------------------------------------------------------------
+
+# Convert km/h and mass (kg) to kinetic energy (J)
+fn kmh_kg_to_j(kmh, kg) {
+    ms = kmh_to_ms(kmh)
+    return 0.5 * kg * ms * ms
+}
+
+# Convert Celsius and mass (kg) to heat energy at constant pressure (air, c≈1005 J/(kg·K))
+fn c_kg_to_j_air(c, kg) {
+    return kg * 1005.0 * c
+}
+
+# Generic linear conversion: value * factor
+fn convert(value, factor) {
+    return value * factor
+}
+
+# ------------------------------------------------------------
+# Unit Formatting Helpers
+# ------------------------------------------------------------
+
+# Format with SI prefix (returns string)
+fn format_si(value) {
+    a = value
+    if a < 0 {
+        a = -a
+    }
+    if a >= 1000000000.0 {
+        return string(value / 1000000000.0) + " G"
+    }
+    if a >= 1000000.0 {
+        return string(value / 1000000.0) + " M"
+    }
+    if a >= 1000.0 {
+        return string(value / 1000.0) + " k"
+    }
+    if a >= 1.0 {
+        return string(value) + " "
+    }
+    if a >= 0.0010000000000000000208167 {
+        return string(value * 1000.0) + " m"
+    }
+    if a >= 0.0000009999999999999999547 {
+        return string(value * 1000000.0) + " µ"
+    }
+    if a >= 0.0000000010000000000000001 {
+        return string(value * 1000000000.0) + " n"
+    }
+    return string(value) + " "
+}

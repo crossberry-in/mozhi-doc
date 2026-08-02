@@ -1,0 +1,217 @@
+# ============================================================
+# Mozhi Physics Library — Electricity (v1.0.0)
+# Voltage, current, resistance, power, capacitance, electric field
+# All inputs/outputs in SI units (V, A, Ω, F, C, N, N/C, m)
+# ============================================================
+
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+
+fn _sqrt(n) {
+    if n <= 0 {
+        return 0.0
+    }
+    x = n
+    prev = 0.0
+    while abs(x - prev) > 0.0000000001 {
+        prev = x
+        x = (x + n / x) / 2.0
+    }
+    return x
+}
+
+# ------------------------------------------------------------
+# Ohm's Law
+# ------------------------------------------------------------
+
+# Ohm's law: V = I × R
+# current (A), resistance (Ω) → voltage (V)
+fn voltage(current, resistance) {
+    return current * resistance
+}
+
+# Current: I = V / R
+# voltage (V), resistance (Ω) → current (A)
+fn current(voltage_val, resistance) {
+    if resistance == 0 {
+        return errors.err_zero("resistance")
+    }
+    return voltage_val / resistance
+}
+
+# Resistance: R = V / I
+# voltage (V), current (A) → resistance (Ω)
+fn resistance(voltage_val, current_val) {
+    if current_val == 0 {
+        return errors.err_zero("current")
+    }
+    return voltage_val / current_val
+}
+
+# ------------------------------------------------------------
+# Electric Power
+# ------------------------------------------------------------
+
+# Power (from V and I): P = V × I
+# voltage (V), current (A) → power (W)
+fn power(voltage_val, current_val) {
+    return voltage_val * current_val
+}
+
+# Power (from I and R): P = I² × R
+# current (A), resistance (Ω) → power (W)
+fn power_from_current(current_val, resistance) {
+    return current_val * current_val * resistance
+}
+
+# Power (from V and R): P = V² / R
+# voltage (V), resistance (Ω) → power (W)
+fn power_from_voltage(voltage_val, resistance) {
+    if resistance == 0 {
+        return errors.err_zero("resistance")
+    }
+    return (voltage_val * voltage_val) / resistance
+}
+
+# ------------------------------------------------------------
+# Capacitance
+# ------------------------------------------------------------
+
+# Capacitance: C = Q / V
+# charge (C), voltage (V) → capacitance (F)
+fn capacitance(charge, voltage_val) {
+    if voltage_val == 0 {
+        return errors.err_zero("voltage")
+    }
+    return charge / voltage_val
+}
+
+# Energy stored in a capacitor: U = ½ · C · V²
+# capacitance (F), voltage (V) → energy (J)
+fn capacitor_energy(capacitance_val, voltage_val) {
+    return 0.5 * capacitance_val * voltage_val * voltage_val
+}
+
+# Charge stored: Q = C × V
+# capacitance (F), voltage (V) → charge (C)
+fn capacitor_charge(capacitance_val, voltage_val) {
+    return capacitance_val * voltage_val
+}
+
+# Parallel-plate capacitor: C = ε₀ · A / d
+# area (m²), separation (m) → capacitance (F)
+fn parallel_plate_capacitance(area, separation) {
+    if separation == 0 {
+        return errors.err_zero("separation")
+    }
+    if separation < 0 {
+        return errors.err_negative("separation")
+    }
+    if area < 0 {
+        return errors.err_negative("area")
+    }
+    return constants.VACUUM_PERMITTIVITY * area / separation
+}
+
+# ------------------------------------------------------------
+# Electric Field
+# ------------------------------------------------------------
+
+# Electric field from a point charge: E = k · Q / r²
+# charge (C), distance (m) → field (N/C or V/m)
+fn electricField(charge, distance) {
+    if distance == 0 {
+        return errors.err_zero("distance")
+    }
+    if distance < 0 {
+        return errors.err_negative("distance")
+    }
+    return constants.COULOMB_CONSTANT * charge / (distance * distance)
+}
+
+# Electric field between parallel plates: E = V / d
+# voltage (V), separation (m) → field (V/m)
+fn electric_field_uniform(voltage_val, separation) {
+    if separation == 0 {
+        return errors.err_zero("separation")
+    }
+    if separation < 0 {
+        return errors.err_negative("separation")
+    }
+    return voltage_val / separation
+}
+
+# ------------------------------------------------------------
+# Coulomb's Law
+# ------------------------------------------------------------
+
+# Coulomb force between two point charges: F = k · q₁ · q₂ / r²
+# charge1 (C), charge2 (C), distance (m) → force (N)
+fn coulomb_force(charge1, charge2, distance) {
+    if distance == 0 {
+        return errors.err_zero("distance")
+    }
+    if distance < 0 {
+        return errors.err_negative("distance")
+    }
+    return constants.COULOMB_CONSTANT * charge1 * charge2 / (distance * distance)
+}
+
+# ------------------------------------------------------------
+# Resistors
+# ------------------------------------------------------------
+
+# Series resistance: R_total = R₁ + R₂ + ... (array input)
+# resistors (Ω array) → total resistance (Ω)
+fn resistors_series(resistors) {
+    total = 0.0
+    for r in resistors {
+        total = total + r
+    }
+    return total
+}
+
+# Parallel resistance: 1/R = 1/R₁ + 1/R₂ + ...
+# resistors (Ω array) → total resistance (Ω)
+fn resistors_parallel(resistors) {
+    inv_total = 0.0
+    for r in resistors {
+        if r == 0 {
+            return errors.err_zero("resistor")
+        }
+        inv_total = inv_total + 1.0 / r
+    }
+    if inv_total == 0 {
+        return errors.err_zero("sum")
+    }
+    return 1.0 / inv_total
+}
+
+# ------------------------------------------------------------
+# Kirchhoff (simplified helpers)
+# ------------------------------------------------------------
+
+# Sum of currents at a node (KCL): ΣI_in = ΣI_out
+# Returns the net current (should be zero at steady state)
+# currents_in (A array), currents_out (A array) → net current (A)
+fn kcl(currents_in, currents_out) {
+    sum_in = 0.0
+    for i in currents_in {
+        sum_in = sum_in + i
+    }
+    sum_out = 0.0
+    for i in currents_out {
+        sum_out = sum_out + i
+    }
+    return sum_in - sum_out
+}
+
+# Sum of voltages in a loop (KVL): ΣV = 0
+# voltages (V array, signed) → sum (should be zero)
+fn kvl(voltages) {
+    total = 0.0
+    for v in voltages {
+        total = total + v
+    }
+    return total
+}

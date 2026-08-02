@@ -1,0 +1,119 @@
+# ============================================================
+# Mozhi Physics Library — Main Entry (v1.0.0)
+# Import this to access all physics functions and constants.
+#
+# Usage:
+#   import physics from "physics"
+#   echo(physics.force(10, 5))           # 50
+#   echo(physics.kineticEnergy(2, 8))    # 64
+#   echo(physics.voltage(2, 10))         # 20
+#   echo(physics.photonEnergy(5e14))     # 3.31e-19
+# ============================================================
+
+# Re-export all modules
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+import mechanics from "physics/mechanics.mz"
+import motion from "physics/motion.mz"
+import energy from "physics/energy.mz"
+import gravity from "physics/gravity.mz"
+import fluids from "physics/fluids.mz"
+import thermodynamics from "physics/thermodynamics.mz"
+import electricity from "physics/electricity.mz"
+import magnetism from "physics/magnetism.mz"
+import waves from "physics/waves.mz"
+import optics from "physics/optics.mz"
+import relativity from "physics/relativity.mz"
+import quantum from "physics/quantum.mz"
+import astronomy from "physics/astronomy.mz"
+import units from "physics/units.mz"
+
+# ============================================================
+# Convenience wrappers (flat namespace)
+# ============================================================
+
+# ---- Constants ----
+const PI = constants.PI
+const E = constants.E
+const SPEED_OF_LIGHT = constants.SPEED_OF_LIGHT
+const GRAVITATIONAL_CONSTANT = constants.GRAVITATIONAL_CONSTANT
+const PLANCK_CONSTANT = constants.PLANCK_CONSTANT
+const BOLTZMANN_CONSTANT = constants.BOLTZMANN_CONSTANT
+const AVOGADRO_CONSTANT = constants.AVOGADRO_CONSTANT
+const ELEMENTARY_CHARGE = constants.ELEMENTARY_CHARGE
+const ELECTRON_MASS = constants.ELECTRON_MASS
+const PROTON_MASS = constants.PROTON_MASS
+const NEUTRON_MASS = constants.NEUTRON_MASS
+const STANDARD_GRAVITY = constants.STANDARD_GRAVITY
+const VACUUM_PERMITTIVITY = constants.VACUUM_PERMITTIVITY
+const VACUUM_PERMEABILITY = constants.VACUUM_PERMEABILITY
+
+# ---- Mechanics ----
+fn force(m, a) { return mechanics.force(m, a) }
+fn weight(m) { return mechanics.weight(m) }
+fn momentum(m, v) { return mechanics.momentum(m, v) }
+fn impulse(f, t) { return mechanics.impulse(f, t) }
+fn torque(r, f, a) { return mechanics.torque(r, f, a) }
+fn pressure(f, a) { return mechanics.pressure(f, a) }
+fn density(m, v) { return mechanics.density(m, v) }
+
+# ---- Motion ----
+fn velocity(d, t) { return motion.velocity(d, t) }
+fn acceleration(dv, t) { return motion.acceleration(dv, t) }
+fn averageSpeed(d, t) { return motion.averageSpeed(d, t) }
+fn displacement(u, a, t) { return motion.displacement(u, a, t) }
+
+# ---- Energy ----
+fn work(f, d, a) { return energy.work(f, d, a) }
+fn power(w, t) { return energy.power(w, t) }
+fn kineticEnergy(m, v) { return energy.kineticEnergy(m, v) }
+fn potentialEnergy(m, h, g) { return energy.potentialEnergy(m, h, g) }
+fn springEnergy(k, x) { return energy.springEnergy(k, x) }
+
+# ---- Gravity ----
+fn gravitationalForce(m1, m2, r) { return gravity.gravitationalForce(m1, m2, r) }
+fn escapeVelocity(m, r) { return gravity.escapeVelocity(m, r) }
+fn orbitalVelocity(m, r) { return gravity.orbitalVelocity(m, r) }
+
+# ---- Electricity ----
+fn voltage(i, r) { return electricity.voltage(i, r) }
+fn current(v, r) { return electricity.current(v, r) }
+fn resistance(v, i) { return electricity.resistance(v, i) }
+fn power_electric(v, i) { return electricity.power(v, i) }
+fn capacitance(q, v) { return electricity.capacitance(q, v) }
+fn electricField(q, r) { return electricity.electricField(q, r) }
+
+# ---- Magnetism ----
+fn magneticForce(b, i, l, a) { return magnetism.magneticForce(b, i, l, a) }
+fn magneticFlux(b, a, ang) { return magnetism.magneticFlux(b, a, ang) }
+
+# ---- Waves ----
+fn frequency_wave(v, l) { return waves.frequency(v, l) }
+fn wavelength_wave(v, f) { return waves.wavelength(v, f) }
+fn waveSpeed(f, l) { return waves.waveSpeed(f, l) }
+fn period_wave(f) { return waves.period(f) }
+
+# ---- Optics ----
+fn refractiveIndex(v) { return optics.refractiveIndex(v) }
+fn focalLength(n, r1, r2) { return optics.focalLength(n, r1, r2) }
+fn magnification(di, do_val) { return optics.magnification(di, do_val) }
+
+# ---- Thermodynamics ----
+fn heat(m, c, dt) { return thermodynamics.heat(m, c, dt) }
+fn specificHeat(q, m, dt) { return thermodynamics.specificHeat(q, m, dt) }
+fn idealGasLaw(p, v, n) { return thermodynamics.idealGasLaw(p, v, n) }
+fn efficiency(w, q) { return thermodynamics.efficiency(w, q) }
+
+# ---- Relativity ----
+fn massEnergy(m) { return relativity.massEnergy(m) }
+fn timeDilation(t, v) { return relativity.timeDilation(t, v) }
+fn lengthContraction(l, v) { return relativity.lengthContraction(l, v) }
+
+# ---- Quantum ----
+fn photonEnergy(f) { return quantum.photonEnergy(f) }
+fn deBroglieWavelength(m, v) { return quantum.deBroglieWavelength(m, v) }
+
+# ---- Astronomy ----
+fn orbitalPeriod(m, a) { return astronomy.orbitalPeriod(m, a) }
+fn luminosity(r, t) { return astronomy.luminosity(r, t) }
+fn stellarMass(l) { return astronomy.stellarMass(l) }

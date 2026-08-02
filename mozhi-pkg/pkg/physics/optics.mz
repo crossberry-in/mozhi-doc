@@ -1,0 +1,248 @@
+# ============================================================
+# Mozhi Physics Library — Optics (v1.0.0)
+# Refractive index, focal length, magnification
+# Snell's law, lens/mirror equation, thin-lens
+# All inputs/outputs in SI units (m, dimensionless)
+# ============================================================
+
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+
+# ------------------------------------------------------------
+# Refractive Index
+# ------------------------------------------------------------
+
+# Refractive index: n = c / v
+# speed_in_medium (m/s) → refractive index (dimensionless, ≥ 1)
+fn refractiveIndex(speed_in_medium) {
+    if speed_in_medium == 0 {
+        return errors.err_zero("speed_in_medium")
+    }
+    if speed_in_medium < 0 {
+        return errors.err_negative("speed_in_medium")
+    }
+    return constants.SPEED_OF_LIGHT / speed_in_medium
+}
+
+# Refractive index from Snell's law: n₁·sin(θ₁) = n₂·sin(θ₂)
+# Solve for n₂: n₂ = n₁·sin(θ₁) / sin(θ₂)
+# n1 (dimensionless), angle1 (deg), angle2 (deg) → n2 (dimensionless)
+fn refractive_index_snell(n1, angle1_deg, angle2_deg) {
+    a1 = angle1_deg * constants.PI / 180.0
+    a2 = angle2_deg * constants.PI / 180.0
+    sin2 = sin(a2)
+    if sin2 == 0 {
+        return errors.err_zero("sin(angle2)")
+    }
+    return n1 * sin(a1) / sin2
+}
+
+# Speed in medium given refractive index: v = c / n
+# n (dimensionless) → speed (m/s)
+fn speed_in_medium(n) {
+    if n == 0 {
+        return errors.err_zero("n")
+    }
+    return constants.SPEED_OF_LIGHT / n
+}
+
+# ------------------------------------------------------------
+# Snell's Law (refraction angle)
+# ------------------------------------------------------------
+
+# Refraction angle: θ₂ = arcsin( (n₁/n₂) · sin(θ₁) )
+# Returns -1 if total internal reflection occurs.
+# n1 (dimensionless), n2 (dimensionless), angle1 (deg) → angle2 (deg) or -1 (TIR)
+fn refraction_angle(n1, n2, angle1_deg) {
+    a1 = angle1_deg * constants.PI / 180.0
+    sin_theta2 = (n1 / n2) * sin(a1)
+    # Check for total internal reflection
+    if sin_theta2 > 1.0 {
+        return -1.0
+    }
+    # arcsin via Newton-Raphson: solve sin(x) = y for x in [-π/2, π/2]
+    x = sin_theta2  # initial guess
+    i = 0
+    while i < 20 {
+        s = sin(x)
+        c = cos(x)
+        if c == 0 {
+            break
+        }
+        x = x - (s - sin_theta2) / c
+        i = i + 1
+    }
+    return x * 180.0 / constants.PI
+}
+
+# Critical angle (total internal reflection): sin(θ_c) = n₂ / n₁  (n₁ > n₂)
+# n1 (denser), n2 (rarer) → critical angle (deg), or -1 if no TIR
+fn critical_angle(n1, n2) {
+    if n1 <= n2 {
+        return -1.0
+    }
+    ratio = n2 / n1
+    # arcsin(ratio)
+    x = ratio
+    i = 0
+    while i < 20 {
+        s = sin(x)
+        c = cos(x)
+        if c == 0 {
+            break
+        }
+        x = x - (s - ratio) / c
+        i = i + 1
+    }
+    return x * 180.0 / constants.PI
+}
+
+# ------------------------------------------------------------
+# Focal Length
+# ------------------------------------------------------------
+
+# Lens maker's equation (thin lens): 1/f = (n - 1) · (1/R₁ - 1/R₂)
+# n (lens index), r1 (m, +convex), r2 (m, +convex) → focal length (m)
+fn focalLength(n, r1, r2) {
+    if r1 == 0 and r2 == 0 {
+        return errors.err_zero("r1 and r2")
+    }
+    inv_r1 = 0.0
+    inv_r2 = 0.0
+    if r1 != 0 {
+        inv_r1 = 1.0 / r1
+    }
+    if r2 != 0 {
+        inv_r2 = 1.0 / r2
+    }
+    inv_f = (n - 1.0) * (inv_r1 - inv_r2)
+    if inv_f == 0 {
+        return errors.err_zero("inverse_focal_length")
+    }
+    return 1.0 / inv_f
+}
+
+# Focal length from object and image distances: 1/f = 1/do + 1/di
+# object_distance (m), image_distance (m) → focal length (m)
+fn focal_length_thin_lens(do_val, di_val) {
+    if do_val == 0 {
+        return errors.err_zero("object_distance")
+    }
+    if di_val == 0 {
+        return errors.err_zero("image_distance")
+    }
+    inv_f = 1.0 / do_val + 1.0 / di_val
+    if inv_f == 0 {
+        return errors.err_zero("inverse_focal_length")
+    }
+    return 1.0 / inv_f
+}
+
+# Spherical mirror focal length: f = R / 2
+# radius (m) → focal length (m)
+fn mirror_focal_length(radius) {
+    return radius / 2.0
+}
+
+# ------------------------------------------------------------
+# Magnification
+# ------------------------------------------------------------
+
+# Magnification (thin lens): m = -di / do  =  hi / ho
+# image_distance (m), object_distance (m) → magnification (dimensionless)
+fn magnification(image_distance, object_distance) {
+    if object_distance == 0 {
+        return errors.err_zero("object_distance")
+    }
+    return -image_distance / object_distance
+}
+
+# Magnification from heights: m = hi / ho
+# image_height (m), object_height (m) → magnification (dimensionless)
+fn magnification_height(image_height, object_height) {
+    if object_height == 0 {
+        return errors.err_zero("object_height")
+    }
+    return image_height / object_height
+}
+
+# ------------------------------------------------------------
+# Power of a Lens
+# ------------------------------------------------------------
+
+# Lens power: P = 1 / f  (in diopters when f in meters)
+# focal_length (m) → power (diopters)
+fn lens_power(focal_length_val) {
+    if focal_length_val == 0 {
+        return errors.err_zero("focal_length")
+    }
+    return 1.0 / focal_length_val
+}
+
+# ------------------------------------------------------------
+# Combined Lenses
+# ------------------------------------------------------------
+
+# Effective focal length of lenses in contact: 1/f = 1/f₁ + 1/f₂
+# f1 (m), f2 (m) → combined focal length (m)
+fn combined_focal_length(f1, f2) {
+    if f1 == 0 {
+        return errors.err_zero("f1")
+    }
+    if f2 == 0 {
+        return errors.err_zero("f2")
+    }
+    inv_f = 1.0 / f1 + 1.0 / f2
+    if inv_f == 0 {
+        return errors.err_zero("inverse_combined_focal_length")
+    }
+    return 1.0 / inv_f
+}
+
+# ------------------------------------------------------------
+# Diffraction (single slit)
+# ------------------------------------------------------------
+
+# Position of first minimum: sin(θ) = λ / a
+# wavelength (m), slit_width (m) → angle (deg)
+fn single_slit_first_minimum(wavelength, slit_width) {
+    if slit_width == 0 {
+        return errors.err_zero("slit_width")
+    }
+    sin_theta = wavelength / slit_width
+    if sin_theta > 1.0 {
+        return -1.0
+    }
+    # arcsin(sin_theta)
+    x = sin_theta
+    i = 0
+    while i < 20 {
+        s = sin(x)
+        c = cos(x)
+        if c == 0 {
+            break
+        }
+        x = x - (s - sin_theta) / c
+        i = i + 1
+    }
+    return x * 180.0 / constants.PI
+}
+
+# ------------------------------------------------------------
+# Young's Double Slit
+# ------------------------------------------------------------
+
+# Fringe spacing: Δy = λ · L / d
+# wavelength (m), screen_distance (m), slit_separation (m) → spacing (m)
+fn double_slit_fringe_spacing(wavelength, screen_distance, slit_separation) {
+    if slit_separation == 0 {
+        return errors.err_zero("slit_separation")
+    }
+    if slit_separation < 0 {
+        return errors.err_negative("slit_separation")
+    }
+    if screen_distance < 0 {
+        return errors.err_negative("screen_distance")
+    }
+    return wavelength * screen_distance / slit_separation
+}

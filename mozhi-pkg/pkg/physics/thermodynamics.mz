@@ -1,0 +1,241 @@
+# ============================================================
+# Mozhi Physics Library — Thermodynamics (v1.0.0)
+# Heat, specific heat, ideal gas law, efficiency
+# All inputs/outputs in SI units (J, K, kg, mol, Pa, m³)
+# ============================================================
+
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+
+fn _abs(n) {
+    if n < 0 {
+        return -n
+    }
+    return n
+}
+
+# ------------------------------------------------------------
+# Heat Transfer
+# ------------------------------------------------------------
+
+# Sensible heat: Q = m · c · ΔT
+# mass (kg), specific_heat (J/(kg·K)), delta_T (K or °C) → heat (J)
+fn heat(mass, specific_heat, delta_T) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    if specific_heat < 0 {
+        return errors.err_negative("specific_heat")
+    }
+    return mass * specific_heat * delta_T
+}
+
+# Specific heat capacity: c = Q / (m · ΔT)
+# heat (J), mass (kg), delta_T (K) → specific heat (J/(kg·K))
+fn specificHeat(heat_val, mass, delta_T) {
+    if mass == 0 {
+        return errors.err_zero("mass")
+    }
+    if delta_T == 0 {
+        return errors.err_zero("delta_T")
+    }
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return heat_val / (mass * delta_T)
+}
+
+# Latent heat (phase change): Q = m · L
+# mass (kg), latent_heat (J/kg) → heat (J)
+fn latent_heat(mass, latent_heat_val) {
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return mass * latent_heat_val
+}
+
+# ------------------------------------------------------------
+# Ideal Gas Law
+# ------------------------------------------------------------
+
+# PV = nRT  →  solve for pressure
+# moles (mol), temperature (K), volume (m³) → pressure (Pa)
+fn idealGasLaw_pressure(moles, temperature, volume) {
+    if volume == 0 {
+        return errors.err_zero("volume")
+    }
+    if volume < 0 {
+        return errors.err_negative("volume")
+    }
+    if temperature < 0 {
+        return errors.err_negative("temperature")
+    }
+    if moles < 0 {
+        return errors.err_negative("moles")
+    }
+    return moles * constants.GAS_CONSTANT * temperature / volume
+}
+
+# PV = nRT  →  solve for volume
+# moles (mol), temperature (K), pressure (Pa) → volume (m³)
+fn idealGasLaw_volume(moles, temperature, pressure) {
+    if pressure == 0 {
+        return errors.err_zero("pressure")
+    }
+    if temperature < 0 {
+        return errors.err_negative("temperature")
+    }
+    if moles < 0 {
+        return errors.err_negative("moles")
+    }
+    return moles * constants.GAS_CONSTANT * temperature / pressure
+}
+
+# PV = nRT  →  solve for temperature
+# moles (mol), pressure (Pa), volume (m³) → temperature (K)
+fn idealGasLaw_temperature(moles, pressure, volume) {
+    if volume == 0 {
+        return errors.err_zero("volume")
+    }
+    if moles == 0 {
+        return errors.err_zero("moles")
+    }
+    return pressure * volume / (moles * constants.GAS_CONSTANT)
+}
+
+# PV = nRT  →  solve for moles
+# pressure (Pa), volume (m³), temperature (K) → moles (mol)
+fn idealGasLaw_moles(pressure, volume, temperature) {
+    if temperature == 0 {
+        return errors.err_zero("temperature")
+    }
+    if temperature < 0 {
+        return errors.err_negative("temperature")
+    }
+    return pressure * volume / (constants.GAS_CONSTANT * temperature)
+}
+
+# Convenience: idealGasLaw(p, v, n) returns temperature
+# (matches the API name in the spec)
+# pressure (Pa), volume (m³), moles (mol) → temperature (K)
+fn idealGasLaw(pressure, volume, moles) {
+    return idealGasLaw_temperature(moles, pressure, volume)
+}
+
+# ------------------------------------------------------------
+# Thermal Expansion
+# ------------------------------------------------------------
+
+# Linear expansion: ΔL = α · L₀ · ΔT
+# length0 (m), alpha (1/K), delta_T (K) → change (m)
+fn linear_expansion(length0, alpha, delta_T) {
+    return alpha * length0 * delta_T
+}
+
+# Volumetric expansion: ΔV = β · V₀ · ΔT
+# volume0 (m³), beta (1/K), delta_T (K) → change (m³)
+fn volumetric_expansion(volume0, beta, delta_T) {
+    return beta * volume0 * delta_T
+}
+
+# ------------------------------------------------------------
+# Heat Engine Efficiency
+# ------------------------------------------------------------
+
+# Carnot efficiency: η = 1 - T_cold / T_hot  (temperatures in Kelvin)
+# t_hot (K), t_cold (K) → efficiency (0..1)
+fn carnot_efficiency(t_hot, t_cold) {
+    if t_hot == 0 {
+        return errors.err_zero("t_hot")
+    }
+    if t_hot < 0 {
+        return errors.err_negative("t_hot")
+    }
+    if t_cold < 0 {
+        return errors.err_negative("t_cold")
+    }
+    return 1.0 - t_cold * 1.0 / t_hot
+}
+
+# Heat engine efficiency: η = W_out / Q_in  =  1 - Q_out / Q_in
+# work_out (J), heat_in (J) → efficiency (0..1)
+fn efficiency(work_out, heat_in) {
+    if heat_in == 0 {
+        return errors.err_zero("heat_in")
+    }
+    if heat_in < 0 {
+        return errors.err_negative("heat_in")
+    }
+    return work_out * 1.0 / heat_in
+}
+
+# Efficiency from heat flow: η = 1 - Q_cold / Q_hot
+# q_hot (J), q_cold (J) → efficiency (0..1)
+fn efficiency_heat(q_hot, q_cold) {
+    if q_hot == 0 {
+        return errors.err_zero("q_hot")
+    }
+    if q_hot < 0 {
+        return errors.err_negative("q_hot")
+    }
+    return 1.0 - q_cold / q_hot
+}
+
+# ------------------------------------------------------------
+# Heat Conduction (Fourier's Law)
+# ------------------------------------------------------------
+
+# Rate of heat conduction: Q/t = k · A · ΔT / d
+# conductivity (W/(m·K)), area (m²), delta_T (K), thickness (m) → power (W)
+fn heat_conduction_rate(conductivity, area, delta_T, thickness) {
+    if thickness == 0 {
+        return errors.err_zero("thickness")
+    }
+    if thickness < 0 {
+        return errors.err_negative("thickness")
+    }
+    if area < 0 {
+        return errors.err_negative("area")
+    }
+    return conductivity * area * delta_T / thickness
+}
+
+# ------------------------------------------------------------
+# Stefan-Boltzmann Law (radiation)
+# ------------------------------------------------------------
+
+# Radiated power: P = σ · A · ε · T⁴
+# area (m²), emissivity (0..1), temperature (K) → power (W)
+fn radiated_power(area, emissivity, temperature) {
+    if area < 0 {
+        return errors.err_negative("area")
+    }
+    if temperature < 0 {
+        return errors.err_negative("temperature")
+    }
+    return constants.STEFAN_BOLTZMANN * area * emissivity * temperature * temperature * temperature * temperature
+}
+
+# ------------------------------------------------------------
+# Temperature Conversions
+# ------------------------------------------------------------
+
+# Celsius → Kelvin
+fn celsius_to_kelvin(c) {
+    return c + 273.15
+}
+
+# Kelvin → Celsius
+fn kelvin_to_celsius(k) {
+    return k - 273.15
+}
+
+# Celsius → Fahrenheit
+fn celsius_to_fahrenheit(c) {
+    return c * 9.0 / 5.0 + 32.0
+}
+
+# Fahrenheit → Celsius
+fn fahrenheit_to_celsius(f) {
+    return (f - 32.0) * 5.0 / 9.0
+}

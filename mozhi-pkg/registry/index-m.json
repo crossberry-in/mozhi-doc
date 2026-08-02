@@ -1,0 +1,39 @@
+{
+  "letter": "m",
+  "count": 1,
+  "packages": [
+    {
+      "name": "math_utils",
+      "version": "1.0.0",
+      "description": "Extended math helpers: arithmetic, geometry, statistics, number theory",
+      "category": "math",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/math_utils",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "PI": "mod.PI",
+        "E": "mod.E",
+        "abs": "mod.abs",
+        "sqrt": "mod.sqrt",
+        "factorial": "mod.factorial",
+        "gcd": "mod.gcd",
+        "lcm": "mod.lcm",
+        "is_prime": "mod.is_prime",
+        "fibonacci": "mod.fibonacci"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [
+        "test_basic.mz"
+      ],
+      "checksum_sha256": "e2ea441a14c25ac4f69674683b278e66ab7aa988ff09edc3bd7bba9e38639285",
+      "has_mod": true,
+      "source": "pkg/math_utils/src/mod.mz",
+      "install": "pkg/math_utils/src/"
+    }
+  ]
+}

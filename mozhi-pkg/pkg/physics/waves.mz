@@ -1,0 +1,248 @@
+# ============================================================
+# Mozhi Physics Library — Waves (v1.0.0)
+# Frequency, wavelength, wave speed, period
+# All inputs/outputs in SI units (Hz, m, m/s, s)
+# ============================================================
+
+import constants from "physics/constants.mz"
+import errors from "physics/errors.mz"
+
+# ------------------------------------------------------------
+# Wave Equation: v = f · λ
+# ------------------------------------------------------------
+
+# Wave speed: v = f · λ
+# frequency (Hz), wavelength (m) → speed (m/s)
+fn waveSpeed(frequency, wavelength) {
+    if frequency < 0 {
+        return errors.err_negative("frequency")
+    }
+    if wavelength < 0 {
+        return errors.err_negative("wavelength")
+    }
+    return frequency * wavelength
+}
+
+# Frequency: f = v / λ
+# speed (m/s), wavelength (m) → frequency (Hz)
+fn frequency(speed, wavelength) {
+    if wavelength == 0 {
+        return errors.err_zero("wavelength")
+    }
+    if wavelength < 0 {
+        return errors.err_negative("wavelength")
+    }
+    if speed < 0 {
+        return errors.err_negative("speed")
+    }
+    return speed / wavelength
+}
+
+# Wavelength: λ = v / f
+# speed (m/s), frequency (Hz) → wavelength (m)
+fn wavelength(speed, freq) {
+    if freq == 0 {
+        return errors.err_zero("frequency")
+    }
+    if freq < 0 {
+        return errors.err_negative("frequency")
+    }
+    if speed < 0 {
+        return errors.err_negative("speed")
+    }
+    return speed / freq
+}
+
+# Period: T = 1 / f
+# frequency (Hz) → period (s)
+fn period(frequency) {
+    if frequency == 0 {
+        return errors.err_zero("frequency")
+    }
+    if frequency < 0 {
+        return errors.err_negative("frequency")
+    }
+    return 1.0 / frequency
+}
+
+# Frequency from period: f = 1 / T
+# period (s) → frequency (Hz)
+fn frequency_from_period(period_val) {
+    if period_val == 0 {
+        return errors.err_zero("period")
+    }
+    if period_val < 0 {
+        return errors.err_negative("period")
+    }
+    return 1.0 / period_val
+}
+
+# ------------------------------------------------------------
+# Sound Waves
+# ------------------------------------------------------------
+
+# Speed of sound in air (approximate, at temperature T in Celsius):
+# v ≈ 331 + 0.6·T  (m/s)
+# temperature_c (°C) → speed (m/s)
+fn speed_of_sound(temperature_c) {
+    return 331.0 + 0.6 * temperature_c
+}
+
+# Mach number: M = v_object / v_sound
+# velocity (m/s), sound_speed (m/s) → dimensionless
+fn mach_number(velocity, sound_speed) {
+    if sound_speed == 0 {
+        return errors.err_zero("sound_speed")
+    }
+    return velocity / sound_speed
+}
+
+# ------------------------------------------------------------
+# Wave Intensity
+# ------------------------------------------------------------
+
+# Intensity (spherical wave): I = P / (4π·r²)
+# power (W), distance (m) → intensity (W/m²)
+fn wave_intensity(power, distance) {
+    if distance == 0 {
+        return errors.err_zero("distance")
+    }
+    if distance < 0 {
+        return errors.err_negative("distance")
+    }
+    return power / (4.0 * constants.PI * distance * distance)
+}
+
+# Sound intensity level (decibels): β = 10·log₁₀(I / I₀)
+# I₀ = 1e-12 W/m² (threshold of hearing)
+# intensity (W/m²) → level (dB)
+const THRESHOLD_INTENSITY = 0.000000000001
+
+fn sound_level_db(intensity) {
+    if intensity <= 0 {
+        return errors.err_positive("intensity")
+    }
+    # log10(x) = ln(x) / ln(10)
+    # Using natural log approximation via series
+    ratio = intensity / THRESHOLD_INTENSITY
+    return 10.0 * _log10(ratio)
+}
+
+# Natural log approximation (Newton-Raphson on e^x = y)
+fn _ln(y) {
+    if y <= 0 {
+        return 0.0
+    }
+    # ln(y) = 2 * [ (y-1)/(y+1) + (1/3)((y-1)/(y+1))^3 + (1/5)((y-1)/(y+1))^5 + ... ]
+    t = (y - 1.0) / (y + 1.0)
+    t2 = t * t
+    result = 0.0
+    term = t
+    k = 1
+    while k <= 21 {
+        result = result + term / k
+        term = term * t2
+        k = k + 2
+    }
+    return 2.0 * result
+}
+
+fn _log10(y) {
+    if y <= 0 {
+        return 0.0
+    }
+    return _ln(y) / 2.302585093
+}
+
+# ------------------------------------------------------------
+# Doppler Effect
+# ------------------------------------------------------------
+
+# Doppler (stationary observer, moving source):
+# f' = f · v / (v - v_source)   (source approaching)
+# f' = f · v / (v + v_source)   (source receding)
+# source_freq (Hz), wave_speed (m/s), source_velocity (m/s), approaching (bool) → observed freq (Hz)
+fn doppler(source_freq, wave_speed, source_velocity, approaching) {
+    if wave_speed == 0 {
+        return errors.err_zero("wave_speed")
+    }
+    if approaching {
+        return source_freq * wave_speed / (wave_speed - source_velocity)
+    }
+    return source_freq * wave_speed / (wave_speed + source_velocity)
+}
+
+# ------------------------------------------------------------
+# Standing Waves
+# ------------------------------------------------------------
+
+# Fundamental frequency (string fixed at both ends): f₁ = v / (2L)
+# speed (m/s), length (m) → frequency (Hz)
+fn fundamental_frequency_string(speed, length) {
+    if length == 0 {
+        return errors.err_zero("length")
+    }
+    if length < 0 {
+        return errors.err_negative("length")
+    }
+    return speed / (2.0 * length)
+}
+
+# Harmonic frequency (string): f_n = n · v / (2L)
+# speed (m/s), length (m), harmonic (n=1,2,3,...) → frequency (Hz)
+fn harmonic_frequency_string(speed, length, n) {
+    if n <= 0 {
+        return errors.err_positive("n")
+    }
+    return n * speed / (2.0 * length)
+}
+
+# ------------------------------------------------------------
+# Simple Harmonic Motion (SHM)
+# ------------------------------------------------------------
+
+# Angular frequency of a spring: ω = √(k / m)
+# spring_k (N/m), mass (kg) → angular frequency (rad/s)
+fn shm_angular_frequency_spring(spring_k, mass) {
+    if mass == 0 {
+        return errors.err_zero("mass")
+    }
+    if mass < 0 {
+        return errors.err_negative("mass")
+    }
+    return _sqrt(spring_k / mass)
+}
+
+fn _sqrt(n) {
+    if n <= 0 {
+        return 0.0
+    }
+    x = n
+    prev = 0.0
+    while abs(x - prev) > 0.0000000001 {
+        prev = x
+        x = (x + n / x) / 2.0
+    }
+    return x
+}
+
+# Period of a spring: T = 2π · √(m / k)
+# mass (kg), spring_k (N/m) → period (s)
+fn spring_period(mass, spring_k) {
+    if spring_k == 0 {
+        return errors.err_zero("spring_k")
+    }
+    return 2.0 * constants.PI * _sqrt(mass / spring_k)
+}
+
+# Period of a pendulum (small angle): T = 2π · √(L / g)
+# length (m), gravity (m/s²) → period (s)
+fn pendulum_period(length, gravity) {
+    if gravity == 0 {
+        return errors.err_zero("gravity")
+    }
+    if length < 0 {
+        return errors.err_negative("length")
+    }
+    return 2.0 * constants.PI * _sqrt(length / gravity)
+}

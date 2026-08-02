@@ -1,0 +1,160 @@
+# ============================================================
+# Mozhi Physics Library — Examples
+# Demonstrates every public API
+# Run: mozhi-interpreter examples.mz
+# ============================================================
+
+import constants from "physics/constants.mz"
+import mechanics from "physics/mechanics.mz"
+import motion from "physics/motion.mz"
+import energy from "physics/energy.mz"
+import gravity from "physics/gravity.mz"
+import fluids from "physics/fluids.mz"
+import thermodynamics from "physics/thermodynamics.mz"
+import electricity from "physics/electricity.mz"
+import magnetism from "physics/magnetism.mz"
+import waves from "physics/waves.mz"
+import optics from "physics/optics.mz"
+import relativity from "physics/relativity.mz"
+import quantum from "physics/quantum.mz"
+import astronomy from "physics/astronomy.mz"
+import units from "physics/units.mz"
+
+echo("=== Physical Constants ===")
+echo("PI = " + string(constants.PI))
+echo("SPEED_OF_LIGHT = " + string(constants.SPEED_OF_LIGHT) + " m/s")
+echo("GRAVITATIONAL_CONSTANT = " + string(constants.GRAVITATIONAL_CONSTANT))
+echo("PLANCK_CONSTANT = " + string(constants.PLANCK_CONSTANT) + " J·s")
+echo("BOLTZMANN_CONSTANT = " + string(constants.BOLTZMANN_CONSTANT) + " J/K")
+echo("AVOGADRO_CONSTANT = " + string(constants.AVOGADRO_CONSTANT) + " /mol")
+echo("ELEMENTARY_CHARGE = " + string(constants.ELEMENTARY_CHARGE) + " C")
+echo("ELECTRON_MASS = " + string(constants.ELECTRON_MASS) + " kg")
+echo("PROTON_MASS = " + string(constants.PROTON_MASS) + " kg")
+echo("STANDARD_GRAVITY = " + string(constants.STANDARD_GRAVITY) + " m/s²")
+echo("VACUUM_PERMITTIVITY = " + string(constants.VACUUM_PERMITTIVITY) + " F/m")
+echo("VACUUM_PERMEABILITY = " + string(constants.VACUUM_PERMEABILITY) + " H/m")
+echo("")
+
+echo("=== Mechanics ===")
+echo("force(10, 5) = " + string(mechanics.force(10, 5)) + " N")
+echo("weight(70) = " + string(mechanics.weight(70)) + " N")
+echo("momentum(2, 8) = " + string(mechanics.momentum(2, 8)) + " kg·m/s")
+echo("impulse(50, 0.1) = " + string(mechanics.impulse(50, 0.1)) + " N·s")
+echo("torque(0.5, 20, 90) = " + string(mechanics.torque(0.5, 20, 90)) + " N·m")
+echo("pressure(100, 2) = " + string(mechanics.pressure(100, 2)) + " Pa")
+echo("density(5, 0.002) = " + string(mechanics.density(5, 0.002)) + " kg/m³")
+echo("")
+
+echo("=== Motion ===")
+echo("velocity(100, 5) = " + string(motion.velocity(100, 5)) + " m/s")
+echo("acceleration(30, 5) = " + string(motion.acceleration(30, 5)) + " m/s²")
+echo("averageSpeed(150, 3) = " + string(motion.averageSpeed(150, 3)) + " m/s")
+echo("displacement(0, 2, 5) = " + string(motion.displacement(0, 2, 5)) + " m")
+echo("free_fall_distance(9.81, 3) = " + string(motion.free_fall_distance(9.81, 3)) + " m")
+echo("")
+
+echo("=== Energy ===")
+echo("work(50, 10, 0) = " + string(energy.work(50, 10, 0)) + " J")
+echo("power(1000, 10) = " + string(energy.power(1000, 10)) + " W")
+echo("kineticEnergy(2, 8) = " + string(energy.kineticEnergy(2, 8)) + " J")
+echo("potentialEnergy(5, 10, 9.81) = " + string(energy.potentialEnergy(5, 10, 9.81)) + " J")
+echo("springEnergy(200, 0.1) = " + string(energy.springEnergy(200, 0.1)) + " J")
+echo("")
+
+echo("=== Gravity ===")
+echo("gravitationalForce(5.972e24, 7.348e22, 3.844e8) = " + string(gravity.gravitationalForce(5972000000000000327155712.0, 73479999999999997902848.0, 384400000.0)) + " N")
+echo("escapeVelocity(5.972e24, 6371000) = " + string(gravity.escapeVelocity(5972000000000000327155712.0, 6371000)) + " m/s")
+echo("orbitalVelocity(5.972e24, 6371000) = " + string(gravity.orbitalVelocity(5972000000000000327155712.0, 6371000)) + " m/s")
+echo("")
+
+echo("=== Fluids ===")
+echo("buoyant_force(1000, 9.81, 0.001) = " + string(fluids.buoyant_force(1000, 9.81, 0.001)) + " N")
+echo("volume_flow_rate(0.01, 5) = " + string(fluids.volume_flow_rate(0.01, 5)) + " m³/s")
+echo("reynolds_number(1000, 10, 0.1, 0.001) = " + string(fluids.reynolds_number(1000, 10, 0.1, 0.001)))
+echo("")
+
+echo("=== Thermodynamics ===")
+echo("heat(2, 4184, 10) = " + string(thermodynamics.heat(2, 4184, 10)) + " J")
+echo("specificHeat(83680, 2, 10) = " + string(thermodynamics.specificHeat(83680, 2, 10)) + " J/(kg·K)")
+echo("idealGasLaw(101325, 0.0224, 1) = " + string(thermodynamics.idealGasLaw(101325, 0.0224, 1)) + " K")
+echo("efficiency(300, 1000) = " + string(thermodynamics.efficiency(300, 1000)))
+echo("carnot_efficiency(600, 300) = " + string(thermodynamics.carnot_efficiency(600, 300)))
+echo("celsius_to_kelvin(25) = " + string(thermodynamics.celsius_to_kelvin(25)) + " K")
+echo("")
+
+echo("=== Electricity ===")
+echo("voltage(2, 10) = " + string(electricity.voltage(2, 10)) + " V")
+echo("current(12, 4) = " + string(electricity.current(12, 4)) + " A")
+echo("resistance(12, 2) = " + string(electricity.resistance(12, 2)) + " Ω")
+echo("power(12, 2) = " + string(electricity.power(12, 2)) + " W")
+echo("capacitance(0.01, 5) = " + string(electricity.capacitance(0.01, 5)) + " F")
+echo("electricField(1e-9, 0.1) = " + string(electricity.electricField(0.0000000010000000000000001, 0.1)) + " N/C")
+echo("coulomb_force(1e-6, 1e-6, 1) = " + string(electricity.coulomb_force(0.0000009999999999999999547, 0.0000009999999999999999547, 1)) + " N")
+echo("")
+
+echo("=== Magnetism ===")
+echo("magneticForce(0.5, 10, 0.2, 90) = " + string(magnetism.magneticForce(0.5, 10, 0.2, 90)) + " N")
+echo("magneticFlux(0.5, 0.1, 0) = " + string(magnetism.magneticFlux(0.5, 0.1, 0)) + " Wb")
+echo("field_from_wire(10, 0.1) = " + string(magnetism.field_from_wire(10, 0.1)) + " T")
+echo("")
+
+echo("=== Waves ===")
+echo("frequency(340, 2) = " + string(waves.frequency(340, 2)) + " Hz")
+echo("wavelength(340, 170) = " + string(waves.wavelength(340, 170)) + " m")
+echo("waveSpeed(170, 2) = " + string(waves.waveSpeed(170, 2)) + " m/s")
+echo("period(50) = " + string(waves.period(50)) + " s")
+echo("speed_of_sound(20) = " + string(waves.speed_of_sound(20)) + " m/s")
+echo("pendulum_period(1, 9.81) = " + string(waves.pendulum_period(1, 9.81)) + " s")
+echo("")
+
+echo("=== Optics ===")
+echo("refractiveIndex(2e8) = " + string(optics.refractiveIndex(200000000.0)))
+echo("focalLength(1.5, 0.5, -0.5) = " + string(optics.focalLength(1.5, 0.5, -0.5)) + " m")
+echo("magnification(0.1, 0.2) = " + string(optics.magnification(0.1, 0.2)))
+echo("lens_power(0.5) = " + string(optics.lens_power(0.5)) + " D")
+echo("")
+
+echo("=== Relativity ===")
+echo("massEnergy(1) = " + string(relativity.massEnergy(1)) + " J")
+echo("massEnergy(0.001) = " + string(relativity.massEnergy(0.001)) + " J")
+echo("lorentz_factor(2.99e8) = " + string(relativity.lorentz_factor(299000000.0)))
+echo("timeDilation(1, 2.5e8) = " + string(relativity.timeDilation(1, 250000000.0)) + " s")
+echo("lengthContraction(10, 2.5e8) = " + string(relativity.lengthContraction(10, 250000000.0)) + " m")
+echo("")
+
+echo("=== Quantum ===")
+echo("photonEnergy(5e14) = " + string(quantum.photonEnergy(500000000000000.0)) + " J")
+echo("photonEnergy_wavelength(5e-7) = " + string(quantum.photonEnergy_wavelength(0.0000004999999999999999774)) + " J")
+echo("deBroglieWavelength(9.1e-31, 1e6) = " + string(quantum.deBroglieWavelength(0., 1000000.0)) + " m")
+echo("hydrogen_energy_level(1) = " + string(quantum.hydrogen_energy_level(1)) + " J")
+echo("wien_wavelength(5778) = " + string(quantum.wien_wavelength(5778)) + " m")
+echo("")
+
+echo("=== Astronomy ===")
+echo("orbitalPeriod(5.972e24, 6371000) = " + string(astronomy.orbitalPeriod(5972000000000000327155712.0, 6371000)) + " s")
+echo("orbitalPeriod(1.989e30, 1.496e11) = " + string(astronomy.orbitalPeriod(1988999999999999901909255192576.0, 149600000000.0)) + " s (Earth orbit)")
+echo("luminosity(6.96e8, 5778) = " + string(astronomy.luminosity(696000000.0, 5778)) + " W")
+echo("stellarMass(3.828e26) = " + string(astronomy.stellarMass(382800000000000008824815616.0)) + " kg")
+echo("schwarzschild_radius(1.989e30) = " + string(astronomy.schwarzschild_radius(1988999999999999901909255192576.0)) + " m")
+echo("")
+
+echo("=== Units ===")
+echo("km_to_m(5) = " + string(units.km_to_m(5)) + " m")
+echo("m_to_km(1000) = " + string(units.m_to_km(1000)) + " km")
+echo("h_to_s(1) = " + string(units.h_to_s(1)) + " s")
+echo("mph_to_ms(60) = " + string(units.mph_to_ms(60)) + " m/s")
+echo("c_to_k(25) = " + string(units.c_to_k(25)) + " K")
+echo("c_to_f(25) = " + string(units.c_to_f(25)) + " °F")
+echo("ev_to_j(1) = " + string(units.ev_to_j(1)) + " J")
+echo("pa_to_atm(101325) = " + string(units.pa_to_atm(101325)) + " atm")
+echo("lb_to_kg(150) = " + string(units.lb_to_kg(150)) + " kg")
+echo("format_si(1500000) = " + units.format_si(1500000))
+echo("")
+
+echo("=== Spec Examples ===")
+echo("force(10, 5) = " + string(mechanics.force(10, 5)))
+echo("kineticEnergy(2, 8) = " + string(energy.kineticEnergy(2, 8)))
+echo("voltage(2, 10) = " + string(electricity.voltage(2, 10)))
+echo("photonEnergy(5e14) = " + string(quantum.photonEnergy(500000000000000.0)))
+echo("")
+echo("=== All examples complete! ===")

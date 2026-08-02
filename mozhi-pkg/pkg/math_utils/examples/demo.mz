@@ -1,0 +1,13 @@
+import mod from "../src/mod.mz"
+
+echo("=== Math Utils Demo ===")
+echo("PI = " + string(mod.PI))
+echo("E = " + string(mod.E))
+echo("factorial(10) = " + string(mod.factorial(10)))
+echo("fibonacci(20) = " + string(mod.fibonacci(20)))
+echo("gcd(48, 36) = " + string(mod.gcd(48, 36)))
+echo("is_prime(97) = " + string(mod.is_prime(97)))
+echo("sqrt(144) = " + string(mod.sqrt(144)))
+echo("clamp(15, 0, 10) = " + string(mod.clamp(15, 0, 10)))
+echo("lerp(0, 100, 0.5) = " + string(mod.lerp(0, 100, 0.5)))
+echo("radians(180) = " + string(mod.radians(180)))
