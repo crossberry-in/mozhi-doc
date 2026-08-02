@@ -1,6 +1,6 @@
 {
   "letter": "m",
-  "count": 1,
+  "count": 2,
   "packages": [
     {
       "name": "math_utils",
@@ -34,6 +34,39 @@
       "has_mod": true,
       "source": "pkg/math_utils/src/mod.mz",
       "install": "pkg/math_utils/src/"
+    },
+    {
+      "name": "mznn",
+      "version": "1.0.0",
+      "description": "Mozhi Neural Network \u2014 Python + C++ + Julia + JavaScript, auto-download from GitHub",
+      "category": "science",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/mznn",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "demo": "mod.demo",
+        "demo_cpp": "mod.demo_cpp",
+        "demo_js": "mod.demo_js",
+        "demo_julia": "mod.demo_julia",
+        "demo_all": "mod.demo_all",
+        "train": "mod.train",
+        "predict": "mod.predict",
+        "info": "mod.info",
+        "run_xor_pipeline": "mod.run_xor_pipeline"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [
+        "test_basic.mz"
+      ],
+      "checksum_sha256": "a5a2fc209957291500975ae18f09a6f456ff18f60fcc2034d6fe374ac21c5237",
+      "has_mod": true,
+      "source": "pkg/mznn/src/mod.mz",
+      "install": "pkg/mznn/src/"
     }
   ]
 }

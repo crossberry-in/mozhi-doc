@@ -1,16 +1,16 @@
 {
-  "total_packages": 14,
-  "total_modules": 27,
-  "total_exports": 198,
+  "total_packages": 15,
+  "total_modules": 28,
+  "total_exports": 207,
   "categories": {
     "data": 2,
     "crypto": 1,
     "general": 3,
-    "science": 1,
+    "science": 2,
     "web": 3,
     "math": 1,
     "os": 1,
     "text": 2
   },
-  "updated": "2026-08-02T20:19:13Z"
+  "updated": "2026-08-02T20:55:46Z"
 }

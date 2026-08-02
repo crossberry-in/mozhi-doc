@@ -264,6 +264,39 @@
       "version": "1.0.0"
     },
     {
+      "category": "science",
+      "checksum_sha256": "a5a2fc209957291500975ae18f09a6f456ff18f60fcc2034d6fe374ac21c5237",
+      "description": "Mozhi Neural Network \u2014 Python + C++ + Julia + JavaScript, auto-download from GitHub",
+      "edition": "2024",
+      "examples": [
+        "demo.mz"
+      ],
+      "exports": {
+        "demo": "mod.demo",
+        "demo_all": "mod.demo_all",
+        "demo_cpp": "mod.demo_cpp",
+        "demo_js": "mod.demo_js",
+        "demo_julia": "mod.demo_julia",
+        "info": "mod.info",
+        "predict": "mod.predict",
+        "run_xor_pipeline": "mod.run_xor_pipeline",
+        "train": "mod.train"
+      },
+      "has_mod": true,
+      "install": "pkg/mznn/src/",
+      "license": "MIT",
+      "modules": [
+        "mod.mz"
+      ],
+      "name": "mznn",
+      "path": "pkg/mznn",
+      "source": "pkg/mznn/src/mod.mz",
+      "tests": [
+        "test_basic.mz"
+      ],
+      "version": "1.0.0"
+    },
+    {
       "category": "os",
       "checksum_sha256": "60a2959b73bd3ba5758b18704c92716333e0209eb20cc84408fadce24ccce492",
       "description": "Full OS control: system info, processes, filesystem, network, users, power, packages, services, cron",
@@ -524,6 +557,6 @@
       "version": "1.0.0"
     }
   ],
-  "updated": "2026-08-02T20:19:13Z",
+  "updated": "2026-08-02T20:55:46Z",
   "version": "1.0.0"
 }

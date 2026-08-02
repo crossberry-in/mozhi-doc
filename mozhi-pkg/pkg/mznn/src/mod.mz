@@ -1,0 +1,325 @@
+# ============================================================
+# mznn — Mozhi Neural Network (v1.0.0)
+# Multi-language: Python, C++, Julia, JavaScript
+# Auto-downloads from GitHub release if not found locally
+# ============================================================
+# Usage:
+#   import mod from "mznn"
+#   mod.demo()                                    # Python XOR
+#   mod.demo_cpp()                                # C++ XOR
+#   mod.demo_js()                                 # JavaScript XOR
+#   mod.demo_julia()                              # Julia XOR
+#   mod.train("data.csv", "2 4 1", 1000, "model.json")
+#   mod.predict("model.json", "0.5,0.3")
+# ============================================================
+
+# ============================================================
+# Configuration
+# ============================================================
+
+const GITHUB_REPO = "crossberry-in/mznn"
+const RELEASE_TAG = "v1.0.0"
+const BASE_URL = "https://github.com/" + GITHUB_REPO + "/releases/download/" + RELEASE_TAG
+
+# Local paths (relative to mznn/ directory or .mozhi/libs/)
+PYTHON_SCRIPT = "python/mznn.py"
+CPP_SCRIPT = "cpp/mznn.cpp"
+JULIA_SCRIPT = "julia/mznn.jl"
+JS_SCRIPT = "javascript/mznn.js"
+
+# ============================================================
+# Auto-download from GitHub release
+# ============================================================
+
+# Ensure a file exists, download from GitHub if not
+fn _ensure_file(local_path, remote_url) {
+    if file_exists(local_path) {
+        return true
+    }
+    # Try to download
+    mkdir_result = run("mkdir -p $(dirname '" + local_path + "') 2>/dev/null")
+    result = run("curl -fsSL '" + remote_url + "' -o '" + local_path + "' 2>/dev/null")
+    if file_exists(local_path) {
+        echo("  [mznn] Downloaded: " + local_path)
+        return true
+    }
+    return false
+}
+
+# Ensure all implementations are available
+fn _ensure_all() {
+    # Try local first, then .mozhi/libs/mznn/, then download
+    dirs = ["./", "./.mozhi/libs/mznn/", "./mznn/"]
+    
+    found_py = false
+    found_cpp = false
+    found_js = false
+    
+    for d in dirs {
+        if file_exists(d + "python/mznn.py") and not found_py {
+            PYTHON_SCRIPT = d + "python/mznn.py"
+            found_py = true
+        }
+        if file_exists(d + "cpp/mznn.cpp") and not found_cpp {
+            CPP_SCRIPT = d + "cpp/mznn.cpp"
+            found_cpp = true
+        }
+        if file_exists(d + "javascript/mznn.js") and not found_js {
+            JS_SCRIPT = d + "javascript/mznn.js"
+            found_js = true
+        }
+    }
+    
+    # Download missing files
+    if not found_py {
+        run("mkdir -p .mozhi/libs/mznn/python")
+        _ensure_file(".mozhi/libs/mznn/python/mznn.py", BASE_URL + "/mznn.py")
+        if file_exists(".mozhi/libs/mznn/python/mznn.py") {
+            PYTHON_SCRIPT = ".mozhi/libs/mznn/python/mznn.py"
+        }
+    }
+    if not found_cpp {
+        run("mkdir -p .mozhi/libs/mznn/cpp")
+        _ensure_file(".mozhi/libs/mznn/cpp/mznn.cpp", BASE_URL + "/mznn.cpp")
+        if file_exists(".mozhi/libs/mznn/cpp/mznn.cpp") {
+            CPP_SCRIPT = ".mozhi/libs/mznn/cpp/mznn.cpp"
+        }
+    }
+    if not found_js {
+        run("mkdir -p .mozhi/libs/mznn/javascript")
+        _ensure_file(".mozhi/libs/mznn/javascript/mznn.js", BASE_URL + "/mznn.js")
+        if file_exists(".mozhi/libs/mznn/javascript/mznn.js") {
+            JS_SCRIPT = ".mozhi/libs/mznn/javascript/mznn.js"
+        }
+    }
+}
+
+# ============================================================
+# XOR Demos — one for each language
+# ============================================================
+
+# Python XOR demo
+fn demo() {
+    _ensure_all()
+    echo("=== mznn: XOR Demo (Python) ===")
+    result = run("python3 " + PYTHON_SCRIPT + " --demo 2>&1")
+    echo(result)
+    return result
+}
+
+# C++ XOR demo (compiles and runs)
+fn demo_cpp() {
+    _ensure_all()
+    echo("=== mznn: XOR Demo (C++) ===")
+    result = run_cpp(CPP_SCRIPT)
+    echo(result)
+    return result
+}
+
+# JavaScript XOR demo (requires Node.js)
+fn demo_js() {
+    _ensure_all()
+    echo("=== mznn: XOR Demo (JavaScript) ===")
+    result = run("node " + JS_SCRIPT + " 2>&1 || nodejs " + JS_SCRIPT + " 2>&1")
+    echo(result)
+    return result
+}
+
+# Julia XOR demo (requires Julia)
+fn demo_julia() {
+    _ensure_all()
+    echo("=== mznn: XOR Demo (Julia) ===")
+    result = run("julia " + JULIA_SCRIPT + " 2>&1")
+    echo(result)
+    return result
+}
+
+# Run all available language demos
+fn demo_all() {
+    echo("=== mznn: All Language Demos ===")
+    echo("")
+    
+    # Python
+    if run("which python3 2>/dev/null").trim() != "" {
+        demo()
+        echo("")
+    } else {
+        echo("[mznn] Python not found — skipping")
+        echo("")
+    }
+    
+    # C++
+    if run("which g++ 2>/dev/null").trim() != "" {
+        demo_cpp()
+        echo("")
+    } else {
+        echo("[mznn] g++ not found — skipping")
+        echo("")
+    }
+    
+    # JavaScript
+    if run("which node 2>/dev/null || which nodejs 2>/dev/null").trim() != "" {
+        demo_js()
+        echo("")
+    } else {
+        echo("[mznn] Node.js not found — skipping")
+        echo("")
+    }
+    
+    # Julia
+    if run("which julia 2>/dev/null").trim() != "" {
+        demo_julia()
+        echo("")
+    } else {
+        echo("[mznn] Julia not found — skipping")
+        echo("")
+    }
+    
+    echo("=== All available demos complete! ===")
+}
+
+# ============================================================
+# Train
+# ============================================================
+
+# Train on CSV data
+fn train(data_path, layers_str, epochs, output) {
+    _ensure_all()
+    cmd = "python3 " + PYTHON_SCRIPT + " --train " + data_path
+    cmd = cmd + " --layers " + layers_str
+    cmd = cmd + " --epochs " + string(epochs)
+    if output != "" {
+        cmd = cmd + " --output " + output
+    }
+    cmd = cmd + " 2>&1"
+    echo("[mznn] Training neural network...")
+    result = run(cmd)
+    echo(result)
+    return result
+}
+
+# Train with custom parameters
+fn train_custom(data_path, layers, activation, loss, lr, epochs, output) {
+    _ensure_all()
+    cmd = "python3 " + PYTHON_SCRIPT + " --train " + data_path
+    cmd = cmd + " --layers " + layers
+    cmd = cmd + " --activation " + activation
+    cmd = cmd + " --loss " + loss
+    cmd = cmd + " --lr " + string(lr)
+    cmd = cmd + " --epochs " + string(epochs)
+    if output != "" {
+        cmd = cmd + " --output " + output
+    }
+    cmd = cmd + " 2>&1"
+    result = run(cmd)
+    echo(result)
+    return result
+}
+
+# ============================================================
+# Predict
+# ============================================================
+
+fn predict(model_path, input_str) {
+    _ensure_all()
+    cmd = "python3 " + PYTHON_SCRIPT + " --predict '" + input_str + "' --model " + model_path + " 2>&1"
+    result = run(cmd)
+    echo(result)
+    return result
+}
+
+fn predict_csv(model_path, csv_path) {
+    _ensure_all()
+    cmd = "python3 " + PYTHON_SCRIPT + " --predict " + csv_path + " --model " + model_path + " 2>&1"
+    result = run(cmd)
+    echo(result)
+    return result
+}
+
+# ============================================================
+# Data Generation
+# ============================================================
+
+fn create_xor_data() {
+    write_file("/tmp/mznn_xor.csv", "0,0,0\n0,1,1\n1,0,1\n1,1,0")
+    echo("[mznn] XOR data created at /tmp/mznn_xor.csv")
+    return "/tmp/mznn_xor.csv"
+}
+
+fn create_classification_data(samples) {
+    content = "x1,x2,label\n"
+    i = 0
+    while i < samples {
+        x1 = run("echo $((RANDOM % 100)) / 100.0").trim()
+        x2 = run("echo $((RANDOM % 100)) / 100.0").trim()
+        label = "0"
+        content = content + x1 + "," + x2 + "," + label + "\n"
+        i = i + 1
+    }
+    write_file("/tmp/mznn_data.csv", content)
+    echo("[mznn] Classification data created at /tmp/mznn_data.csv")
+    return "/tmp/mznn_data.csv"
+}
+
+# ============================================================
+# Info
+# ============================================================
+
+fn info() {
+    s = "============================================\n"
+    s = s + "  mznn — Mozhi Neural Network v1.0.0\n"
+    s = s + "  Multi-Language: Python + C++ + Julia + JS\n"
+    s = s + "============================================\n\n"
+    s = s + "  Languages:\n"
+    s = s + "    Python:      " + PYTHON_SCRIPT + "\n"
+    s = s + "    C++:         " + CPP_SCRIPT + "\n"
+    s = s + "    JavaScript:  " + JS_SCRIPT + "\n"
+    s = s + "    Julia:       " + JULIA_SCRIPT + "\n\n"
+    s = s + "  Features:\n"
+    s = s + "    - Feedforward MLP\n"
+    s = s + "    - Backpropagation\n"
+    s = s + "    - sigmoid, tanh, relu, softmax\n"
+    s = s + "    - MSE, cross-entropy loss\n"
+    s = s + "    - Save/Load (JSON)\n"
+    s = s + "    - Auto-download from GitHub\n\n"
+    s = s + "  Usage:\n"
+    s = s + "    mod.demo()       # Python XOR\n"
+    s = s + "    mod.demo_cpp()   # C++ XOR\n"
+    s = s + "    mod.demo_js()    # JS XOR\n"
+    s = s + "    mod.demo_julia() # Julia XOR\n"
+    s = s + "    mod.demo_all()   # All available\n"
+    s = s + "    mod.train('data.csv', '2 4 1', 1000, 'model.json')\n"
+    s = s + "    mod.predict('model.json', '0.5,0.3')\n"
+    s = s + "============================================"
+    echo(s)
+    return s
+}
+
+# ============================================================
+# Full Pipeline
+# ============================================================
+
+fn run_xor_pipeline() {
+    echo("=== mznn: Full XOR Pipeline ===")
+    echo("")
+    
+    # 1. Create data
+    echo("--- Step 1: Create XOR data ---")
+    data_path = create_xor_data()
+    
+    # 2. Train
+    echo("")
+    echo("--- Step 2: Train model ---")
+    train(data_path, "2 4 1", 1000, "/tmp/mznn_xor_model.json")
+    
+    # 3. Predict
+    echo("")
+    echo("--- Step 3: Predict ---")
+    predict("/tmp/mznn_xor_model.json", "0,0")
+    predict("/tmp/mznn_xor_model.json", "0,1")
+    predict("/tmp/mznn_xor_model.json", "1,0")
+    predict("/tmp/mznn_xor_model.json", "1,1")
+    
+    echo("")
+    echo("=== Pipeline complete! ===")
+}

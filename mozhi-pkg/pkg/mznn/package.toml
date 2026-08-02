@@ -1,0 +1,24 @@
+[package]
+name = "mznn"
+version = "1.0.0"
+category = "science"
+description = "Mozhi Neural Network — Python + C++ + Julia + JavaScript, auto-download from GitHub"
+license = "MIT"
+edition = "2024"
+repository = "https://github.com/crossberry-in/mznn"
+release = "v1.0.0"
+download_url = "https://github.com/crossberry-in/mznn/releases/download/v1.0.0"
+
+[modules]
+mod = "Multi-language NN: demo, train, predict (Python/C++/JS/Julia)"
+
+[exports]
+demo = "mod.demo"
+demo_cpp = "mod.demo_cpp"
+demo_js = "mod.demo_js"
+demo_julia = "mod.demo_julia"
+demo_all = "mod.demo_all"
+train = "mod.train"
+predict = "mod.predict"
+info = "mod.info"
+run_xor_pipeline = "mod.run_xor_pipeline"

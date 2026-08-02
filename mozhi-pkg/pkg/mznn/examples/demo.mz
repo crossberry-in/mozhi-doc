@@ -1,0 +1,3 @@
+import mod from "../src/mod.mz"
+mod.info()
+mod.demo_all()

@@ -13,7 +13,8 @@
       "random"
     ],
     "science": [
-      "gravity_simulation"
+      "gravity_simulation",
+      "mznn"
     ],
     "web": [
       "html",

@@ -1,0 +1,4 @@
+import mod from "../src/mod.mz"
+echo("Running mznn tests...")
+mod.info()
+echo("Tests complete.")
