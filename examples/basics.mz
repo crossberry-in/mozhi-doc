@@ -1,9 +1,9 @@
-# Basic examples in Sino
+# Basic examples in Mozhi
 
 # Variables and types
 var num = 42
 var pi = 3.14159
-var str = "Hello, Sino!"
+var str = "Hello, Mozhi!"
 var flag = true
 var nothing = null
 

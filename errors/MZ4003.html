@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MZ4003 - Network Error - Mozhi Error Reference</title>
+    <meta name="description" content="A network operation failed.">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
+    <style>
+        .error-header { background: #DC262611; border-left: 4px solid #DC2626; padding: 24px; border-radius: 0 8px 8px 0; margin-bottom: 24px; }
+        .error-code { font-family: var(--font-mono); font-size: 14px; color: #DC2626; font-weight: 700; }
+        .error-title { font-size: 28px; font-weight: 800; margin: 4px 0 8px; }
+        .error-summary { font-size: 16px; color: var(--text-muted); }
+        .example { margin: 24px 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .example h4 { background: var(--bg-alt); padding: 12px 16px; margin: 0; border-bottom: 1px solid var(--border); }
+        .example-problem, .example-fix { padding: 16px; }
+        .example-problem { border-bottom: 1px solid var(--border); }
+        .example-problem pre { margin: 8px 0; }
+        .related a { display: inline-block; padding: 4px 12px; background: var(--primary-light); color: var(--primary-dark); border-radius: 4px; font-family: var(--font-mono); font-size: 13px; margin: 2px; }
+        .related a:hover { background: var(--primary); color: white; text-decoration: none; }
+        .back-link { margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
+        <span class="topbar-title">MZ4003</span>
+    </div>
+    <div class="wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">M</text></svg>
+                    Mozhi
+                </a>
+                <div class="sidebar-version">v2.0</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Navigation</div>
+                    <a href="../index.html">Home</a>
+                    <a href="index.html" class="active">Error Reference</a>
+                    <a href="../benchmark.html">Benchmarks</a>
+                    <a href="../spec.html">Specification</a>
+                    <a href="../quickstart.html">Quick Start</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Categories</div>
+                    <a href="index.html#sn1xxx">Parse Errors (MZ1xxx)</a>
+                    <a href="index.html#sn2xxx">Type Errors (MZ2xxx)</a>
+                    <a href="index.html#sn3xxx">Runtime Errors (MZ3xxx)</a>
+                    <a href="index.html#sn4xxx">I/O Errors (MZ4xxx)</a>
+                </div>
+            </nav>
+        </aside>
+        <main class="main">
+            <div class="back-link"><a href="index.html">&larr; Back to Error Reference</a></div>
+            <div class="error-header">
+                <div class="error-code">MZ4003 &middot; I/O Error &middot; ERROR</div>
+                <div class="error-title">Network Error</div>
+                <div class="error-summary">A network operation failed.</div>
+            </div>
+            <h2>Cause</h2>
+            <p>A network request failed due to DNS resolution failure, connection reset, timeout, or other network issue.</p>
+            <h2>Examples</h2>
+        <div class="example">
+            <h4>Example 1</h4>
+            <div class="example-problem">
+                <p><strong>Problem:</strong></p>
+                <pre><code>response = http.get(https://example.com)</code></pre>
+                <p>Network unreachable or DNS failure.</p>
+            </div>
+            <div class="example-fix">
+                <p><strong>Fix:</strong></p>
+                <p>Use try/catch and retry logic for transient failures.</p>
+            </div>
+        </div>
+            <h2>Hint</h2>
+            <div class="note"><p>Network errors are often transient. Consider retrying.</p></div>
+            <h2>Suggestion</h2>
+            <p>Use try/catch, and implement retry logic.</p>
+            <h2>Related</h2><div class="related"><p><a href="MZ4004.html">MZ4004</a> &middot; <a href="MZ4005.html">MZ4005</a></p></div>
+            <div class="footer">
+                <p>Copyright &copy; 2026 crossberry-in.</p>
+                <p><a href="https://github.com/crossberry-in/mozhi-doc">View on GitHub</a></p>
+            </div>
+        </main>
+    </div>
+    <script>
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    </script>
+</body>
+</html>

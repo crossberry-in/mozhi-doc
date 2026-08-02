@@ -677,7 +677,7 @@ Mozhi provides the following primitive types. Each has a fixed size and represen
 
 ### 4.2 Integer Type Inference
 
-Integer literals are inferred as `int` by default. If the literal exceeds the range of `int`, the type is promoted to `int64`. If the literal is negative and exceeds `int64`, the compiler reports an error (SN1008). When an integer literal is assigned to a variable with an explicit narrower type annotation, the literal is checked against that type's range.
+Integer literals are inferred as `int` by default. If the literal exceeds the range of `int`, the type is promoted to `int64`. If the literal is negative and exceeds `int64`, the compiler reports an error (MZ1008). When an integer literal is assigned to a variable with an explicit narrower type annotation, the literal is checked against that type's range.
 
 ```mozhi
 x = 42           # inferred as int
@@ -803,7 +803,7 @@ Types are compatible if they are identical, or if an implicit conversion exists 
 
 ### 4.9 Explicit Type Casts
 
-Explicit type casts use the target type as a function call. Casts that would lose data emit a warning (SN2003) unless suppressed.
+Explicit type casts use the target type as a function call. Casts that would lose data emit a warning (MZ2003) unless suppressed.
 
 ```mozhi
 x = 3.99
@@ -816,7 +816,7 @@ s = "42"
 num = int(s)      # 42 (parses string)
 
 big = 1000
-small = int8(big) # SN2003 warning: narrowing cast may lose data
+small = int8(big) # MZ2003 warning: narrowing cast may lose data
 ```
 
 ### 4.10 Nullable Types
@@ -842,7 +842,7 @@ display = name ?? "Anonymous"
 
 ### 5.1 Variable Declaration
 
-Variables in Mozhi are declared by assignment. The syntax `name = expression` creates a new variable in the current scope, infers its type from the expression, and binds the value. A variable must be declared before it is used. Redeclaring a variable in the same scope shadows the previous declaration and emits a warning (SN2002).
+Variables in Mozhi are declared by assignment. The syntax `name = expression` creates a new variable in the current scope, infers its type from the expression, and binds the value. A variable must be declared before it is used. Redeclaring a variable in the same scope shadows the previous declaration and emits a warning (MZ2002).
 
 ```mozhi
 name = "Mozhi"
@@ -853,7 +853,7 @@ active = true
 
 ### 5.2 Explicit Type Annotations
 
-An explicit type annotation can be provided using the colon syntax: `name: type = expression`. The expression's type must be compatible with the annotated type. If the types are incompatible, the compiler reports an error (SN1003).
+An explicit type annotation can be provided using the colon syntax: `name: type = expression`. The expression's type must be compatible with the annotated type. If the types are incompatible, the compiler reports an error (MZ1003).
 
 ```mozhi
 count: int = 0
@@ -878,7 +878,7 @@ x %= 3          # x is now 1
 
 ### 5.4 Constant Declaration
 
-Constants are declared with the `const` keyword. Constants must be initialized at declaration with a value that is a compile-time constant. Constants cannot be reassigned after declaration. Attempted reassignment of a constant produces an error (SN1004).
+Constants are declared with the `const` keyword. Constants must be initialized at declaration with a value that is a compile-time constant. Constants cannot be reassigned after declaration. Attempted reassignment of a constant produces an error (MZ1004).
 
 ```mozhi
 const PI = 3.14159
@@ -901,7 +901,7 @@ if true {
 }
 
 echo(x)  # 20
-# echo(y)  # SN1001: y is not defined here
+# echo(y)  # MZ1001: y is not defined here
 ```
 
 ### 5.6 Block Scopes
@@ -1124,7 +1124,7 @@ for name in ages {
 
 ### 7.5 Match Statements
 
-The `match` statement compares a value against a series of patterns and executes the first matching arm. Each arm consists of a pattern, the `=>` operator, and a body (either a block or a single expression). The `_` pattern (wildcard) matches any value and serves as a default case. Match expressions must be exhaustive — if no default arm is provided, the compiler warns about non-exhaustive matching (SN2004).
+The `match` statement compares a value against a series of patterns and executes the first matching arm. Each arm consists of a pattern, the `=>` operator, and a body (either a block or a single expression). The `_` pattern (wildcard) matches any value and serves as a default case. Match expressions must be exhaustive — if no default arm is provided, the compiler warns about non-exhaustive matching (MZ2004).
 
 ```mozhi
 x = 2
@@ -1139,11 +1139,11 @@ match x {
 
 ### 7.6 Break and Continue
 
-The `break` statement immediately exits the enclosing loop. The `continue` statement skips the rest of the current iteration and proceeds to the next. Both statements only affect the innermost loop. Using `break` or `continue` outside a loop is a compile error (SN1005).
+The `break` statement immediately exits the enclosing loop. The `continue` statement skips the rest of the current iteration and proceeds to the next. Both statements only affect the innermost loop. Using `break` or `continue` outside a loop is a compile error (MZ1005).
 
 ### 7.7 Return
 
-The `return` statement exits the current function and optionally returns a value. A `return` without an expression returns `null`. Using `return` outside a function is a compile error (SN1006).
+The `return` statement exits the current function and optionally returns a value. A `return` without an expression returns `null`. Using `return` outside a function is a compile error (MZ1006).
 
 ### 7.8 Defer
 
@@ -1353,7 +1353,7 @@ match x {
 
 ### 9.8 Exhaustiveness Checking
 
-The compiler checks that match expressions are exhaustive — every possible value of the scrutinee type must be handled by some arm. For enums, all variants must be covered (unless a wildcard arm is present). For integers and strings, a wildcard arm is required for exhaustiveness. Non-exhaustive matches produce a warning (SN2004) unless the scrutinee type is open-ended.
+The compiler checks that match expressions are exhaustive — every possible value of the scrutinee type must be handled by some arm. For enums, all variants must be covered (unless a wildcard arm is present). For integers and strings, a wildcard arm is required for exhaustiveness. Non-exhaustive matches produce a warning (MZ2004) unless the scrutinee type is open-ended.
 
 ---
 
@@ -1428,15 +1428,15 @@ Mozhi uses a standardized error code system. Error codes are formatted as `SNxNN
 
 | Code Range | Category | Description |
 |-----------|----------|-------------|
-| SN1xxx | Parse errors | Syntax errors, invalid tokens, malformed expressions |
-| SN2xxx | Type errors | Type mismatches, undefined variables, scope errors |
-| SN3xxx | Runtime errors | Null dereference, index out of bounds, division by zero |
-| SN4xxx | I/O errors | File not found, permission denied, network errors |
-| SN5xxx | Link errors | Undefined symbols, duplicate symbols, missing libraries |
-| SN6xxx | Module errors | Module not found, circular imports, visibility errors |
-| SN7xxx | FFI errors | ABI mismatches, marshalling failures, dangling pointers |
-| SN8xxx | Concurrency errors | Deadlock, race condition, channel closed |
-| SN9xxx | Internal errors | Compiler bugs, unexpected state |
+| MZ1xxx | Parse errors | Syntax errors, invalid tokens, malformed expressions |
+| MZ2xxx | Type errors | Type mismatches, undefined variables, scope errors |
+| MZ3xxx | Runtime errors | Null dereference, index out of bounds, division by zero |
+| MZ4xxx | I/O errors | File not found, permission denied, network errors |
+| MZ5xxx | Link errors | Undefined symbols, duplicate symbols, missing libraries |
+| MZ6xxx | Module errors | Module not found, circular imports, visibility errors |
+| MZ7xxx | FFI errors | ABI mismatches, marshalling failures, dangling pointers |
+| MZ8xxx | Concurrency errors | Deadlock, race condition, channel closed |
+| MZ9xxx | Internal errors | Compiler bugs, unexpected state |
 
 ---
 
@@ -1765,7 +1765,7 @@ The analyzer walks the AST and performs semantic checks: variable scope resoluti
 
 ### 14.5 Type Checking
 
-The type checker applies the type rules from Chapter 4 to every expression and statement. It performs type inference, checks compatibility, and verifies exhaustiveness of match expressions. Type errors (SN2xxx) are reported at this stage.
+The type checker applies the type rules from Chapter 4 to every expression and statement. It performs type inference, checks compatibility, and verifies exhaustiveness of match expressions. Type errors (MZ2xxx) are reported at this stage.
 
 ### 14.6 Optimization
 
@@ -1786,7 +1786,7 @@ The code generator translates the optimized AST into native machine code. On x86
 
 ### 14.8 Linking
 
-The linker combines object files and libraries into the final executable. It resolves symbols, performs relocation, and produces the output file. Link errors (SN5xxx) are reported at this stage.
+The linker combines object files and libraries into the final executable. It resolves symbols, performs relocation, and produces the output file. Link errors (MZ5xxx) are reported at this stage.
 
 ### 14.9 Interpreter Mode
 
@@ -1882,7 +1882,7 @@ The build system can produce three types of output:
 Mozhi diagnostics follow a consistent format designed for readability and IDE integration. Each diagnostic includes a severity, error code, message, source location, and optional hints.
 
 ```
-error[SN1001]: Unknown variable
+error[MZ1001]: Unknown variable
 
   --> src/main.si:12:8
    |
@@ -1893,7 +1893,7 @@ Variable 'total' does not exist in this scope.
 
 Hint: Did you mean 'totalPrice'?
 
-Documentation: https://crossberry-in.github.io/mozhi-doc/errors/SN1001
+Documentation: https://crossberry-in.github.io/mozhi-doc/errors/MZ1001
 ```
 
 ### 16.2 Severity Levels
@@ -1979,64 +1979,64 @@ async fn main() {
 
 This appendix lists all error codes defined by the Mozhi specification. Error codes are prefixed with `SN` and categorized by the first digit.
 
-### A.1 Parse Errors (SN1xxx)
+### A.1 Parse Errors (MZ1xxx)
 
 | Code | Error | Description |
 |------|-------|-------------|
-| SN1001 | Unknown variable | A variable used before declaration |
-| SN1002 | Unexpected token | A token that doesn't fit the grammar |
-| SN1003 | Type mismatch | Incompatible types in assignment |
-| SN1004 | Cannot reassign constant | Attempt to modify a const value |
-| SN1005 | Break outside loop | break used outside a loop |
-| SN1006 | Return outside function | return used outside a function |
-| SN1007 | Missing semicolon | Expected ; between statements |
-| SN1008 | Integer overflow | Literal exceeds type range |
-| SN1009 | Invalid escape sequence | Unknown \\ escape in string |
-| SN1010 | Unterminated string | String literal not closed |
-| SN1011 | Unterminated comment | /* without matching */ |
-| SN1012 | Expected { | Block opening brace missing |
-| SN1013 | Expected } | Block closing brace missing |
-| SN1014 | Expected ( | Opening parenthesis missing |
-| SN1015 | Expected ) | Closing parenthesis missing |
+| MZ1001 | Unknown variable | A variable used before declaration |
+| MZ1002 | Unexpected token | A token that doesn't fit the grammar |
+| MZ1003 | Type mismatch | Incompatible types in assignment |
+| MZ1004 | Cannot reassign constant | Attempt to modify a const value |
+| MZ1005 | Break outside loop | break used outside a loop |
+| MZ1006 | Return outside function | return used outside a function |
+| MZ1007 | Missing semicolon | Expected ; between statements |
+| MZ1008 | Integer overflow | Literal exceeds type range |
+| MZ1009 | Invalid escape sequence | Unknown \\ escape in string |
+| MZ1010 | Unterminated string | String literal not closed |
+| MZ1011 | Unterminated comment | /* without matching */ |
+| MZ1012 | Expected { | Block opening brace missing |
+| MZ1013 | Expected } | Block closing brace missing |
+| MZ1014 | Expected ( | Opening parenthesis missing |
+| MZ1015 | Expected ) | Closing parenthesis missing |
 
-### A.2 Type Errors (SN2xxx)
-
-| Code | Error | Description |
-|------|-------|-------------|
-| SN2001 | Type inference failure | Cannot infer type from context |
-| SN2002 | Variable shadowing | Variable redeclared in same scope |
-| SN2003 | Narrowing cast | Cast may lose data |
-| SN2004 | Non-exhaustive match | Match missing cases |
-| SN2005 | Undefined function | Function not found |
-| SN2006 | Argument count mismatch | Wrong number of arguments |
-| SN2007 | Undefined type | Type not found |
-| SN2008 | Undefined trait | Trait not found |
-| SN2009 | Trait not implemented | Type doesn't implement trait |
-| SN2010 | Field not found | Struct field doesn't exist |
-
-### A.3 Runtime Errors (SN3xxx)
+### A.2 Type Errors (MZ2xxx)
 
 | Code | Error | Description |
 |------|-------|-------------|
-| SN3001 | Null dereference | Accessing member of null |
-| SN3002 | Index out of bounds | Array index exceeds length |
-| SN3003 | Division by zero | Integer division by zero |
-| SN3004 | Stack overflow | Recursion too deep |
-| SN3005 | Out of memory | Heap allocation failed |
-| SN3006 | Invalid cast | Runtime type cast failed |
-| SN3007 | Uncaught error | Error not caught by try/catch |
-| SN3008 | Channel closed | Sending to closed channel |
+| MZ2001 | Type inference failure | Cannot infer type from context |
+| MZ2002 | Variable shadowing | Variable redeclared in same scope |
+| MZ2003 | Narrowing cast | Cast may lose data |
+| MZ2004 | Non-exhaustive match | Match missing cases |
+| MZ2005 | Undefined function | Function not found |
+| MZ2006 | Argument count mismatch | Wrong number of arguments |
+| MZ2007 | Undefined type | Type not found |
+| MZ2008 | Undefined trait | Trait not found |
+| MZ2009 | Trait not implemented | Type doesn't implement trait |
+| MZ2010 | Field not found | Struct field doesn't exist |
 
-### A.4 I/O Errors (SN4xxx)
+### A.3 Runtime Errors (MZ3xxx)
 
 | Code | Error | Description |
 |------|-------|-------------|
-| SN4001 | File not found | Specified file does not exist |
-| SN4002 | Permission denied | Insufficient permissions |
-| SN4003 | Network error | Network operation failed |
-| SN4004 | Connection refused | Cannot connect to host |
-| SN4005 | Timeout | Operation timed out |
-| SN4006 | Disk full | No space to write |
+| MZ3001 | Null dereference | Accessing member of null |
+| MZ3002 | Index out of bounds | Array index exceeds length |
+| MZ3003 | Division by zero | Integer division by zero |
+| MZ3004 | Stack overflow | Recursion too deep |
+| MZ3005 | Out of memory | Heap allocation failed |
+| MZ3006 | Invalid cast | Runtime type cast failed |
+| MZ3007 | Uncaught error | Error not caught by try/catch |
+| MZ3008 | Channel closed | Sending to closed channel |
+
+### A.4 I/O Errors (MZ4xxx)
+
+| Code | Error | Description |
+|------|-------|-------------|
+| MZ4001 | File not found | Specified file does not exist |
+| MZ4002 | Permission denied | Insufficient permissions |
+| MZ4003 | Network error | Network operation failed |
+| MZ4004 | Connection refused | Cannot connect to host |
+| MZ4005 | Timeout | Operation timed out |
+| MZ4006 | Disk full | No space to write |
 
 ---
 

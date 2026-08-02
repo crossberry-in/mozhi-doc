@@ -1,4 +1,4 @@
-# Factorial in Sino
+# Factorial in Mozhi
 
 func factorial(n):
     if n <= 1:

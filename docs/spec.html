@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mozhi Language Specification v2.0</title>
-    <meta name="description" content="Official specification for the Mozhi programming language v2.0 — syntax, grammar, type system, standard library, and tooling.">
+    <title>Mozhi Language Specification v2.4</title>
+    <meta name="description" content="Official specification for the Mozhi programming language v2.4 — syntax, grammar, type system, standard library, and tooling.">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
 </head>
 <body>
     <div class="topbar">
@@ -19,10 +19,10 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <a href="index.html" class="sidebar-logo">
-                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
+                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">M</text></svg>
                     Mozhi
                 </a>
-                <div class="sidebar-version">v2.0</div>
+                <div class="sidebar-version">v2.4</div>
             </div>
             <nav class="sidebar-nav">
                 <div class="sidebar-section">
@@ -76,7 +76,7 @@
         </aside>
 
         <main class="main">
-            <h1 id="mozhi-programming-language-specification-v2-0">Mozhi Programming Language Specification v2.0</h1>
+            <h1 id="mozhi-programming-language-specification-v2-0">Mozhi Programming Language Specification v2.4</h1>
 
 <p><strong>Official Language Specification</strong></p>
 
@@ -1053,7 +1053,7 @@ type_list      = type { "," type } ;</code></pre>
 
 <h3 id="4-2-integer-type-inference">4.2 Integer Type Inference</h3>
 
-<p>Integer literals are inferred as <code>int</code> by default. If the literal exceeds the range of <code>int</code>, the type is promoted to <code>int64</code>. If the literal is negative and exceeds <code>int64</code>, the compiler reports an error (SN1008). When an integer literal is assigned to a variable with an explicit narrower type annotation, the literal is checked against that type's range.</p>
+<p>Integer literals are inferred as <code>int</code> by default. If the literal exceeds the range of <code>int</code>, the type is promoted to <code>int64</code>. If the literal is negative and exceeds <code>int64</code>, the compiler reports an error (MZ1008). When an integer literal is assigned to a variable with an explicit narrower type annotation, the literal is checked against that type's range.</p>
 
 <pre><code class="code-mozhi">x = <span class="number">42</span>           <span class=<span class="string">"comment"</span>># inferred <span class="keyword">as</span> int</span>
 y = 0xFF         <span class=<span class="string">"comment"</span>># inferred <span class="keyword">as</span> int</span>
@@ -1213,7 +1213,7 @@ pair = (<span class="number">1</span>, <span class="string">"a"</span>) <span cl
 
 <h3 id="4-9-explicit-type-casts">4.9 Explicit Type Casts</h3>
 
-<p>Explicit type casts use the target type as a function call. Casts that would lose data emit a warning (SN2003) unless suppressed.</p>
+<p>Explicit type casts use the target type as a function call. Casts that would lose data emit a warning (MZ2003) unless suppressed.</p>
 
 <pre><code class="code-mozhi">x = <span class="number">3.99</span>
 y = <span class="function">int</span>(x)        <span class=<span class="string">"comment"</span>># <span class="number">3</span> (truncates)</span>
@@ -1225,7 +1225,7 @@ s = <span class="string">"<span class="number">42</span>"</span>
 num = <span class="function">int</span>(s)      <span class=<span class="string">"comment"</span>># <span class="number">42</span> (parses string)</span>
 
 big = <span class="number">1000</span>
-small = <span class="function">int8</span>(big) <span class=<span class="string">"comment"</span>># SN2003 warning: narrowing cast may lose data</span></code></pre>
+small = <span class="function">int8</span>(big) <span class=<span class="string">"comment"</span>># MZ2003 warning: narrowing cast may lose data</span></code></pre>
 
 <h3 id="4-10-nullable-types">4.10 Nullable Types</h3>
 
@@ -1248,7 +1248,7 @@ display = name ?? <span class="string">"Anonymous"</span></code></pre>
 
 <h3 id="5-1-variable-declaration">5.1 Variable Declaration</h3>
 
-<p>Variables in Mozhi are declared by assignment. The syntax <code>name = expression</code> creates a new variable in the current scope, infers its type from the expression, and binds the value. A variable must be declared before it is used. Redeclaring a variable in the same scope shadows the previous declaration and emits a warning (SN2002).</p>
+<p>Variables in Mozhi are declared by assignment. The syntax <code>name = expression</code> creates a new variable in the current scope, infers its type from the expression, and binds the value. A variable must be declared before it is used. Redeclaring a variable in the same scope shadows the previous declaration and emits a warning (MZ2002).</p>
 
 <pre><code class="code-mozhi">name = <span class="string">"Mozhi"</span>
 age = <span class="number">20</span>
@@ -1257,7 +1257,7 @@ active = <span class="keyword">true</span></code></pre>
 
 <h3 id="5-2-explicit-type-annotations">5.2 Explicit Type Annotations</h3>
 
-<p>An explicit type annotation can be provided using the colon syntax: <code>name: type = expression</code>. The expression's type must be compatible with the annotated type. If the types are incompatible, the compiler reports an error (SN1003).</p>
+<p>An explicit type annotation can be provided using the colon syntax: <code>name: type = expression</code>. The expression's type must be compatible with the annotated type. If the types are incompatible, the compiler reports an error (MZ1003).</p>
 
 <pre><code class="code-mozhi">count: int = <span class="number">0</span>
 label: string = <span class="string">"default"</span>
@@ -1278,7 +1278,7 @@ x %= <span class="number">3</span>          <span class=<span class="string">"co
 
 <h3 id="5-4-constant-declaration">5.4 Constant Declaration</h3>
 
-<p>Constants are declared with the <code>const</code> keyword. Constants must be initialized at declaration with a value that is a compile-time constant. Constants cannot be reassigned after declaration. Attempted reassignment of a constant produces an error (SN1004).</p>
+<p>Constants are declared with the <code>const</code> keyword. Constants must be initialized at declaration with a value that is a compile-time constant. Constants cannot be reassigned after declaration. Attempted reassignment of a constant produces an error (MZ1004).</p>
 
 <pre><code class="code-mozhi"><span class="keyword">const</span> PI = <span class="number">3.14159</span>
 <span class="keyword">const</span> MAX_SIZE = <span class="number">1024</span>
@@ -1298,7 +1298,7 @@ x %= <span class="number">3</span>          <span class=<span class="string">"co
 }
 
 <span class="function">echo</span>(x)  <span class=<span class="string">"comment"</span>># <span class="number">20</span></span>
-<span class=<span class="string">"comment"</span>># <span class="function">echo</span>(y)  # SN1001: y is <span class="keyword">not</span> defined here</span></code></pre>
+<span class=<span class="string">"comment"</span>># <span class="function">echo</span>(y)  # MZ1001: y is <span class="keyword">not</span> defined here</span></code></pre>
 
 <h3 id="5-6-block-scopes">5.6 Block Scopes</h3>
 
@@ -1524,7 +1524,7 @@ ages = map { <span class="string">"Alice"</span>: <span class="number">30</span>
 
 <h3 id="7-5-match-statements">7.5 Match Statements</h3>
 
-<p>The <code>match</code> statement compares a value against a series of patterns and executes the first matching arm. Each arm consists of a pattern, the <code>=&gt;</code> operator, and a body (either a block or a single expression). The <code>_</code> pattern (wildcard) matches any value and serves as a default case. Match expressions must be exhaustive — if no default arm is provided, the compiler warns about non-exhaustive matching (SN2004).</p>
+<p>The <code>match</code> statement compares a value against a series of patterns and executes the first matching arm. Each arm consists of a pattern, the <code>=&gt;</code> operator, and a body (either a block or a single expression). The <code>_</code> pattern (wildcard) matches any value and serves as a default case. Match expressions must be exhaustive — if no default arm is provided, the compiler warns about non-exhaustive matching (MZ2004).</p>
 
 <pre><code class="code-mozhi">x = <span class="number">2</span>
 
@@ -1537,11 +1537,11 @@ ages = map { <span class="string">"Alice"</span>: <span class="number">30</span>
 
 <h3 id="7-6-break-and-continue">7.6 Break and Continue</h3>
 
-<p>The <code>break</code> statement immediately exits the enclosing loop. The <code>continue</code> statement skips the rest of the current iteration and proceeds to the next. Both statements only affect the innermost loop. Using <code>break</code> or <code>continue</code> outside a loop is a compile error (SN1005).</p>
+<p>The <code>break</code> statement immediately exits the enclosing loop. The <code>continue</code> statement skips the rest of the current iteration and proceeds to the next. Both statements only affect the innermost loop. Using <code>break</code> or <code>continue</code> outside a loop is a compile error (MZ1005).</p>
 
 <h3 id="7-7-return">7.7 Return</h3>
 
-<p>The <code>return</code> statement exits the current function and optionally returns a value. A <code>return</code> without an expression returns <code>null</code>. Using <code>return</code> outside a function is a compile error (SN1006).</p>
+<p>The <code>return</code> statement exits the current function and optionally returns a value. A <code>return</code> without an expression returns <code>null</code>. Using <code>return</code> outside a function is a compile error (MZ1006).</p>
 
 <h3 id="7-8-defer">7.8 Defer</h3>
 
@@ -1729,7 +1729,7 @@ shape = Shape::Circle(<span class="number">5.0</span>)
 
 <h3 id="9-8-exhaustiveness-checking">9.8 Exhaustiveness Checking</h3>
 
-<p>The compiler checks that match expressions are exhaustive — every possible value of the scrutinee type must be handled by some arm. For enums, all variants must be covered (unless a wildcard arm is present). For integers and strings, a wildcard arm is required for exhaustiveness. Non-exhaustive matches produce a warning (SN2004) unless the scrutinee type is open-ended.</p>
+<p>The compiler checks that match expressions are exhaustive — every possible value of the scrutinee type must be handled by some arm. For enums, all variants must be covered (unless a wildcard arm is present). For integers and strings, a wildcard arm is required for exhaustiveness. Non-exhaustive matches produce a warning (MZ2004) unless the scrutinee type is open-ended.</p>
 
 <hr>
 
@@ -1804,47 +1804,47 @@ shape = Shape::Circle(<span class="number">5.0</span>)
 </tr></thead>
 <tbody>
 <tr>
-<td>SN1xxx</td>
+<td>MZ1xxx</td>
 <td>Parse errors</td>
 <td>Syntax errors, invalid tokens, malformed expressions</td>
 </tr>
 <tr>
-<td>SN2xxx</td>
+<td>MZ2xxx</td>
 <td>Type errors</td>
 <td>Type mismatches, undefined variables, scope errors</td>
 </tr>
 <tr>
-<td>SN3xxx</td>
+<td>MZ3xxx</td>
 <td>Runtime errors</td>
 <td>Null dereference, index out of bounds, division by zero</td>
 </tr>
 <tr>
-<td>SN4xxx</td>
+<td>MZ4xxx</td>
 <td>I/O errors</td>
 <td>File not found, permission denied, network errors</td>
 </tr>
 <tr>
-<td>SN5xxx</td>
+<td>MZ5xxx</td>
 <td>Link errors</td>
 <td>Undefined symbols, duplicate symbols, missing libraries</td>
 </tr>
 <tr>
-<td>SN6xxx</td>
+<td>MZ6xxx</td>
 <td>Module errors</td>
 <td>Module not found, circular imports, visibility errors</td>
 </tr>
 <tr>
-<td>SN7xxx</td>
+<td>MZ7xxx</td>
 <td>FFI errors</td>
 <td>ABI mismatches, marshalling failures, dangling pointers</td>
 </tr>
 <tr>
-<td>SN8xxx</td>
+<td>MZ8xxx</td>
 <td>Concurrency errors</td>
 <td>Deadlock, race condition, channel closed</td>
 </tr>
 <tr>
-<td>SN9xxx</td>
+<td>MZ9xxx</td>
 <td>Internal errors</td>
 <td>Compiler bugs, unexpected state</td>
 </tr>
@@ -2675,7 +2675,7 @@ extern <span class="keyword">fn</span> <span class="function">c_strlen</span>(s:
 
 <h3 id="14-5-type-checking">14.5 Type Checking</h3>
 
-<p>The type checker applies the type rules from Chapter 4 to every expression and statement. It performs type inference, checks compatibility, and verifies exhaustiveness of match expressions. Type errors (SN2xxx) are reported at this stage.</p>
+<p>The type checker applies the type rules from Chapter 4 to every expression and statement. It performs type inference, checks compatibility, and verifies exhaustiveness of match expressions. Type errors (MZ2xxx) are reported at this stage.</p>
 
 <h3 id="14-6-optimization">14.6 Optimization</h3>
 
@@ -2719,7 +2719,7 @@ extern <span class="keyword">fn</span> <span class="function">c_strlen</span>(s:
 
 <h3 id="14-8-linking">14.8 Linking</h3>
 
-<p>The linker combines object files and libraries into the final executable. It resolves symbols, performs relocation, and produces the output file. Link errors (SN5xxx) are reported at this stage.</p>
+<p>The linker combines object files and libraries into the final executable. It resolves symbols, performs relocation, and produces the output file. Link errors (MZ5xxx) are reported at this stage.</p>
 
 <h3 id="14-9-interpreter-mode">14.9 Interpreter Mode</h3>
 
@@ -2915,7 +2915,7 @@ type = "static"</code></pre>
 
 <p>Mozhi diagnostics follow a consistent format designed for readability and IDE integration. Each diagnostic includes a severity, error code, message, source location, and optional hints.</p>
 
-<pre><code class="code-mozhi">error[SN1001]: Unknown variable
+<pre><code class="code-mozhi">error[MZ1001]: Unknown variable
 
   --&gt; src/main.si:<span class="number">12</span>:<span class="number">8</span>
    |
@@ -2926,7 +2926,7 @@ Variable 'total' does <span class="keyword">not</span> exist <span class="keywor
 
 Hint: Did you mean 'totalPrice'?
 
-Documentation: https://crossberry-in.github.io/mozhi-doc/errors/SN1001</code></pre>
+Documentation: https://crossberry-in.github.io/mozhi-doc/errors/MZ1001</code></pre>
 
 <h3 id="16-2-severity-levels">16.2 Severity Levels</h3>
 
@@ -3029,7 +3029,7 @@ t2 = <span class="function">spawn</span>(<span class="keyword">fn</span>() { <sp
 
 <p>This appendix lists all error codes defined by the Mozhi specification. Error codes are prefixed with <code>SN</code> and categorized by the first digit.</p>
 
-<h3 id="a-1-parse-errors-sn1xxx">A.1 Parse Errors (SN1xxx)</h3>
+<h3 id="a-1-parse-errors-sn1xxx">A.1 Parse Errors (MZ1xxx)</h3>
 
 <table>
 <thead><tr>
@@ -3039,83 +3039,83 @@ t2 = <span class="function">spawn</span>(<span class="keyword">fn</span>() { <sp
 </tr></thead>
 <tbody>
 <tr>
-<td>SN1001</td>
+<td>MZ1001</td>
 <td>Unknown variable</td>
 <td>A variable used before declaration</td>
 </tr>
 <tr>
-<td>SN1002</td>
+<td>MZ1002</td>
 <td>Unexpected token</td>
 <td>A token that doesn't fit the grammar</td>
 </tr>
 <tr>
-<td>SN1003</td>
+<td>MZ1003</td>
 <td>Type mismatch</td>
 <td>Incompatible types in assignment</td>
 </tr>
 <tr>
-<td>SN1004</td>
+<td>MZ1004</td>
 <td>Cannot reassign constant</td>
 <td>Attempt to modify a const value</td>
 </tr>
 <tr>
-<td>SN1005</td>
+<td>MZ1005</td>
 <td>Break outside loop</td>
 <td>break used outside a loop</td>
 </tr>
 <tr>
-<td>SN1006</td>
+<td>MZ1006</td>
 <td>Return outside function</td>
 <td>return used outside a function</td>
 </tr>
 <tr>
-<td>SN1007</td>
+<td>MZ1007</td>
 <td>Missing semicolon</td>
 <td>Expected ; between statements</td>
 </tr>
 <tr>
-<td>SN1008</td>
+<td>MZ1008</td>
 <td>Integer overflow</td>
 <td>Literal exceeds type range</td>
 </tr>
 <tr>
-<td>SN1009</td>
+<td>MZ1009</td>
 <td>Invalid escape sequence</td>
 <td>Unknown \\ escape in string</td>
 </tr>
 <tr>
-<td>SN1010</td>
+<td>MZ1010</td>
 <td>Unterminated string</td>
 <td>String literal not closed</td>
 </tr>
 <tr>
-<td>SN1011</td>
+<td>MZ1011</td>
 <td>Unterminated comment</td>
 <td>/<em> without matching </em>/</td>
 </tr>
 <tr>
-<td>SN1012</td>
+<td>MZ1012</td>
 <td>Expected {</td>
 <td>Block opening brace missing</td>
 </tr>
 <tr>
-<td>SN1013</td>
+<td>MZ1013</td>
 <td>Expected }</td>
 <td>Block closing brace missing</td>
 </tr>
 <tr>
-<td>SN1014</td>
+<td>MZ1014</td>
 <td>Expected (</td>
 <td>Opening parenthesis missing</td>
 </tr>
 <tr>
-<td>SN1015</td>
+<td>MZ1015</td>
 <td>Expected )</td>
 <td>Closing parenthesis missing</td>
 </tr>
 </tbody></table>
 
-<h3 id="a-2-type-errors-sn2xxx">A.2 Type Errors (SN2xxx)</h3>
+<h3 id="a-2-type-errors-sn2xxx">A.2 Type Errors (MZ2xxx)</h3>
 
 <table>
 <thead><tr>
@@ -3125,58 +3125,58 @@ t2 = <span class="function">spawn</span>(<span class="keyword">fn</span>() { <sp
 </tr></thead>
 <tbody>
 <tr>
-<td>SN2001</td>
+<td>MZ2001</td>
 <td>Type inference failure</td>
 <td>Cannot infer type from context</td>
 </tr>
 <tr>
-<td>SN2002</td>
+<td>MZ2002</td>
 <td>Variable shadowing</td>
 <td>Variable redeclared in same scope</td>
 </tr>
 <tr>
-<td>SN2003</td>
+<td>MZ2003</td>
 <td>Narrowing cast</td>
 <td>Cast may lose data</td>
 </tr>
 <tr>
-<td>SN2004</td>
+<td>MZ2004</td>
 <td>Non-exhaustive match</td>
 <td>Match missing cases</td>
 </tr>
 <tr>
-<td>SN2005</td>
+<td>MZ2005</td>
 <td>Undefined function</td>
 <td>Function not found</td>
 </tr>
 <tr>
-<td>SN2006</td>
+<td>MZ2006</td>
 <td>Argument count mismatch</td>
 <td>Wrong number of arguments</td>
 </tr>
 <tr>
-<td>SN2007</td>
+<td>MZ2007</td>
 <td>Undefined type</td>
 <td>Type not found</td>
 </tr>
 <tr>
-<td>SN2008</td>
+<td>MZ2008</td>
 <td>Undefined trait</td>
 <td>Trait not found</td>
 </tr>
 <tr>
-<td>SN2009</td>
+<td>MZ2009</td>
 <td>Trait not implemented</td>
 <td>Type doesn't implement trait</td>
 </tr>
 <tr>
-<td>SN2010</td>
+<td>MZ2010</td>
 <td>Field not found</td>
 <td>Struct field doesn't exist</td>
 </tr>
 </tbody></table>
 
-<h3 id="a-3-runtime-errors-sn3xxx">A.3 Runtime Errors (SN3xxx)</h3>
+<h3 id="a-3-runtime-errors-sn3xxx">A.3 Runtime Errors (MZ3xxx)</h3>
 
 <table>
 <thead><tr>
@@ -3186,48 +3186,48 @@ t2 = <span class="function">spawn</span>(<span class="keyword">fn</span>() { <sp
 </tr></thead>
 <tbody>
 <tr>
-<td>SN3001</td>
+<td>MZ3001</td>
 <td>Null dereference</td>
 <td>Accessing member of null</td>
 </tr>
 <tr>
-<td>SN3002</td>
+<td>MZ3002</td>
 <td>Index out of bounds</td>
 <td>Array index exceeds length</td>
 </tr>
 <tr>
-<td>SN3003</td>
+<td>MZ3003</td>
 <td>Division by zero</td>
 <td>Integer division by zero</td>
 </tr>
 <tr>
-<td>SN3004</td>
+<td>MZ3004</td>
 <td>Stack overflow</td>
 <td>Recursion too deep</td>
 </tr>
 <tr>
-<td>SN3005</td>
+<td>MZ3005</td>
 <td>Out of memory</td>
 <td>Heap allocation failed</td>
 </tr>
 <tr>
-<td>SN3006</td>
+<td>MZ3006</td>
 <td>Invalid cast</td>
 <td>Runtime type cast failed</td>
 </tr>
 <tr>
-<td>SN3007</td>
+<td>MZ3007</td>
 <td>Uncaught error</td>
 <td>Error not caught by try/catch</td>
 </tr>
 <tr>
-<td>SN3008</td>
+<td>MZ3008</td>
 <td>Channel closed</td>
 <td>Sending to closed channel</td>
 </tr>
 </tbody></table>
 
-<h3 id="a-4-i-o-errors-sn4xxx">A.4 I/O Errors (SN4xxx)</h3>
+<h3 id="a-4-i-o-errors-sn4xxx">A.4 I/O Errors (MZ4xxx)</h3>
 
 <table>
 <thead><tr>
@@ -3237,32 +3237,32 @@ t2 = <span class="function">spawn</span>(<span class="keyword">fn</span>() { <sp
 </tr></thead>
 <tbody>
 <tr>
-<td>SN4001</td>
+<td>MZ4001</td>
 <td>File not found</td>
 <td>Specified file does not exist</td>
 </tr>
 <tr>
-<td>SN4002</td>
+<td>MZ4002</td>
 <td>Permission denied</td>
 <td>Insufficient permissions</td>
 </tr>
 <tr>
-<td>SN4003</td>
+<td>MZ4003</td>
 <td>Network error</td>
 <td>Network operation failed</td>
 </tr>
 <tr>
-<td>SN4004</td>
+<td>MZ4004</td>
 <td>Connection refused</td>
 <td>Cannot connect to host</td>
 </tr>
 <tr>
-<td>SN4005</td>
+<td>MZ4005</td>
 <td>Timeout</td>
 <td>Operation timed out</td>
 </tr>
 <tr>
-<td>SN4006</td>
+<td>MZ4006</td>
 <td>Disk full</td>
 <td>No space to write</td>
 </tr>
@@ -3447,7 +3447,7 @@ result = <span class="keyword">true</span> or <span class="function">expensive</
 
 <hr>
 
-<p><em>End of Mozhi Programming Language Specification v2.0</em></p>
+<p><em>End of Mozhi Programming Language Specification v2.4</em></p>
 
 <p>Copyright © 2026 crossberry-in. All Rights Reserved.</p>
 

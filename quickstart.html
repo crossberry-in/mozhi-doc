@@ -6,7 +6,7 @@
     <title>Quick Start — Mozhi Programming Language</title>
     <meta name="description" content="Get started with Mozhi in 5 minutes — write your first program.">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
 </head>
 <body>
     <div class="topbar">
@@ -18,10 +18,10 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <a href="index.html" class="sidebar-logo">
-                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
+                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">M</text></svg>
                     Mozhi
                 </a>
-                <div class="sidebar-version">v2.0</div>
+                <div class="sidebar-version">v2.4</div>
             </div>
             <nav class="sidebar-nav">
                 <div class="sidebar-section">
@@ -184,6 +184,42 @@ greeting = <span class="string">"Hello, "</span> <span class="operator">+</span>
 } <span class="keyword">catch</span> err {
     <span class="function">echo</span>(<span class="string">"Error: "</span>, err.message)
 }</code></pre>
+
+            <h2>Imports &amp; Libraries (v2.3+)</h2>
+            <pre><code class="code-mozhi"><span class="comment"># Three import styles:</span>
+<span class="keyword">import</span> html                        <span class="comment"># wildcard (func() directly)</span>
+<span class="keyword">import</span> http <span class="keyword">from</span> <span class="string">"mozhi-http"</span>      <span class="comment"># namespace (http.func())</span>
+<span class="keyword">import</span> my <span class="keyword">from</span> <span class="string">"mylib.mz"</span>          <span class="comment"># file path (my.func())</span>
+
+<span class="comment"># Libraries auto-download from GitHub on first use!</span>
+page = html_page(<span class="string">"My Site"</span>, html_h1(<span class="string">"Hello!"</span>))
+<span class="function">echo</span>(page)</code></pre>
+
+            <h2>File I/O &amp; Shell (v2.4+)</h2>
+            <pre><code class="code-mozhi"><span class="comment"># File operations</span>
+<span class="function">write_file</span>(<span class="string">"data.txt"</span>, <span class="string">"Hello!"</span>)
+content = <span class="function">read_file</span>(<span class="string">"data.txt"</span>)
+<span class="function">echo</span>(content)
+
+<span class="comment"># Run shell commands</span>
+output = <span class="function">run</span>(<span class="string">"ls -la"</span>)
+<span class="function">echo</span>(output)
+
+<span class="comment"># Run other language files</span>
+<span class="function">echo</span>(<span class="function">run_c</span>(<span class="string">"program.c"</span>))      <span class="comment"># compile & run C</span>
+<span class="function">echo</span>(<span class="function">run_py</span>(<span class="string">"script.py"</span>))     <span class="comment"># run Python</span>
+<span class="function">echo</span>(<span class="function">run_sh</span>(<span class="string">"script.sh"</span>))     <span class="comment"># run shell script</span></code></pre>
+
+            <h2>HTTP Server (v2.4+)</h2>
+            <pre><code class="code-mozhi"><span class="keyword">import</span> http <span class="keyword">from</span> <span class="string">"mozhi-http"</span>
+
+<span class="keyword">fn</span> <span class="function">handler</span>(method, path) {
+    <span class="comment"># Serve static files from public/ directory</span>
+    <span class="keyword">return</span> http.http_serve_static(path, <span class="string">"public"</span>)
+}
+
+server = http.http_start(<span class="number">8080</span>)
+http.http_serve_loop(server, handler)</code></pre>
 
             <h2>REPL</h2>
             <p>Start the interactive REPL:</p>

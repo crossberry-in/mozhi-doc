@@ -1,4 +1,4 @@
-# Fibonacci sequence in Sino
+# Fibonacci sequence in Mozhi
 
 func fibonacci(n):
     if n <= 1:

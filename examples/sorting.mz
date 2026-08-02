@@ -1,4 +1,4 @@
-# Sorting algorithms in Sino
+# Sorting algorithms in Mozhi
 
 func bubble_sort(arr):
     var n = len(arr)

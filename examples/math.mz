@@ -1,4 +1,4 @@
-# Power operator in Sino
+# Power operator in Mozhi
 
 echo "Power examples:"
 echo "2 ** 10 = ", 2 ** 10

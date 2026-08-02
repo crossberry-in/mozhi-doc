@@ -6,7 +6,7 @@
   "total": 26,
   "passed": 25,
   "failed": 1,
-  "sino_version": "Sino v1.0 (C Implementation)",
+  "mozhi_version": "Mozhi v2.4.0 (C Implementation)",
   "git_commit": "c16a659",
   "interpreter_hash": "5065b8dd487010e9",
   "machine_id": "803582b32a9c",

@@ -46,7 +46,7 @@ irm https://github.com/crossberry-in/mozhi-doc/raw/main/install.ps1 | iex
 
 The PowerShell installer:
 
-1. Downloads `mozhi-windows-x86_64.exe` from the latest release
+1. Downloads `mozhi-interpreter-windows-x86_64.exe` from the latest release
 2. Installs it to `%USERPROFILE%\.mozhi\bin\mozhi.exe`
 3. Adds `%USERPROFILE%\.mozhi\bin` to your user `PATH`
 4. Verifies the installation
@@ -73,15 +73,15 @@ The glibc Linux builds dynamically link against `libc` and `libm` (already prese
 
 | Platform | Architecture | Libc | Asset name | Build type |
 |----------|--------------|------|------------|-----------|
-| Linux (Ubuntu, Debian, Fedora, Arch) | x86_64 | glibc | `mozhi-linux-x86_64` | Dynamic |
-| Linux (Raspberry Pi 4/5, ARM servers) | ARM64 (aarch64) | glibc | `mozhi-linux-arm64` | Dynamic |
-| Alpine Linux | x86_64 | musl | `mozhi-alpine-x86_64` | **Static** |
-| Alpine Linux | ARM64 | musl | `mozhi-alpine-arm64` | **Static** |
-| Termux on Android | ARM64 | bionic | `mozhi-alpine-arm64` | **Static** |
-| Termux on Android | x86_64 | bionic | `mozhi-alpine-x86_64` | **Static** |
-| macOS (Intel) | x86_64 | Darwin | `mozhi-macos-x86_64` | Dynamic |
-| macOS (Apple Silicon M1/M2/M3/M4) | ARM64 | Darwin | `mozhi-macos-arm64` | Dynamic |
-| Windows 10/11 | x86_64 | MSVCRT | `mozhi-windows-x86_64.exe` | Static |
+| Linux (Ubuntu, Debian, Fedora, Arch) | x86_64 | glibc | `mozhi-interpreter-linux-x86_64` | Dynamic |
+| Linux (Raspberry Pi 4/5, ARM servers) | ARM64 (aarch64) | glibc | `mozhi-interpreter-linux-arm64` | Dynamic |
+| Alpine Linux | x86_64 | musl | `mozhi-interpreter-alpine-x86_64` | **Static** |
+| Alpine Linux | ARM64 | musl | `mozhi-interpreter-alpine-arm64` | **Static** |
+| Termux on Android | ARM64 | bionic | `mozhi-interpreter-alpine-arm64` | **Static** |
+| Termux on Android | x86_64 | bionic | `mozhi-interpreter-alpine-x86_64` | **Static** |
+| macOS (Intel) | x86_64 | Darwin | `mozhi-interpreter-macos-x86_64` | Dynamic |
+| macOS (Apple Silicon M1/M2/M3/M4) | ARM64 | Darwin | `mozhi-interpreter-macos-arm64` | Dynamic |
+| Windows 10/11 | x86_64 | MSVCRT | `mozhi-interpreter-windows-x86_64.exe` | Static |
 
 > Termux uses the static musl build because Android's bionic libc is not API-compatible with glibc or musl. Static musl binaries run natively on the Linux kernel that Android uses — no `proot` needed.
 
@@ -167,7 +167,7 @@ The installer:
 
 - On **Apple Silicon** (M1/M2/M3/M4), installs to `/opt/homebrew/bin` if it exists, otherwise `/usr/local/bin`, otherwise `~/.local/bin`
 - On **Intel** Macs, installs to `/usr/local/bin`, otherwise `~/.local/bin`
-- Downloads `mozhi-macos-arm64` for Apple Silicon or `mozhi-macos-x86_64` for Intel
+- Downloads `mozhi-interpreter-macos-arm64` for Apple Silicon or `mozhi-interpreter-macos-x86_64` for Intel
 
 Verify:
 
@@ -193,7 +193,7 @@ irm https://github.com/crossberry-in/mozhi-doc/raw/main/install.ps1 | iex
 
 The installer:
 
-1. Downloads `mozhi-windows-x86_64.exe`
+1. Downloads `mozhi-interpreter-windows-x86_64.exe`
 2. Installs it to `%USERPROFILE%\.mozhi\bin\mozhi.exe`
 3. Adds `%USERPROFILE%\.mozhi\bin` to your user `PATH`
 
@@ -234,21 +234,21 @@ Go to the [Releases page](https://github.com/crossberry-in/mozhi-doc/releases) a
 
 | Your platform | Download this asset |
 |---------------|---------------------|
-| Ubuntu / Debian / Fedora / Arch (x86_64) | `mozhi-linux-x86_64` |
-| Raspberry Pi 4/5, ARM servers | `mozhi-linux-arm64` |
-| Alpine Linux (x86_64) | `mozhi-alpine-x86_64` |
-| Alpine Linux (ARM64) | `mozhi-alpine-arm64` |
-| Termux on Android (arm64) | `mozhi-alpine-arm64` |
-| Termux on Android (x86_64) | `mozhi-alpine-x86_64` |
-| macOS Intel | `mozhi-macos-x86_64` |
-| macOS Apple Silicon | `mozhi-macos-arm64` |
-| Windows 10/11 x86_64 | `mozhi-windows-x86_64.exe` |
+| Ubuntu / Debian / Fedora / Arch (x86_64) | `mozhi-interpreter-linux-x86_64` |
+| Raspberry Pi 4/5, ARM servers | `mozhi-interpreter-linux-arm64` |
+| Alpine Linux (x86_64) | `mozhi-interpreter-alpine-x86_64` |
+| Alpine Linux (ARM64) | `mozhi-interpreter-alpine-arm64` |
+| Termux on Android (arm64) | `mozhi-interpreter-alpine-arm64` |
+| Termux on Android (x86_64) | `mozhi-interpreter-alpine-x86_64` |
+| macOS Intel | `mozhi-interpreter-macos-x86_64` |
+| macOS Apple Silicon | `mozhi-interpreter-macos-arm64` |
+| Windows 10/11 x86_64 | `mozhi-interpreter-windows-x86_64.exe` |
 
 Or download from the command line:
 
 ```bash
 # Example: Linux x86_64
-curl -L -o mozhi https://github.com/crossberry-in/mozhi-doc/releases/download/v2.0.0/mozhi-linux-x86_64
+curl -L -o mozhi https://github.com/crossberry-in/mozhi-doc/releases/download/v2.4.0/mozhi-interpreter-linux-x86_64
 ```
 
 ### Step 2 — Make it executable (Linux / macOS / Termux only)
@@ -279,7 +279,7 @@ For Termux, no `sudo` is needed:
 mv mozhi $PREFIX/bin/mozhi
 ```
 
-For Windows, move `mozhi-windows-x86_64.exe` to `%USERPROFILE%\.mozhi\bin\mozhi.exe` and add that directory to your `PATH`:
+For Windows, move `mozhi-interpreter-windows-x86_64.exe` to `%USERPROFILE%\.mozhi\bin\mozhi.exe` and add that directory to your `PATH`:
 
 ```powershell
 mkdir "$env:USERPROFILE\.mozhi\bin"
@@ -357,8 +357,8 @@ You downloaded a binary for the wrong architecture. Check your architecture:
 uname -m
 ```
 
-- `x86_64` → use `mozhi-linux-x86_64`, `mozhi-alpine-x86_64`, `mozhi-macos-x86_64`, or `mozhi-windows-x86_64.exe`
-- `aarch64` or `arm64` → use `mozhi-linux-arm64`, `mozhi-alpine-arm64`, or `mozhi-macos-arm64`
+- `x86_64` → use `mozhi-interpreter-linux-x86_64`, `mozhi-interpreter-alpine-x86_64`, `mozhi-interpreter-macos-x86_64`, or `mozhi-interpreter-windows-x86_64.exe`
+- `aarch64` or `arm64` → use `mozhi-interpreter-linux-arm64`, `mozhi-interpreter-alpine-arm64`, or `mozhi-interpreter-macos-arm64`
 
 ### `Permission denied`
 
@@ -405,7 +405,7 @@ The install script is defensive — even if some checks print warnings, the bina
 
 ### Termux: `No such file or directory` when running `mozhi`
 
-This usually means you accidentally downloaded the glibc binary (which won't run on Android's bionic). Re-run the installer — it should download `mozhi-alpine-arm64` (static musl), which works on Termux natively.
+This usually means you accidentally downloaded the glibc binary (which won't run on Android's bionic). Re-run the installer — it should download `mozhi-interpreter-alpine-arm64` (static musl), which works on Termux natively.
 
 ---
 

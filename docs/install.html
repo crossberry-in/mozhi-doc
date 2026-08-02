@@ -6,7 +6,7 @@
     <title>Installation — Mozhi Programming Language</title>
     <meta name="description" content="Install the Mozhi programming language on Linux, macOS, Windows, and Termux.">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
 </head>
 <body>
     <div class="topbar">
@@ -18,10 +18,10 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <a href="index.html" class="sidebar-logo">
-                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
+                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">M</text></svg>
                     Mozhi
                 </a>
-                <div class="sidebar-version">v2.0</div>
+                <div class="sidebar-version">v2.4</div>
             </div>
             <nav class="sidebar-nav">
                 <div class="sidebar-section">
@@ -88,14 +88,14 @@ mozhi doctor       # Should show all green checks</code></pre>
                     <tr><th>Platform</th><th>Architecture</th><th>Binary Name</th><th>Status</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>Linux (Ubuntu, Debian, Fedora, Arch)</td><td>x86_64</td><td><code>mozhi-linux-x86_64</code></td><td>&#10003; Supported</td></tr>
-                    <tr><td>Linux (Raspberry Pi, ARM servers)</td><td>ARM64 (aarch64)</td><td><code>mozhi-linux-arm64</code></td><td>&#10003; Supported</td></tr>
-                    <tr><td>Alpine Linux</td><td>x86_64</td><td><code>mozhi-alpine-x86_64</code></td><td>&#10003; Supported (static)</td></tr>
-                    <tr><td>Alpine Linux</td><td>ARM64</td><td><code>mozhi-alpine-arm64</code></td><td>&#10003; Supported (static)</td></tr>
-                    <tr><td>Termux (Android)</td><td>ARM64</td><td><code>mozhi-alpine-arm64</code></td><td>&#10003; Supported (static)</td></tr>
-                    <tr><td>macOS (Intel)</td><td>x86_64</td><td><code>mozhi-macos-x86_64</code></td><td>&#10003; Supported</td></tr>
-                    <tr><td>macOS (Apple Silicon M1/M2/M3/M4)</td><td>ARM64</td><td><code>mozhi-macos-arm64</code></td><td>&#10003; Supported</td></tr>
-                    <tr><td>Windows 10/11</td><td>x86_64</td><td><code>mozhi-windows-x86_64.exe</code></td><td>&#10003; Supported</td></tr>
+                    <tr><td>Linux (Ubuntu, Debian, Fedora, Arch)</td><td>x86_64</td><td><code>mozhi-interpreter-linux-x86_64</code></td><td>&#10003; Supported</td></tr>
+                    <tr><td>Linux (Raspberry Pi, ARM servers)</td><td>ARM64 (aarch64)</td><td><code>mozhi-interpreter-linux-arm64</code></td><td>&#10003; Supported</td></tr>
+                    <tr><td>Alpine Linux</td><td>x86_64</td><td><code>mozhi-interpreter-alpine-x86_64</code></td><td>&#10003; Supported (static)</td></tr>
+                    <tr><td>Alpine Linux</td><td>ARM64</td><td><code>mozhi-interpreter-alpine-arm64</code></td><td>&#10003; Supported (static)</td></tr>
+                    <tr><td>Termux (Android)</td><td>ARM64</td><td><code>mozhi-interpreter-alpine-arm64</code></td><td>&#10003; Supported (static)</td></tr>
+                    <tr><td>macOS (Intel)</td><td>x86_64</td><td><code>mozhi-interpreter-macos-x86_64</code></td><td>&#10003; Supported</td></tr>
+                    <tr><td>macOS (Apple Silicon M1/M2/M3/M4)</td><td>ARM64</td><td><code>mozhi-interpreter-macos-arm64</code></td><td>&#10003; Supported</td></tr>
+                    <tr><td>Windows 10/11</td><td>x86_64</td><td><code>mozhi-interpreter-windows-x86_64.exe</code></td><td>&#10003; Supported</td></tr>
                 </tbody>
             </table>
 
@@ -112,7 +112,7 @@ mozhi doctor       # Should show all green checks</code></pre>
             <p>If the installer doesn't work, you can install manually:</p>
             <pre><code># Download the interpreter binary
 curl -fsSL -o /usr/local/bin/mozhi-interpreter \\
-  https://github.com/crossberry-in/mozhi-doc/releases/download/v2.0.0/mozhi-linux-arm64
+  https://github.com/crossberry-in/mozhi-doc/releases/download/v2.4.0/mozhi-interpreter-linux-arm64
 
 # Download the dispatcher
 curl -fsSL -o /usr/local/bin/mozhi \\

@@ -23,7 +23,7 @@
     "filesystem": "17%",
     "locale": "unknown",
     "timezone": "UTC",
-    "mozhi_path": "/home/z/my-project/download/sino/sino/bin/mozhi",
+    "mozhi_path": "mozhi-interpreter",
     "mozhi_binary_size_bytes": 64232,
     "mozhi_binary_size_kb": 62.7,
     "interpreter_hash": "20ba7a1522760a7c",
@@ -38,7 +38,7 @@
   "configuration": {
     "min_runs": 10,
     "warmup_runs": 2,
-    "interpreter": "/home/z/my-project/download/sino/sino/bin/mozhi",
+    "interpreter": "mozhi-interpreter",
     "thresholds": {
       "startup_shutdown": 100,
       "function_call": 500,

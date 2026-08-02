@@ -6,7 +6,7 @@
     <title>Mozhi Programming Language — Documentation</title>
     <meta name="description" content="Official documentation for the Mozhi programming language — a fast, safe, modern statically-typed language.">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>S</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
 </head>
 <body>
     <div class="topbar">
@@ -18,10 +18,10 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <a href="index.html" class="sidebar-logo">
-                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">S</text></svg>
+                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">M</text></svg>
                     Mozhi
                 </a>
-                <div class="sidebar-version">v2.0</div>
+                <div class="sidebar-version">v2.4</div>
             </div>
             <nav class="sidebar-nav">
                 <div class="sidebar-section">
@@ -90,41 +90,70 @@
             <div class="hero">
                 <h1>Mozhi</h1>
                 <div class="subtitle">Programming Language</div>
-                <div class="version">Version 2.0</div>
+                <div class="version">Version 2.4.0</div>
                 <p class="tagline">Fast &bull; Safe &bull; Modern</p>
                 <div class="hero-cta">
                     <a href="spec.html" class="btn btn-primary">Read the Specification</a>
                     <a href="install.html" class="btn btn-secondary">Install</a>
+                    <a href="libs.html" class="btn btn-secondary">Libraries</a>
                 </div>
             </div>
 
-            <p>Mozhi is a statically-typed programming language designed for building fast, safe, and maintainable software. This is the official documentation site, hosted on GitHub Pages.</p>
+            <p>Mozhi is a programming language with a tree-walking interpreter implemented in C, a beautiful TUI in Go, and a library package system. This is the official documentation site, hosted on GitHub Pages.</p>
+
+            <h2>What's New in v2.4.0</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>File I/O</h3>
+                    <p><code>read_file()</code>, <code>write_file()</code>, <code>file_exists()</code>, <code>list_dir()</code> — read and write files from Mozhi programs.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Shell & Multi-Language</h3>
+                    <p><code>run(cmd)</code>, <code>run_c()</code>, <code>run_cpp()</code>, <code>run_py()</code>, <code>run_sh()</code>, <code>run_mz()</code> — execute shell commands and run files in other languages.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Smart Imports</h3>
+                    <p><code>import http from "mozhi-http"</code> — libraries auto-download from GitHub on first use. Three import styles: wildcard, namespace, and file path.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>HTTP Static Files</h3>
+                    <p><code>http_serve_static(path, dir)</code> — serve <code>index.html</code>, CSS, JS, and other static files. Plus <code>http_run_mz/c/py/sh()</code> for dynamic endpoints.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Library System</h3>
+                    <p>5 official libraries (112 functions): html, http, json, math_utils, strings. Install with <code>mozhi add</code> or just <code>import</code> directly.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Cross-Platform</h3>
+                    <p>Pre-built binaries for Linux (x86_64/ARM64), macOS (Intel/Apple Silicon), Alpine, and Windows. Closed-source — only binaries are published.</p>
+                </div>
+            </div>
 
             <h2>Key Features</h2>
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h3>Static Typing</h3>
-                    <p>Compile-time type safety with automatic type inference. Catch errors before your code runs.</p>
+                    <h3>Tree-Walking Interpreter</h3>
+                    <p>Implemented in C with cross-compilation via Zig. Runs on 7 platform targets including static musl builds for Alpine.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Native Performance</h3>
-                    <p>Compiled to native machine code. Runs at full speed on Linux, macOS, Windows, and Android.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Memory Safe</h3>
-                    <p>Automatic garbage collection and ownership tracking prevent memory errors.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>FFI Support</h3>
-                    <p>Call functions written in C, C++, Assembly, and Rust through a stable ABI.</p>
+                    <h3>Go TUI CLI</h3>
+                    <p>Beautiful glassmorphism UI built with Bubble Tea and Lip Gloss. Commands: build, run, test, fmt, lint, add, update, repl, and more.</p>
                 </div>
                 <div class="feature-card">
                     <h3>Modern Syntax</h3>
-                    <p>Clean, consistent syntax with braces, pattern matching, and trait-based polymorphism.</p>
+                    <p>Clean syntax with braces <code>{ }</code>, <code>fn</code>, <code>const</code>, <code>match</code>, <code>and</code>/<code>or</code>, string methods, and pattern matching.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Package Manager</h3>
-                    <p>Built-in package manager with semantic versioning, lock files, and GitHub integration.</p>
+                    <h3>Networking Builtins</h3>
+                    <p><code>server_listen()</code>, <code>http_get()</code>, <code>socket_send/recv()</code> — build HTTP servers and clients directly in Mozhi.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>String & Array Methods</h3>
+                    <p><code>.upper()</code>, <code>.lower()</code>, <code>.split()</code>, <code>.replace()</code>, <code>.contains()</code>, <code>.slice()</code>, <code>.push()</code>, <code>.pop()</code>, and more.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>GitHub Actions CI/CD</h3>
+                    <p>Automated builds for all platforms. Push to trigger a new release with binaries published to the public mozhi-doc repo.</p>
                 </div>
             </div>
 
