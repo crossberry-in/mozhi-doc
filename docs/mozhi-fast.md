@@ -63,12 +63,13 @@ Measured on x86_64 Linux with the release builds (median of 3 runs):
 
 | Benchmark | mozhi-fast | mozhi-mini | Speedup |
 |-----------|------------|------------|---------|
-| `fib(25)` | **168 ms** | 197 ms | **~1.2×** |
-| 2M `while` loop | **836 ms** (correct `1999999000000`) | 1405 ms (wrong, 32-bit overflow) | **~1.7×** |
+| `fib(30)` | **1562 ms** | 2205 ms | **~1.4×** |
+| 1M `while` loop | **385 ms** (correct `499999500000`) | 727 ms (wrong, 32-bit overflow) | **~1.9×** |
 
 mozhi-fast is faster than the mozhi-mini tree-walking interpreter on both
 recursion and tight loops, and produces **correct 64-bit results** where
-mozhi-mini's 32-bit integers overflow.
+mozhi-mini's 32-bit integers overflow. (Optimized: environments are shared via
+`Rc` so function calls are cheap, and hot-path helpers are `#[inline]`.)
 
 Reproduce:
 
