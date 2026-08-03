@@ -1,8 +1,9 @@
 {
-  "total_packages": 15,
-  "total_modules": 28,
-  "total_exports": 207,
+  "total_packages": 16,
+  "total_modules": 29,
+  "total_exports": 222,
   "categories": {
+    "visualization": 1,
     "data": 2,
     "crypto": 1,
     "general": 3,
@@ -12,5 +13,5 @@
     "os": 1,
     "text": 2
   },
-  "updated": "2026-08-03T07:42:07Z"
+  "updated": "2026-08-03T23:09:01Z"
 }

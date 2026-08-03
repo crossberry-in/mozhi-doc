@@ -1,0 +1,83 @@
+# =============================================================================
+# Mozhi Charts — gallery example
+# Renders mozhi-mini vs mozhi-fast benchmark data as multiple SVG charts and
+# writes a self-contained HTML page.
+#
+# Run (mozhi-fast with import support):
+#   mozhi-fast examples/gallery.mz
+# (the library is installed with: mz add @crossberry-in/charts  or  mz add charts)
+# Output: /tmp/mozhi_charts.html
+# =============================================================================
+
+import charts from "charts"
+
+# ---- data: mozhi-mini vs mozhi-fast runtimes (ms) ----
+labels = ["fib(28)", "fib(30)", "Loop 10M"]
+mini = [911.6, 2209.3, 7066.8]
+fast = [680.8, 1767.9, 4269.4]
+
+titles = []
+descs = []
+svgs = []
+
+push(titles, "Bar Chart")
+push(descs, "mozhi-fast runtimes (ms)")
+push(svgs, charts.bar(labels, fast))
+
+push(titles, "Column Chart")
+push(descs, "mozhi-mini runtimes (ms)")
+push(svgs, charts.bar(labels, mini))
+
+push(titles, "Horizontal Bar")
+push(descs, "mozhi-fast vs mozhi-mini Loop")
+push(svgs, charts.hbar(["mozhi-fast", "mozhi-mini"], [4269.4, 7066.8]))
+
+push(titles, "Line Chart")
+push(descs, "runtime trend")
+push(svgs, charts.line(labels, fast))
+
+push(titles, "Area Chart")
+push(descs, "filled runtime")
+push(svgs, charts.area(labels, mini))
+
+push(titles, "Donut Chart")
+push(descs, "share of Loop 10M runtime")
+push(svgs, charts.donut(["mozhi-fast", "mozhi-mini"], [4269.4, 7066.8]))
+
+push(titles, "Pie Chart")
+push(descs, "share of fib(30) runtime")
+push(svgs, charts.pie(["mozhi-mini", "mozhi-fast"], [2209.3, 1767.9]))
+
+push(titles, "Scatter Plot")
+push(descs, "benchmark runtime points")
+push(svgs, charts.scatter(labels, fast, mini))
+
+push(titles, "Histogram")
+push(descs, "runtime distribution")
+push(svgs, charts.histogram(["mini", "fast"], [7066.8, 4269.4]))
+
+push(titles, "Gauge")
+push(descs, "mozhi-fast speedup vs mini")
+push(svgs, charts.gauge(63.0))
+
+push(titles, "Funnel")
+push(descs, "execution stages (ms)")
+push(svgs, charts.funnel(["fib(28)", "fib(30)", "Loop 10M"], [1592.4, 3977.2, 11336.2]))
+
+push(titles, "Radar Chart")
+push(descs, "speed metrics (inverted)")
+push(svgs, charts.radar(labels, [0.7, 0.8, 0.6]))
+
+push(titles, "Lollipop")
+push(descs, "mozhi-fast runtimes")
+push(svgs, charts.lollipop(labels, fast))
+
+push(titles, "Sparkline")
+push(descs, "mini runtime trend")
+push(svgs, charts.sparkline(mini))
+
+# ---- write HTML ----
+html = charts.page(titles, descs, svgs)
+write_file("/tmp/mozhi_charts.html", html)
+echo("Wrote /tmp/mozhi_charts.html with " + string(len(titles)) + " charts")
+echo("mozhi charts library v" + charts.version())

@@ -1,5 +1,8 @@
 {
   "categories": {
+    "visualization": [
+      "charts"
+    ],
     "data": [
       "collections",
       "json"

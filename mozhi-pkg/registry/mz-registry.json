@@ -2,6 +2,43 @@
   "name": "mozhi",
   "packages": [
     {
+      "category": "visualization",
+      "checksum_sha256": "90688cf2d15be4592b7909082aea6799bc9889c23bbf5bbe413552e9f7d3e43a",
+      "description": "Mozhi chart library \u2014 render bar, line, area, pie, donut, scatter, gauge, funnel, radar and more as SVG/HTML",
+      "edition": "2024",
+      "examples": [
+        "demo.mz"
+      ],
+      "exports": {
+        "area": "mod.area",
+        "bar": "mod.bar",
+        "donut": "mod.donut",
+        "funnel": "mod.funnel",
+        "gauge": "mod.gauge",
+        "hbar": "mod.hbar",
+        "histogram": "mod.histogram",
+        "line": "mod.line",
+        "lollipop": "mod.lollipop",
+        "page": "mod.page",
+        "pie": "mod.pie",
+        "radar": "mod.radar",
+        "scatter": "mod.scatter",
+        "sparkline": "mod.sparkline",
+        "version": "mod.version"
+      },
+      "has_mod": true,
+      "install": "pkg/charts/src/",
+      "license": "MIT",
+      "modules": [
+        "mod.mz"
+      ],
+      "name": "charts",
+      "path": "pkg/charts",
+      "source": "pkg/charts/src/mod.mz",
+      "tests": [],
+      "version": "1.0.0"
+    },
+    {
       "category": "data",
       "checksum_sha256": "8278ac0c741bee966b0592fb1e2bf4bf0659c2559a1fa20a49ae4c56397f8393",
       "description": "Array operations \u2014 sort, reverse, sum, min, max, mean, contains, slice, concat, range",
@@ -557,6 +594,6 @@
       "version": "1.0.0"
     }
   ],
-  "updated": "2026-08-03T07:42:07Z",
+  "updated": "2026-08-03T23:09:01Z",
   "version": "1.0.0"
 }

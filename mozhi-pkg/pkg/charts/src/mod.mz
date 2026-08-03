@@ -1,0 +1,435 @@
+# =============================================================================
+# Charts — Mozhi chart library
+# Renders chart types as SVG/HTML markup from simple data.
+# Runs on mozhi-fast (Rust bytecode VM):  mozhi-fast charts.mz
+#
+#   import charts from "charts"
+#   bars = charts.bar(["a","b","c"], [1.0, 2.0, 3.0])
+#   echo(bars)
+#
+# Supported chart types: bar, column, line, area, pie, donut, scatter,
+# histogram, gauge, funnel, radar (SVG polygons), sparkline, lollipop.
+# =============================================================================
+
+const MZ_CHARTS_VERSION = "1.0.0"
+
+# Escape a string for SVG/HTML text (replace < > &).
+fn esc(s) {
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+}
+
+# ---------- helpers ----------
+# svg head with given width/height
+fn svg_head(w, h) {
+    return "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + string(w) + "\" height=\"" + string(h) + "\" viewBox=\"0 0 " + string(w) + " " + string(h) + "\">"
+}
+fn svg_tail() {
+    return "</svg>"
+}
+
+# max of a numeric array
+fn max_arr(a) {
+    m = 0.0
+    i = 0
+    while i < len(a) {
+        if a[i] > m {
+            m = a[i]
+        }
+        i = i + 1
+    }
+    return m
+}
+
+# min of a numeric array
+fn min_arr(a) {
+    m = a[0]
+    i = 1
+    while i < len(a) {
+        if a[i] < m {
+            m = a[i]
+        }
+        i = i + 1
+    }
+    return m
+}
+
+# ---------- Bar chart (vertical columns) ----------
+# labels: [str], values: [num], returns SVG
+fn bar(labels, values) {
+    n = len(values)
+    w = 420
+    h = 300
+    pad = 40
+    maxv = max_arr(values)
+    if maxv <= 0.0 { maxv = 1.0 }
+    bw = (w - pad * 2) / float(n)
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    i = 0
+    while i < n {
+        bh = (values[i] / maxv) * (h - pad - 30)
+        x = pad + float(i) * bw
+        y = h - pad - bh
+        # color ramp by value
+        col = "#4C6EF5"
+        s = s + "<rect x=\"" + string(x) + "\" y=\"" + string(y) + "\" width=\"" + string(bw - 8) + "\" height=\"" + string(bh) + "\" rx=\"3\" fill=\"" + col + "\"/>"
+        # label below
+        s = s + "<text x=\"" + string(x + bw / 2) + "\" y=\"" + string(h - 18) + "\" font-size=\"10\" fill=\"#94a3b8\" text-anchor=\"middle\">" + esc(labels[i]) + "</text>"
+        # value on top
+        s = s + "<text x=\"" + string(x + bw / 2) + "\" y=\"" + string(y - 6) + "\" font-size=\"10\" fill=\"#e2e8f0\" text-anchor=\"middle\">" + string(values[i]) + "</text>"
+        i = i + 1
+    }
+    return s + svg_tail()
+}
+
+# ---------- Horizontal bar ----------
+fn hbar(labels, values) {
+    n = len(values)
+    w = 420
+    h = 40 + n * 34
+    maxv = max_arr(values)
+    if maxv <= 0.0 { maxv = 1.0 }
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    i = 0
+    while i < n {
+        bw = (values[i] / maxv) * (w - 140)
+        y = 20 + float(i) * 34
+        s = s + "<text x=\"10\" y=\"" + string(y + 14) + "\" font-size=\"11\" fill=\"#94a3b8\">" + esc(labels[i]) + "</text>"
+        s = s + "<rect x=\"110\" y=\"" + string(y) + "\" width=\"" + string(bw) + "\" height=\"22\" rx=\"4\" fill=\"#9A4FF5\"/>"
+        s = s + "<text x=\"" + string(116 + bw) + "\" y=\"" + string(y + 16) + "\" font-size=\"10\" fill=\"#e2e8f0\">" + string(values[i]) + "</text>"
+        i = i + 1
+    }
+    return s + svg_tail()
+}
+
+# ---------- Line chart ----------
+fn line(labels, values) {
+    n = len(values)
+    w = 420
+    h = 300
+    pad = 40
+    maxv = max_arr(values)
+    if maxv <= 0.0 { maxv = 1.0 }
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    # build polyline points
+    pts = ""
+    i = 0
+    while i < n {
+        x = pad + float(i) * ((w - pad * 2) / float(n - 1))
+        y = h - pad - (values[i] / maxv) * (h - pad - 30)
+        if i > 0 { pts = pts + " " }
+        pts = pts + string(x) + "," + string(y)
+        # points
+        s = s + "<circle cx=\"" + string(x) + "\" cy=\"" + string(y) + "\" r=\"3\" fill=\"#9A4FF5\"/>"
+        # label
+        s = s + "<text x=\"" + string(x) + "\" y=\"" + string(h - 18) + "\" font-size=\"9\" fill=\"#94a3b8\" text-anchor=\"middle\">" + esc(labels[i]) + "</text>"
+        i = i + 1
+    }
+    s = s + "<polyline points=\"" + pts + "\" fill=\"none\" stroke=\"#9A4FF5\" stroke-width=\"2\"/>"
+    return s + svg_tail()
+}
+
+# ---------- Area chart ----------
+fn area(labels, values) {
+    n = len(values)
+    w = 420
+    h = 300
+    pad = 40
+    maxv = max_arr(values)
+    if maxv <= 0.0 { maxv = 1.0 }
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    pts = ""
+    i = 0
+    while i < n {
+        x = pad + float(i) * ((w - pad * 2) / float(n - 1))
+        y = h - pad - (values[i] / maxv) * (h - pad - 30)
+        if i > 0 { pts = pts + " " }
+        pts = pts + string(x) + "," + string(y)
+        i = i + 1
+    }
+    # close polygon down to baseline
+    area_pts = pts + " " + string(pad + (w - pad * 2)) + "," + string(h - pad) + " " + string(pad) + "," + string(h - pad)
+    s = s + "<polygon points=\"" + area_pts + "\" fill=\"rgba(154,79,245,0.35)\" stroke=\"#9A4FF5\" stroke-width=\"2\"/>"
+    return s + svg_tail()
+}
+
+# ---------- Pie / Donut ----------
+# values: [num], returns donut SVG (with hole)
+fn donut(labels, values) {
+    n = len(values)
+    total = 0.0
+    i = 0
+    while i < n {
+        total = total + values[i]
+        i = i + 1
+    }
+    if total <= 0.0 { total = 1.0 }
+    w = 320
+    h = 320
+    cx = 160.0
+    cy = 160.0
+    r = 120.0
+    hole = 60.0
+    cols = ["#4C6EF5", "#9A4FF5", "#f59e0b", "#10b981", "#ef4444", "#3b82f6", "#ec4899", "#14b8a6"]
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    ang = -90.0
+    i = 0
+    while i < n {
+        frac = values[i] / total
+        ang2 = ang + frac * 360.0
+        # path arc
+        x1 = cx + r * cos(ang)
+        y1 = cy + r * sin(ang)
+        x2 = cx + r * cos(ang2)
+        y2 = cy + r * sin(ang2)
+        large = 0
+        if frac > 0.5 { large = 1 }
+        col = cols[i % 8]
+        # outer arc path
+        path = "M " + string(cx) + "," + string(cy) + " L " + string(x1) + "," + string(y1) + " A " + string(r) + "," + string(r) + " 0 " + string(large) + " 1 " + string(x2) + "," + string(y2) + " Z"
+        s = s + "<path d=\"" + path + "\" fill=\"" + col + "\"/>"
+        # label at mid angle
+        mid = ang + frac * 180.0
+        lx = cx + (r + 20) * cos(mid)
+        ly = cy + (r + 20) * sin(mid)
+        s = s + "<text x=\"" + string(lx) + "\" y=\"" + string(ly) + "\" font-size=\"9\" fill=\"#e2e8f0\" text-anchor=\"middle\">" + esc(labels[i]) + "</text>"
+        ang = ang2
+        i = i + 1
+    }
+    # donut hole
+    s = s + "<circle cx=\"" + string(cx) + "\" cy=\"" + string(cy) + "\" r=\"" + string(hole) + "\" fill=\"#0f172a\"/>"
+    return s + svg_tail()
+}
+
+# pie = donut without hole
+fn donut_full(labels, values) {
+    n = len(values)
+    total = 0.0
+    i = 0
+    while i < n {
+        total = total + values[i]
+        i = i + 1
+    }
+    if total <= 0.0 { total = 1.0 }
+    w = 320
+    h = 320
+    cx = 160.0
+    cy = 160.0
+    r = 140.0
+    cols = ["#4C6EF5", "#9A4FF5", "#f59e0b", "#10b981", "#ef4444", "#3b82f6", "#ec4899", "#14b8a6"]
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    ang = -90.0
+    i = 0
+    while i < n {
+        frac = values[i] / total
+        ang2 = ang + frac * 360.0
+        x1 = cx + r * cos(ang)
+        y1 = cy + r * sin(ang)
+        x2 = cx + r * cos(ang2)
+        y2 = cy + r * sin(ang2)
+        large = 0
+        if frac > 0.5 { large = 1 }
+        col = cols[i % 8]
+        path = "M " + string(cx) + "," + string(cy) + " L " + string(x1) + "," + string(y1) + " A " + string(r) + "," + string(r) + " 0 " + string(large) + " 1 " + string(x2) + "," + string(y2) + " Z"
+        s = s + "<path d=\"" + path + "\" fill=\"" + col + "\"/>"
+        mid = ang + frac * 180.0
+        lx = cx + (r / 2.0) * cos(mid)
+        ly = cy + (r / 2.0) * sin(mid)
+        s = s + "<text x=\"" + string(lx) + "\" y=\"" + string(ly) + "\" font-size=\"10\" fill=\"#fff\" text-anchor=\"middle\">" + string(int(frac * 100.0)) + "%</text>"
+        ang = ang2
+        i = i + 1
+    }
+    return s + svg_tail()
+}
+
+fn pie(labels, values) {
+    # reuse donut but return SVG with no hole: approximate by drawing circle
+    d = donut(labels, values)
+    # donut already has a hole; for pie we re-render with hole=0 by drawing outer
+    # simple: return donut (close enough for a gallery). Better: full pie below.
+    return donut_full(labels, values)
+}
+
+
+# ---------- Scatter ----------
+fn scatter(labels, xs, ys) {
+    n = len(xs)
+    w = 420
+    h = 300
+    pad = 40
+    maxx = max_arr(xs)
+    maxy = max_arr(ys)
+    if maxx <= 0.0 { maxx = 1.0 }
+    if maxy <= 0.0 { maxy = 1.0 }
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    i = 0
+    while i < n {
+        x = pad + (xs[i] / maxx) * (w - pad * 2)
+        y = h - pad - (ys[i] / maxy) * (h - pad - 30)
+        s = s + "<circle cx=\"" + string(x) + "\" cy=\"" + string(y) + "\" r=\"5\" fill=\"#4C6EF5\" opacity=\"0.85\"/>"
+        s = s + "<text x=\"" + string(x) + "\" y=\"" + string(y - 8) + "\" font-size=\"8\" fill=\"#94a3b8\" text-anchor=\"middle\">" + esc(labels[i]) + "</text>"
+        i = i + 1
+    }
+    return s + svg_tail()
+}
+
+# ---------- Histogram ----------
+fn histogram(labels, values) {
+    return bar(labels, values)
+}
+
+# ---------- Gauge ----------
+fn gauge(percent) {
+    w = 320
+    h = 220
+    cx = 160.0
+    cy = 170.0
+    r = 120.0
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    # background arc (180 deg)
+    s = s + "<path d=\"M " + string(cx - r) + "," + string(cy) + " A " + string(r) + "," + string(r) + " 0 0 1 " + string(cx + r) + "," + string(cy) + "\" fill=\"none\" stroke=\"#334155\" stroke-width=\"18\" stroke-linecap=\"round\"/>"
+    # value arc
+    ang = -180.0 + (percent / 100.0) * 180.0
+    x1 = cx + r * cos(-180.0 * 3.14159 / 180.0)
+    y1 = cy + r * sin(-180.0 * 3.14159 / 180.0)
+    x2 = cx + r * cos(ang * 3.14159 / 180.0)
+    y2 = cy + r * sin(ang * 3.14159 / 180.0)
+    s = s + "<path d=\"M " + string(x1) + "," + string(y1) + " A " + string(r) + "," + string(r) + " 0 0 1 " + string(x2) + "," + string(y2) + "\" fill=\"none\" stroke=\"#9A4FF5\" stroke-width=\"18\" stroke-linecap=\"round\"/>"
+    s = s + "<text x=\"" + string(cx) + "\" y=\"" + string(cy + 20) + "\" font-size=\"24\" fill=\"#fff\" text-anchor=\"middle\">" + string(int(percent)) + "%</text>"
+    s = s + "<text x=\"" + string(cx) + "\" y=\"" + string(cy + 40) + "\" font-size=\"10\" fill=\"#94a3b8\" text-anchor=\"middle\">speedup</text>"
+    return s + svg_tail()
+}
+
+# ---------- Funnel ----------
+fn funnel(labels, values) {
+    n = len(values)
+    maxv = max_arr(values)
+    if maxv <= 0.0 { maxv = 1.0 }
+    w = 300
+    h = n * 40 + 20
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    i = 0
+    while i < n {
+        bw = (values[i] / maxv) * 260.0 + 20.0
+        x = (300.0 - bw) / 2.0
+        y = 10.0 + float(i) * 40.0
+        s = s + "<rect x=\"" + string(x) + "\" y=\"" + string(y) + "\" width=\"" + string(bw) + "\" height=\"30\" rx=\"5\" fill=\"#4C6EF5\" opacity=\"0.85\"/>"
+        s = s + "<text x=\"150\" y=\"" + string(y + 20) + "\" font-size=\"11\" fill=\"#fff\" text-anchor=\"middle\">" + esc(labels[i]) + " · " + string(values[i]) + "</text>"
+        i = i + 1
+    }
+    return s + svg_tail()
+}
+
+# ---------- Radar (SVG polygon) ----------
+# values on axes; returns radar SVG
+fn radar(labels, values) {
+    n = len(values)
+    w = 320
+    h = 320
+    cx = 160.0
+    cy = 160.0
+    r = 110.0
+    maxv = max_arr(values)
+    if maxv <= 0.0 { maxv = 1.0 }
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    # axis lines + polygon
+    pts = ""
+    i = 0
+    while i < n {
+        ang = (360.0 / float(n)) * float(i) - 90.0
+        arad = ang * 3.14159 / 180.0
+        ex = cx + r * cos(arad)
+        ey = cy + r * sin(arad)
+        s = s + "<line x1=\"" + string(cx) + "\" y1=\"" + string(cy) + "\" x2=\"" + string(ex) + "\" y2=\"" + string(ey) + "\" stroke=\"#334155\"/>"
+        lx = cx + (r + 16) * cos(arad)
+        ly = cy + (r + 16) * sin(arad)
+        s = s + "<text x=\"" + string(lx) + "\" y=\"" + string(ly) + "\" font-size=\"9\" fill=\"#94a3b8\" text-anchor=\"middle\">" + esc(labels[i]) + "</text>"
+        # value point
+        vr = (values[i] / maxv) * r
+        px = cx + vr * cos(arad)
+        py = cy + vr * sin(arad)
+        if i > 0 { pts = pts + " " }
+        pts = pts + string(px) + "," + string(py)
+        s = s + "<circle cx=\"" + string(px) + "\" cy=\"" + string(py) + "\" r=\"3\" fill=\"#9A4FF5\"/>"
+        i = i + 1
+    }
+    s = s + "<polygon points=\"" + pts + "\" fill=\"rgba(154,79,245,0.3)\" stroke=\"#9A4FF5\" stroke-width=\"2\"/>"
+    return s + svg_tail()
+}
+
+# ---------- Lollipop ----------
+fn lollipop(labels, values) {
+    n = len(values)
+    w = 420
+    h = 300
+    pad = 40
+    maxv = max_arr(values)
+    if maxv <= 0.0 { maxv = 1.0 }
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    i = 0
+    while i < n {
+        bh = (values[i] / maxv) * (h - pad - 30)
+        x = pad + float(i) * ((w - pad * 2) / float(n))
+        base = h - pad
+        top = base - bh
+        s = s + "<line x1=\"" + string(x) + "\" y1=\"" + string(base) + "\" x2=\"" + string(x) + "\" y2=\"" + string(top) + "\" stroke=\"#9A4FF5\" stroke-width=\"3\"/>"
+        s = s + "<circle cx=\"" + string(x) + "\" cy=\"" + string(top) + "\" r=\"6\" fill=\"#9A4FF5\"/>"
+        s = s + "<text x=\"" + string(x) + "\" y=\"" + string(h - 18) + "\" font-size=\"9\" fill=\"#94a3b8\" text-anchor=\"middle\">" + esc(labels[i]) + "</text>"
+        i = i + 1
+    }
+    return s + svg_tail()
+}
+
+# ---------- Sparkline ----------
+fn sparkline(values) {
+    n = len(values)
+    w = 120
+    h = 40
+    maxv = max_arr(values)
+    if maxv <= 0.0 { maxv = 1.0 }
+    s = svg_head(w, h)
+    s = s + "<rect width=\"" + string(w) + "\" height=\"" + string(h) + "\" fill=\"#0f172a\"/>"
+    pts = ""
+    i = 0
+    while i < n {
+        x = float(i) * (w / float(n - 1))
+        y = h - (values[i] / maxv) * (h - 4)
+        if i > 0 { pts = pts + " " }
+        pts = pts + string(x) + "," + string(y)
+        i = i + 1
+    }
+    s = s + "<polyline points=\"" + pts + "\" fill=\"none\" stroke=\"#4C6EF5\" stroke-width=\"2\"/>"
+    return s + svg_tail()
+}
+
+# ---------- Full HTML page with all charts ----------
+# takes parallel arrays: titles, descs, svgs
+fn page(titles, descs, svgs) {
+    html = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Mozhi Charts</title>"
+    html = html + "<style>body{background:#0f172a;color:#e2e8f0;font-family:sans-serif;padding:24px;margin:0}"
+    html = html + "h1{text-align:center}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:20px}"
+    html = html + ".card{background:#1e293b;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px}"
+    html = html + ".card h3{font-size:15px;margin:0 0 4px}.card .desc{font-size:12px;color:#94a3b8;margin-bottom:8px}</style></head><body>"
+    html = html + "<h1>Mozhi Charts Gallery</h1><div class=\"grid\">"
+    i = 0
+    while i < len(titles) {
+        html = html + "<div class=\"card\"><h3>" + titles[i] + "</h3><div class=\"desc\">" + descs[i] + "</div>" + svgs[i] + "</div>"
+        i = i + 1
+    }
+    html = html + "</div></body></html>"
+    return html
+}
+
+fn version() {
+    return MZ_CHARTS_VERSION
+}

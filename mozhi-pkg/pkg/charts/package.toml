@@ -1,0 +1,28 @@
+[package]
+name = "charts"
+version = "1.0.0"
+category = "visualization"
+description = "Mozhi chart library — render bar, line, area, pie, donut, scatter, gauge, funnel, radar and more as SVG/HTML"
+license = "MIT"
+edition = "2024"
+repository = "https://github.com/crossberry-in/charts"
+
+[modules]
+mod = "Charts: bar, hbar, line, area, donut, pie, scatter, histogram, gauge, funnel, radar, lollipop, sparkline, page"
+
+[exports]
+bar = "mod.bar"
+hbar = "mod.hbar"
+line = "mod.line"
+area = "mod.area"
+donut = "mod.donut"
+pie = "mod.pie"
+scatter = "mod.scatter"
+histogram = "mod.histogram"
+gauge = "mod.gauge"
+funnel = "mod.funnel"
+radar = "mod.radar"
+lollipop = "mod.lollipop"
+sparkline = "mod.sparkline"
+page = "mod.page"
+version = "mod.version"

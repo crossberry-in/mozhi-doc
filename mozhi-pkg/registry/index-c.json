@@ -1,7 +1,44 @@
 {
   "letter": "c",
-  "count": 2,
+  "count": 3,
   "packages": [
+    {
+      "name": "charts",
+      "version": "1.0.0",
+      "description": "Mozhi chart library \u2014 render bar, line, area, pie, donut, scatter, gauge, funnel, radar and more as SVG/HTML",
+      "category": "visualization",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/charts",
+      "modules": [
+        "mod.mz"
+      ],
+      "exports": {
+        "bar": "mod.bar",
+        "hbar": "mod.hbar",
+        "line": "mod.line",
+        "area": "mod.area",
+        "donut": "mod.donut",
+        "pie": "mod.pie",
+        "scatter": "mod.scatter",
+        "histogram": "mod.histogram",
+        "gauge": "mod.gauge",
+        "funnel": "mod.funnel",
+        "radar": "mod.radar",
+        "lollipop": "mod.lollipop",
+        "sparkline": "mod.sparkline",
+        "page": "mod.page",
+        "version": "mod.version"
+      },
+      "examples": [
+        "demo.mz"
+      ],
+      "tests": [],
+      "checksum_sha256": "90688cf2d15be4592b7909082aea6799bc9889c23bbf5bbe413552e9f7d3e43a",
+      "has_mod": true,
+      "source": "pkg/charts/src/mod.mz",
+      "install": "pkg/charts/src/"
+    },
     {
       "name": "collections",
       "version": "1.0.0",
