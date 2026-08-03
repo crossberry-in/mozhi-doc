@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Performance Benchmarks — Mozhi Programming Language</title>
-    <meta name="description" content="Animated performance comparison: Mozhi vs C vs Python on fibonacci and loop benchmarks.">
+    <meta name="description" content="Animated performance comparison: mozhi-mini vs mozhi-fast on fibonacci and loop benchmarks.">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -92,6 +92,7 @@
         .stat-card.c-lang .stat-value { color: #3AAFA9; }
         .stat-card.python .stat-value { color: #E6A23C; }
         .stat-card.mozhi .stat-value { color: #4C6EF5; }
+        .stat-card.fast .stat-value { color: #9A4FF5; }
 
         /* Chart container */
         .chart-container {
@@ -344,23 +345,23 @@
             <!-- Hero -->
             <div class="bench-hero">
                 <h1>Performance Benchmarks</h1>
-                <div class="subtitle">Mozhi vs C vs Python</div>
-                <div class="meta">Measured on x86_64 Linux &middot; August 2026 &middot; 3-run average</div>
+                <div class="subtitle">mozhi-mini vs mozhi-fast</div>
+                <div class="meta">Measured on x86_64 Linux &middot; August 2026 &middot; median of 3 runs</div>
             </div>
 
             <!-- Stats Cards -->
             <div class="stats-row">
-                <div class="stat-card c-lang">
-                    <div class="stat-value"><span class="counter" data-target="1" data-suffix="ms">0</span></div>
-                    <div class="stat-label">C (gcc -O2) &middot; Fastest</div>
-                </div>
-                <div class="stat-card python">
-                    <div class="stat-value"><span class="counter" data-target="938" data-suffix="ms">0</span></div>
-                    <div class="stat-label">Python 3 &middot; Loop Sum</div>
+                <div class="stat-card fast">
+                    <div class="stat-value"><span class="counter" data-target="4269" data-suffix="ms">0</span></div>
+                    <div class="stat-label">mozhi-fast &middot; Loop Sum 10M</div>
                 </div>
                 <div class="stat-card mozhi">
-                    <div class="stat-value"><span class="counter" data-target="5196" data-suffix="ms">0</span></div>
-                    <div class="stat-label">Mozhi &middot; Loop Sum</div>
+                    <div class="stat-value"><span class="counter" data-target="7067" data-suffix="ms">0</span></div>
+                    <div class="stat-label">mozhi-mini &middot; Loop Sum 10M</div>
+                </div>
+                <div class="stat-card fast">
+                    <div class="stat-value"><span class="counter" data-target="1" data-suffix=".7x">0</span></div>
+                    <div class="stat-label">mozhi-fast speedup</div>
                 </div>
             </div>
 
@@ -398,28 +399,14 @@
                     <p style="text-align: center; color: var(--text-muted);">Watch the race &mdash; bars animate to scale. Shorter = faster.</p>
                     <div class="race-track">
                         <div class="race-lane">
-                            <div class="race-label" style="color: #3AAFA9;">C (gcc -O2)</div>
-                            <div class="race-bar-container">
-                                <div class="race-bar c-lang" data-width="0.13">2.9ms</div>
-                            </div>
-                            <div class="race-time">2.9ms</div>
-                        </div>
-                        <div class="race-lane">
-                            <div class="race-label" style="color: #E6A23C;">Python 3</div>
-                            <div class="race-bar-container">
-                                <div class="race-bar python" data-width="0.65">14.4ms</div>
-                            </div>
-                            <div class="race-time">14.4ms</div>
-                        </div>
-                        <div class="race-lane">
-                            <div class="race-label" style="color: #9A4FF5;">mozhi-fast (Rust)</div>
+                            <div class="race-label" style="color: #9A4FF5;">mozhi-fast</div>
                             <div class="race-bar-container">
                                 <div class="race-bar fast" data-width="80">1,767.9ms</div>
                             </div>
                             <div class="race-time">1,767.9ms</div>
                         </div>
                         <div class="race-lane">
-                            <div class="race-label" style="color: #4C6EF5;">mozhi-mini (C)</div>
+                            <div class="race-label" style="color: #4C6EF5;">mozhi-mini</div>
                             <div class="race-bar-container">
                                 <div class="race-bar mozhi" data-width="100">2,209.3ms</div>
                             </div>
@@ -438,28 +425,14 @@
                     <h2>Benchmark Race: Loop Sum 10M</h2>
                     <div class="race-track">
                         <div class="race-lane">
-                            <div class="race-label" style="color: #3AAFA9;">C (gcc -O2)</div>
-                            <div class="race-bar-container">
-                                <div class="race-bar c-lang" data-width="0.02">1.3ms</div>
-                            </div>
-                            <div class="race-time">1.3ms</div>
-                        </div>
-                        <div class="race-lane">
-                            <div class="race-label" style="color: #E6A23C;">Python 3</div>
-                            <div class="race-bar-container">
-                                <div class="race-bar python" data-width="3.3">234.9ms</div>
-                            </div>
-                            <div class="race-time">234.9ms</div>
-                        </div>
-                        <div class="race-lane">
-                            <div class="race-label" style="color: #9A4FF5;">mozhi-fast (Rust)</div>
+                            <div class="race-label" style="color: #9A4FF5;">mozhi-fast</div>
                             <div class="race-bar-container">
                                 <div class="race-bar fast" data-width="60">4,269.4ms</div>
                             </div>
                             <div class="race-time">4,269.4ms</div>
                         </div>
                         <div class="race-lane">
-                            <div class="race-label" style="color: #4C6EF5;">mozhi-mini (C)</div>
+                            <div class="race-label" style="color: #4C6EF5;">mozhi-mini</div>
                             <div class="race-bar-container">
                                 <div class="race-bar mozhi" data-width="100">7,066.8ms</div>
                             </div>
@@ -474,7 +447,7 @@
                 <div class="static-chart">
                     <h2>Static Benchmark Chart (PNG)</h2>
                     <p style="color: var(--text-muted);">Generated with matplotlib at 200 DPI. Suitable for embedding in documents.</p>
-                    <img src="benchmark-results.png" alt="Mozhi vs C vs Python benchmark results" loading="lazy">
+                    <img src="benchmark-results.png" alt="mozhi-mini vs mozhi-fast benchmark results" loading="lazy">
                 </div>
             </div>
 
@@ -486,66 +459,55 @@
                         <thead>
                             <tr>
                                 <th>Benchmark</th>
-                                <th>C (gcc -O2)</th>
-                                <th>Python 3</th>
-                                <th>mozhi-mini (C)</th>
-                                <th>mozhi-fast (Rust)</th>
+                                <th>mozhi-mini</th>
+                                <th>mozhi-fast</th>
+                                <th>Speedup</th>
                                 <th>Winner</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td><strong>Fibonacci(28)</strong><br>Recursive</td>
-                                <td><span style="color:#3AAFA9;font-weight:700;">4.6 ms</span></td>
-                                <td>14.3 ms</td>
                                 <td>911.6 ms</td>
                                 <td><span style="color:#9A4FF5;font-weight:700;">680.8 ms</span></td>
-                                <td><span class="winner-badge">C</span></td>
+                                <td>~1.3&times;</td>
+                                <td><span class="winner-badge">mozhi-fast</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Fibonacci(30)</strong><br>Recursive</td>
-                                <td><span style="color:#3AAFA9;font-weight:700;">2.9 ms</span></td>
-                                <td>14.4 ms</td>
                                 <td>2,209.3 ms</td>
                                 <td><span style="color:#9A4FF5;font-weight:700;">1,767.9 ms</span></td>
-                                <td><span class="winner-badge">C</span></td>
+                                <td>~1.25&times;</td>
+                                <td><span class="winner-badge">mozhi-fast</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Loop Sum</strong><br>10M iterations</td>
-                                <td><span style="color:#3AAFA9;font-weight:700;">1.3 ms</span></td>
-                                <td>234.9 ms</td>
                                 <td>7,066.8 ms</td>
                                 <td><span style="color:#9A4FF5;font-weight:700;">4,269.4 ms</span></td>
-                                <td><span class="winner-badge">C</span></td>
+                                <td>~1.7&times;</td>
+                                <td><span class="winner-badge">mozhi-fast</span></td>
                             </tr>
                         </tbody>
                     </table>
 
                     <h3>Analysis</h3>
                     <div class="note">
-                        <p><strong>C (gcc -O2)</strong> is the fastest &mdash; compiled to native machine code with optimization. This is the baseline.</p>
+                        <p><strong>mozhi-mini</strong> is a tree-walking interpreter. It walks the AST directly
+                        without compiling to bytecode.</p>
                     </div>
                     <div class="note">
-                        <p><strong>Python 3</strong> is 65&ndash;938&times; slower than C. CPython is a bytecode interpreter with no JIT in standard mode.</p>
-                    </div>
-                    <div class="note">
-                        <p><strong>mozhi-mini</strong> (C tree-walking interpreter) is 148&ndash;5,436&times; slower than
-                        C. It walks the AST directly without compiling to bytecode.</p>
-                    </div>
-                    <div class="note">
-                        <p><strong>mozhi-fast</strong> (Rust bytecode VM) is ~1.2&ndash;1.7&times; faster than
-                        mozhi-mini by compiling Mozhi to bytecode and running it on a stack-based VM.</p>
+                        <p><strong>mozhi-fast</strong> is ~1.25&ndash;1.7&times; faster than mozhi-mini by compiling
+                        Mozhi to bytecode and running it on a stack-based VM.</p>
                     </div>
 
-                    <h3>mozhi-fast (Rust bytecode VM) vs C interpreter</h3>
-                    <p>Compared against the reference <strong>C tree-walking interpreter</strong>
-                    (not native C) — both run the <em>same</em> Mozhi source.</p>
+                    <h3>mozhi-fast vs mozhi-mini</h3>
+                    <p>Both run the <em>identical</em> Mozhi source.</p>
                     <table>
                         <thead>
                             <tr>
                                 <th>Benchmark</th>
-                                <th>mozhi-fast (Rust VM)</th>
-                                <th>C interpreter</th>
+                                <th>mozhi-fast</th>
+                                <th>mozhi-mini</th>
                                 <th>Speedup</th>
                                 <th>Result</th>
                             </tr>
@@ -553,32 +515,32 @@
                         <tbody>
                             <tr>
                                 <td><strong>Fibonacci(28)</strong><br>Recursive</td>
-                                <td><span style="color:#3AAFA9;font-weight:700;">680.8 ms</span></td>
+                                <td><span style="color:#9A4FF5;font-weight:700;">680.8 ms</span></td>
                                 <td>911.6 ms</td>
-                                <td>~1.3&times; faster</td>
+                                <td>~1.3&times;</td>
                                 <td>317811</td>
                             </tr>
                             <tr>
                                 <td><strong>Fibonacci(30)</strong><br>Recursive</td>
-                                <td><span style="color:#3AAFA9;font-weight:700;">1,767.9 ms</span></td>
+                                <td><span style="color:#9A4FF5;font-weight:700;">1,767.9 ms</span></td>
                                 <td>2,209.3 ms</td>
-                                <td>~1.25&times; faster</td>
+                                <td>~1.25&times;</td>
                                 <td>832040</td>
                             </tr>
                             <tr>
                                 <td><strong>Loop Sum</strong><br>10M iterations</td>
-                                <td><span style="color:#3AAFA9;font-weight:700;">4,269.4 ms</span></td>
+                                <td><span style="color:#9A4FF5;font-weight:700;">4,269.4 ms</span></td>
                                 <td>7,066.8 ms</td>
-                                <td>~1.7&times; faster</td>
+                                <td>~1.7&times;</td>
                                 <td>49999995000000 <em>(correct)</em></td>
                             </tr>
                         </tbody>
                     </table>
                     <div class="note">
                         <p><strong>mozhi-fast</strong> compiles Mozhi source to bytecode and runs it on a
-                        stack-based VM. It is <strong>~1.2&ndash;1.7&times; faster</strong> than the C
-                        tree-walking interpreter and produces <strong>correct 64-bit results</strong> where
-                        the C interpreter's 32-bit integers overflow. Full details:
+                        stack-based VM. It is <strong>~1.2&ndash;1.7&times; faster</strong> than mozhi-mini
+                        and produces <strong>correct 64-bit results</strong> where mozhi-mini's 32-bit
+                        integers overflow. Full details:
                         <a href="docs/mozhi-fast.md">docs/mozhi-fast.md</a>.</p>
                     </div>
 
@@ -599,19 +561,17 @@
 
             <h2>Benchmark Methodology</h2>
             <ul>
-                <li><strong>Platform:</strong> x86_64 Linux, gcc 14.2.0, Python 3.12.13</li>
-                <li><strong>C compilation:</strong> <code>gcc -O2 fib.c -o fib_c</code></li>
-                <li><strong>Python:</strong> <code>python3 fib.py</code> (CPython, no JIT)</li>
-                <li><strong>mozhi-mini:</strong> <code>mozhi fib.mz</code> (C tree-walking interpreter)</li>
-                <li><strong>mozhi-fast:</strong> <code>mozhi-fast fib.mz</code> (Rust bytecode VM)</li>
-                <li><strong>Measurement:</strong> median of 3 runs (wall-clock, Python <code>time.perf_counter</code>)</li>
-                <li><strong>Correctness:</strong> All implementations produce identical results: Fib(28)=317811, Fib(30)=832040, Loop Sum=49999995000000</li>
+                <li><strong>Platform:</strong> x86_64 Linux</li>
+                <li><strong>mozhi-mini:</strong> <code>mozhi fib.mz</code> (tree-walking interpreter)</li>
+                <li><strong>mozhi-fast:</strong> <code>mozhi-fast fib.mz</code> (bytecode VM)</li>
+                <li><strong>Measurement:</strong> median of 3 runs (wall-clock, <code>time.perf_counter</code>)</li>
+                <li><strong>Correctness:</strong> Both implementations produce identical results: Fib(28)=317811, Fib(30)=832040, Loop Sum=49999995000000</li>
             </ul>
 
             <h2>Benchmark Code</h2>
-            <p>All three implementations use identical algorithms:</p>
+            <p>Both implementations run the identical Mozhi source:</p>
 
-            <h3>Mozhi (fib.mz)</h3>
+            <h3>fib.mz</h3>
             <pre><code>fn fibonacci(n) {
     if n &lt;= 1 {
         return n
@@ -619,27 +579,7 @@
     return fibonacci(n - 1) + fibonacci(n - 2)
 }
 
-result = fibonacci(30)
-echo("Fib(30) = ", result)</code></pre>
-
-            <h3>C (fib.c)</h3>
-            <pre><code>#include &lt;stdio.h&gt;
-long fibonacci(long n) {
-    if (n &lt;= 1) return n;
-    return fibonacci(n - 1) + fibonacci(n - 2);
-}
-int main() {
-    printf("Fib(30) = %ld\n", fibonacci(30));
-    return 0;
-}</code></pre>
-
-            <h3>Python (fib.py)</h3>
-            <pre><code>def fibonacci(n):
-    if n &lt;= 1:
-        return n
-    return fibonacci(n - 1) + fibonacci(n - 2)
-
-print(f"Fib(30) = {fibonacci(30)}")</code></pre>
+echo("Fib(30) = ", fibonacci(30))</code></pre>
 
             <div class="footer">
                 <p>Copyright &copy; 2026 crossberry-in.</p>
@@ -714,28 +654,14 @@ print(f"Fib(30) = {fibonacci(30)}")</code></pre>
                     labels: ['Fibonacci(28)', 'Fibonacci(30)', 'Loop Sum 10M'],
                     datasets: [
                         {
-                            label: 'C (gcc -O2)',
-                            data: [4.6, 2.9, 1.3],
-                            backgroundColor: 'rgba(58, 175, 169, 0.8)',
-                            borderColor: '#3AAFA9',
-                            borderWidth: 2,
-                        },
-                        {
-                            label: 'Python 3',
-                            data: [14.3, 14.4, 234.9],
-                            backgroundColor: 'rgba(230, 162, 60, 0.8)',
-                            borderColor: '#E6A23C',
-                            borderWidth: 2,
-                        },
-                        {
-                            label: 'mozhi-mini (C interp)',
+                            label: 'mozhi-mini',
                             data: [911.6, 2209.3, 7066.8],
                             backgroundColor: 'rgba(76, 110, 245, 0.8)',
                             borderColor: '#4C6EF5',
                             borderWidth: 2,
                         },
                         {
-                            label: 'mozhi-fast (Rust VM)',
+                            label: 'mozhi-fast',
                             data: [680.8, 1767.9, 4269.4],
                             backgroundColor: 'rgba(154, 79, 245, 0.8)',
                             borderColor: '#9A4FF5',
@@ -788,29 +714,15 @@ print(f"Fib(30) = {fibonacci(30)}")</code></pre>
                     labels: ['Fibonacci(28)', 'Fibonacci(30)', 'Loop Sum 10M'],
                     datasets: [
                         {
-                            label: 'C (baseline)',
+                            label: 'mozhi-mini (baseline)',
                             data: [1, 1, 1],
-                            backgroundColor: 'rgba(58, 175, 169, 0.8)',
-                            borderColor: '#3AAFA9',
-                            borderWidth: 2,
-                        },
-                        {
-                            label: 'Python 3',
-                            data: [3.1, 5.0, 181],
-                            backgroundColor: 'rgba(230, 162, 60, 0.8)',
-                            borderColor: '#E6A23C',
-                            borderWidth: 2,
-                        },
-                        {
-                            label: 'mozhi-mini',
-                            data: [198, 762, 5436],
                             backgroundColor: 'rgba(76, 110, 245, 0.8)',
                             borderColor: '#4C6EF5',
                             borderWidth: 2,
                         },
                         {
                             label: 'mozhi-fast',
-                            data: [148, 610, 3284],
+                            data: [0.75, 0.80, 0.60],
                             backgroundColor: 'rgba(154, 79, 245, 0.8)',
                             borderColor: '#9A4FF5',
                             borderWidth: 2,

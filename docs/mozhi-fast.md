@@ -2,18 +2,18 @@
 
 `mozhi-fast` is a **faster implementation** of the Mozhi interpreter, written in
 **Rust**. It compiles Mozhi source to **bytecode** and executes it on a
-stack-based virtual machine, instead of walking the AST like the reference C
-interpreter.
+stack-based virtual machine, instead of walking the AST like the reference
+`mozhi-mini` interpreter.
 
 ## Why mozhi-fast?
 
-| | C interpreter (reference) | mozhi-fast (Rust VM) |
+| | mozhi-mini | mozhi-fast |
 |---|---|---|
 | Execution model | tree-walking (AST) | **bytecode VM** |
 | Safety | manual memory | **memory-safe Rust** |
 | Integers | 32-bit (can overflow) | **64-bit (correct)** |
 | Speed | fast | **~1.3–1.6× faster** |
-| File | `interpreter/` (C) | `mozhi-fast/` (Rust) |
+| File | `interpreter/` | `mozhi-fast/` (Rust) |
 
 ## Build
 
@@ -61,14 +61,14 @@ src/main.rs       entry point
 
 Measured on x86_64 Linux with the release builds (median of 3 runs):
 
-| Benchmark | mozhi-fast (Rust VM) | C interpreter | Speedup |
-|-----------|---------------------|---------------|---------|
+| Benchmark | mozhi-fast | mozhi-mini | Speedup |
+|-----------|------------|------------|---------|
 | `fib(25)` | **168 ms** | 197 ms | **~1.2×** |
 | 2M `while` loop | **836 ms** (correct `1999999000000`) | 1405 ms (wrong, 32-bit overflow) | **~1.7×** |
 
-mozhi-fast is faster than the C tree-walking interpreter on both recursion and
-tight loops, and produces **correct 64-bit results** where the C interpreter's
-32-bit integers overflow.
+mozhi-fast is faster than the mozhi-mini tree-walking interpreter on both
+recursion and tight loops, and produces **correct 64-bit results** where
+mozhi-mini's 32-bit integers overflow.
 
 Reproduce:
 
@@ -103,4 +103,4 @@ echo(M[0][1])                          # 9
 - `match` arms using `=> return X` (as in the `enums` example) are not yet
   supported; value arms (`0 => "a"`) work.
 - `enum`/`struct` declarations are skipped (parsed as no-ops), matching the
-  current C interpreter behavior.
+  current mozhi-mini behavior.
