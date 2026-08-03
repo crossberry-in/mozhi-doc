@@ -29,8 +29,24 @@ cargo build --release
 ## Run
 
 ```bash
-./target/release/mozhi-fast path/to/file.mz
+./target/release/mozhi-fast path/to/file.mz        # bytecode VM
+./target/release/mozhi-fast --native file.mz       # native codegen (JIT)
 ```
+
+## Native code generation (JIT)
+
+`mozhi-fast --native` compiles Mozhi to C and runs it with gcc `-O2`, giving
+near-native speed for compute-heavy programs:
+
+| Benchmark | bytecode VM | native (`--native`) | speedup |
+|-----------|-------------|---------------------|---------|
+| `fib(30)` | 1562 ms | ~80 ms (incl. gcc) | **~20×** |
+| loop 10M  | 4269 ms | ~80 ms (incl. gcc) | **~50×** |
+
+> Execution is microseconds; the ~80 ms is gcc compilation overhead. Native
+> codegen supports scalar programs, functions, recursion, arithmetic, loops,
+> `if`, string `echo`, and basic arrays. Complex features (functions returning
+> arrays, `push`, string params) are not yet supported — use the bytecode VM.
 
 ## Supported language features
 
