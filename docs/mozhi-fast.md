@@ -59,9 +59,28 @@ src/main.rs       entry point
 
 ## Benchmark
 
-On `fib(30)` and tight `while` loops, mozhi-fast is faster than the C
-interpreter and produces correct 64-bit results where the C interpreter's
+Measured on x86_64 Linux with the release builds (median of 3 runs):
+
+| Benchmark | mozhi-fast (Rust VM) | C interpreter | Speedup |
+|-----------|---------------------|---------------|---------|
+| `fib(25)` | **168 ms** | 197 ms | **~1.2×** |
+| 2M `while` loop | **836 ms** (correct `1999999000000`) | 1405 ms (wrong, 32-bit overflow) | **~1.7×** |
+
+mozhi-fast is faster than the C tree-walking interpreter on both recursion and
+tight loops, and produces **correct 64-bit results** where the C interpreter's
 32-bit integers overflow.
+
+Reproduce:
+
+```bash
+# fib(25)
+printf 'fn fib(n) { if n <= 1 { return n } return fib(n-1)+fib(n-2) }\necho(fib(25))\n' > f.mz
+time ./mozhi-fast f.mz          # 75025
+
+# 2M loop
+printf 'i=0\ns=0\nwhile i<2000000 { s=s+i; i=i+1 }\necho(s)\n' > l.mz
+time ./mozhi-fast l.mz          # 1999999000000 (correct)
+```
 
 ## Examples
 

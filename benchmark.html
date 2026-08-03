@@ -517,6 +517,44 @@
                         <p><strong>Mozhi (tree-walking interpreter)</strong> is 1,042&ndash;5,196&times; slower than C. Mozhi currently walks the AST directly without compiling to bytecode or native code.</p>
                     </div>
 
+                    <h3>mozhi-fast (Rust bytecode VM) vs C interpreter</h3>
+                    <p>Compared against the reference <strong>C tree-walking interpreter</strong>
+                    (not native C) — both run the <em>same</em> Mozhi source.</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Benchmark</th>
+                                <th>mozhi-fast (Rust VM)</th>
+                                <th>C interpreter</th>
+                                <th>Speedup</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Fibonacci(25)</strong><br>Recursive</td>
+                                <td><span style="color:#3AAFA9;font-weight:700;">168 ms</span></td>
+                                <td>197 ms</td>
+                                <td>~1.2&times; faster</td>
+                                <td>75025</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Loop Sum</strong><br>2M iterations</td>
+                                <td><span style="color:#3AAFA9;font-weight:700;">836 ms</span></td>
+                                <td>1,405 ms</td>
+                                <td>~1.7&times; faster</td>
+                                <td>1999999000000 <em>(correct)</em></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="note">
+                        <p><strong>mozhi-fast</strong> compiles Mozhi source to bytecode and runs it on a
+                        stack-based VM. It is <strong>~1.2&ndash;1.7&times; faster</strong> than the C
+                        tree-walking interpreter and produces <strong>correct 64-bit results</strong> where
+                        the C interpreter's 32-bit integers overflow. Full details:
+                        <a href="docs/mozhi-fast.md">docs/mozhi-fast.md</a>.</p>
+                    </div>
+
                     <h3>Roadmap: Performance Improvements</h3>
                     <table>
                         <thead>
