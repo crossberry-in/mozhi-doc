@@ -1,0 +1,75 @@
+# =============================================================================
+# Arrays & Matrices — Mozhi v2.5.0
+#
+# Demonstrates the upgraded array/matrix features:
+#   - multi-line array / matrix literals (trailing commas allowed)
+#   - functions that build and RETURN arrays/matrices
+#   - nested element assignment  m[i][j] = v   and compound  a[i] += v
+#   - math builtins: exp, log, pow, sqrt, min, max, round, clamp
+#
+# Run:   mozhi examples/arrays-and-matrices/app.mz
+# =============================================================================
+
+# --- matrix multiply: C = A * B --------------------------------------------
+fn matmul(A, B, m, n, p) {
+    C = []
+    i = 0
+    while i < m {
+        row = []
+        j = 0
+        while j < p {
+            s = 0.0
+            k = 0
+            while k < n {
+                s = s + A[i][k] * B[k][j]
+                k = k + 1
+            }
+            push(row, s)
+            j = j + 1
+        }
+        push(C, row)
+        i = i + 1
+    }
+    return C
+}
+
+echo("=== Matrix multiply (multi-line literals) ===")
+A = [
+    [1.0, 2.0,],
+    [3.0, 4.0,],
+]
+B = [
+    [5.0, 6.0,],
+    [7.0, 8.0,],
+]
+C = matmul(A, B, 2, 2, 2)
+echo("A * B = [" + string(C[0][0]) + ", " + string(C[0][1]) + "; " + string(C[1][0]) + ", " + string(C[1][1]) + "]")
+
+echo("")
+echo("=== Nested element assignment m[i][j] = v ===")
+M = [
+    [0.0, 0.0,],
+    [0.0, 0.0,],
+]
+i = 0
+while i < 2 {
+    M[i][i] = 7.0
+    i = i + 1
+}
+echo("diag M[0][0]=" + string(M[0][0]) + " M[1][1]=" + string(M[1][1]) + " M[0][1]=" + string(M[0][1]))
+
+echo("")
+echo("=== Compound element assignment a[i] += v ===")
+w = [1.0, 2.0, 3.0]
+w[1] += 10.0
+echo("w = [" + string(w[0]) + ", " + string(w[1]) + ", " + string(w[2]) + "]")
+
+echo("")
+echo("=== New math builtins ===")
+echo("exp(1)=" + string(exp(1.0)) + "  log(exp(2))=" + string(log(exp(2.0))))
+echo("pow(2,10)=" + string(pow(2,10)) + "  sqrt(144)=" + string(sqrt(144.0)))
+echo("min(3,7)=" + string(min(3,7)) + "  max(3.5,2)=" + string(max(3.5,2)))
+echo("round(3.6)=" + string(round(3.6)) + "  clamp(5,1,3)=" + string(clamp(5,1,3)))
+
+echo("")
+echo("=== Done ===")
