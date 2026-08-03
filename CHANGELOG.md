@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.6.0] — 2026-08-03
+
+### Added
+
+- **mozhi-fast** — a faster Rust bytecode-VM implementation of the Mozhi
+  interpreter. Compiles Mozhi source to bytecode and executes it on a
+  stack-based VM (memory-safe, 64-bit integers, ~1.3–1.6× faster than the C
+  tree-walking interpreter).
+  - Functions, recursion, closures, arrays (reference semantics), maps,
+    `for-in`, `if`/`else`, `while`, c-style `for`, `match`
+  - String/array methods and math builtins
+  - Multi-line / trailing-comma array literals
+  - Docs: `docs/mozhi-fast.md`; source: `crossberry-in/mozhi` → `mozhi-fast/`
+- **Documentation** for mozhi-fast in `docs/mozhi-fast.md`.
+
+---
+
 ## [Unreleased]
 
 _No unreleased changes yet._

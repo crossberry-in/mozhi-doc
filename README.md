@@ -25,11 +25,27 @@
 - **[Installation Guide](INSTALL.md)** — How to install Mozhi on your system
 - **[Usage Guide](USAGE.md)** — How to use the Mozhi interpreter (REPL, files, examples)
 - **[Language Reference](LANGUAGE_REFERENCE.md)** — Complete language syntax and features
+- **[mozhi-fast (Rust VM)](docs/mozhi-fast.md)** — The faster Rust bytecode-VM interpreter
 - **[Examples](examples/)** — Sample Mozhi programs to learn from
 - **[Changelog](CHANGELOG.md)** — Version history and changes
 - **[FAQ](FAQ.md)** — Frequently asked questions
 
 ---
+
+## What's New in v2.6.0
+
+### mozhi-fast — Rust bytecode VM
+A **faster Rust implementation** of the Mozhi interpreter. Compiles Mozhi
+source to bytecode and runs it on a stack-based VM — faster and memory-safe,
+with correct 64-bit arithmetic.
+
+```bash
+# build from source (see docs/mozhi-fast.md)
+cd mozhi-fast && cargo build --release
+./target/release/mozhi-fast file.mz
+```
+
+Full details: **[docs/mozhi-fast.md](docs/mozhi-fast.md)**
 
 ## What's New in v2.4.0
 
