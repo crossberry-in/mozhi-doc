@@ -265,8 +265,8 @@
     },
     {
       "category": "science",
-      "checksum_sha256": "a5a2fc209957291500975ae18f09a6f456ff18f60fcc2034d6fe374ac21c5237",
-      "description": "Mozhi Neural Network \u2014 Python + C++ + Julia + JavaScript, auto-download from GitHub",
+      "checksum_sha256": "aa4aa27e7859f5f4ebf750def23fdb6cd9e17d1ab9ee3ccef8994d71e1b87b39",
+      "description": "Mozhi Neural Network \u2014 binary distribution, no source code needed",
       "edition": "2024",
       "examples": [
         "demo.mz"
@@ -274,11 +274,13 @@
       "exports": {
         "demo": "mod.demo",
         "demo_all": "mod.demo_all",
-        "demo_cpp": "mod.demo_cpp",
         "demo_js": "mod.demo_js",
-        "demo_julia": "mod.demo_julia",
+        "demo_python": "mod.demo_python",
+        "emit_js": "mod.emit_js",
+        "emit_mz": "mod.emit_mz",
+        "emit_python": "mod.emit_python",
         "info": "mod.info",
-        "predict": "mod.predict",
+        "languages": "mod.languages",
         "run_xor_pipeline": "mod.run_xor_pipeline",
         "train": "mod.train"
       },
@@ -294,7 +296,7 @@
       "tests": [
         "test_basic.mz"
       ],
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "category": "os",
@@ -557,6 +559,6 @@
       "version": "1.0.0"
     }
   ],
-  "updated": "2026-08-02T20:55:46Z",
+  "updated": "2026-08-03T07:21:07Z",
   "version": "1.0.0"
 }
