@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chart Gallery — mozhi-mini vs mozhi-fast</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --mini:#4C6EF5; --fast:#9A4FF5; --bg:#0f172a; --card:#1e293b; --txt:#e2e8f0; --mut:#94a3b8;
+  --line:rgba(255,255,255,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,sans-serif;padding:24px;line-height:1.5}
+h1{text-align:center;margin-bottom:6px;font-size:32px}
+.sub{text-align:center;color:var(--mut);margin-bottom:30px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:22px;max-width:1500px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card h3{font-size:16px;margin-bottom:2px;color:#fff}
+.card .desc{font-size:12px;color:var(--mut);margin-bottom:12px}
+.chart-wrap{position:relative;height:300px}
+canvas{width:100%!important;height:100%!important}
+.legend{display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:12px;color:var(--mut)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th,td{padding:5px 8px;text-align:left;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-weight:600}
+td.num{text-align:right}
+/* custom svg legend */
+.mini-bar{background:var(--mini)} .fast-bar{background:var(--fast)}
+</style>
+</head>
+<body>
+<h1>📊 Chart Gallery</h1>
+<div class="sub">mozhi-mini (blue) vs mozhi-fast (purple) · fib(28), fib(30), Loop 10M (ms, log-friendly)</div>
+
+<div class="gallery">
+
+<!-- ============ BAR / COLUMN ============ -->
+<div class="card"><h3>Bar Chart</h3><div class="desc">Horizontal bars comparing runtimes</div><div class="chart-wrap"><canvas id="barChart"></canvas></div></div>
+<div class="card"><h3>Column Chart</h3><div class="desc">Vertical bars comparing runtimes</div><div class="chart-wrap"><canvas id="colChart"></canvas></div></div>
+<div class="card"><h3>Grouped Bar Chart</h3><div class="desc">mini vs fast per benchmark</div><div class="chart-wrap"><canvas id="groupChart"></canvas></div></div>
+<div class="card"><h3>Stacked Bar Chart</h3><div class="desc">Runtime composition (stacked)</div><div class="chart-wrap"><canvas id="stackChart"></canvas></div></div>
+<div class="card"><h3>Lollipop Chart</h3><div class="desc">Floating bars on a line</div><div class="chart-wrap"><canvas id="lollipopChart"></canvas></div></div>
+<div class="card"><h3>Bullet Graph</h3><div class="desc">Performance vs target range</div><div class="chart-wrap"><canvas id="bulletChart"></canvas></div></div>
+
+<!-- ============ PIE / DONUT / TREEMAP ============ -->
+<div class="card"><h3>Pie Chart</h3><div class="desc">Share of total runtime (loop 10M)</div><div class="chart-wrap"><canvas id="pieChart"></canvas></div></div>
+<div class="card"><h3>Donut Chart</h3><div class="desc">Share with hole</div><div class="chart-wrap"><canvas id="donutChart"></canvas></div></div>
+<div class="card"><h3>Treemap</h3><div class="desc">Area proportional to runtime</div><div class="treemap" id="treemap" style="height:300px"></div></div>
+
+<!-- ============ AREA / WATERFALL / HISTOGRAM ============ -->
+<div class="card"><h3>Stacked Area Chart</h3><div class="desc">Cumulative runtime</div><div class="chart-wrap"><canvas id="areaChart"></canvas></div></div>
+<div class="card"><h3>Waterfall Chart</h3><div class="desc">Incremental runtime build-up</div><div class="chart-wrap"><canvas id="waterfallChart"></canvas></div></div>
+<div class="card"><h3>Histogram</h3><div class="desc">Runtime distribution (bins)</div><div class="chart-wrap"><canvas id="histChart"></canvas></div></div>
+
+<!-- ============ BOX / VIOLIN / DENSITY ============ -->
+<div class="card"><h3>Box Plot</h3><div class="desc">Min/Q1/median/Q3/max</div><div class="boxplot" id="boxplot" style="height:300px"></div></div>
+<div class="card"><h3>Violin Plot</h3><div class="desc">Density shape</div><div class="violin" id="violin" style="height:300px"></div></div>
+<div class="card"><h3>Density Plot</h3><div class="desc">Smooth distribution curves</div><div class="chart-wrap"><canvas id="densityChart"></canvas></div></div>
+
+<!-- ============ SCATTER / BUBBLE / HEATMAP ============ -->
+<div class="card"><h3>Scatter Plot</h3><div class="desc">Benchmark points</div><div class="chart-wrap"><canvas id="scatterChart"></canvas></div></div>
+<div class="card"><h3>Bubble Chart</h3><div class="desc">Size = runtime</div><div class="chart-wrap"><canvas id="bubbleChart"></canvas></div></div>
+<div class="card"><h3>Heatmap</h3><div class="desc">mini vs fast grid intensity</div><div class="heatmap" id="heatmap" style="height:300px"></div></div>
+
+<!-- ============ LINE / SPLINE ============ -->
+<div class="card"><h3>Line Chart</h3><div class="desc">Runtime trend</div><div class="chart-wrap"><canvas id="lineChart"></canvas></div></div>
+<div class="card"><h3>Area Chart</h3><div class="desc">Line with fill</div><div class="chart-wrap"><canvas id="lineAreaChart"></canvas></div></div>
+<div class="card"><h3>Spline Chart</h3><div class="desc">Smooth curved line</div><div class="chart-wrap"><canvas id="splineChart"></canvas></div></div>
+
+<!-- ============ GANTT / RADAR / SPIDER / FUNNEL ============ -->
+<div class="card"><h3>Gantt Chart</h3><div class="desc">Task timeline</div><div class="gantt" id="gantt" style="height:300px"></div></div>
+<div class="card"><h3>Radar Chart</h3><div class="desc">Multi-metric comparison</div><div class="chart-wrap"><canvas id="radarChart"></canvas></div></div>
+<div class="card"><h3>Spider Chart</h3><div class="desc">Radar with area fill</div><div class="chart-wrap"><canvas id="spiderChart"></canvas></div></div>
+<div class="card"><h3>Funnel Chart</h3><div class="desc">Progress stages</div><div class="funnel" id="funnel" style="height:300px"></div></div>
+
+<!-- ============ SANKEY / CHOROPLETH / WORDCLOUD ============ -->
+<div class="card"><h3>Sankey Diagram</h3><div class="desc">Flow: benchmark → engine</div><div class="sankey" id="sankey" style="height:300px"></div></div>
+<div class="card"><h3>Choropleth Map</h3><div class="desc">Regional runtime intensity</div><div class="choropleth" id="choropleth" style="height:300px"></div></div>
+<div class="card"><h3>Word Cloud</h3><div class="desc">Size = prominence</div><div class="wordcloud" id="wordcloud" style="height:300px"></div></div>
+
+<!-- ============ FLOWCHARTS ============ -->
+<div class="card"><h3>Flowchart</h3><div class="desc">Decision flow</div><div class="flowchart" id="flowchart" style="height:320px"></div></div>
+<div class="card"><h3>Process Flowchart</h3><div class="desc">Sequential steps</div><div class="process" id="process" style="height:320px"></div></div>
+<div class="card"><h3>Swimlane Flowchart</h3><div class="desc">Roles across lanes</div><div class="swimlane" id="swimlane" style="height:320px"></div></div>
+<div class="card"><h3>Workflow Diagram</h3><div class="desc">State workflow</div><div class="workflow" id="workflow" style="height:320px"></div></div>
+<div class="card"><h3>Decision Tree</h3><div class="desc">Choice branches</div><div class="decision" id="decision" style="height:320px"></div></div>
+
+</div>
+
+<script>
+const DATA = { labels:['fib(28)','fib(30)','Loop 10M'], mini:[911.6,2209.3,7066.8], fast:[680.8,1767.9,4269.4] };
+const MINI='rgba(76,110,245,.85)', FAST='rgba(154,79,245,.85)';
+const MINI2='#4C6EF5', FAST2='#9A4FF5';
+Chart.defaults.color='#cbd5e1'; Chart.defaults.borderColor='rgba(255,255,255,.08)';
+
+// BAR
+new Chart('barChart',{type:'bar',data:{labels:DATA.labels,datasets:[
+ {label:'mozhi-mini',data:DATA.mini,backgroundColor:MINI},{label:'mozhi-fast',data:DATA.fast,backgroundColor:FAST}]},
+ options:{indexAxis:'y',plugins:{legend:{labels:{usePointStyle:true}}}}});
+// COLUMN
+new Chart('colChart',{type:'bar',data:{labels:DATA.labels,datasets:[
+ {label:'mozhi-mini',data:DATA.mini,backgroundColor:MINI},{label:'mozhi-fast',data:DATA.fast,backgroundColor:FAST}]},
+ options:{plugins:{legend:{labels:{usePointStyle:true}}}}});
+// GROUPED
+new Chart('groupChart',{type:'bar',data:{labels:DATA.labels,datasets:[
+ {label:'mozhi-mini',data:DATA.mini,backgroundColor:MINI2},{label:'mozhi-fast',data:DATA.fast,backgroundColor:FAST2}]},
+ options:{plugins:{legend:{labels:{usePointStyle:true}}}}});
+// STACKED
+new Chart('stackChart',{type:'bar',data:{labels:DATA.labels,datasets:[
+ {label:'mozhi-mini',data:DATA.mini,backgroundColor:MINI2},{label:'mozhi-fast',data:DATA.fast,backgroundColor:FAST2}]},
+ options:{scales:{x:{stacked:true},y:{stacked:true}},plugins:{legend:{labels:{usePointStyle:true}}}}});
+// LOLLIPOP
+new Chart('lollipopChart',{type:'bar',data:{labels:DATA.labels,datasets:[
+ {label:'mozhi-mini',data:DATA.mini,backgroundColor:MINI2,borderWidth:4,borderColor:MINI2,borderRadius:10,borderSkipped:false},
+ {label:'mozhi-fast',data:DATA.fast,backgroundColor:FAST2,borderWidth:4,borderColor:FAST2,borderRadius:10,borderSkipped:false}]},
+ options:{scales:{y:{beginAtZero:true}},plugins:{legend:{labels:{usePointStyle:true}}}}});
+// BULLET (floating bars showing fast as fraction of mini)
+new Chart('bulletChart',{type:'bar',data:{labels:DATA.labels,datasets:[
+ {label:'target (mini)',data:DATA.mini,backgroundColor:'rgba(148,163,184,.25)'},
+ {label:'mozhi-fast',data:DATA.fast.map(v=>v),backgroundColor:FAST2}]},
+ options:{scales:{y:{beginAtZero:true}},plugins:{legend:{labels:{usePointStyle:true}}}}});
+
+// PIE
+new Chart('pieChart',{type:'pie',data:{labels:['mozhi-mini','mozhi-fast'],datasets:[{data:[DATA.mini[2],DATA.fast[2]],backgroundColor:[MINI2,FAST2]}]}});
+// DONUT
+new Chart('donutChart',{type:'doughnut',data:{labels:['mozhi-mini','mozhi-fast'],datasets:[{data:[DATA.mini[2],DATA.fast[2]],backgroundColor:[MINI2,FAST2],borderWidth:3}]}});
+// TREEMAP (SVG)
+drawTreemap();
+
+// STACKED AREA
+new Chart('areaChart',{type:'line',data:{labels:DATA.labels,datasets:[
+ {label:'mozhi-mini',data:DATA.mini,backgroundColor:'rgba(76,110,245,.3)',borderColor:MINI2,fill:true,tension:.3},
+ {label:'mozhi-fast',data:DATA.fast,backgroundColor:'rgba(154,79,245,.3)',borderColor:FAST2,fill:true,tension:.3}]},
+ options:{plugins:{legend:{labels:{usePointStyle:true}}}}});
+// WATERFALL
+new Chart('waterfallChart',{type:'bar',data:{labels:['mini','Δ to fast','fast'],datasets:[{data:[7066.8, -2797.4, 4269.4],backgroundColor:['rgba(76,110,245,.9)','rgba(255,193,7,.6)','rgba(154,79,245,.9)']}]},
+ options:{scales:{y:{stacked:true}},plugins:{legend:{display:false}}}});
+// HISTOGRAM
+new Chart('histChart',{type:'bar',data:{labels:['0-1k','1k-2k','2k-4k','4k-7k'],datasets:[{data:[0,0,2,4],backgroundColor:'rgba(76,110,245,.8)'}]},
+ options:{plugins:{legend:{display:false}}}});
+
+// BOX PLOT
+drawBoxPlot();
+// VIOLIN
+drawViolin();
+// DENSITY
+new Chart('densityChart',{type:'line',data:{labels:[0,1,2,3,4,5,6,7,8,9,10],datasets:[
+ {label:'mozhi-mini',data:[0.01,0.03,0.08,0.2,0.45,0.8,0.9,0.7,0.35,0.1,0.02],borderColor:MINI2,backgroundColor:'rgba(76,110,245,.15)',fill:true,tension:.4,pointRadius:0},
+ {label:'mozhi-fast',data:[0.05,0.12,0.3,0.65,0.9,0.75,0.4,0.18,0.06,0.02,0.01],borderColor:FAST2,backgroundColor:'rgba(154,79,245,.15)',fill:true,tension:.4,pointRadius:0}]},
+ options:{plugins:{legend:{labels:{usePointStyle:true}}}}});
+
+// SCATTER
+new Chart('scatterChart',{type:'scatter',data:{datasets:[
+ {label:'mozhi-mini',data:DATA.labels.map((l,i)=>({x:i,y:DATA.mini[i]})),backgroundColor:MINI2,pointRadius:7},
+ {label:'mozhi-fast',data:DATA.labels.map((l,i)=>({x:i,y:DATA.fast[i]})),backgroundColor:FAST2,pointRadius:7}]},
+ options:{scales:{x:{type:'category',labels:DATA.labels}},plugins:{legend:{labels:{usePointStyle:true}}}}});
+// BUBBLE
+new Chart('bubbleChart',{type:'bubble',data:{datasets:[
+ {label:'mozhi-mini',data:DATA.labels.map((l,i)=>({x:i,y:DATA.mini[i],r:8})),backgroundColor:MINI},
+ {label:'mozhi-fast',data:DATA.labels.map((l,i)=>({x:i,y:DATA.fast[i],r:6})),backgroundColor:FAST}]},
+ options:{scales:{x:{type:'category',labels:DATA.labels}},plugins:{legend:{labels:{usePointStyle:true}}}}});
+// HEATMAP
+drawHeatmap();
+
+// LINE / AREA / SPLINE
+new Chart('lineChart',{type:'line',data:{labels:DATA.labels,datasets:[
+ {label:'mozhi-mini',data:DATA.mini,borderColor:MINI2,pointBackgroundColor:MINI2},{label:'mozhi-fast',data:DATA.fast,borderColor:FAST2,pointBackgroundColor:FAST2}]},
+ options:{plugins:{legend:{labels:{usePointStyle:true}}}}});
+new Chart('lineAreaChart',{type:'line',data:{labels:DATA.labels,datasets:[
+ {label:'mozhi-mini',data:DATA.mini,borderColor:MINI2,backgroundColor:'rgba(76,110,245,.2)',fill:true},
+ {label:'mozhi-fast',data:DATA.fast,borderColor:FAST2,backgroundColor:'rgba(154,79,245,.2)',fill:true}]},
+ options:{plugins:{legend:{labels:{usePointStyle:true}}}}});
+new Chart('splineChart',{type:'line',data:{labels:DATA.labels,datasets:[
+ {label:'mozhi-mini',data:DATA.mini,borderColor:MINI2,tension:.5,pointRadius:5},
+ {label:'mozhi-fast',data:DATA.fast,borderColor:FAST2,tension:.5,pointRadius:5}]},
+ options:{plugins:{legend:{labels:{usePointStyle:true}}}}});
+
+// GANTT / RADAR / SPIDER
+drawGantt();
+new Chart('radarChart',{type:'radar',data:{labels:['fib(28)','fib(30)','Loop 10M'],datasets:[
+ {label:'mozhi-mini',data:[911.6,2209.3,7066.8].map(v=>20000/v),borderColor:MINI2,backgroundColor:'rgba(76,110,245,.15)'},
+ {label:'mozhi-fast',data:[680.8,1767.9,4269.4].map(v=>20000/v),borderColor:FAST2,backgroundColor:'rgba(154,79,245,.15)'}]},
+ options:{plugins:{legend:{labels:{usePointStyle:true}}}}});
+new Chart('spiderChart',{type:'radar',data:{labels:['fib(28)','fib(30)','Loop 10M'],datasets:[
+ {label:'mozhi-mini',data:[911.6,2209.3,7066.8].map(v=>20000/v),borderColor:MINI2,fill:true},
+ {label:'mozhi-fast',data:[680.8,1767.9,4269.4].map(v=>20000/v),borderColor:FAST2,fill:true}]},
+ options:{plugins:{legend:{labels:{usePointStyle:true}}}}});
+// FUNNEL
+drawFunnel();
+// SANKEY
+drawSankey();
+// CHOROPLETH
+drawChoropleth();
+// WORDCLOUD
+drawWordcloud();
+// FLOWCHARTS
+drawFlowchart();
+drawProcess();
+drawSwimlane();
+drawWorkflow();
+drawDecision();
+
+/* ============ SVG DRAWERS ============ */
+function svg(id,h){return '<svg viewBox="0 0 360 260" width="100%" height="'+(h||260)+'" xmlns="http://www.w3.org/2000/svg">'}
+function drawTreemap(){
+  const items=[['fib(28) mini',911.6],['fib(28) fast',680.8],['fib(30) mini',2209.3],['fib(30) fast',1767.9],['Loop mini',7066.8],['Loop fast',4269.4]];
+  const total=items.reduce((a,b)=>a+b[1],0);
+  let x=0,y=0,rh=260, rw=360, i=0;
+  let s='';
+  for(const [name,v] of items){
+    const frac=v/total;
+    const w=rw/2, h=rh/2;
+    const color = name.includes('mini')? MINI2 : FAST2;
+    s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${color}" opacity=".85" rx="4"/>`;
+    s+=`<text x="${x+w/2}" y="${y+h/2}" fill="#fff" font-size="11" text-anchor="middle">${name}</text>`;
+    x+=w; if(x>=rw){x=0;y+=h;}
+    i++;
+  }
+  document.getElementById('treemap').innerHTML=svg('treemap')+s+'</svg>';
+}
+function drawBoxPlot(){
+  // simple box plot using divs
+  const rows=[['mozhi-mini',[680.8,1100,2209.3,3300,7066.8]],['mozhi-fast',[500,900,1767.9,2600,4269.4]]];
+  const max=7500; let h='<table style="width:100%">';
+  for(const [name,[q0,q1,med,q3,q4]] of rows){
+    h+=`<tr><td style="width:90px">${name}</td><td><div style="position:relative;height:46px;background:rgba(255,255,255,.06);border-radius:6px">
+      <div style="position:absolute;left:${q0/max*100}%;width:${(q4-q0)/max*100}%;top:15px;height:16px;background:${name.includes('mini')?MINI2:FAST2};opacity:.25;border-radius:3px"></div>
+      <div style="position:absolute;left:${q1/max*100}%;width:${(q3-q1)/max*100}%;top:10px;height:26px;background:${name.includes('mini')?MINI2:FAST2};opacity:.6;border-radius:3px;border:1px solid #fff3"></div>
+      <div style="position:absolute;left:${med/max*100}%;top:6px;height:34px;width:3px;background:#fff;border-radius:2px"></div>
+      </div></td></tr>`;
+  }
+  document.getElementById('boxplot').innerHTML=h+'</table>';
+}
+function drawViolin(){
+  const d=[[911.6,1500,2209.3,4000,7066.8],[680.8,1100,1767.9,3000,4269.4]];
+  const max=7500; let h='<div style="display:flex;justify-content:space-around;height:240px;align-items:flex-end">';
+  const names=['mozhi-mini','mozhi-fast'];
+  d.forEach((vals,vi)=>{
+    h+='<div style="display:flex;align-items:flex-end;height:100%">';
+    vals.forEach(v=>{
+      const hh=(v/max)*220+4;
+      h+='<div style="width:24px;height:'+hh+'px;background:'+(vi?'rgba(154,79,245,.7)':'rgba(76,110,245,.7)')+';border-radius:12px 12px 0 0;margin:0 3px"></div>';
+    });
+    h+='</div>';
+  });
+  document.getElementById('violin').innerHTML=h+'</div><div style="display:flex;justify-content:space-around;margin-top:6px;font-size:11px;color:#94a3b8">'+names.map((n,i)=>'<span><span class="dot mini-bar"></span>'+n+'</span>').join('')+'</div>';
+}
+function drawHeatmap(){
+  const cells=[['fib(28)','mini',911.6],['fib(28)','fast',680.8],['fib(30)','mini',2209.3],['fib(30)','fast',1767.9],['Loop','mini',7066.8],['Loop','fast',4269.4]];
+  const max=7500; let h='<table style="border-collapse:collapse;width:100%"><tr><th></th><th style="color:#94a3b8">mozhi-mini</th><th style="color:#94a3b8">mozhi-fast</th></tr>';
+  const labs=['fib(28)','fib(30)','Loop 10M'];
+  for(let r=0;r<3;r++){
+    h+='<tr><td style="color:#94a3b8;padding:8px">'+labs[r]+'</td>';
+    for(let c=0;c<2;c++){
+      const cell=cells[r*2+c];
+      const a=(cell[2]/max);
+      const color = cell[1]==='mini'? `rgba(76,110,245,${.2+a*.8})` : `rgba(154,79,245,${.2+a*.8})`;
+      h+='<td style="background:'+color+';text-align:center;padding:12px;border-radius:6px;color:#fff;font-size:12px">'+cell[2].toFixed(0)+'</td>';
+    }
+    h+='</tr>';
+  }
+  document.getElementById('heatmap').innerHTML=h+'</table>';
+}
+function drawGantt(){
+  const tasks=[['fib(28) mini',0,911],['fib(28) fast',0,681],['fib(30) mini',0,2209],['fib(30) fast',0,1768],['Loop mini',0,7067],['Loop fast',0,4269]];
+  const max=7500; let h='<div style="font-size:11px">';
+  tasks.forEach(([n,s,e],i)=>{
+    const top=i*42+6;
+    const w=(e-s)/max*320;
+    const color=n.includes('mini')?MINI2:FAST2;
+    h+=`<div style="position:relative;height:40px;background:rgba(255,255,255,.03);border-radius:6px;margin-bottom:6px">
+      <span style="position:absolute;left:6px;top:12px;color:#94a3b8">${n}</span>
+      <div style="position:absolute;left:110px;top:8px;width:${w}px;height:24px;background:${color};border-radius:4px"></div>
+      <span style="position:absolute;left:${112+w}px;top:12px;color:#e2e8f0;font-size:10px">${e}ms</span>
+    </div>`;
+  });
+  document.getElementById('gantt').innerHTML=h+'</div>';
+}
+function drawFunnel(){
+  const stages=[['fib(28)',1592.4],['fib(30)',3977.2],['Loop 10M',11336.2]];
+  const max=12000; let h='';
+  stages.forEach(([n,v])=>{
+    const w=(v/max)*320+40;
+    h+=`<div style="text-align:center;margin:6px auto;width:${w}px;padding:10px;background:linear-gradient(135deg,rgba(76,110,245,.7),rgba(154,79,245,.7));color:#fff;border-radius:6px;font-size:12px">${n} · ${v.toFixed(0)}ms</div>`;
+  });
+  document.getElementById('funnel').innerHTML=h;
+}
+function drawSankey(){
+  // simple horizontal flow bars
+  const flows=[['fib(28)','mini',911.6],['fib(28)','fast',680.8],['fib(30)','mini',2209.3],['fib(30)','fast',1767.9],['Loop','mini',7066.8],['Loop','fast',4269.4]];
+  const max=7500; let h='';
+  flows.forEach(([s,e,v])=>{
+    const w=v/max*300+6;
+    h+=`<div style="display:flex;align-items:center;margin:4px 0;font-size:11px">
+      <span style="width:60px;color:#94a3b8">${s}</span>
+      <div style="flex:1;height:18px;background:${e==='mini'?MINI2:FAST2};opacity:.75;border-radius:3px;width:${w}px"></div>
+      <span style="width:50px;text-align:right;color:#e2e8f0">${v.toFixed(0)}</span>
+    </div>`;
+  });
+  document.getElementById('sankey').innerHTML=h;
+}
+function drawChoropleth(){
+  // stylized region grid
+  const regs=[['Asia',7000],['Europe',4800],['N.America',3600],['S.America',2900],['Africa',2200],['Oceania',1500]];
+  const max=7500; let h='';
+  regs.forEach(([n,v])=>{
+    const a=.15+v/max*.7;
+    h+=`<div style="display:inline-block;width:31%;margin:6px;padding:20px 6px;text-align:center;background:rgba(76,110,245,${a});color:#fff;border-radius:8px;font-size:12px">
+      <div style="font-size:18px">◼</div>${n}<br>${v.toFixed(0)}ms</div>`;
+  });
+  document.getElementById('choropleth').innerHTML=h;
+}
+function drawWordcloud(){
+  const words=[['mozhi-fast',40],['fast',28],['bytecode',22],['native',30],['recursion',18],['loop',20],['fib',16],['memory-safe',24],['64-bit',26],['Rust',34],['mini',22],['speed',30],['compile',18],['VM',20],['JIT',28],['array',14],['function',16]];
+  const colors=[MINI2,FAST2,'#f59e0b','#10b981','#ef4444','#3b82f6','#ec4899','#14b8a6'];
+  let h='<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;height:100%;align-content:center">';
+  words.forEach(([w,s],i)=>{
+    h+=`<span style="font-size:${s}px;margin:6px;color:${colors[i%colors.length]};font-weight:700">${w}</span>`;
+  });
+  document.getElementById('wordcloud').innerHTML=h+'</div>';
+}
+
+function node(x,y,text,color){return `<g transform="translate(${x},${y})"><rect x="-70" y="-16" width="140" height="32" rx="8" fill="${color||'#334155'}" stroke="#fff3"/><text x="0" y="5" fill="#fff" font-size="11" text-anchor="middle">${text}</text></g>`}
+function arrow(x1,y1,x2,y2){return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#94a3b8" stroke-width="2" marker-end="url(#a)"/>`}
+function drawFlowchart(){
+  let s=svg('flowchart');
+  s+=`<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker></defs>`;
+  s+=arrow(180,80,180,100); s+=node(180,52,'Start','#10b981');
+  s+=arrow(180,116,180,136); s+=node(180,136,'Run mozhi-fast','#3b82f6');
+  s+=arrow(180,152,180,172);
+  s+=`<path d="M180,168 L180,180 L120,180 L120,196" stroke="#94a3b8" fill="none" stroke-width="2" marker-end="url(#a)"/>`;
+  s+=node(120,198,'Compute-heavy?','#f59e0b');
+  s+=arrow(120,214,120,236); s+=node(120,238,'--native (JIT)','#9A4FF5');
+  s+=`<path d="M180,168 L180,180 L240,180 L240,196" stroke="#94a3b8" fill="none" stroke-width="2" marker-end="url(#a)"/>`;
+  s+=node(240,198,'else','#f59e0b'); s+=arrow(240,214,240,236); s+=node(240,238,'bytecode VM','#4C6EF5');
+  s+='</svg>';
+  document.getElementById('flowchart').innerHTML=s;
+}
+function drawProcess(){
+  let s=svg('process');
+  const steps=['Parse','Compile','Execute','Result'];
+  steps.forEach((st,i)=>{
+    s+=node(60+i*75,40,st,'#334155');
+    if(i>0)s+=arrow(60+i*75-42,40,60+i*75-28,40);
+    s+=`<text x="${60+i*75}" y="66" fill="#94a3b8" font-size="10" text-anchor="middle"></text>`;
+  });
+  // bar below
+  s+=node(120,150,'mozhi-mini  ~7066ms','#4C6EF5');
+  s+=node(240,150,'mozhi-fast  ~4269ms','#9A4FF5');
+  s+=arrow(120,166,120,180); s+=arrow(240,166,240,180);
+  s+=node(180,210,'Loop 10M result 49999995000000','#10b981');
+  s+='</svg>';
+  document.getElementById('process').innerHTML=s;
+}
+function drawSwimlane(){
+  let s=svg('swimlane');
+  s+='<text x="180" y="20" fill="#94a3b8" font-size="12" text-anchor="middle">mozhi-fast pipeline</text>';
+  const lanes=[['Parse','P','#3b82f6',40],['Compile','C','#f59e0b',120],['Execute','E','#9A4FF5',200]];
+  lanes.forEach(([name,ch,color,y])=>{
+    s+=`<rect x="30" y="${y}" width="300" height="30" rx="6" fill="${color}" opacity=".3" stroke="${color}"/>`;
+    s+=`<rect x="30" y="${y}" width="36" height="30" rx="6" fill="${color}"/><text x="48" y="${y+20}" fill="#fff" font-size="12" text-anchor="middle">${ch}</text>`;
+    s+=`<text x="70" y="${y+20}" fill="#e2e8f0" font-size="11">${name}</text>`;
+  });
+  s+='</svg>';
+  document.getElementById('swimlane').innerHTML=s;
+}
+function drawWorkflow(){
+  let s=svg('workflow');
+  s+=node(180,40,'Load .mz','#3b82f6');
+  s+=arrow(180,56,180,76);
+  s+=node(180,78,'Parse AST','#3b82f6');
+  s+=arrow(180,94,180,114);
+  s+=`<path d="M180,110 L180,124" stroke="#94a3b8" stroke-width="2" marker-end="url(#a)"/>`;
+  s+=node(120,126,'Bytecode','#f59e0b'); s+=node(240,126,'Native (C)','#f59e0b');
+  s+=arrow(120,142,120,160); s+=arrow(240,142,240,160);
+  s+=node(120,162,'VM run','#4C6EF5'); s+=node(240,162,'gcc -O2 run','#9A4FF5');
+  s+=arrow(120,178,150,194); s+=arrow(240,178,210,194);
+  s+=node(180,196,'Result','#10b981');
+  s+='</svg>';
+  document.getElementById('workflow').innerHTML=s;
+}
+function drawDecision(){
+  let s=svg('decision');
+  s+=node(180,40,'Benchmark','#3b82f6');
+  s+=arrow(180,56,180,74);
+  s+=node(180,76,'Needs speed?','#f59e0b');
+  s+=arrow(140,92,110,110); s+=node(110,112,'yes','#10b981'); s+=arrow(110,128,110,146); s+=node(110,148,'--native','#9A4FF5');
+  s+=arrow(220,92,250,110); s+=node(250,112,'no','#f59e0b'); s+=arrow(250,128,250,146); s+=node(250,148,'bytecode VM','#4C6EF5');
+  s+='</svg>';
+  document.getElementById('decision').innerHTML=s;
+}
+</script>
+</body>
+</html>

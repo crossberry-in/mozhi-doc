@@ -26,6 +26,7 @@
 - **[Usage Guide](USAGE.md)** — How to use the Mozhi interpreter (REPL, files, examples)
 - **[Language Reference](LANGUAGE_REFERENCE.md)** — Complete language syntax and features
 - **[mozhi-fast (Rust VM)](docs/mozhi-fast.md)** — The faster Rust bytecode-VM interpreter
+- **[Chart Gallery](docs/chart-gallery.html)** — 33 chart types of mozhi-mini vs mozhi-fast benchmarks
 - **[Examples](examples/)** — Sample Mozhi programs to learn from
 - **[Changelog](CHANGELOG.md)** — Version history and changes
 - **[FAQ](FAQ.md)** — Frequently asked questions
