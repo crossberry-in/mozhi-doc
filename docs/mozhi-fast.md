@@ -77,26 +77,37 @@ src/main.rs       entry point
 
 Measured on x86_64 Linux with the release builds (median of 3 runs):
 
-| Benchmark | mozhi-fast | mozhi-mini | Speedup |
-|-----------|------------|------------|---------|
-| `fib(30)` | **1562 ms** | 2205 ms | **~1.4×** |
-| 1M `while` loop | **385 ms** (correct `499999500000`) | 727 ms (wrong, 32-bit overflow) | **~1.9×** |
+| Benchmark | mozhi-mini | mozhi-fast VM | mozhi-fast native (`--native`) |
+|-----------|------------|---------------|-------------------------------|
+| `fib(30)` | 2252 ms | 1654 ms | **85.6 ms** |
+| 1M `while` loop | 685 ms | 381 ms | **50.8 ms** |
+
+Relative speedup vs mozhi-mini:
+
+| Benchmark | mozhi-fast VM | mozhi-fast native |
+|-----------|---------------|-------------------|
+| `fib(30)` | ~1.4× | **~26×** |
+| 1M loop | ~1.8× | **~13×** |
 
 mozhi-fast is faster than the mozhi-mini tree-walking interpreter on both
-recursion and tight loops, and produces **correct 64-bit results** where
-mozhi-mini's 32-bit integers overflow. (Optimized: environments are shared via
-`Rc` so function calls are cheap, and hot-path helpers are `#[inline]`.)
+recursion and tight loops. The **bytecode VM** gives ~1.4–1.8× speedup (with
+correct 64-bit results where mozhi-mini's 32-bit integers overflow), and the
+**native codegen (`--native`)** gives ~13–26× speedup — approaching native
+speed. (VM optimizations: `Rc`-shared environments so calls are cheap, and
+`#[inline]` hot-path helpers.)
 
 Reproduce:
 
 ```bash
-# fib(25)
-printf 'fn fib(n) { if n <= 1 { return n } return fib(n-1)+fib(n-2) }\necho(fib(25))\n' > f.mz
-time ./mozhi-fast f.mz          # 75025
+# fib(30)
+printf 'fn fib(n) { if n <= 1 { return n } return fib(n-1)+fib(n-2) }\necho(fib(30))\n' > fib.mz
+time ./mozhi-fast fib.mz          # 832040 (bytecode VM)
+time ./mozhi-fast --native fib.mz # 832040 (native, ~26x faster)
 
-# 2M loop
-printf 'i=0\ns=0\nwhile i<2000000 { s=s+i; i=i+1 }\necho(s)\n' > l.mz
-time ./mozhi-fast l.mz          # 1999999000000 (correct)
+# 1M loop
+printf 'i=0\ns=0\nwhile i<1000000 { s=s+i; i=i+1 }\necho(s)\n' > loop.mz
+time ./mozhi-fast loop.mz          # 499999500000 (correct, bytecode VM)
+time ./mozhi-fast --native loop.mz # 499999500000 (native)
 ```
 
 ## Examples
