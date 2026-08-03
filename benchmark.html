@@ -537,9 +537,10 @@
                         </tbody>
                     </table>
                     <div class="note">
-                        <p><strong>mozhi-fast</strong> compiles Mozhi source to bytecode and runs it on a
-                        stack-based VM. It is <strong>~1.2&ndash;1.7&times; faster</strong> than mozhi-mini
-                        and produces <strong>correct 64-bit results</strong> where mozhi-mini's 32-bit
+                        <p><strong>mozhi-fast</strong> has two engines: a bytecode VM (~1.4&ndash;1.8&times;
+                        faster than mozhi-mini) and a <strong>native codegen (`--native`)</strong> that
+                        compiles to C with gcc -O2 (~13&ndash;26&times; faster, approaching native speed).
+                        Both produce <strong>correct 64-bit results</strong> where mozhi-mini's 32-bit
                         integers overflow. Full details:
                         <a href="docs/mozhi-fast.md">docs/mozhi-fast.md</a>.</p>
                     </div>
