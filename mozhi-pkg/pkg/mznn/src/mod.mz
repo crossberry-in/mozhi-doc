@@ -1,26 +1,16 @@
 # ============================================================
-# mznn — Mozhi Neural Network (v1.1.0)
-# Binary distribution — downloads pre-compiled binary
-# No source code needed — everything is embedded in the binary
-# ============================================================
-# Usage:
-#   import mod from "mznn"
-#   mod.demo()                    # Auto-download + XOR demo
-#   mod.train("data.csv", 1000)   # Train on CSV
-#   mod.info()                    # Library info
-#   mod.emit_python()             # Extract embedded Python script
-#   mod.emit_js()                 # Extract embedded JS script
+# mznn — Mozhi Neural Network (v2.0.0)
+# Binary distribution — auto-download from GitHub
+# 8 activations, 4 optimizers, L2, dropout, mini-batch
 # ============================================================
 
 const GITHUB_REPO = "crossberry-in/mznn"
-const RELEASE_TAG = "v1.1.0"
+const RELEASE_TAG = "v2.0.0"
 const BASE_URL = "https://github.com/" + GITHUB_REPO + "/releases/download/" + RELEASE_TAG
 
-# Detect platform and architecture
 fn _detect_asset() {
     os_type = run("uname -s 2>/dev/null").trim()
     arch = run("uname -m 2>/dev/null").trim()
-
     if os_type == "Linux" {
         if arch == "x86_64" { return "mznn-linux-x86_64" }
         if arch == "aarch64" or arch == "arm64" { return "mznn-linux-arm64" }
@@ -29,210 +19,89 @@ fn _detect_asset() {
         if arch == "x86_64" { return "mznn-macos-x86_64" }
         if arch == "arm64" { return "mznn-macos-arm64" }
     }
-    # Windows fallback
     return "mznn-linux-x86_64"
 }
 
-# Binary cache path
-fn _binary_path() {
-    return ".mozhi/libs/mznn/mznn"
-}
+fn _binary_path() { return ".mozhi/libs/mznn/mznn" }
 
-# Ensure the binary is downloaded
 fn _ensure_binary() {
-    bin_path = _binary_path()
-
-    if file_exists(bin_path) {
-        return bin_path
-    }
-
-    echo("  [mznn] Downloading binary...")
+    if file_exists(_binary_path()) { return _binary_path() }
+    echo("  [mznn] Downloading binary v" + RELEASE_TAG + "...")
     run("mkdir -p .mozhi/libs/mznn")
-
     asset = _detect_asset()
     url = BASE_URL + "/" + asset
-
-    result = run("curl -fsSL '" + url + "' -o '" + bin_path + "' 2>/dev/null")
-
-    if file_exists(bin_path) {
-        run("chmod +x '" + bin_path + "'")
-        echo("  [mznn] Binary downloaded: " + bin_path)
-        return bin_path
+    run("curl -fsSL '" + url + "' -o '" + _binary_path() + "' 2>/dev/null")
+    if file_exists(_binary_path()) {
+        run("chmod +x '" + _binary_path() + "'")
+        echo("  [mznn] Binary downloaded")
+        return _binary_path()
     }
-
-    # Fallback: try building from source
-    echo("  [mznn] Binary download failed, trying source build...")
     if file_exists("cpp/mznn.cpp") {
-        run("g++ -O2 -s -o '" + bin_path + "' cpp/mznn.cpp -lm 2>/dev/null")
-        if file_exists(bin_path) {
-            run("chmod +x '" + bin_path + "'")
-            echo("  [mznn] Built from source: " + bin_path)
-            return bin_path
-        }
+        run("g++ -std=c++17 -O2 -s -o '" + _binary_path() + "' cpp/mznn.cpp -lm 2>/dev/null")
+        if file_exists(_binary_path()) { run("chmod +x '" + _binary_path() + "'"); return _binary_path() }
     }
-
-    echo("  [mznn] ERROR: Could not obtain binary")
     return ""
 }
 
-# Run the binary with arguments
-fn _run_bin(args) {
-    bin_path = _ensure_binary()
-    if bin_path == "" {
-        return "[mznn] Binary not available"
-    }
-    return run(bin_path + " " + args + " 2>&1")
+fn _run(args) {
+    p = _ensure_binary()
+    if p == "" { return "[mznn] Binary not available" }
+    return run(p + " " + args + " 2>&1")
 }
 
-# ============================================================
-# Public API
-# ============================================================
-
-# Run XOR demo (native C++)
-fn demo() {
-    result = _run_bin("--demo")
-    echo(result)
-    return result
+fn demo() { echo(_run("--demo")) }
+fn info() { echo(_run("--info")) }
+fn train(data, epochs) {
+    if epochs == "" { epochs = "2000" }
+    echo(_run("--train " + data + " " + string(epochs)))
 }
+fn languages() { echo(_run("--languages")) }
+fn version() { echo(_run("--version")) }
 
-# Show library info
-fn info() {
-    result = _run_bin("--info")
-    echo(result)
-    return result
-}
-
-# Train on CSV data
-# data_path: CSV file (last column = target)
-# epochs: number of training epochs (default 1000)
-fn train(data_path, epochs) {
-    if epochs == "" {
-        epochs = "1000"
-    }
-    result = _run_bin("--train " + data_path + " " + string(epochs))
-    echo(result)
-    return result
-}
-
-# Extract embedded Python script to a file
-fn emit_python(output) {
-    if output == "" {
-        output = "mznn.py"
-    }
-    result = _run_bin("--emit-python")
-    write_file(output, result)
-    echo("[mznn] Python script extracted to " + output)
-    return output
-}
-
-# Extract embedded JavaScript script to a file
-fn emit_js(output) {
-    if output == "" {
-        output = "mznn.js"
-    }
-    result = _run_bin("--emit-js")
-    write_file(output, result)
-    echo("[mznn] JavaScript script extracted to " + output)
-    return output
-}
-
-# Extract embedded .mz wrapper to a file
-fn emit_mz(output) {
-    if output == "" {
-        output = "mznn.mz"
-    }
-    result = _run_bin("--emit-mz")
-    write_file(output, result)
-    echo("[mznn] .mz wrapper extracted to " + output)
-    return output
-}
-
-# List available languages
-fn languages() {
-    result = _run_bin("--languages")
-    echo(result)
-    return result
-}
-
-# Run Python XOR demo (extracts Python, runs it)
 fn demo_python() {
-    # Extract Python script
-    emit_python("/tmp/mznn_extracted.py")
-    result = run("python3 /tmp/mznn_extracted.py --demo 2>&1")
-    echo(result)
-    return result
+    if file_exists("python/mznn.py") {
+        echo(run("python3 python/mznn.py --demo 2>&1"))
+    } else {
+        echo("[mznn] Python script not found locally")
+    }
 }
 
-# Run JavaScript XOR demo (extracts JS, runs it)
 fn demo_js() {
-    emit_js("/tmp/mznn_extracted.js")
-    result = run("node /tmp/mznn_extracted.js 2>&1")
-    echo(result)
-    return result
+    if file_exists("javascript/mznn.js") {
+        echo(run("node javascript/mznn.js --demo 2>&1"))
+    } else {
+        echo("[mznn] JS script not found locally")
+    }
 }
 
-# Run all available demos
 fn demo_all() {
-    echo("=== mznn: All Demos ===")
+    echo("=== mznn v2.0.0: All Demos ===")
     echo("")
-
     echo("--- C++ (native binary) ---")
     demo()
     echo("")
-
     if run("which python3 2>/dev/null").trim() != "" {
-        echo("--- Python (extracted from binary) ---")
+        echo("--- Python ---")
         demo_python()
         echo("")
-    } else {
-        echo("[mznn] Python not found — skipping")
-        echo("")
     }
-
     if run("which node 2>/dev/null").trim() != "" {
-        echo("--- JavaScript (extracted from binary) ---")
+        echo("--- JavaScript ---")
         demo_js()
         echo("")
-    } else {
-        echo("[mznn] Node.js not found — skipping")
-        echo("")
     }
-
-    echo("=== All demos complete! ===")
+    echo("=== Done ===")
 }
-
-# ============================================================
-# Data helpers
-# ============================================================
 
 fn create_xor_data() {
     write_file("/tmp/mznn_xor.csv", "0,0,0\n0,1,1\n1,0,1\n1,1,0")
-    echo("[mznn] XOR data created at /tmp/mznn_xor.csv")
     return "/tmp/mznn_xor.csv"
 }
 
-# ============================================================
-# Full pipeline
-# ============================================================
-
 fn run_xor_pipeline() {
-    echo("=== mznn: Full XOR Pipeline ===")
-    echo("")
-
-    # 1. Create data
-    echo("--- Step 1: Create XOR data ---")
+    echo("=== mznn: XOR Pipeline ===")
     create_xor_data()
-
-    # 2. Train
-    echo("")
-    echo("--- Step 2: Train (C++ native) ---")
     train("/tmp/mznn_xor.csv", 2000)
-
-    # 3. Demo (shows results)
-    echo("")
-    echo("--- Step 3: Results ---")
     demo()
-
-    echo("")
-    echo("=== Pipeline complete! ===")
+    echo("=== Done ===")
 }

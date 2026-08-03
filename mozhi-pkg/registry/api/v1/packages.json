@@ -1,7 +1,7 @@
 {
   "name": "mozhi",
   "version": "1.0.0",
-  "updated": "2026-08-03T07:21:07Z",
+  "updated": "2026-08-03T07:42:07Z",
   "packages": [
     {
       "name": "collections",
@@ -267,8 +267,8 @@
     },
     {
       "name": "mznn",
-      "version": "1.1.0",
-      "description": "Mozhi Neural Network \u2014 binary distribution, no source code needed",
+      "version": "2.0.0",
+      "description": "Mozhi Neural Network v2 \u2014 8 activations, 4 optimizers, L2, dropout, gradient check",
       "category": "science",
       "license": "MIT",
       "edition": "2024",
@@ -283,9 +283,7 @@
         "demo_all": "mod.demo_all",
         "train": "mod.train",
         "info": "mod.info",
-        "emit_python": "mod.emit_python",
-        "emit_js": "mod.emit_js",
-        "emit_mz": "mod.emit_mz",
+        "version": "mod.version",
         "languages": "mod.languages",
         "run_xor_pipeline": "mod.run_xor_pipeline"
       },
@@ -295,7 +293,7 @@
       "tests": [
         "test_basic.mz"
       ],
-      "checksum_sha256": "aa4aa27e7859f5f4ebf750def23fdb6cd9e17d1ab9ee3ccef8994d71e1b87b39",
+      "checksum_sha256": "025c127da13a68227cd93584c74845aac478aa7b0602dfe37dc7da72463c4518",
       "has_mod": true,
       "source": "pkg/mznn/src/mod.mz",
       "install": "pkg/mznn/src/"

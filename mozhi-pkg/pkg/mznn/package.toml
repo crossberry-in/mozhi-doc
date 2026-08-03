@@ -1,16 +1,16 @@
 [package]
 name = "mznn"
-version = "1.1.0"
+version = "2.0.0"
 category = "science"
-description = "Mozhi Neural Network — binary distribution, no source code needed"
+description = "Mozhi Neural Network v2 — 8 activations, 4 optimizers, L2, dropout, gradient check"
 license = "MIT"
 edition = "2024"
 repository = "https://github.com/crossberry-in/mznn"
-release = "v1.1.0"
+release = "v2.0.0"
 binary = true
 
 [modules]
-mod = "Binary neural network: demo, train, emit scripts"
+mod = "Binary NN: demo, train, predict, info, demo_all"
 
 [exports]
 demo = "mod.demo"
@@ -19,8 +19,6 @@ demo_js = "mod.demo_js"
 demo_all = "mod.demo_all"
 train = "mod.train"
 info = "mod.info"
-emit_python = "mod.emit_python"
-emit_js = "mod.emit_js"
-emit_mz = "mod.emit_mz"
+version = "mod.version"
 languages = "mod.languages"
 run_xor_pipeline = "mod.run_xor_pipeline"
