@@ -375,7 +375,7 @@ def measure_memory_cpu():
 
 def run_benchmark(bench_id, name, category, description, si_code, expected_output=None, iterations=1, runs=MIN_RUNS):
     """Run a single benchmark with full metrics."""
-    # Write the .si file
+    # Write the .mz file
     si_file = BENCH_DIR / f"bench_{name}.mz"
     si_file.write_text(si_code)
 
@@ -463,7 +463,7 @@ def run_benchmark(bench_id, name, category, description, si_code, expected_outpu
             stats["status"] = "PASS"
             stats["status_reason"] = f"Mean {stats['mean']:.2f} ms within threshold ({threshold} ms)"
 
-        # Benchmark hash (hash of the .si code)
+        # Benchmark hash (hash of the .mz code)
         stats["benchmark_hash"] = hashlib.sha256(si_code.encode()).hexdigest()[:16]
 
     return stats
@@ -1411,7 +1411,7 @@ def generate_html_report(env, results, scores, regressions, history=None, grade=
                 <li>Throughput: operations/sec = iterations / (mean_ms / 1000)</li>
                 <li>Regression: compared with previous run, >5% change flagged</li>
                 <li>PASS/FAIL: status based on threshold + correctness</li>
-                <li>Benchmark hash: SHA-256 of .si source code (first 16 chars)</li>
+                <li>Benchmark hash: SHA-256 of .mz source code (first 16 chars)</li>
             </ul>
 
             <div class="footer">

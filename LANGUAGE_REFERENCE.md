@@ -37,7 +37,7 @@ This is the complete reference for the Mozhi programming language.
 ### Run a File
 
 ```bash
-./mozhi examples/hello.si
+./mozhi examples/hello.mz
 ```
 
 ### Build from Source (Maintainers Only)
@@ -537,7 +537,7 @@ echo john.to_string()
 
 ## File Extension
 
-Mozhi source files use the **`.si`** extension.
+Mozhi source files use the **`.mz`** extension.
 
 ---
 

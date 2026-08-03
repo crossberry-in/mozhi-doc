@@ -1727,7 +1727,7 @@ When passing data across the FFI boundary, ownership rules apply. Primitive type
 The Mozhi compiler transforms source code into native executables through a multi-stage pipeline. Each stage transforms the program representation and may report errors. The pipeline is designed for fast compilation and comprehensive error reporting.
 
 ```
-Source Code (.si)
+Source Code (.mz)
        |
        v
   [1. Lexer]      -- Tokenizes source text
@@ -1871,7 +1871,7 @@ The build system can produce three types of output:
 |------|-----------|-------------|
 | static | `.a` | Static library (lib&lt;name&gt;.a) |
 | shared | `.so/.dylib/.dll` | Shared/dynamic library |
-| native | `.mzl` | Native Mozhi library (zip of .si files) |
+| native | `.mzl` | Native Mozhi library (zip of .mz files) |
 
 ---
 
@@ -1884,7 +1884,7 @@ Mozhi diagnostics follow a consistent format designed for readability and IDE in
 ```
 error[MZ1001]: Unknown variable
 
-  --> src/main.si:12:8
+  --> src/main.mz:12:8
    |
 12 | print(total)
    |        ^^^^^

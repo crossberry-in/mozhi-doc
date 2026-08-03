@@ -537,7 +537,7 @@
                 <li><strong>Platform:</strong> x86_64 Linux, gcc 14.2.0, Python 3.12.13</li>
                 <li><strong>C compilation:</strong> <code>gcc -O2 fib.c -o fib_c</code></li>
                 <li><strong>Python:</strong> <code>python3 fib.py</code> (CPython, no JIT)</li>
-                <li><strong>Mozhi:</strong> <code>mozhi fib.si</code> (tree-walking interpreter v2.0)</li>
+                <li><strong>Mozhi:</strong> <code>mozhi fib.mz</code> (tree-walking interpreter v2.0)</li>
                 <li><strong>Measurement:</strong> 3 runs, average taken. Wall-clock time via <code>date +%s%N</code></li>
                 <li><strong>Correctness:</strong> All implementations produce identical results: Fib(30)=832040, Fib(35)=9227465, Sum=49999995000000</li>
             </ul>
@@ -545,7 +545,7 @@
             <h2>Benchmark Code</h2>
             <p>All three implementations use identical algorithms:</p>
 
-            <h3>Mozhi (fib.si)</h3>
+            <h3>Mozhi (fib.mz)</h3>
             <pre><code>fn fibonacci(n) {
     if n &lt;= 1 {
         return n

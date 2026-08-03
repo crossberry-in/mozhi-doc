@@ -414,8 +414,8 @@ This usually means you accidentally downloaded the glibc binary (which won't run
 After installation, run the following smoke test to make sure Mozhi works:
 
 ```bash
-echo 'echo "Mozhi is working!"' > /tmp/test.si
-mozhi /tmp/test.si
+echo 'echo "Mozhi is working!"' > /tmp/test.mz
+mozhi /tmp/test.mz
 ```
 
 Expected output:

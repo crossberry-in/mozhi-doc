@@ -117,7 +117,7 @@ You should see the Mozhi REPL prompt.
 
 ### 3. Hello, World!
 
-Create a file `hello.si`:
+Create a file `hello.mz`:
 
 ```mozhi
 echo "Hello, World!"
@@ -126,7 +126,7 @@ echo "Hello, World!"
 Run it:
 
 ```bash
-mozhi hello.si
+mozhi hello.mz
 ```
 
 Output:

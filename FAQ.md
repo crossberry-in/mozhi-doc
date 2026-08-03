@@ -160,7 +160,7 @@ The source code is **closed-source**, so public builds are not supported. If you
 ### How do I run a Mozhi script?
 
 ```bash
-mozhi my_script.si
+mozhi my_script.mz
 ```
 
 See [Running a Mozhi File](USAGE.md#running-a-mozhi-file) for details.
@@ -175,7 +175,7 @@ See [Using the REPL](USAGE.md#using-the-repl) for details.
 
 ### What file extension do Mozhi files use?
 
-Mozhi source files use the **`.si`** extension. For example: `hello.si`, `fibonacci.si`.
+Mozhi source files use the **`.mz`** extension. For example: `hello.mz`, `fibonacci.mz`.
 
 ### Can I pass command-line arguments to a Mozhi script?
 

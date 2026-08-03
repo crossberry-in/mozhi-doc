@@ -2640,7 +2640,7 @@ extern <span class="keyword">fn</span> <span class="function">c_strlen</span>(s:
 
 <p>The Mozhi compiler transforms source code into native executables through a multi-stage pipeline. Each stage transforms the program representation and may report errors. The pipeline is designed for fast compilation and comprehensive error reporting.</p>
 
-<pre><code class="code-mozhi">Source Code (.si)
+<pre><code class="code-mozhi">Source Code (.mz)
        |
        v
   [<span class="number">1</span>. Lexer]      -- Tokenizes source text
@@ -2905,7 +2905,7 @@ type = "static"</code></pre>
 <tr>
 <td>native</td>
 <td><code>.mzl</code></td>
-<td>Native Mozhi library (zip of .si files)</td>
+<td>Native Mozhi library (zip of .mz files)</td>
 </tr>
 </tbody></table>
 
@@ -2919,7 +2919,7 @@ type = "static"</code></pre>
 
 <pre><code class="code-mozhi">error[MZ1001]: Unknown variable
 
-  --&gt; src/main.si:<span class="number">12</span>:<span class="number">8</span>
+  --&gt; src/main.mz:<span class="number">12</span>:<span class="number">8</span>
    |
 <span class="number">12</span> | <span class="function">print</span>(total)
    |        ^^^^^

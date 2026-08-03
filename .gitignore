@@ -1,8 +1,8 @@
 # Binary release assets — distributed via GitHub Releases, not committed
-sino-linux-*
-sino-alpine-*
-sino-macos-*
-sino-windows-*
+mozhi-linux-*
+mozhi-alpine-*
+mozhi-macos-*
+mozhi-windows-*
 
 # Compressed archives
 *.tar.gz

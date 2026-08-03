@@ -118,7 +118,7 @@ _No unreleased changes yet._
   - Math: `sqrt(x)`, `abs(x)`, `floor(x)`, `ceil(x)`
 - **Comments**: Single-line comments with `#`.
 - **REPL**: Interactive Read-Eval-Print Loop.
-- **File Execution**: Run Mozhi scripts from `.si` files.
+- **File Execution**: Run Mozhi scripts from `.mz` files.
 - **Makefile**: Standard build system with `make`, `make clean`, `make run`, `make repl`, `make file` targets.
 
 ### Documentation

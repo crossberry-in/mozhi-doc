@@ -98,12 +98,12 @@ Mozhi supports multi-line blocks in the REPL. After typing a block opener (`if`,
 To run a Mozhi script, pass the file path as an argument:
 
 ```bash
-mozhi path/to/script.si
+mozhi path/to/script.mz
 ```
 
 ### Example
 
-Create a file `hello.si`:
+Create a file `hello.mz`:
 
 ```mozhi
 # Hello World in Mozhi
@@ -124,7 +124,7 @@ echo "Power: ", a ** b
 Run it:
 
 ```bash
-mozhi hello.si
+mozhi hello.mz
 ```
 
 Output:
@@ -141,17 +141,17 @@ Power: 1000
 
 ## File Extension
 
-Mozhi source files use the **`.si`** extension.
+Mozhi source files use the **`.mz`** extension.
 
 | Extension | Description |
 |-----------|-------------|
-| `.si` | Mozhi source file |
+| `.mz` | Mozhi source file |
 
 Example filenames:
 
-- `hello.si`
-- `fibonacci.si`
-- `my_script.si`
+- `hello.mz`
+- `fibonacci.mz`
+- `my_script.mz`
 
 ---
 
@@ -173,7 +173,7 @@ The Mozhi interpreter accepts the following command-line arguments:
 mozhi
 
 # Run a file
-mozhi my_script.si
+mozhi my_script.mz
 
 # Print version
 mozhi --version

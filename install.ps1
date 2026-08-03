@@ -102,7 +102,7 @@ if ($PathEnv -notlike "*$InstallDir*") {
 
 Write-Info "Verifying installation..."
 # The interpreter doesn't support --version; run a tiny script instead
-$TestScript = [System.IO.Path]::GetTempFileName() + ".si"
+$TestScript = [System.IO.Path]::GetTempFileName() + ".mz"
 'echo "Mozhi interpreter OK"' | Set-Content -Path $TestScript
 & $FinalPath $TestScript
 Remove-Item $TestScript -ErrorAction SilentlyContinue
@@ -121,7 +121,7 @@ Write-Info "  https://github.com/crossberry-in/mozhi-pkg"
 Write-Host ""
 Write-Info "Then use the unified 'mozhi' command:"
 Write-Info "  mozhi                    # start REPL"
-Write-Info "  mozhi my_script.si       # run a script"
+Write-Info "  mozhi my_script.mz       # run a script"
 Write-Info "  mozhi build              # build a project"
 Write-Host ""
 Write-Warn "Note: Open a NEW PowerShell window for PATH changes to take effect."

@@ -5,16 +5,16 @@ All rights reserved.
 
 1. DEFINITIONS
 
-   "Software" refers to the Sino programming language interpreter binary,
+   "Software" refers to the Mozhi programming language interpreter binary,
    its source code, and any accompanying documentation.
 
-   "Source Code" refers to the human-readable C source files of the Sino
+   "Source Code" refers to the human-readable C source files of the Mozhi
    interpreter, including but not limited to files under the src/ and
    include/ directories of the private source repository.
 
    "Binary" refers to the compiled, executable form of the Software,
    distributed via the public releases at
-   https://github.com/crossberry-in/sino-lang-docs/releases.
+   https://github.com/crossberry-in/mozhi-doc/releases.
 
    "Licensee" refers to any individual or entity that downloads, installs,
    or uses the Software.
@@ -35,8 +35,8 @@ All rights reserved.
    a) Download, install, and use the Binary of the Software for any
       lawful purpose, including personal, educational, and commercial use.
 
-   b) Write, distribute, and publicly share Sino scripts (source files
-      with the .si extension) that are executed by the Software.
+   b) Write, distribute, and publicly share Mozhi scripts (source files
+      with the .mz extension) that are executed by the Software.
 
    c) Distribute verbatim copies of the unmodified Binary to third parties,
       provided that this License is included with such copies.
@@ -113,4 +113,4 @@ All rights reserved.
 ---
 
 For inquiries regarding licensing, source code access, or commercial use,
-please visit: https://github.com/crossberry-in/sino-lang-docs/issues
+please visit: https://github.com/crossberry-in/mozhi-doc/issues
