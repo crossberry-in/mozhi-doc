@@ -71,8 +71,8 @@ mozhi-fast plot.mz
 
 ## Notes & limitations
 
-- **Self-recursion** within a module works (e.g. `fib`). Mutual recursion
-  between two functions in the same module is a known limitation.
+- **Self-recursion** and **mutual recursion** between module functions both work
+  (e.g. `fib`, and `is_even`/`is_odd` calling each other).
 - The registry packages live in the `mozhi-doc` repo under
   `mozhi-pkg/pkg/<name>/` with `package.toml` metadata; `mz-registry.json`
   provides the install paths.
