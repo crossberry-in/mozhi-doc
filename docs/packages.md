@@ -69,6 +69,31 @@ EOF
 mozhi-fast plot.mz
 ```
 
+## Environment spaces (ens)
+
+Like a Python virtualenv, you can create an isolated environment where
+`import` and `mz add` work from any folder.
+
+```bash
+# create an environment (activates it in this shell)
+source mz-ens.sh create myenv
+# or programmatically:
+mozhi-fast ens-create myenv
+
+# from any folder, activate then install/import
+source mz-ens.sh activate myenv
+mozhi-fast add charts        # installs into the env's libs
+mozhi-fast file.mz           # import charts resolves from the env
+
+# manage
+source mz-ens.sh deactivate
+mozhi-fast ens-list
+```
+
+Environments live in `$HOME/.mozhi/ens/<name>/`. Activating sets `MZ_ENV` and
+`MZ_LIB` to the environment's `libs/` dir; `mz add` installs there and
+`import` resolves from there (before project/global libs).
+
 ## Notes & limitations
 
 - **Self-recursion** and **mutual recursion** between module functions both work
