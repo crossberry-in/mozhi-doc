@@ -1,107 +1,700 @@
-# ============================================================
-# mznn — Mozhi Neural Network (v2.0.0)
-# Binary distribution — auto-download from GitHub
-# 8 activations, 4 optimizers, L2, dropout, mini-batch
-# ============================================================
+# =============================================================================
+# mznn — Mozhi Neural Network Library  (pure-Mozhi implementation)
+#
+# A PyTorch-like, lightweight MLP library written entirely in Mozhi, following
+# the documented Mozhi language specification (crossberry-in/mozhi-doc).
+#
+#   - activations : sigmoid, tanh, relu, leaky_relu, elu, gelu, silu/swish
+#   - losses      : MSE, cross_entropy, binary_cross_entropy
+#   - optimizers  : SGD, SGD+momentum, Adam, AdamW
+#   - model       : Sequential of Linear layers
+#   - training    : full-batch gradient descent via numerical gradients
+#                   (clear and educational; swap for exact autograd anytime)
+#   - save / load : portable JSON
+#
+# API sketch (PyTorch-like):
+#   import mznn from "mznn"
+#   model = mznn.Sequential([mznn.Linear(2, 8), "tanh", mznn.Linear(8, 1)])
+#   mznn.train(model, X, y, 2000, 0.02, "adam")
+#   pred  = mznn.predict(model, X)
+#   loss  = mznn.mse_loss(mznn.predict(model, X), y)
+#
+# =============================================================================
 
-const GITHUB_REPO = "crossberry-in/mznn"
-const RELEASE_TAG = "v2.0.0"
-const BASE_URL = "https://github.com/" + GITHUB_REPO + "/releases/download/" + RELEASE_TAG
+const MZNN_VERSION = "3.0.0"
+const MZNN_FORMAT  = "mznn"
+const MZNN_FORMAT_VERSION = 3
 
-fn _detect_asset() {
-    os_type = run("uname -s 2>/dev/null").trim()
-    arch = run("uname -m 2>/dev/null").trim()
-    if os_type == "Linux" {
-        if arch == "x86_64" { return "mznn-linux-x86_64" }
-        if arch == "aarch64" or arch == "arm64" { return "mznn-linux-arm64" }
-    }
-    if os_type == "Darwin" {
-        if arch == "x86_64" { return "mznn-macos-x86_64" }
-        if arch == "arm64" { return "mznn-macos-arm64" }
-    }
-    return "mznn-linux-x86_64"
+# Euler's number - std.math has pow() but not exp(); exp(x) == pow(E, x).
+const E = 2.718281828459045
+
+# ---------------------------------------------------------------------------
+# Numeric helpers
+# ---------------------------------------------------------------------------
+fn exp(x) -> float {
+    return pow(E, x)
 }
 
-fn _binary_path() { return ".mozhi/libs/mznn/mznn" }
-
-fn _ensure_binary() {
-    if file_exists(_binary_path()) { return _binary_path() }
-    echo("  [mznn] Downloading binary v" + RELEASE_TAG + "...")
-    run("mkdir -p .mozhi/libs/mznn")
-    asset = _detect_asset()
-    url = BASE_URL + "/" + asset
-    run("curl -fsSL '" + url + "' -o '" + _binary_path() + "' 2>/dev/null")
-    if file_exists(_binary_path()) {
-        run("chmod +x '" + _binary_path() + "'")
-        echo("  [mznn] Binary downloaded")
-        return _binary_path()
+fn clampf(x, lo, hi) -> float {
+    if x < lo {
+        return lo
     }
-    if file_exists("cpp/mznn.cpp") {
-        run("g++ -std=c++17 -O2 -s -o '" + _binary_path() + "' cpp/mznn.cpp -lm 2>/dev/null")
-        if file_exists(_binary_path()) { run("chmod +x '" + _binary_path() + "'"); return _binary_path() }
+    if x > hi {
+        return hi
     }
-    return ""
+    return x
 }
 
-fn _run(args) {
-    p = _ensure_binary()
-    if p == "" { return "[mznn] Binary not available" }
-    return run(p + " " + args + " 2>&1")
+# ---------------------------------------------------------------------------
+# Activations
+# ---------------------------------------------------------------------------
+fn sigmoid(x) -> float { return 1.0 / (1.0 + exp(0.0 - x)) }
+
+fn tanh(x) -> float {
+    e2 = exp(2.0 * x)
+    return (e2 - 1.0) / (e2 + 1.0)
 }
 
-fn demo() { echo(_run("--demo")) }
-fn info() { echo(_run("--info")) }
-fn train(data, epochs) {
-    if epochs == "" { epochs = "2000" }
-    echo(_run("--train " + data + " " + string(epochs)))
+fn relu(x) -> float {
+    if x > 0.0 {
+        return x
+    }
+    return 0.0
 }
-fn languages() { echo(_run("--languages")) }
-fn version() { echo(_run("--version")) }
 
-fn demo_python() {
-    if file_exists("python/mznn.py") {
-        echo(run("python3 python/mznn.py --demo 2>&1"))
-    } else {
-        echo("[mznn] Python script not found locally")
+fn leaky_relu(x) -> float {
+    if x > 0.0 {
+        return x
+    }
+    return 0.01 * x
+}
+
+fn elu(x) -> float {
+    if x > 0.0 {
+        return x
+    }
+    return 1.0 * (exp(x) - 1.0)
+}
+
+fn gelu(x) -> float {
+    c = 0.7978845608
+    return 0.5 * x * (1.0 + tanh(c * (x + 0.044715 * x * x * x)))
+}
+
+fn silu(x) -> float {
+    return x * sigmoid(x)
+}
+
+fn swish(x) -> float { return silu(x) }
+
+# apply a named activation to a single value
+fn act(name, x) -> float {
+    if name == "sigmoid" {
+        return sigmoid(x)
+    }
+    if name == "tanh" {
+        return tanh(x)
+    }
+    if name == "relu" {
+        return relu(x)
+    }
+    if name == "leaky_relu" {
+        return leaky_relu(x)
+    }
+    if name == "elu" {
+        return elu(x)
+    }
+    if name == "gelu" {
+        return gelu(x)
+    }
+    if name == "silu" or name == "swish" {
+        return silu(x)
+    }
+    return relu(x)
+}
+
+# softmax over a vector v (returns a new vector)
+fn softmax(v) {
+    n = len(v)
+    mx = v[0]
+    i = 1
+    while i < n {
+        if v[i] > mx {
+            mx = v[i]
+        }
+        i = i + 1
+    }
+    sum = 0.0
+    out = []
+    i = 0
+    while i < n {
+        e = exp(v[i] - mx)
+        push(out, e)
+        sum = sum + e
+        i = i + 1
+    }
+    i = 0
+    while i < n {
+        out[i] = out[i] / sum
+        i = i + 1
+    }
+    return out
+}
+
+# ---------------------------------------------------------------------------
+# Vector / matrix helpers
+# ---------------------------------------------------------------------------
+fn zeros(n) {
+    out = []
+    i = 0
+    while i < n {
+        push(out, 0.0)
+        i = i + 1
+    }
+    return out
+}
+
+fn zeros2(rows, cols) {
+    out = []
+    i = 0
+    while i < rows {
+        push(out, zeros(cols))
+        i = i + 1
+    }
+    return out
+}
+
+fn dot(a, b, n) -> float {
+    s = 0.0
+    i = 0
+    while i < n {
+        s = s + a[i] * b[i]
+        i = i + 1
+    }
+    return s
+}
+
+# y = W * x + b ; W:[rows x cols], x:[cols], b:[rows] -> y:[rows]
+fn affine(W, x, b, rows, cols) {
+    y = []
+    i = 0
+    while i < rows {
+        push(y, dot(W[i], x, cols) + b[i])
+        i = i + 1
+    }
+    return y
+}
+
+# ---------------------------------------------------------------------------
+# Model
+# ---------------------------------------------------------------------------
+struct Layer {
+    kind: string          # "linear" | "activation"
+    in: int
+    out: int
+    W: [][]float
+    b: []float
+    act: string
+}
+
+struct Model {
+    layers: []Layer
+}
+
+# Linear layer (He-ish init: scale sqrt(2/in); bias = 0).
+fn Linear(in_features, out_features) -> Layer {
+    W = zeros2(out_features, in_features)
+    scale = sqrt(2.0 / float(in_features))
+    i = 0
+    while i < out_features {
+        j = 0
+        while j < in_features {
+            W[i][j] = scale
+            j = j + 1
+        }
+        i = i + 1
+    }
+    return Layer { kind: "linear", in: in_features, out: out_features, W: W, b: zeros(out_features), act: "" }
+}
+
+# Build a Sequential model from a list of Layer structs and/or activation strings.
+fn Sequential(spec) -> Model {
+    layers = []
+    i = 0
+    while i < len(spec) {
+        item = spec[i]
+        if typeof(item) == "string" {
+            push(layers, Layer { kind: "activation", in: 0, out: 0, W: [], b: [], act: item })
+        } else {
+            push(layers, item)
+        }
+        i = i + 1
+    }
+    return Model { layers: layers }
+}
+
+# forward(model, X): X is [batch x in] -> [batch x out]
+fn forward(model, X) {
+    batch = len(X)
+    hidden = X
+    li = 0
+    while li < len(model.layers) {
+        L = model.layers[li]
+        if L.kind == "linear" {
+            next = []
+            r = 0
+            while r < batch {
+                push(next, affine(L.W, hidden[r], L.b, L.out, L.in))
+                r = r + 1
+            }
+            hidden = next
+        } else {
+            r = 0
+            while r < batch {
+                hid_row = hidden[r]
+                h2 = []
+                c = 0
+                while c < len(hid_row) {
+                    push(h2, act(L.act, hid_row[c]))
+                    c = c + 1
+                }
+                hidden[r] = h2
+                r = r + 1
+            }
+        }
+        li = li + 1
+    }
+    return hidden
+}
+
+fn num_linear_layers(model) -> int {
+    n = 0
+    i = 0
+    while i < len(model.layers) {
+        if model.layers[i].kind == "linear" {
+            n = n + 1
+        }
+        i = i + 1
+    }
+    return n
+}
+
+fn num_params(model) -> int {
+    total = 0
+    i = 0
+    while i < len(model.layers) {
+        L = model.layers[i]
+        if L.kind == "linear" {
+            total = total + L.in * L.out + L.out
+        }
+        i = i + 1
+    }
+    return total
+}
+
+# ---------------------------------------------------------------------------
+# Losses  (pred/target are [batch x out]; mean reduction)
+# ---------------------------------------------------------------------------
+fn mse_loss(pred, target) -> float {
+    batch = len(pred)
+    cols = len(pred[0])
+    total = 0.0
+    i = 0
+    while i < batch {
+        j = 0
+        while j < cols {
+            d = pred[i][j] - target[i][j]
+            total = total + d * d
+            j = j + 1
+        }
+        i = i + 1
+    }
+    return total / float(batch * cols)
+}
+
+fn binary_cross_entropy(pred, target) -> float {
+    batch = len(pred)
+    total = 0.0
+    i = 0
+    while i < batch {
+        p = clampf(pred[i][0], 1e-12, 1.0 - 1e-12)
+        y = target[i][0]
+        total = total - (y * log(p) + (1.0 - y) * log(1.0 - p))
+        i = i + 1
+    }
+    return total / float(batch)
+}
+
+fn cross_entropy(pred, target) -> float {
+    batch = len(pred)
+    total = 0.0
+    i = 0
+    while i < batch {
+        probs = softmax(pred[i])
+        cls = int(target[i][0])
+        total = total - log(clampf(probs[cls], 1e-12, 1.0))
+        i = i + 1
+    }
+    return total / float(batch)
+}
+
+fn loss_of_kind(kind, pred, target) -> float {
+    if kind == "mse" {
+        return mse_loss(pred, target)
+    }
+    if kind == "cross_entropy" or kind == "ce" {
+        return cross_entropy(pred, target)
+    }
+    return binary_cross_entropy(pred, target)
+}
+
+# ---------------------------------------------------------------------------
+# Gradients via numerical central differences.
+# Returns a list (parallel to the linear layers) of { dW, db }.
+# ---------------------------------------------------------------------------
+fn gradient(model, X, y, loss_kind) {
+    nlin = num_linear_layers(model)
+    grads = []
+    i = 0
+    while i < nlin {
+        push(grads, { dW: [], db: [] })
+        i = i + 1
+    }
+    h = 0.00001
+    gi = 0
+    li = 0
+    while li < len(model.layers) {
+        L = model.layers[li]
+        if L.kind == "linear" {
+            dW = zeros2(L.out, L.in)
+            r = 0
+            while r < L.out {
+                c = 0
+                while c < L.in {
+                    orig = L.W[r][c]
+                    L.W[r][c] = orig + h
+                    lp = loss_of_kind(loss_kind, forward(model, X), y)
+                    L.W[r][c] = orig - h
+                    lm = loss_of_kind(loss_kind, forward(model, X), y)
+                    dW[r][c] = (lp - lm) / (2.0 * h)
+                    L.W[r][c] = orig
+                    c = c + 1
+                }
+                r = r + 1
+            }
+            db = zeros(L.out)
+            r = 0
+            while r < L.out {
+                orig = L.b[r]
+                L.b[r] = orig + h
+                lp = loss_of_kind(loss_kind, forward(model, X), y)
+                L.b[r] = orig - h
+                lm = loss_of_kind(loss_kind, forward(model, X), y)
+                db[r] = (lp - lm) / (2.0 * h)
+                L.b[r] = orig
+                r = r + 1
+            }
+            grads[gi].dW = dW
+            grads[gi].db = db
+            gi = gi + 1
+        }
+        li = li + 1
+    }
+    return grads
+}
+
+# ---------------------------------------------------------------------------
+# Optimizers
+# ---------------------------------------------------------------------------
+struct OptimState {
+    kind: string
+    lr: float
+    momentum: float
+    beta1: float
+    beta2: float
+    eps: float
+    wd: float
+    t: int
+    # state arrays indexed by linear-layer index gi
+    velW: [][]float
+    velb: [][]float
+    mW: [][]float
+    vW: [][]float
+    mb: [][]float
+    vb: [][]float
+}
+
+fn make_optimizer(kind, lr, momentum, beta1, beta2, eps, wd) -> OptimState {
+    return OptimState {
+        kind: kind, lr: lr, momentum: momentum, beta1: beta1, beta2: beta2,
+        eps: eps, wd: wd, t: 0, velW: [], velb: [], mW: [], vW: [], mb: [], vb: []
     }
 }
 
-fn demo_js() {
-    if file_exists("javascript/mznn.js") {
-        echo(run("node javascript/mznn.js --demo 2>&1"))
-    } else {
-        echo("[mznn] JS script not found locally")
+# Apply one optimizer step to all linear-layer params of the model.
+fn optimizer_step(model, grads, opt) {
+    opt.t = opt.t + 1
+    gi = 0
+    li = 0
+    while li < len(model.layers) {
+        L = model.layers[li]
+        if L.kind == "linear" {
+            if len(opt.velW) <= gi {
+                push(opt.velW, zeros2(L.out, L.in))
+                push(opt.velb, zeros(L.out))
+                push(opt.mW, zeros2(L.out, L.in))
+                push(opt.vW, zeros2(L.out, L.in))
+                push(opt.mb, zeros(L.out))
+                push(opt.vb, zeros(L.out))
+            }
+            _step_weight(L, grads[gi].dW, L.out, L.in, opt, gi)
+            _step_bias(L, grads[gi].db, L.out, opt, gi)
+            gi = gi + 1
+        }
+        li = li + 1
     }
 }
 
-fn demo_all() {
-    echo("=== mznn v2.0.0: All Demos ===")
-    echo("")
-    echo("--- C++ (native binary) ---")
-    demo()
-    echo("")
-    if run("which python3 2>/dev/null").trim() != "" {
-        echo("--- Python ---")
-        demo_python()
-        echo("")
+# update the weight matrix W (out x in) in place
+fn _step_weight(L, dW, rows, cols, opt, gi) {
+    i = 0
+    while i < rows {
+        j = 0
+        while j < cols {
+            val = L.W[i][j]
+            g = dW[i][j]
+            if opt.kind == "sgd" {
+                gg = g + opt.wd * val
+                opt.velW[gi][i][j] = opt.momentum * opt.velW[gi][i][j] + gg
+                L.W[i][j] = val - opt.lr * opt.velW[gi][i][j]
+            } else {
+                if opt.kind == "adam" {
+                    gg = g + opt.wd * val
+                } else {
+                    # adamw: decoupled weight decay first
+                    L.W[i][j] = val - opt.lr * opt.wd * val
+                    val = L.W[i][j]
+                    gg = g
+                }
+                opt.mW[gi][i][j] = opt.beta1 * opt.mW[gi][i][j] + (1.0 - opt.beta1) * gg
+                opt.vW[gi][i][j] = opt.beta2 * opt.vW[gi][i][j] + (1.0 - opt.beta2) * gg * gg
+                bc1 = 1.0 - pow(opt.beta1, float(opt.t))
+                bc2 = 1.0 - pow(opt.beta2, float(opt.t))
+                mh = opt.mW[gi][i][j] / bc1
+                vh = opt.vW[gi][i][j] / bc2
+                L.W[i][j] = val - opt.lr * mh / (sqrt(vh) + opt.eps)
+            }
+            j = j + 1
+        }
+        i = i + 1
     }
-    if run("which node 2>/dev/null").trim() != "" {
-        echo("--- JavaScript ---")
-        demo_js()
-        echo("")
-    }
-    echo("=== Done ===")
 }
 
-fn create_xor_data() {
-    write_file("/tmp/mznn_xor.csv", "0,0,0\n0,1,1\n1,0,1\n1,1,0")
-    return "/tmp/mznn_xor.csv"
+# update the bias vector b in place
+fn _step_bias(L, db, n, opt, gi) {
+    i = 0
+    while i < n {
+        val = L.b[i]
+        g = db[i]
+        if opt.kind == "sgd" {
+            gg = g + opt.wd * val
+            opt.velb[gi][i] = opt.momentum * opt.velb[gi][i] + gg
+            L.b[i] = val - opt.lr * opt.velb[gi][i]
+        } else {
+            if opt.kind == "adam" {
+                gg = g + opt.wd * val
+            } else {
+                L.b[i] = val - opt.lr * opt.wd * val
+                val = L.b[i]
+                gg = g
+            }
+            opt.mb[gi][i] = opt.beta1 * opt.mb[gi][i] + (1.0 - opt.beta1) * gg
+            opt.vb[gi][i] = opt.beta2 * opt.vb[gi][i] + (1.0 - opt.beta2) * gg * gg
+            bc1 = 1.0 - pow(opt.beta1, float(opt.t))
+            bc2 = 1.0 - pow(opt.beta2, float(opt.t))
+            mh = opt.mb[gi][i] / bc1
+            vh = opt.vb[gi][i] / bc2
+            L.b[i] = val - opt.lr * mh / (sqrt(vh) + opt.eps)
+        }
+        i = i + 1
+    }
 }
 
-fn run_xor_pipeline() {
-    echo("=== mznn: XOR Pipeline ===")
-    create_xor_data()
-    train("/tmp/mznn_xor.csv", 2000)
-    demo()
-    echo("=== Done ===")
+# ---------------------------------------------------------------------------
+# High-level helpers
+# ---------------------------------------------------------------------------
+# Convenience optimizer factory.
+#   kind : "sgd" | "sgd_momentum" | "adam" | "adamw"
+fn optimizer(kind, lr) -> OptimState {
+    if kind == "sgd" {
+        return make_optimizer("sgd", lr, 0.0, 0.9, 0.999, 1e-8, 0.0)
+    }
+    if kind == "sgd_momentum" {
+        return make_optimizer("sgd", lr, 0.9, 0.9, 0.999, 1e-8, 0.0)
+    }
+    if kind == "adamw" {
+        return make_optimizer("adamw", lr, 0.0, 0.9, 0.999, 1e-8, 0.01)
+    }
+    return make_optimizer("adam", lr, 0.0, 0.9, 0.999, 1e-8, 0.0)
+}
+
+# Train a model on X:[batch x in], y:[batch x out].
+#   epochs : number of full-batch steps
+#   lr     : learning rate
+#   optim  : "sgd" | "sgd_momentum" | "adam" | "adamw"
+#   loss   : "mse" | "cross_entropy" | "binary_cross_entropy"
+#   verbose: print loss every `verbose` epochs (0 disables)
+fn train(model, X, y, epochs, lr, optim, loss, verbose) {
+    opt = optimizer(optim, lr)
+    ep = 1
+    while ep <= epochs {
+        grads = gradient(model, X, y, loss)
+        optimizer_step(model, grads, opt)
+        if verbose > 0 and ep % verbose == 0 {
+            cur = loss_of_kind(loss, forward(model, X), y)
+            echo("epoch " + string(ep) + "  loss = " + string(cur))
+        }
+        ep = ep + 1
+    }
+}
+
+# predict(model, X) -> [batch x out]
+fn predict(model, X) {
+    return forward(model, X)
+}
+
+# accuracy for classification: pred class vs target class (batch x 1)
+fn accuracy(model, X, y) -> float {
+    pred = forward(model, X)
+    batch = len(pred)
+    correct = 0
+    i = 0
+    while i < batch {
+        pc = 0
+        mx = pred[i][0]
+        j = 1
+        while j < len(pred[i]) {
+            if pred[i][j] > mx {
+                mx = pred[i][j]
+                pc = j
+            }
+            j = j + 1
+        }
+        if pc == int(y[i][0]) {
+            correct = correct + 1
+        }
+        i = i + 1
+    }
+    return float(correct) / float(batch)
+}
+
+# ---------------------------------------------------------------------------
+# Save / Load (portable JSON, format v3)
+# ---------------------------------------------------------------------------
+fn _num_to_json(v) -> string {
+    return string(v)
+}
+
+# serialize a 2D array of numbers to a JSON array of arrays
+fn _mat_to_json(A) -> string {
+    s = "["
+    i = 0
+    while i < len(A) {
+        if i > 0 {
+            s = s + ","
+        }
+        s = s + "["
+        j = 0
+        while j < len(A[i]) {
+            if j > 0 {
+                s = s + ","
+            }
+            s = s + _num_to_json(A[i][j])
+            j = j + 1
+        }
+        s = s + "]"
+        i = i + 1
+    }
+    return s + "]"
+}
+
+fn _vec_to_json(v) -> string {
+    s = "["
+    i = 0
+    while i < len(v) {
+        if i > 0 {
+            s = s + ","
+        }
+        s = s + _num_to_json(v[i])
+        i = i + 1
+    }
+    return s + "]"
+}
+
+fn model_to_json(model) -> string {
+    s = "{\"format\":\"mznn\",\"version\":3,\"layers\":["
+    first = true
+    li = 0
+    while li < len(model.layers) {
+        L = model.layers[li]
+        if not first {
+            s = s + ","
+        }
+        first = false
+        if L.kind == "linear" {
+            s = s + "{\"type\":\"linear\",\"in\":" + string(L.in) + ",\"out\":" + string(L.out)
+            s = s + ",\"weight\":" + _mat_to_json(L.W)
+            s = s + ",\"bias\":" + _vec_to_json(L.b) + "}"
+        } else {
+            s = s + "{\"type\":\"activation\",\"kind\":\"" + L.act + "\"}"
+        }
+        li = li + 1
+    }
+    return s + "]}"
+}
+
+# Save the model to a file (portable JSON).
+fn save(model, path) {
+    json = model_to_json(model)
+    f = open(path)
+    write(f, json)
+    close(f)
+}
+
+# Load a model from a JSON file created by save(). The architecture is rebuilt
+# from the stored shapes.
+fn load(path) -> Model {
+    f = open(path)
+    json = read(f)
+    close(f)
+    return model_from_json(json)
+}
+
+# NOTE: full JSON *parsing* is delegated to std.json.parse for robustness; the
+# structural builder above covers serialization, and load() reconstructs layers.
+fn model_from_json(json) -> Model {
+    data = parse(json)                 # std.json
+    layers = []
+    ls = data.layers
+    i = 0
+    while i < len(ls) {
+        item = ls[i]
+        if item.type == "linear" {
+            W = item.weight            # [out x in]
+            b = item.bias              # [out]
+            push(layers, Layer { kind: "linear", in: item.in, out: item.out, W: W, b: b, act: "" })
+        } else {
+            push(layers, Layer { kind: "activation", in: 0, out: 0, W: [], b: [], act: item.kind })
+        }
+        i = i + 1
+    }
+    return Model { layers: layers }
+}
+
+fn version() -> string {
+    return MZNN_VERSION
+}
+
+fn info() -> string {
+    return "mznn " + MZNN_VERSION + " (pure Mozhi, format v" + string(MZNN_FORMAT_VERSION) + ")"
 }

@@ -302,20 +302,25 @@
     },
     {
       "category": "science",
-      "checksum_sha256": "025c127da13a68227cd93584c74845aac478aa7b0602dfe37dc7da72463c4518",
-      "description": "Mozhi Neural Network v2 \u2014 8 activations, 4 optimizers, L2, dropout, gradient check",
+      "checksum_sha256": "165cf9d4602816f8b3df01eb7dac1b9d88d5af24e07050100aae10347d225975",
+      "description": "mznn in Mozhi - a pure-Mozhi neural network library: activations, losses, SGD/Adam/AdamW, Sequential, train/predict, save/load",
       "edition": "2024",
       "examples": [
         "demo.mz"
       ],
       "exports": {
-        "demo": "mod.demo",
-        "demo_all": "mod.demo_all",
-        "demo_js": "mod.demo_js",
-        "demo_python": "mod.demo_python",
+        "Linear": "mod.Linear",
+        "Sequential": "mod.Sequential",
+        "accuracy": "mod.accuracy",
+        "binary_cross_entropy": "mod.binary_cross_entropy",
+        "cross_entropy": "mod.cross_entropy",
+        "forward": "mod.forward",
         "info": "mod.info",
-        "languages": "mod.languages",
-        "run_xor_pipeline": "mod.run_xor_pipeline",
+        "load": "mod.load",
+        "mse_loss": "mod.mse_loss",
+        "num_params": "mod.num_params",
+        "predict": "mod.predict",
+        "save": "mod.save",
         "train": "mod.train",
         "version": "mod.version"
       },
@@ -331,7 +336,7 @@
       "tests": [
         "test_basic.mz"
       ],
-      "version": "2.0.0"
+      "version": "3.0.0"
     },
     {
       "category": "os",
@@ -594,6 +599,6 @@
       "version": "1.0.0"
     }
   ],
-  "updated": "2026-08-03T23:09:01Z",
+  "updated": "2026-08-04T08:17:35Z",
   "version": "1.0.0"
 }

@@ -1,7 +1,7 @@
 {
   "name": "mozhi",
   "version": "1.0.0",
-  "updated": "2026-08-03T23:09:01Z",
+  "updated": "2026-08-04T08:17:35Z",
   "packages": [
     {
       "name": "charts",
@@ -304,8 +304,8 @@
     },
     {
       "name": "mznn",
-      "version": "2.0.0",
-      "description": "Mozhi Neural Network v2 \u2014 8 activations, 4 optimizers, L2, dropout, gradient check",
+      "version": "3.0.0",
+      "description": "mznn in Mozhi - a pure-Mozhi neural network library: activations, losses, SGD/Adam/AdamW, Sequential, train/predict, save/load",
       "category": "science",
       "license": "MIT",
       "edition": "2024",
@@ -314,15 +314,20 @@
         "mod.mz"
       ],
       "exports": {
-        "demo": "mod.demo",
-        "demo_python": "mod.demo_python",
-        "demo_js": "mod.demo_js",
-        "demo_all": "mod.demo_all",
-        "train": "mod.train",
-        "info": "mod.info",
         "version": "mod.version",
-        "languages": "mod.languages",
-        "run_xor_pipeline": "mod.run_xor_pipeline"
+        "info": "mod.info",
+        "Linear": "mod.Linear",
+        "Sequential": "mod.Sequential",
+        "forward": "mod.forward",
+        "predict": "mod.predict",
+        "train": "mod.train",
+        "mse_loss": "mod.mse_loss",
+        "cross_entropy": "mod.cross_entropy",
+        "binary_cross_entropy": "mod.binary_cross_entropy",
+        "accuracy": "mod.accuracy",
+        "save": "mod.save",
+        "load": "mod.load",
+        "num_params": "mod.num_params"
       },
       "examples": [
         "demo.mz"
@@ -330,7 +335,7 @@
       "tests": [
         "test_basic.mz"
       ],
-      "checksum_sha256": "025c127da13a68227cd93584c74845aac478aa7b0602dfe37dc7da72463c4518",
+      "checksum_sha256": "165cf9d4602816f8b3df01eb7dac1b9d88d5af24e07050100aae10347d225975",
       "has_mod": true,
       "source": "pkg/mznn/src/mod.mz",
       "install": "pkg/mznn/src/"
