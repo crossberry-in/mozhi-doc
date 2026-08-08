@@ -8,7 +8,7 @@ set -e
 
 REPO="crossberry-in/mozhi-doc"
 BINARY_NAME="mozhi-fast"
-VERSION="v2.6.0"
+VERSION="v2.7.0"
 
 info()    { printf "\033[1;34m[info]\033[0m  %s\n"  "$*" >&2; }
 success() { printf "\033[1;32m[ok]\033[0m    %s\n"  "$*" >&2; }
