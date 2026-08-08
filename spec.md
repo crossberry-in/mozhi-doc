@@ -2306,3 +2306,53 @@ mozhi-fast build secret_app.mz --encrypt --password s3cret
 mozhi-fast run secret_app.mzb -p s3cret
 ```
 
+
+### 15.14 Multi-Target Compilation
+
+Mozhi supports compiling to multiple output targets. No password is required for JS, C, or native targets.
+
+**Build targets:**
+
+| Target | Command | Output | Run with |
+|--------|---------|--------|----------|
+| Bytecode | `mozhi-fast build app.mz` | `app.mzb` | `mozhi-fast run app.mzb` |
+| JavaScript | `mozhi-fast build app.mz --target js` | `app.js` | `node app.js` |
+| C source | `mozhi-fast build app.mz --target c` | `app.c` | `cc -O2 app.c -o app` |
+| Native binary | `mozhi-fast build app.mz --target native` | `app` | `./app` |
+| Encrypted | `mozhi-fast build app.mz --encrypt` | `app.mzb` | `mozhi-fast run app.mzb -p <pw>` |
+
+**Examples:**
+
+```bash
+# JavaScript — runs anywhere with Node.js
+mozhi-fast build hello.mz --target js
+node hello.js
+
+# Native binary — no interpreter needed
+mozhi-fast build hello.mz --target native
+./hello
+
+# Custom output name
+mozhi-fast build hello.mz --target native -o myapp
+./myapp
+
+# All targets from one source
+mozhi-fast build app.mz                          # → app.mzb
+mozhi-fast build app.mz --target js              # → app.js
+mozhi-fast build app.mz --target c               # → app.c
+mozhi-fast build app.mz --target native          # → app
+mozhi-fast build app.mz --encrypt -p secret      # → app.mzb (encrypted)
+```
+
+**JavaScript target features:**
+- All Mozhi builtins mapped to JS (`Math.*`, `console.log`, `JSON.*`, `require('fs')`)
+- Control flow: `if/else`, `while`, `for-in`, `fn`
+- Arrays, maps, strings, numbers
+- Output runs with Node.js or in browsers
+
+**Native target:**
+- AST → C source → machine code via cc/gcc/clang
+- `-O2` optimization applied automatically
+- Produces standalone executable (no interpreter/runtime needed)
+- Auto-detects available compiler: `cc` → `gcc` → `clang`
+
