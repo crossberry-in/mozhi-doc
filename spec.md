@@ -2253,3 +2253,56 @@ result = true or expensive()    # expensive() not called
 *End of Mozhi Programming Language Specification v2.0*
 
 Copyright © 2026 crossberry-in. All Rights Reserved.
+
+### 15.13 Bytecode Compilation (.mzb)
+
+The Mozhi interpreter can compile `.mz` source files into bytecode binary format (`.mzb`). This enables faster startup and closed-source distribution.
+
+**Compile to bytecode:**
+
+```bash
+mozhi-fast build app.mz              # → app.mzb
+mozhi-fast build app.mz -o out.mzb   # custom output name
+```
+
+**Run bytecode:**
+
+```bash
+mozhi-fast run app.mzb              # run compiled bytecode
+mozhi-fast app.mzb                  # also works (auto-detects .mzb)
+```
+
+**Encrypted bytecode (closed source):**
+
+```bash
+# Compile with encryption
+mozhi-fast build app.mz --encrypt
+mozhi-fast build app.mz --encrypt --password mysecret
+
+# Run encrypted bytecode
+mozhi-fast run app.mzb --password mysecret
+mozhi-fast run app.mzb -p mysecret
+```
+
+**Binary format (.mzb):**
+
+| Field | Size | Description |
+|-------|------|-------------|
+| Magic | 4 bytes | `MZBC` (unencrypted) or `MZBE` (encrypted) |
+| Version | 2 bytes | Format version (u16) |
+| Flags | 2 bytes | Bit flags (encrypted, compressed) |
+| Chunks | variable | Serialized bytecode chunks |
+
+Each chunk contains: opcodes, constants, variable names, parameters.
+
+**Distribution:**
+
+```bash
+# Distribute compiled bytecode (source not included)
+mozhi-fast build secret_app.mz --encrypt --password s3cret
+# Ship only secret_app.mzb to users
+
+# Users run with password
+mozhi-fast run secret_app.mzb -p s3cret
+```
+
