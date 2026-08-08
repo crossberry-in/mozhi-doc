@@ -279,5 +279,68 @@ grep html.mz /tmp/checksums.txt</code></pre>
                 '<p style="color:#f85149">Failed to load registry: ' + err.message + '</p>';
         });
     </script>
+    <h2 id="pkg-manager">📦 PKG Manager (mzpkg)</h2>
+    <div class="pkg">
+        <h3>Install mzpkg CLI</h3>
+        <pre><code>curl -fsSL https://pkgs-mz.vercel.app/install.sh | bash
+source ~/.bashrc</code></pre>
+
+        <h3>Account</h3>
+        <pre><code>mzpkg register           # Create account
+mzpkg login              # Log in
+mzpkg status             # Show profile
+mzpkg logout             # Sign out</code></pre>
+
+        <h3>Install Packages</h3>
+        <pre><code># Official packages (no login required)
+mzpkg install strings
+mzpkg install http
+mzpkg install math_utils
+
+# User-published packages
+mzpkg install tree              # finds Cross/tree
+mzpkg install cross/tree        # explicit author
+
+# Global tools (interpreters)
+mzpkg install -g interpreter-fast
+mzpkg install -g interpreter</code></pre>
+
+        <h3>Search &amp; List</h3>
+        <pre><code>mzpkg search http
+mzpkg search tree
+mzpkg list
+mzpkg info strings</code></pre>
+
+        <h3>Publish Your Package</h3>
+        <pre><code>mzpkg init mylib         # Create template
+cd mylib
+# Edit src/mod.mz
+mzpkg login              # Must be logged in
+mzpkg push               # Uploads to cloud</code></pre>
+
+        <p>Pushed packages appear in search as <code>username/pkg-name</code>. Only the owner can update their packages.</p>
+
+        <h3>Package Template</h3>
+        <pre><code>mylib/
+├── package.json      # name, version, description
+├── README.md
+├── src/
+│   └── mod.mz        # your code
+└── tests/
+    └── test.mz</code></pre>
+
+        <h3>Storage</h3>
+        <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:6px;border-bottom:1px solid #30363d"><code>~/.mzpkg/libs/&lt;name&gt;/</code></td><td style="padding:6px;border-bottom:1px solid #30363d">Installed packages</td></tr>
+            <tr><td style="padding:6px;border-bottom:1px solid #30363d"><code>~/.mzpkg/bin/</code></td><td style="padding:6px;border-bottom:1px solid #30363d">Global binaries (interpreters)</td></tr>
+            <tr><td style="padding:6px;border-bottom:1px solid #30363d"><code>~/.mzpkg/config.json</code></td><td style="padding:6px;border-bottom:1px solid #30363d">Login session</td></tr>
+            <tr><td style="padding:6px;border-bottom:1px solid #30363d"><code>~/.mzpkg/cache/</code></td><td style="padding:6px;border-bottom:1px solid #30363d">Registry cache</td></tr>
+        </table>
+
+        <h3>Cloud Registry</h3>
+        <p>Browse packages online: <a href="https://pkgs-mz.vercel.app/packages" target="_blank">pkgs-mz.vercel.app/packages</a></p>
+        <p>API docs: <a href="https://pkgs-mz.vercel.app/api/docs" target="_blank">pkgs-mz.vercel.app/api/docs</a></p>
+    </div>
+
 </body>
 </html>

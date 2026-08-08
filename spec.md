@@ -1798,80 +1798,224 @@ An intermediate representation between interpretation and native compilation is 
 
 ---
 
-## 15. Package Manager
+## 15. Package Manager (mzpkg)
 
-### 15.1 Manifest (mozhi.toml)
+The Mozhi Package Manager (`mzpkg`) is a CLI tool for installing, searching, publishing, and managing Mozhi packages and tools. It connects to the pkgs-mz cloud registry at https://pkgs-mz.vercel.app.
 
-Every Mozhi package contains a `mozhi.toml` manifest file in its root directory. The manifest declares the package name, version, dependencies, and build configuration. The manifest uses TOML format.
+### 15.1 Installation
 
-```toml
-name = "mylib"
-version = "1.0.0"
-authors = ["Author Name"]
-license = "MIT"
-description = "A Mozhi library"
+Install mzpkg with a single command:
 
-[dependencies]
-"github:owner/dep1" = "^1.0.0"
-"github:owner/dep2" = "~2.1.0"
-
-[build]
-c = true
-cpp = false
-assembly = true
-rust = false
-
-[build.output]
-type = "static"
+```bash
+curl -fsSL https://pkgs-mz.vercel.app/install.sh | bash
+source ~/.bashrc
 ```
 
-### 15.2 Commands
+This installs the CLI to `~/.mzpkg/bin/` and adds it to your PATH.
 
-| Command | Description |
-|---------|-------------|
-| `mozhi init` | Initialize a new project (--lib or --bin) |
-| `mozhi build` | Build the project (--static, --shared, --native) |
-| `mozhi add` | Add a dependency |
-| `mozhi remove` | Remove a dependency |
-| `mozhi update` | Update dependencies |
-| `mozhi install` | Install dependencies from manifest |
-| `mozhi test` | Run tests |
-| `mozhi doc` | Generate documentation |
-| `mozhi clean` | Remove build artifacts |
-| `mozhi run` | Build and run |
-| `mozhi publish` | Publish to registry |
-| `mozhi search` | Search packages |
-| `mozhi login` | Log in to registry |
-| `mozhi doctor` | Check environment |
+### 15.2 Account System
 
-### 15.3 Dependency Resolution
+Create an account and log in to publish packages:
 
-The package manager resolves dependencies using semantic versioning. Version requirements support the following operators:
+```bash
+# Create a new account
+mzpkg register
+
+# Log in (saved to ~/.mzpkg/config.json)
+mzpkg login
+
+# Check logged-in user
+mzpkg status
+
+# View profile details
+mzpkg profile
+
+# Log out
+mzpkg logout
+```
+
+**Profile fields** (editable via web at https://pkgs-mz.vercel.app/profile):
+- Username, Display Name, Email
+- Bio, Location, Website
+- Avatar (uploaded to GitHub release assets)
+
+Account data is stored securely in a private GitHub repository as release tags. Passwords are hashed with SHA-256 + salt.
+
+### 15.3 Package Commands
+
+| Command | Description | Auth Required |
+|---------|-------------|:---:|
+| `mzpkg install <name>` | Install a package | ✗ |
+| `mzpkg install <user/pkg>` | Install a user-published package | ✗ |
+| `mzpkg install -g <name>` | Install globally (interpreter/tools) | ✗ |
+| `mzpkg search <query>` | Search packages | ✗ |
+| `mzpkg list` | List installed packages | ✗ |
+| `mzpkg info <name>` | Show package details | ✗ |
+| `mzpkg update [name]` | Update packages | ✗ |
+| `mzpkg remove <name>` | Remove a package | ✗ |
+| `mzpkg init [name]` | Create package template | ✗ |
+| `mzpkg push` | Publish package to cloud | ✓ |
+
+### 15.4 Installing Packages
+
+Install official packages from the registry:
+
+```bash
+mzpkg install strings
+mzpkg install http
+mzpkg install math_utils
+```
+
+Install user-published packages (shown as `username/pkg-name`):
+
+```bash
+mzpkg install tree              # finds Cross/tree automatically
+mzpkg install cross/tree        # or specify author explicitly
+```
+
+Packages are installed to `~/.mzpkg/libs/<name>/mod.mz` and can be imported:
+
+```mozhi
+import strings from "strings/mod.mz"
+echo(strings.capitalize("hello"))
+```
+
+### 15.5 Global Install (Interpreters & Tools)
+
+Install Mozhi interpreters and tools globally to `~/.mzpkg/bin/`:
+
+```bash
+mzpkg install -g interpreter-fast   # Mozhi fast interpreter (Rust VM)
+mzpkg install -g interpreter        # Mozhi C interpreter
+mzpkg install -g libs               # Standard libraries
+```
+
+The CLI auto-detects your platform (linux-arm64, linux-x64, macos-arm64, windows-x64) and downloads the correct binary from the mozhi-doc GitHub releases.
+
+### 15.6 Publishing Packages
+
+Create and publish your own packages:
+
+```bash
+# Step 1: Create package template
+mzpkg init mylib
+
+# Step 2: Edit your code
+cd mylib
+# Edit src/mod.mz with your functions
+
+# Step 3: Log in (if not already)
+mzpkg login
+
+# Step 4: Push to cloud
+mzpkg push
+```
+
+The push command:
+1. Reads `package.json` for name, version, description
+2. Collects all `.mz` files from `src/` and `tests/`
+3. Uploads files as GitHub release assets under `pkgs/<name>/`
+4. Updates the registry — your package appears in search as `username/pkg-name`
+
+**Only the package owner can update their packages.** Pushing a package with the same name replaces the previous version.
+
+### 15.7 Package Template (mzpkg init)
+
+The `mzpkg init` command creates a package scaffold:
+
+```
+mylib/
+├── package.json      # Name, version, description, category
+├── README.md         # Documentation
+├── src/
+│   └── mod.mz        # Main module (your code)
+└── tests/
+    └── test.mz       # Tests
+```
+
+**package.json** format:
+
+```json
+{
+  "name": "mylib",
+  "version": "1.0.0",
+  "description": "My Mozhi library",
+  "category": "general",
+  "license": "MIT",
+  "author": "your-username",
+  "main": "src/mod.mz"
+}
+```
+
+### 15.8 Package Storage
+
+| Item | Storage Location |
+|------|-----------------|
+| Official packages | crossberry-in/mozhi-doc registry |
+| User packages | crosslink369/pkgs-mz → Releases → account-\<user\>/pkgs/\<name\>/ |
+| User avatars | crosslink369/pkgs-mz → Releases → account-\<user\>/avatar.png |
+| Account data | GitHub release tag body (hashed passwords) |
+| CLI config | ~/.mzpkg/config.json |
+| Installed libs | ~/.mzpkg/libs/\<name\>/ |
+| Global binaries | ~/.mzpkg/bin/ |
+| Registry cache | ~/.mzpkg/cache/registry.json |
+
+### 15.9 Search
+
+Search works across official and user packages:
+
+```bash
+mzpkg search http          # finds official 'http' package
+mzpkg search tree          # finds user 'Cross/tree' package
+mzpkg interpreter-fast     # finds Mozhi fast interpreter
+```
+
+Search results show:
+
+```
+PACKAGE                  VERSION    CATEGORY     AUTHOR       DESCRIPTION
+────────────────────────────────────────────────────────────────────────
+Cross/tree               v1.0.0     clis         Cross        tree in folder
+http                     v1.0.0     web          official     HTTP server utilities
+```
+
+### 15.10 Dependency Resolution
+
+The package manager resolves dependencies using semantic versioning:
 
 | Operator | Example | Matches |
 |----------|---------|---------|
 | `^` | `^1.2.3` | >=1.2.3, <2.0.0 (compatible) |
 | `~` | `~1.2.3` | >=1.2.3, <1.3.0 (patch only) |
 | `>=` | `>=1.0.0` | >=1.0.0 |
-| `>` | `>1.0.0` | >1.0.0 |
-| `<=` | `<=1.5.0` | <=1.5.0 |
-| `<` | `<2.0.0` | <2.0.0 |
 | `=` | `=1.2.3` | exactly 1.2.3 |
 | `*` | `*` | any version |
 
-### 15.4 Lock File
+### 15.11 Other Commands
 
-After dependency resolution, the package manager generates a `mozhi.lock` file. The lock file records the exact resolved versions of all dependencies. Committing the lock file ensures reproducible builds across machines. The lock file is in JSON format.
+```bash
+mzpkg doctor             # Check environment, login status, API connection
+mzpkg version            # Show mzpkg version
+mzpkg help               # Show all commands
+```
 
-### 15.5 Output Types
+### 15.12 API Endpoints
 
-The build system can produce three types of output:
+The pkgs-mz cloud provides these API endpoints:
 
-| Type | Extension | Description |
-|------|-----------|-------------|
-| static | `.a` | Static library (lib&lt;name&gt;.a) |
-| shared | `.so/.dylib/.dll` | Shared/dynamic library |
-| native | `.mzl` | Native Mozhi library (zip of .mz files) |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/registry-json` | GET | Full package registry (official + user) |
+| `/api/file?path=...` | GET | Download official package file |
+| `/api/file?user=X&pkg=Y` | GET | Download user package (proxy) |
+| `/api/auth/register` | POST | Create account |
+| `/api/auth/login` | POST | Log in |
+| `/api/auth/profile` | GET/PUT | Get/update profile |
+| `/api/auth/avatar` | POST | Upload avatar image |
+| `/api/auth/push` | POST | Publish package |
+| `/api/auth/pkgs` | GET | List user-published packages |
+| `/api/global?q=...` | GET | Search mozhi-doc releases |
+| `/api/download/binary` | GET | Download CLI binary |
 
 ---
 
