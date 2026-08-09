@@ -599,6 +599,49 @@
       "has_mod": true,
       "source": "pkg/strings/src/mod.mz",
       "install": "pkg/strings/src/"
+    },
+    {
+      "name": "js-sdk",
+      "version": "1.0.0",
+      "description": "JavaScript/NPM interoperability for Mozhi \u2014 import JS modules, NPM packages, call JS functions from Mozhi",
+      "category": "interop",
+      "license": "MIT",
+      "edition": "2024",
+      "path": "pkg/js-sdk",
+      "modules": [
+        "index.js",
+        "resolver.js",
+        "loader.js",
+        "bridge.js",
+        "value.js",
+        "promise.js",
+        "callback.js",
+        "handles.js",
+        "runtime.js"
+      ],
+      "exports": {
+        "mz_js_load": "bridge.mz_js_load",
+        "mz_js_export": "bridge.mz_js_export",
+        "mz_js_call": "bridge.mz_js_call",
+        "mz_js_method": "bridge.mz_js_method",
+        "mz_js_get": "bridge.mz_js_get",
+        "mz_js_set": "bridge.mz_js_set",
+        "mz_js_await": "bridge.mz_js_await",
+        "mz_js_callback": "bridge.mz_js_callback",
+        "mzToJs": "value.mzToJs",
+        "jsToMz": "value.jsToMz",
+        "resolve": "resolver.resolve",
+        "load": "loader.load",
+        "MozhiJsRuntime": "runtime.MozhiJsRuntime"
+      },
+      "examples": [],
+      "tests": [
+        "run.js"
+      ],
+      "checksum_sha256": "",
+      "has_mod": false,
+      "source": "pkg/js-sdk/src/index.js",
+      "install": "pkg/js-sdk/src/"
     }
   ]
 }
