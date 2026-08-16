@@ -64,14 +64,7 @@ pre-built binary:
 curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install-fast.sh | bash
 ```
 
-Or build from source:
 
-```bash
-git clone https://github.com/crossberry-in/mozhi
-cd mozhi/mozhi-fast
-cargo build --release        # requires Rust 1.75+
-./target/release/mozhi-fast  file.mz
-```
 
 See **[docs/mozhi-fast.md](docs/mozhi-fast.md)** for full details, features, and
 benchmarks.
