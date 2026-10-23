@@ -6,7 +6,7 @@
 
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Termux-blue.svg)](#supported-platforms)
-[![Version: v2.4.0](https://img.shields.io/badge/Version-v2.4.0-green.svg)](https://github.com/crossberry-in/mozhi-doc/releases)
+[![Version: v3.0.0](https://img.shields.io/badge/Version-v3.0.0-green.svg)](https://github.com/crossberry-in/mozhi-doc/releases)
 
 </div>
 
@@ -15,6 +15,8 @@
 ## Overview
 
 **Mozhi** is a lightweight, beginner-friendly scripting language with its own unique syntax. It is implemented in C as a tree-walking interpreter, designed for learning, rapid prototyping, and embedding in larger applications. Mozhi supports variables, constants, functions, closures, classes, arrays, and a rich set of built-in functions.
+
+> **New in v3.0:** Mozhi is now a **full-stack language**. The interpreter ships a native HTTP server, HTML template engine, JSON stack, sandboxed filesystem module, and SQLite database — server-side web development in pure Mozhi with zero external runtimes. See the [Web Server Guide](docs/WEB_GUIDE.md).
 
 > **Note:** The Mozhi source code is **closed-source and proprietary**. This repository contains only the **public documentation, installation guide, usage guide, and binary releases**. Source code is maintained privately by the project maintainers.
 
@@ -25,6 +27,7 @@
 - **[Installation Guide](INSTALL.md)** — How to install Mozhi on your system
 - **[Usage Guide](USAGE.md)** — How to use the Mozhi interpreter (REPL, files, examples)
 - **[Language Reference](LANGUAGE_REFERENCE.md)** — Complete language syntax and features
+- **[Web Server Guide](docs/WEB_GUIDE.md)** — **NEW in v3.0:** native HTTP server, templates, JSON, fs, SQLite — full-stack development in pure Mozhi
 - **[mozhi-fast (Rust VM)](docs/mozhi-fast.md)** — The faster Rust bytecode-VM interpreter
 - **[Chart Gallery](docs/chart-gallery.html)** — 33 chart types of mozhi-mini vs mozhi-fast benchmarks
 - **[Packages](docs/packages.md)** — import libraries & `mz add` package manager
