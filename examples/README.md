@@ -4,6 +4,40 @@ This directory contains sample Mozhi programs (`.mz` files) to help you learn th
 
 ---
 
+## Verified examples (v3.1)
+
+These ten programs are **executed against the v3.1 interpreter before every
+publish** — servers are curled, databases are queried, assertions must pass.
+They are showcased on the [Examples page](https://crossberry-in.github.io/mozhi-doc/examples.html).
+
+Run them with the current CLI:
+
+```bash
+mozhi run examples/basics_hello.mz
+```
+
+| File | What it shows | Needs |
+|------|---------------|-------|
+| [`basics_hello.mz`](basics_hello.mz) | Language tour: variables, functions, control flow, maps, string methods | — |
+| [`math_showcase.mz`](math_showcase.mz) | Native math module: constants, trig, logs, reductions, seeded randomness | — |
+| [`json_showcase.mz`](json_showcase.mz) | Strict JSON: parse, stringify, pretty, validate with position-tagged errors | — |
+| [`fs_notebook.mz`](fs_notebook.mz) | Sandboxed filesystem: write/read/append/list/remove with path validation | — |
+| [`templates_hello.mz`](templates_hello.mz) | HTML templates: auto-escaping (live XSS blocked), filters, if/for | — |
+| [`db_notes.mz`](db_notes.mz) | SQLite: migrations, parameterized queries, transactions, injection attempt fails | writes `data/` |
+| [`web_hello.mz`](web_hello.mz) | Minimal web server: routes, JSON health, path params, custom 404 | listens on :8080 |
+| [`web_api.mz`](web_api.mz) | JSON API: middleware, validation, cookies, query strings, 404/500 handlers | listens on :8081 |
+| [`http_client.mz`](http_client.mz) | HTTP client: GET/POST with JSON against the local example servers | run the servers first |
+| [`app_tests.mz`](app_tests.mz) | Test pattern: assert family, grouping, timing | — |
+
+Notes:
+- Server examples listen until interrupted (Ctrl-C).
+- The native HTTP client speaks plain `http://` — TLS is on the roadmap.
+- `try`/`catch` is parsed but not yet evaluated; examples avoid it by design.
+
+---
+
+---
+
 ## Quick Start
 
 ```bash
@@ -11,9 +45,9 @@ This directory contains sample Mozhi programs (`.mz` files) to help you learn th
 curl -fsSL https://raw.githubusercontent.com/crossberry-in/mozhi-doc/main/install.sh | bash
 
 # Run any example
-mozhi-interpreter hello.mz
-mozhi-interpreter file_io.mz
-mozhi-interpreter http_server.mz
+mozhi run hello.mz
+mozhi run file_io.mz
+mozhi run http_server.mz
 ```
 
 ---
@@ -85,7 +119,7 @@ After installing Mozhi (see the [Installation Guide](../INSTALL.md)), run any ex
 
 ```bash
 # Using the interpreter directly
-mozhi-interpreter hello.mz
+mozhi run hello.mz
 
 # Using the TUI
 mozhi run hello.mz

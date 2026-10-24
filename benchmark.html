@@ -1,20 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Performance Benchmarks — Mozhi Programming Language</title>
-    <meta name="description" content="Animated performance comparison: mozhi-mini vs mozhi-fast on fibonacci and loop benchmarks.">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <title>Benchmarks — Mozhi</title>
+    <meta name="description" content="Mozhi interpreter performance against reference workloads.">
+    <meta name="color-scheme" content="light dark">
+    <meta name="google-site-verification" content="JNO-V5ppCc6ne0IM7bPS9bfRnWuQ8LtmBHulqcz9FkE" />
+    <script>
+(function(){try{var t=localStorage.getItem('md3-theme');document.documentElement.setAttribute('data-theme',t||'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block">
+    <link rel="stylesheet" href="md3.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23415F91'/><stop offset='1' stop-color='%23705575'/></linearGradient></defs><rect width='100' height='100' rx='24' fill='url(%23g)'/><text x='50' y='71' font-size='58' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
     <style>
+
         /* ===== Animated Benchmark Page Styles ===== */
 
         .bench-hero {
             text-align: center;
             padding: 48px 20px 32px;
-            background: linear-gradient(135deg, #DBEAFE 0%, #FFFFFF 100%);
+            background: linear-gradient(135deg, var(--md-primary-container) 0%, var(--md-surface) 100%);
             border-radius: 12px;
             margin-bottom: 40px;
         }
@@ -22,7 +31,7 @@
         .bench-hero h1 {
             font-size: 42px;
             font-weight: 900;
-            color: #0F172A;
+            color: var(--md-on-surface);
             margin-bottom: 8px;
             border: none;
             letter-spacing: -0.02em;
@@ -31,14 +40,14 @@
 
         .bench-hero .subtitle {
             font-size: 18px;
-            color: #2563EB;
+            color: var(--md-primary);
             font-weight: 600;
             animation: fadeInDown 0.8s ease-out 0.15s both;
         }
 
         .bench-hero .meta {
             font-size: 14px;
-            color: #64748B;
+            color: var(--md-on-surface-variant);
             margin-top: 12px;
             font-family: var(--font-mono);
             animation: fadeInDown 0.8s ease-out 0.3s both;
@@ -158,7 +167,7 @@
 
         .race-bar-container {
             flex: 1;
-            background: #E2E8F0;
+            background: var(--md-outline-variant);
             border-radius: 8px;
             height: 32px;
             overflow: hidden;
@@ -299,49 +308,60 @@
             display: block;
             animation: fadeInUp 0.4s ease-out;
         }
-    </style>
+    
+</style>
 </head>
 <body>
-    <div class="topbar">
-        <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
-        <span class="topbar-title">Benchmarks</span>
+    <header class="md-appbar" id="appbar">
+        <button class="md-iconbtn md-menu-btn" id="menuToggle" aria-label="Open navigation menu">
+            <span class="msym">menu</span>
+        </button>
+        <a href="index.html" class="md-brand">
+            <span class="md-brand-badge">M</span>
+            Mozhi
+        </a>
+        <span class="md-version-chip">v3.1.0</span>
+        <span class="md-appbar-spacer"></span>
+        <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
+            <span class="msym">code</span>
+        </a>
+        <button class="md-iconbtn" id="themeToggle" aria-label="Toggle dark theme">
+            <span class="msym">dark_mode</span>
+        </button>
+    </header>
+
+    <aside class="md-drawer" id="drawer">
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Getting started</div>
+        <a href="index.html"><span class="msym">home</span>Overview</a>
+        <a href="install.html"><span class="msym">download</span>Installation</a>
+        <a href="quickstart.html"><span class="msym">rocket_launch</span>Quick start</a>
+        <a href="examples.html"><span class="msym">code_blocks</span>Examples</a>
     </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Language</div>
+        <a href="spec.html"><span class="msym">menu_book</span>Specification</a>
+        <a href="libs.html"><span class="msym">inventory_2</span>Standard library</a>
+        <a href="benchmark.html" class="active"><span class="msym">speed</span>Benchmarks</a>
+        <a href="roadmap.html"><span class="msym">map</span>Roadmap</a>
+    </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Guides</div>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/WEB_GUIDE.md" target="_blank" rel="noopener"><span class="msym">language</span>Web guide</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/TESTING.md" target="_blank" rel="noopener"><span class="msym">fact_check</span>Testing guide</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/CLI.md" target="_blank" rel="noopener"><span class="msym">terminal</span>CLI reference</a>
+    </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Project</div>
+        <a href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener"><span class="msym">deployed_code</span>Source code</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/CHANGELOG.md" target="_blank" rel="noopener"><span class="msym">history</span>Changelog</a>
+    </div>
+</aside>
+    <div class="md-scrim" id="scrim"></div>
 
-    <div class="wrapper">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <a href="index.html" class="sidebar-logo">
-                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">M</text></svg>
-                    Mozhi
-                </a>
-                <div class="sidebar-version">v2.4</div>
-            </div>
-            <nav class="sidebar-nav">
-                <div class="sidebar-section">
-                    <div class="sidebar-section-title">Navigation</div>
-                    <a href="index.html">Home</a>
-                    <a href="benchmark.html" class="active">Benchmarks</a>
-                    <a href="benchmark.html">Benchmarks</a>
-                    <a href="roadmap.html">Roadmap</a>
-                    <a href="spec.html">Specification</a>
-                    <a href="quickstart.html">Quick Start</a>
-                    <a href="install.html">Install</a>
-                </div>
-                <div class="sidebar-section">
-                    <div class="sidebar-section-title">Error Docs</div>
-                    <a href="errors/index.html">Error Reference</a>
-                    <a href="errors/MZ1001.html">MZ1001</a>
-                    <a href="errors/MZ3003.html">MZ3003</a>
-                </div>
-                <div class="sidebar-section">
-                    <div class="sidebar-section-title">External</div>
-                    <a href="https://github.com/crossberry-in/mozhi-doc" target="_blank">GitHub &#8599;</a>
-                    <a href="https://github.com/crossberry-in/mozhi-doc/releases" target="_blank">Download &#8599;</a>
-                </div>
-            </nav>
-        </aside>
-
-        <main class="main">
+    <div class="md-content">
+        <main class="md-main-col">
+<main class="main">
             <!-- Hero -->
             <div class="bench-hero">
                 <h1>Performance Benchmarks</h1>
@@ -587,9 +607,7 @@ echo("Fib(30) = ", fibonacci(30))</code></pre>
                 <p><a href="https://github.com/crossberry-in/mozhi-doc">View on GitHub</a></p>
             </div>
         </main>
-    </div>
-
-    <script>
+<script>
         // ===== Sidebar Toggle =====
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
@@ -786,5 +804,14 @@ echo("Fib(30) = ", fibonacci(30))</code></pre>
             startRace();
         }
     </script>
+            <div class="md-footer">
+                <span>Mozhi — one language, full-stack development.</span>
+                <span class="md-spacer"></span>
+                <a href="https://github.com/crossberry-in" target="_blank" rel="noopener"><span class="msym">github</span>GitHub</a><a href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener"><span class="msym">code</span>mozhi</a><a href="https://github.com/crossberry-in/mozhi-doc" target="_blank" rel="noopener"><span class="msym">description</span>mozhi-doc</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="md3.js"></script>
 </body>
 </html>

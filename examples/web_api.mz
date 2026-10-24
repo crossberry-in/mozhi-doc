@@ -1,0 +1,119 @@
+# ============================================================
+# Web API — routes, params, middleware, validation
+#
+# Run:  mozhi run examples/web_api.mz
+# Then: curl http://127.0.0.1:8081/api/calculate -d '{"op":"add","a":2,"b":3}'
+#       curl 'http://127.0.0.1:8081/api/echo?msg=hi'
+#
+# Demonstrates the pieces a real API needs: route parameters,
+# query strings, middleware with next(), JSON body validation,
+# status codes, and custom 404/500 handlers.
+# ============================================================
+
+import web
+import math
+
+let app = web.create({
+    read_timeout: 15,
+    body_limit: 1048576,
+    log: true
+})
+
+# ---- middleware: runs on every request, in registration order ----
+app.use(fn(req, res, next) {
+    res.header("X-Content-Type-Options", "nosniff")
+    res.header("X-Frame-Options", "DENY")
+    res.header("X-Powered-By", "Mozhi")
+    next()
+})
+
+app.use(fn(req, res, next) {
+    echo(req.method() + " " + req.path())
+    next()
+})
+
+# ---- JSON body validation with typed errors ----
+# req.json() raises a runtime error on malformed bodies; the
+# app.error handler below turns that into a clean 500 with no
+# stack traces leaked to the client. Valid but incomplete
+# payloads are handled here with proper 4xx codes.
+app.post("/api/calculate", fn(req, res) {
+    let data = req.json()
+
+    if data.op == null or data.a == null {
+        res.status(422)
+        return res.json({ error: "fields 'op' and 'a' are required" })
+    }
+
+    if data.op == "add" {
+        return res.json({ result: data.a + data.b })
+    } else if data.op == "sub" {
+        return res.json({ result: data.a - data.b })
+    } else if data.op == "mul" {
+        return res.json({ result: data.a * data.b })
+    } else if data.op == "div" {
+        if data.b == null or data.b == 0 {
+            res.status(422)
+            return res.json({ error: "b must be non-zero for div" })
+        }
+        return res.json({ result: math.safe_div(data.a, data.b) })
+    } else if data.op == "pow" {
+        if data.b == null {
+            res.status(422)
+            return res.json({ error: "b is required for pow" })
+        }
+        return res.json({ result: math.pow(data.a, data.b) })
+    }
+
+    res.status(422)
+    return res.json({ error: "unknown op", supported: ["add", "sub", "mul", "div", "pow"] })
+})
+
+# ---- route params and query strings ----
+app.get("/api/echo", fn(req, res) {
+    return res.json({
+        msg: req.query("msg"),
+        from: req.ip(),
+        ua: req.header("User-Agent")
+    })
+})
+
+app.get("/api/users/:id", fn(req, res) {
+    let id = req.param("id")
+    # look up id... here we just echo it with type validation
+    if id == null {
+        res.status(400)
+        return res.json({ error: "missing id" })
+    }
+    return res.json({ user: { id: id, plan: "free" } })
+})
+
+# ---- cookies ----
+app.get("/api/session", fn(req, res) {
+    let seen = req.cookie("visits")
+    let n = 1
+    if seen != null {
+        n = int(seen) + 1
+    }
+    res.cookie("visits", string(n))
+    return res.json({ visits_before: seen })
+})
+
+# ---- custom error handler ----
+app.error(fn(req, res) {
+    res.status(500)
+    return res.json({ error: "internal error" })   # no stack traces to clients
+})
+
+app.not_found(fn(req, res) {
+    res.status(404)
+    return res.json({ error: "no such route", path: req.path() })
+})
+
+let host = env("MOZHI_HOST")
+let port = env("MOZHI_PORT")
+if host == null { host = "127.0.0.1" }
+if port == null { port = 8081 }
+
+echo("API listening on " + host + ":" + string(port))
+app.listen(host, int(port))

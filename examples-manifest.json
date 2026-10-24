@@ -1,0 +1,82 @@
+[
+  {
+    "file": "basics_hello.mz",
+    "title": "Language tour",
+    "description": "Variables, functions, control flow, arrays, maps and string methods in one runnable file.",
+    "tags": ["basics", "functions", "maps"],
+    "icon": "start",
+    "tone": ""
+  },
+  {
+    "file": "web_hello.mz",
+    "title": "Minimal web server",
+    "description": "A native HTTP server in ~20 lines: routes, JSON health endpoint, path params and a custom 404.",
+    "tags": ["web", "http", "routing"],
+    "icon": "http",
+    "tone": ""
+  },
+  {
+    "file": "web_api.mz",
+    "title": "JSON API with middleware",
+    "description": "Route params, query strings, middleware with next(), body validation, cookies and 404/500 handlers.",
+    "tags": ["web", "middleware", "validation"],
+    "icon": "api",
+    "tone": ""
+  },
+  {
+    "file": "json_showcase.mz",
+    "title": "Strict JSON",
+    "description": "Parse, stringify, pretty-print and validate JSON — with position-tagged strict errors.",
+    "tags": ["json", "rfc8259"],
+    "icon": "data_object",
+    "tone": "tert"
+  },
+  {
+    "file": "db_notes.mz",
+    "title": "SQLite notes store",
+    "description": "Tracked migrations, parameterized queries, transactions — and a live SQL-injection attempt that fails.",
+    "tags": ["sqlite", "db", "security"],
+    "icon": "database",
+    "tone": "sec"
+  },
+  {
+    "file": "fs_notebook.mz",
+    "title": "Sandboxed filesystem",
+    "description": "Write, read, append, list and safely remove files inside the sandbox root — with path validation.",
+    "tags": ["fs", "sandbox"],
+    "icon": "folder_open",
+    "tone": "amber"
+  },
+  {
+    "file": "templates_hello.mz",
+    "title": "HTML templates",
+    "description": "Auto-escaped interpolation, filters, conditionals and loops — with a live XSS attempt that is neutralized.",
+    "tags": ["templates", "html", "auto-escape"],
+    "icon": "auto_awesome",
+    "tone": ""
+  },
+  {
+    "file": "math_showcase.mz",
+    "title": "Math module",
+    "description": "Constants, trigonometry, logs, reductions, safe division and seeded randomness.",
+    "tags": ["math", "numbers"],
+    "icon": "functions",
+    "tone": "green"
+  },
+  {
+    "file": "http_client.mz",
+    "title": "HTTP client",
+    "description": "Call other services: GET and POST with JSON bodies against the local example servers.",
+    "tags": ["http", "client", "json"],
+    "icon": "cloud_sync",
+    "tone": "sec"
+  },
+  {
+    "file": "app_tests.mz",
+    "title": "Testing pattern",
+    "description": "The assert-based test file convention: group with functions, time hot paths, fail loudly.",
+    "tags": ["testing", "assert"],
+    "icon": "fact_check",
+    "tone": "green"
+  }
+]

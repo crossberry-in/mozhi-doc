@@ -1,0 +1,74 @@
+# ============================================================
+# Mozhi Basics — a one-file language tour
+#
+# Run:  mozhi run examples/basics_hello.mz
+#
+# Covers: variables, functions, control flow, collections,
+# maps, string methods, and output with echo().
+# ============================================================
+
+# ---- variables and basic types ----
+let name = "Mozhi"
+let year = 2026
+let pi = 3.14159
+let is_fun = true
+
+echo("Hello from " + name + " (" + string(year) + ")")
+
+# ---- functions ----
+fn greet(who) {
+    return "Hello, " + who + "!"
+}
+
+fn fib(n) {
+    if n < 2 {
+        return n
+    }
+    return fib(n - 1) + fib(n - 2)
+}
+
+echo(greet("world"))
+echo("fib(10) = " + string(fib(10)))
+
+# ---- control flow ----
+let n = 7
+if n % 2 == 0 {
+    echo(string(n) + " is even")
+} else {
+    echo(string(n) + " is odd")
+}
+
+# ---- arrays and for-in loops ----
+let langs = ["Mozhi", "C", "Rust", "Go"]
+for lang in langs {
+    echo("- " + lang.upper())
+}
+echo("count: " + string(langs.len()))
+
+# ---- maps: literal, dot access, methods ----
+let repo = {
+    name: "mozhi",
+    stars: 42,
+    topics: ["interpreter", "web", "sqlite"]
+}
+echo(repo.name + " has " + string(repo.stars) + " stars")
+echo("topics: " + string(repo.topics.len()))
+echo("has name key: " + string(repo.has("name")))
+
+# ---- string methods ----
+let title = "  mozhi language  "
+echo("[" + title.trim() + "]")
+echo(title.trim().upper())
+echo("contains 'lang': " + string(title.contains("lang")))
+echo("slice(2, 7): " + string(title.trim().slice(2, 7)))
+
+# ---- while loop ----
+let i = 0
+let total = 0
+while i <= 100 {
+    total = total + i
+    i = i + 1
+}
+echo("sum 0..100 = " + string(total))
+
+echo("basics_hello.mz OK")

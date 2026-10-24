@@ -1,0 +1,61 @@
+# ============================================================
+# HTTP Client — call other services from Mozhi
+#
+# Run (against the local examples):
+#   mozhi run examples/web_hello.mz          # terminal 1
+#   mozhi run examples/web_api.mz            # terminal 2
+#   MOZHI_DEMO_URL=http://127.0.0.1:8080/api/health \
+#   MOZHI_POST_URL=http://127.0.0.1:8081/api/calculate \
+#     mozhi run examples/http_client.mz      # terminal 3
+#
+# The http module performs real HTTP over sockets inside the
+# interpreter runtime. Note: the native client speaks plain
+# http:// — TLS is on the roadmap. Responses come back as
+# { status, headers, body }.
+# ============================================================
+
+import http
+import json
+
+let url = env("MOZHI_DEMO_URL")
+
+if url == null {
+    echo("set MOZHI_DEMO_URL (e.g. http://127.0.0.1:8080/api/health after")
+    echo("running examples/web_hello.mz) and re-run this file.")
+} else {
+    # ---- GET and inspect the response ----
+    echo("GET " + url)
+    let res = http.get(url)
+    echo("status: " + string(res.status))
+    echo("headers: " + json.stringify(res.headers))
+
+    # res.body is raw text; parse structured payloads with json
+    let check = json.validate(res.body)
+    if check.valid {
+        let data = json.parse(res.body)
+        echo("parsed JSON body, top-level keys: " + string(data.keys().len()))
+    } else {
+        echo("body (first 120 chars): " + res.body.slice(0, 120))
+    }
+
+    # ---- POST a JSON body (pairs with examples/web_api.mz) ----
+    let api = env("MOZHI_POST_URL")
+    if api != null {
+        let payload = json.stringify({
+            op: "add",
+            a: 2,
+            b: 3
+        })
+        echo("POST " + api)
+        let out = http.post(api, payload, { "Content-Type": "application/json" })
+        echo("status: " + string(out.status))
+        echo("server said: " + out.body)
+    }
+
+    # ---- response shape ----
+    let probe = http.get(url)
+    echo("response has status:  " + string(probe.status != null))
+    echo("response has headers: " + string(probe.headers != null))
+    echo("response has body:    " + string(probe.body != null))
+    echo("http_client.mz OK")
+}

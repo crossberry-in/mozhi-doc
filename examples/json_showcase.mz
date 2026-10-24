@@ -1,0 +1,66 @@
+# ============================================================
+# JSON Module — strict RFC 8259 parsing and serialization
+#
+# Run:  mozhi run examples/json_showcase.mz
+#
+# json.parse is strict: position-tagged errors, depth limit,
+# \uXXXX + surrogate-pair handling. json.stringify serializes
+# any Mozhi object. Invalid text raises a runtime error — use
+# json.validate() first when input is untrusted.
+# ============================================================
+
+import json
+
+# ---- parse: JSON text -> Mozhi objects ----
+let doc = json.parse("{\"name\": \"Mozhi\", \"year\": 2026, \"tags\": [\"web\", \"sqlite\"], \"meta\": {\"stable\": true}}")
+echo(doc.name)
+echo(doc.year)
+echo(doc.tags[1])
+echo("stable: " + string(doc.meta.stable))
+
+# ---- stringify: any Mozhi object -> compact JSON ----
+let payload = {
+    action: "deploy",
+    dry_run: false,
+    targets: ["edge-1", "edge-2"],
+    retries: 3
+}
+let wire = json.stringify(payload)
+echo(wire)
+
+# ---- pretty printing ----
+echo(json.stringify_pretty(payload, 2))
+
+# ---- round-trip equality ----
+let back = json.parse(wire)
+assert_eq(back.action, "deploy", "round-trip string")
+assert_eq(back.targets.len(), 2, "round-trip array length")
+assert(back.retries == 3, "round-trip int")
+echo("round-trip OK")
+
+# ---- validate: returns {valid, error, position} without building objects ----
+let ok = json.validate("[1, 2, 3]")
+echo("valid text:   " + string(ok.valid))
+
+let bad = json.validate("[1, 2,")
+echo("broken text:  " + string(bad.valid) + "  (" + bad.error + " at " + string(bad.position) + ")")
+
+let junk = json.validate("{\"a\": 1} garbage")
+echo("trailing junk: " + string(junk.valid) + "  (" + junk.error + ")")
+
+# ---- guard untrusted input with validate, then parse ----
+let untrusted = "{\"user\": \"ada\", \"admin\": false}"
+let check = json.validate(untrusted)
+if check.valid {
+    let req = json.parse(untrusted)
+    echo("parsed user: " + req.user)
+} else {
+    echo("rejected malformed input: " + check.error)
+}
+
+# ---- nested structures and null ----
+let cfg = json.parse("{\"db\": null, \"pool\": {\"min\": 1, \"max\": 10}}")
+assert(cfg.db == null, "null round-trip")
+assert_eq(cfg.pool.max, 10, "nested access")
+
+echo("json_showcase.mz OK")

@@ -1,0 +1,57 @@
+# ============================================================
+# HTML Templates — auto-escaped rendering
+#
+# Run:  mozhi run examples/templates_hello.mz
+#
+# Templates use {{ expression }} interpolation and {% if %} /
+# {% for %} logic. Output is HTML-auto-escaped by default —
+# cross-site scripting through data is blocked at the engine
+# level. Use the `safe` filter only for trusted HTML.
+# ============================================================
+
+import template
+
+# ---- interpolation with auto-escaping ----
+let html = template.render_string(
+    "<h1>Hello, {{ name }}!</h1>",
+    { name: "<script>alert('xss')</script>" }
+)
+echo(html)
+# the script tag comes out escaped — it cannot execute
+assert(html.contains("&lt;script&gt;"), "auto-escaping blocked the XSS")
+
+# ---- filters ----
+echo(template.render_string("{{ title | upper }}", { title: "mozhi" }))
+echo(template.render_string("{{ title | trim | length }}", { title: "  ab  " }))
+echo(template.render_string("{{ missing | default(\"fallback\") }}", {}))
+
+# ---- conditionals ----
+let page = template.render_string(
+    "{% if user %}<p>Hi {{ user }}</p>{% else %}<p>Please log in</p>{% endif %}",
+    { user: "ada" }
+)
+echo(page)
+
+let anon = template.render_string(
+    "{% if user %}<p>Hi {{ user }}</p>{% else %}<p>Please log in</p>{% endif %}",
+    {}
+)
+assert(anon.contains("Please log in"), "else branch works")
+
+# ---- loops with loop.index / loop.first / loop.last ----
+let list = template.render_string(
+    "<ul>{% for t in tags %}<li>{{ loop.index }}: {{ t }}</li>{% endfor %}</ul>",
+    { tags: ["web", "json", "sqlite"] }
+)
+echo(list)
+assert(list.contains("1: web"), "loop indexing")
+
+# ---- data can come straight from JSON ----
+import json
+let data = json.parse("{\"items\": [\"a\", \"b\"], \"show\": true}")
+echo(template.render_string(
+    "{% if show %}{{ items | length }} items{% endif %}",
+    data
+))
+
+echo("templates_hello.mz OK")

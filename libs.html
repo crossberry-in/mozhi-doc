@@ -1,11 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mozhi Libraries — Package Registry</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Standard Library — Mozhi</title>
+    <meta name="description" content="Batteries-included standard library, written in Mozhi itself.">
+    <meta name="color-scheme" content="light dark">
+    <meta name="google-site-verification" content="JNO-V5ppCc6ne0IM7bPS9bfRnWuQ8LtmBHulqcz9FkE" />
+    <script>
+(function(){try{var t=localStorage.getItem('md3-theme');document.documentElement.setAttribute('data-theme',t||'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block">
+    <link rel="stylesheet" href="md3.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23415F91'/><stop offset='1' stop-color='%23705575'/></linearGradient></defs><rect width='100' height='100' rx='24' fill='url(%23g)'/><text x='50' y='71' font-size='58' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
     <style>
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             max-width: 1100px;
@@ -123,17 +135,60 @@
         }
         .stat .num { display: block; font-size: 1.8rem; color: #58a6ff; font-weight: 700; }
         .stat .label { color: #8b949e; font-size: 0.85rem; }
-    </style>
+    
+</style>
 </head>
 <body>
-    <div class="nav-bar">
-        <a href="index.html">← Home</a>
-        <a href="libs.html">Libraries</a>
-        <a href="spec.html">Spec</a>
-        <a href="install.html">Install</a>
-        <a href="roadmap.html">Roadmap</a>
-        <a href="mozhi-registry.json" target="_blank">registry.json</a>
+    <header class="md-appbar" id="appbar">
+        <button class="md-iconbtn md-menu-btn" id="menuToggle" aria-label="Open navigation menu">
+            <span class="msym">menu</span>
+        </button>
+        <a href="index.html" class="md-brand">
+            <span class="md-brand-badge">M</span>
+            Mozhi
+        </a>
+        <span class="md-version-chip">v3.1.0</span>
+        <span class="md-appbar-spacer"></span>
+        <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
+            <span class="msym">code</span>
+        </a>
+        <button class="md-iconbtn" id="themeToggle" aria-label="Toggle dark theme">
+            <span class="msym">dark_mode</span>
+        </button>
+    </header>
+
+    <aside class="md-drawer" id="drawer">
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Getting started</div>
+        <a href="index.html"><span class="msym">home</span>Overview</a>
+        <a href="install.html"><span class="msym">download</span>Installation</a>
+        <a href="quickstart.html"><span class="msym">rocket_launch</span>Quick start</a>
+        <a href="examples.html"><span class="msym">code_blocks</span>Examples</a>
     </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Language</div>
+        <a href="spec.html"><span class="msym">menu_book</span>Specification</a>
+        <a href="libs.html" class="active"><span class="msym">inventory_2</span>Standard library</a>
+        <a href="benchmark.html"><span class="msym">speed</span>Benchmarks</a>
+        <a href="roadmap.html"><span class="msym">map</span>Roadmap</a>
+    </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Guides</div>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/WEB_GUIDE.md" target="_blank" rel="noopener"><span class="msym">language</span>Web guide</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/TESTING.md" target="_blank" rel="noopener"><span class="msym">fact_check</span>Testing guide</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/CLI.md" target="_blank" rel="noopener"><span class="msym">terminal</span>CLI reference</a>
+    </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Project</div>
+        <a href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener"><span class="msym">deployed_code</span>Source code</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/CHANGELOG.md" target="_blank" rel="noopener"><span class="msym">history</span>Changelog</a>
+    </div>
+</aside>
+    <div class="md-scrim" id="scrim"></div>
+
+    <div class="md-content">
+        <main class="md-main-col">
+<main class="main">
 
     <div class="hero">
         <h1>📚 Mozhi Libraries</h1>
@@ -342,5 +397,51 @@ mzpkg push               # Uploads to cloud</code></pre>
         <p>API docs: <a href="https://pkgs-mz.vercel.app/api/docs" target="_blank">pkgs-mz.vercel.app/api/docs</a></p>
     </div>
 
+
+</main>
+<script>
+    fetch('mozhi-registry.json')
+        .then(r => r.json())
+        .then(reg => {
+            const container = document.getElementById('packages');
+            container.innerHTML = '';
+            reg.packages.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'pkg';
+                div.innerHTML = `
+                    <h3>${p.name}
+                        <span class="badge">v${p.version}</span>
+                        <span class="badge category">${p.category}</span>
+                        <span class="badge fns">${p.functions.length} fns</span>
+                    </h3>
+                    <p>${p.description}</p>
+                    <div class="pkg-meta">
+                        <div><b>Import as:</b> <code>${p.import_as}</code></div>
+                        <div><b>License:</b> ${p.license}</div>
+                        <div><b>Install:</b> <code>mozhi add ${p.name}</code></div>
+                        <div><b>Direct:</b> <a href="${p.source.replace('libs/', 'libs/')}">${p.install}</a></div>
+                    </div>
+                    <details>
+                        <summary style="cursor:pointer; color:#58a6ff;">Show ${p.functions.length} functions</summary>
+                        <div class="fn-list">${p.functions.map(f => '<code>' + f + '</code>').join(' &middot; ')}</div>
+                    </details>
+                `;
+                container.appendChild(div);
+            });
+        })
+        .catch(err => {
+            document.getElementById('packages').innerHTML =
+                '<p style="color:#f85149">Failed to load registry: ' + err.message + '</p>';
+        });
+    </script>
+            <div class="md-footer">
+                <span>Mozhi — one language, full-stack development.</span>
+                <span class="md-spacer"></span>
+                <a href="https://github.com/crossberry-in" target="_blank" rel="noopener"><span class="msym">github</span>GitHub</a><a href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener"><span class="msym">code</span>mozhi</a><a href="https://github.com/crossberry-in/mozhi-doc" target="_blank" rel="noopener"><span class="msym">description</span>mozhi-doc</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="md3.js"></script>
 </body>
 </html>

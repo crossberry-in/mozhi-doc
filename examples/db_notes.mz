@@ -1,0 +1,76 @@
+# ============================================================
+# SQLite Database — migrations, parameterized queries, transactions
+#
+# Run:  mozhi run examples/db_notes.mz
+#
+# The db module is backed by SQLite inside the interpreter.
+# Queries are always prepared statements — user input goes in
+# parameters, never concatenated into SQL strings.
+# ============================================================
+
+import db
+
+let conn = db.connect({
+    driver: "sqlite",
+    path: "data/demo.db"
+})
+echo("database: " + conn.path())
+
+# ---- migrations: tracked by name, applied exactly once ----
+let applied = conn.migrate([
+    {
+        name: "001_create_notes",
+        sql: "CREATE TABLE IF NOT EXISTS notes ("
+             + " id INTEGER PRIMARY KEY AUTOINCREMENT,"
+             + " title TEXT NOT NULL,"
+             + " done  INTEGER NOT NULL DEFAULT 0"
+             + ")"
+    }
+])
+for name in applied {
+    echo("applied: " + name)
+}
+
+# run again: nothing re-applies
+assert_eq(conn.migrate([{ name: "001_create_notes", sql: "SELECT 1" }]).len(), 0, "migrations idempotent")
+
+# clean state for repeated demo runs
+conn.exec("DELETE FROM notes")
+
+# ---- inserts with parameters: no SQL injection possible ----
+let titles = ["ship interpreter", "write docs", "drink coffee"]
+let i = 0
+while i < titles.len() {
+    conn.exec("INSERT INTO notes (title, done) VALUES (?, ?)", [titles[i], i == 2])
+    i = i + 1
+}
+
+let injected = "x'); DROP TABLE notes; --"
+conn.exec("INSERT INTO notes (title) VALUES (?)", [injected])
+
+# the injection attempt is stored as plain text — the table survives
+let count = conn.query("SELECT COUNT(*) AS n FROM notes")[0].n
+echo("rows after 'injection': " + string(count))
+assert_eq(count, 4, "parameterized insert is safe")
+
+# ---- queries return maps keyed by column name ----
+let open_notes = conn.query("SELECT id, title FROM notes WHERE done = ? ORDER BY id", [0])
+for row in open_notes {
+    echo(string(row.id) + ": " + row.title)
+}
+
+# ---- transactions: explicit begin / commit / rollback ----
+conn.begin()
+conn.exec("INSERT INTO notes (title, done) VALUES (?, ?)", ["inside tx", 1])
+conn.commit()
+
+conn.begin()
+conn.exec("INSERT INTO notes (title) VALUES (?)", ["will be rolled back"])
+conn.rollback()
+
+let after = conn.query("SELECT COUNT(*) AS n FROM notes")[0].n
+echo("rows after tx: " + string(after))
+assert_eq(after, 5, "commit applied, rollback discarded")
+
+conn.close()
+echo("db_notes.mz OK")

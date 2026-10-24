@@ -1,0 +1,48 @@
+# ============================================================
+# Web Server — minimal HTTP app in ~20 lines
+#
+# Run:  mozhi run examples/web_hello.mz
+# Then: curl http://127.0.0.1:8080/
+#       curl http://127.0.0.1:8080/api/health
+#
+# The HTTP server, router, JSON encoder and thread pool are
+# all native Mozhi runtime code — no external language, no
+# PHP/Python bridge, no child processes.
+# ============================================================
+
+import web
+
+let app = web.create({
+    log: true
+})
+
+app.get("/", fn(req, res) {
+    return res.html("<h1>Hello from Mozhi</h1><p>Native HTTP server, zero dependencies.</p>")
+})
+
+app.get("/api/health", fn(req, res) {
+    return res.json({
+        status: "ok",
+        language: "Mozhi",
+        version: web.version(),
+        time: time()
+    })
+})
+
+app.get("/greet/:name", fn(req, res) {
+    return res.text("Hello, " + req.param("name") + "!")
+})
+
+# custom 404 for anything unmatched
+app.not_found(fn(req, res) {
+    res.status(404)
+    return res.json({ error: "not found", path: req.path() })
+})
+
+let host = env("MOZHI_HOST")
+let port = env("MOZHI_PORT")
+if host == null { host = "127.0.0.1" }
+if port == null { port = 8080 }
+
+echo("listening on " + host + ":" + string(port))
+app.listen(host, int(port))

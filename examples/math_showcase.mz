@@ -1,0 +1,59 @@
+# ============================================================
+# Math Module — native numeric computing in Mozhi
+#
+# Run:  mozhi run examples/math_showcase.mz
+#
+# The math module is implemented natively inside the C
+# interpreter runtime. Domain errors and overflow raise real
+# errors — you never get silent NaN/Inf.
+# (math.safe_div(1, 0) raises and stops the program; keep the
+#  denominator proven non-zero or check it first.)
+# ============================================================
+
+import math
+
+# ---- constants ----
+echo("pi  = " + string(math.pi))
+echo("e   = " + string(math.e))
+echo("tau = " + string(math.tau))
+
+# ---- roots and powers ----
+echo("sqrt(2)        = " + string(math.sqrt(2)))
+echo("pow(2, 10)     = " + string(math.pow(2, 10)))
+echo("abs(-42)       = " + string(math.abs(-42)))
+echo("floor(3.7)     = " + string(math.floor(3.7)))
+echo("ceil(3.2)      = " + string(math.ceil(3.2)))
+
+# ---- trigonometry ----
+echo("sin(pi/2)      = " + string(math.sin(math.pi / 2)))
+echo("cos(0)         = " + string(math.cos(0)))
+echo("atan2(1, 1)    = " + string(math.atan2(1, 1)))
+
+# ---- logarithms ----
+echo("log(e)         = " + string(math.log(math.e)))
+echo("log10(1000)    = " + string(math.log10(1000)))
+
+# ---- reductions: arrays or varargs ----
+let nums = [4, 8, 15, 16, 23, 42]
+echo("min(nums)      = " + string(math.min(nums)))
+echo("max(nums)      = " + string(math.max(nums)))
+echo("sum(nums)      = " + string(math.sum(nums)))
+echo("average(nums)  = " + string(math.average(nums)))
+echo("max(3, 1, 2)   = " + string(math.max(3, 1, 2)))
+
+# ---- safe division: raises on /0 instead of returning garbage ----
+echo("safe_div(10,4) = " + string(math.safe_div(10, 4)))
+let a = 10
+let b = 4
+if b != 0 {
+    echo("guarded divide = " + string(a / b))
+}
+
+# ---- seeded randomness (reproducible) ----
+math.seed(42)
+let first = math.random()
+math.seed(42)
+echo("same seed, same stream: " + string(first == math.random()))
+echo("random_int(1,6) = " + string(math.random_int(1, 6)))
+
+echo("math_showcase.mz OK")
