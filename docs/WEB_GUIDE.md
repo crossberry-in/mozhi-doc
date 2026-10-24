@@ -248,9 +248,17 @@ fs.set_root(path)  fs.get_root()
 ```
 
 Every path is resolved against the sandbox root (the process working
-directory at startup). `..` components are rejected; symlinks are verified
-with `realpath()` so links cannot escape the sandbox. `fs.list` returns
-maps: `{ name, type: "file"|"dir", size }`.
+directory at startup). `..` components are rejected; existing targets and
+the nearest existing ancestor of a not-yet-created target are checked with
+`realpath()` to reject symlink escapes. `fs.list` returns maps:
+`{ name, type: "file"|"dir", size }`.
+
+**Security boundary:** this is application-level path validation, not an OS
+sandbox. Because file operations use ordinary path-based system calls after
+validation, a hostile process that can concurrently replace directories or
+symlinks may create a time-of-check/time-of-use race. Do not treat it as a
+strong isolation boundary for mutually untrusted code; use OS-level sandboxing
+and restrictive filesystem permissions for that threat model.
 
 ## Database (`db`)
 
