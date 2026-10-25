@@ -34,9 +34,9 @@ curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash
 The installer:
 
 1. Detects your OS (Linux, macOS, Termux), architecture (x86_64 or ARM64), and libc (glibc or musl)
-2. Downloads the correct binary from the latest release
-3. Installs it to a directory on your `PATH` (`/usr/local/bin`, `$PREFIX/bin` for Termux, `/opt/homebrew/bin` for Apple Silicon, or `~/.local/bin` as fallback)
-4. Verifies the installation
+2. Downloads the correct binary from the latest release with a Windows/macOS build (falls back automatically)
+3. Installs it as `mozhi` — the canonical command used everywhere in the docs (`mozhi run app.mz`, `mozhi new myapp`, `mozhi --version`) — plus a `mozhi-interpreter` compatibility symlink, into a directory on your `PATH` (`/usr/local/bin`, `$PREFIX/bin` for Termux, `/opt/homebrew/bin` for Apple Silicon, or `~/.local/bin` as fallback)
+4. Verifies the installation and warns you if the install directory is not on your `PATH`
 
 ### Windows (PowerShell)
 
@@ -82,6 +82,8 @@ benchmarks.
 | Windows | Windows 10 (1809+) or Windows 11 | x86_64 | 1 MB | 16 MB |
 
 The glibc Linux builds dynamically link against `libc` and `libm` (already present on every Linux distro). The Alpine, Termux, and Windows builds are statically linked — they have **no runtime dependencies**.
+
+> **Since v3.1.1**, the Linux `mozhi-interpreter-linux-*` binaries are themselves fully static (musl, SQLite vendored) — one binary works on glibc distros, Alpine, and Termux alike, with no runtime dependencies at all. macOS and Windows do not have v3.1.1 builds yet; the installers automatically fall back to the v2.5.0 assets for those platforms.
 
 ---
 
@@ -264,7 +266,7 @@ Or download from the command line:
 
 ```bash
 # Example: Linux x86_64
-curl -L -o mozhi https://github.com/crossberry-in/mozhi-doc/releases/download/v2.4.0/mozhi-interpreter-linux-x86_64
+curl -L -o mozhi https://github.com/crossberry-in/mozhi-doc/releases/download/v3.1.1/mozhi-interpreter-linux-x86_64
 ```
 
 ### Step 2 — Make it executable (Linux / macOS / Termux only)

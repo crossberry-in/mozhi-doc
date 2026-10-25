@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+_No unreleased changes yet._
+
+---
+
+## [v3.1.1] — 2026-10-25 — Interpreter release line + installer overhaul
+
+### Fixed
+- **`install.sh` installed the interpreter under the wrong name**
+  (`mozhi-interpreter`), so the documented `mozhi` command was not
+  available after installing. The interpreter now installs as `mozhi`
+  with a `mozhi-interpreter` compatibility symlink; the installer also
+  detects Termux/musl, warns when the install directory is not on
+  `PATH`, and verifies with a real script run instead of the vacuous
+  `/dev/stdin` pipe test (which read an empty program on every
+  release since v2.4).
+- **`install.ps1` downloaded a non-existent asset name**
+  (`mozhi-windows-x86_64.exe`); it now fetches
+  `mozhi-interpreter-windows-x86_64.exe`, tries the latest release
+  with a Windows build and falls back to v2.5.0, installing as
+  `mozhi.exe` (+ compatibility copy).
+- **`install-fast.sh` pointed at release `v2.7.0`, which does not
+  exist** — now pins `v2.6.0`; `install-tui.sh` no longer shadows the
+  interpreter command (installs as `mozhi-tui`, pinned to `v2.5.0`).
+
+### Added
+- **Release v3.1.1** — first public release of the v3 interpreter line:
+  fully static Linux binaries (musl, SQLite vendored, zero runtime
+  dependencies) for x86_64 and arm64, covering glibc distros, Alpine
+  and Termux with one binary. `install.sh` auto-falls back to the
+  v2.5.0 assets on platforms without a v3.1.1 build (macOS, Windows).
+- Interpreter-side fix shipped in this release: user variables and
+  function parameters now shadow same-named builtins (`input`, `len`,
+  `str`, ...). See the mozhi repo CHANGELOG for details.
+- `MOZHI_INSTALL_DIR` environment override for all shell installers.
+
+### Changed
+- README "What's New" updated from v2.4.0 to v3.1.1 with a runnable
+  web example; `install.html` manual installation rewritten for the
+  single-static-binary layout (the old mozhi-pkg Python dispatcher
+  flow is gone); INSTALL.md documents the dual command names and
+  static builds.
+
+---
+
 ## [v2.6.0] — 2026-08-03
 
 ### Added

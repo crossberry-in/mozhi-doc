@@ -9,9 +9,11 @@
 #
 # This script:
 #   1. Detects the architecture (x86_64 only on Windows)
-#   2. Downloads the latest mozhi-windows-x86_64.exe binary
-#   3. Installs it to $env:USERPROFILE\.mozhi\bin\mozhi-interpreter.exe
-#      (Named 'mozhi-interpreter' to avoid conflict with the mozhi-pkg dispatcher)
+#   2. Downloads the mozhi-interpreter-windows-x86_64.exe asset
+#      (tries the latest release first, falls back to v2.5.0 —
+#      the newest release line with a Windows build)
+#   3. Installs it as mozhi.exe (canonical, used by all docs) and
+#      keeps a mozhi-interpreter.exe copy for compatibility
 #   4. Adds $env:USERPROFILE\.mozhi\bin to the user PATH
 #   5. Verifies the installation
 #
@@ -20,8 +22,10 @@ $ErrorActionPreference = "Stop"
 
 $Repo = "crossberry-in/mozhi-doc"
 $InstallDir = "$env:USERPROFILE\.mozhi\bin"
-$BinaryName = "mozhi-interpreter.exe"
-$AssetName = "mozhi-windows-x86_64.exe"
+$BinaryName = "mozhi.exe"
+$CompatName = "mozhi-interpreter.exe"
+$AssetName = "mozhi-interpreter-windows-x86_64.exe"
+$FallbackVersion = "v2.5.0"
 
 function Write-Info    { param([string]$Msg) Write-Host "[info]  $Msg" -ForegroundColor Cyan }
 function Write-OK      { param([string]$Msg) Write-Host "[ok]    $Msg" -ForegroundColor Green }
@@ -64,17 +68,30 @@ try {
 $Version = $release.tag_name
 Write-Info "Latest version:    $Version"
 
-# --- Download binary ----------------------------------------------------
+# --- Download binary (latest release first, pinned fallback) -------------
 
-$DownloadUrl = "https://github.com/$Repo/releases/download/$Version/$AssetName"
 $TmpFile = [System.IO.Path]::GetTempFileName() + ".exe"
+$Version = $release.tag_name
+$DownloadUrl = "https://github.com/$Repo/releases/download/$Version/$AssetName"
 
-Write-Info "Downloading $AssetName..."
+Write-Info "Downloading $AssetName from $Version..."
+$downloaded = $true
 try {
     Invoke-WebRequest -Uri $DownloadUrl -OutFile $TmpFile -UseBasicParsing
 } catch {
-    Write-Err "Download failed: $_"
-    exit 1
+    $downloaded = $false
+}
+
+if (-not $downloaded) {
+    Write-Warn "$Version has no Windows build yet — falling back to $FallbackVersion."
+    $Version = $FallbackVersion
+    $DownloadUrl = "https://github.com/$Repo/releases/download/$Version/$AssetName"
+    try {
+        Invoke-WebRequest -Uri $DownloadUrl -OutFile $TmpFile -UseBasicParsing
+    } catch {
+        Write-Err "Download failed: $_"
+        exit 1
+    }
 }
 
 # --- Install ------------------------------------------------------------
@@ -85,6 +102,7 @@ if (-not (Test-Path $InstallDir)) {
 }
 $FinalPath = Join-Path $InstallDir $BinaryName
 Move-Item -Path $TmpFile -Destination $FinalPath -Force
+Copy-Item -Path $FinalPath -Destination (Join-Path $InstallDir $CompatName) -Force
 
 # --- Add to PATH --------------------------------------------------------
 
@@ -113,15 +131,13 @@ if ($LASTEXITCODE -eq 0) {
 }
 
 Write-Host ""
-Write-OK "Done! For docs, visit: https://github.com/crossberry-in/mozhi-doc"
+Write-OK "Done! For docs, visit: https://crossberry-in.github.io/mozhi-doc/"
 Write-Host ""
-Write-Info "The interpreter is installed as 'mozhi-interpreter'."
-Write-Info "Install the mozhi-pkg dispatcher ('mozhi') from:"
-Write-Info "  https://github.com/crossberry-in/mozhi-pkg"
+Write-Info "The interpreter is installed as 'mozhi' (also as 'mozhi-interpreter' for compatibility)."
 Write-Host ""
-Write-Info "Then use the unified 'mozhi' command:"
+Write-Info "Get started:"
 Write-Info "  mozhi                    # start REPL"
-Write-Info "  mozhi my_script.mz       # run a script"
-Write-Info "  mozhi build              # build a project"
+Write-Info "  mozhi run my_script.mz   # run a script"
+Write-Info "  mozhi new myapp          # scaffold a new project"
 Write-Host ""
 Write-Warn "Note: Open a NEW PowerShell window for PATH changes to take effect."

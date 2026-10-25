@@ -49,11 +49,11 @@ assert_eq(fs.remove("notebook.txt"), false, "remove missing returns false")
 # ---- safe filename handling from user input ----
 # Never build paths from raw input without a check: reject
 # anything containing separators or ".." before it reaches fs.
-fn safe_name(input) {
-    if input.contains("..") or input.contains("/") {
+fn safe_name(name) {
+    if name.contains("..") or name.contains("/") {
         return null
     }
-    return input
+    return name
 }
 
 let wanted = safe_name("report.txt")

@@ -115,33 +115,25 @@ mozhi doctor       # Should show all green checks</code></pre>
 
             <h2>Requirements</h2>
             <ul>
-                <li><strong>Interpreter:</strong> No dependencies (static or system libc + libm)</li>
-                <li><strong>Dispatcher (mozhi):</strong> Python 3.8+</li>
+                <li><strong>Interpreter:</strong> No dependencies — the v3.1.1 Linux builds are fully static binaries</li>
                 <li><strong>For C/C++/ASM FFI:</strong> <code>gcc</code> or <code>clang</code></li>
                 <li><strong>For Rust FFI:</strong> <code>rustc</code></li>
                 <li><strong>For GitHub dependencies:</strong> <code>git</code></li>
             </ul>
 
             <h2>Manual Installation</h2>
-            <p>If the installer doesn't work, you can install manually:</p>
-            <pre><code># Download the interpreter binary
-curl -fsSL -o /usr/local/bin/mozhi-interpreter \\
-  https://github.com/crossberry-in/mozhi-doc/releases/download/v2.4.0/mozhi-interpreter-linux-arm64
+            <p>If the installer doesn't work, you can install manually — the interpreter is a single fully static binary, no dispatcher or Python needed:</p>
+            <pre><code># Download the interpreter (v3.1.1, static — works on any Linux)
+curl -fsSL -o /tmp/mozhi \\
+  https://github.com/crossberry-in/mozhi-doc/releases/download/v3.1.1/mozhi-interpreter-linux-arm64
 
-# Download the dispatcher
-curl -fsSL -o /usr/local/bin/mozhi \\
-  https://github.com/crossberry-in/mozhi-pkg/releases/download/v1.2.0/mozhi
-
-# Download the UI module
-mkdir -p /usr/local/lib/mozhi
-curl -fsSL -o /usr/local/lib/mozhi/mozhi_ui.py \\
-  https://github.com/crossberry-in/mozhi-pkg/releases/download/v1.2.0/mozhi_ui.py
-
-# Make executable
-chmod +x /usr/local/bin/mozhi /usr/local/bin/mozhi-interpreter
+# Install as 'mozhi' (canonical) and keep the legacy name as a symlink
+sudo mv /tmp/mozhi /usr/local/bin/mozhi
+sudo chmod +x /usr/local/bin/mozhi
+sudo ln -sf mozhi /usr/local/bin/mozhi-interpreter
 
 # Verify
-mozhi version</code></pre>
+mozhi --version</code></pre>
 
             <div class="footer">
                 <p>Copyright &copy; 2026 crossberry-in.</p>

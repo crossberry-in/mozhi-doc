@@ -52,30 +52,37 @@ cd mozhi-fast && cargo build --release
 
 Full details: **[docs/mozhi-fast.md](docs/mozhi-fast.md)**
 
-## What's New in v2.4.0
+## What's New in v3.1.1
 
-### File I/O Builtins
+### Native Full-Stack Platform
 ```mozhi
-content = read_file("data.txt")
-write_file("output.txt", "Hello!")
-if file_exists("config.json") {
-    echo("Config found")
-}
-files = list_dir(".")
-```
+import web
 
-### Shell & Multi-Language Run
-```mozhi
-# Run shell commands
-result = run("ls -la")
+let app = web.create({ log: true })
 
-# Run other language files
-output = run_c("program.c")      # compile & run C
-output = run_cpp("program.cpp")  # compile & run C++
-output = run_py("script.py")     # run Python
-output = run_sh("script.sh")     # run shell script
-output = run_mz("other.mz")      # run Mozhi file
+app.get("/", fn(req, res) {
+    return res.html("<h1>Hello from Mozhi</h1>")
+})
+
+app.get("/api/health", fn(req, res) {
+    return res.json({ status: "ok", lang: "Mozhi" })
+})
+
+app.listen("127.0.0.1", 8080)
 ```
+Native HTTP server, sandboxed filesystem module, SQLite database, a
+template engine, `json_encode/decode`, `http_get/post`, and
+`map/filter/reduce` — zero external dependencies, fully static binaries.
+
+### Identifier Shadowing Fix (v3.1.1)
+User variables and function parameters now correctly shadow same-named
+builtins (`input`, `len`, `str`, ...). Previously a parameter named
+`input` silently resolved to the builtin function object.
+
+### Runnable Examples
+Browse the [examples gallery](https://crossberry-in.github.io/mozhi-doc/examples.html)
+— every snippet is verified against the v3.1.1 interpreter, from
+`basics_hello.mz` to a cookie-session `web_api.mz`.
 
 ### Smart Imports (v2.3.0+)
 ```mozhi
