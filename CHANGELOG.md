@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.2.0] — 2026-10-25 — Error Reference, AI Diagnosis docs & `mz`
+
+### Added
+- **Error reference regenerated from the interpreter registry**
+  (`errors/`): one page per stable code (LEX/PARSE/NAME/RUNTIME/IMPORT/
+  STDLIB/CLI) with trigger condition, root cause, minimal failing example,
+  verified fix, suggested fix, related syntax/diagnostics, reference links
+  and limitations — plus per-category pages (`lexer.html`, `parser.html`,
+  `names.html`, `runtime.html`, `imports.html`, `standard-library.html`,
+  `cli.html`, `types.html`, `compiler.html`) and a new index in the MD3
+  design. Legacy `MZ1xxx–MZ4xxx` pages remain reachable
+  (`errors/mz-legacy-index.html` keeps the old table).
+- **`scripts/gen_error_docs.py`** generates every page from the C registry
+  in `mozhi/interpreter/src/mz_diag.c` (single source of truth) and
+  `--check` validates registry↔docs consistency (wired into the
+  interpreter's `make test`).
+- **AI Diagnosis documentation** (`errors/ai-diagnosis.html`): workflow,
+  privacy guarantees, configuration table and honest limits of the free
+  anonymous service.
+- **`mz` short alias**: `install.sh` now symlinks `mz → mozhi` (identical
+  behavior), detects and never overwrites a foreign `mz` executable, and
+  the get-started hints mention both commands. VERSION bumped to v3.2.0;
+  fixed the broken `\033[...]\033` ANSI escapes in installer messages.
+- Site drawer now links to the Error reference from every page.
+
+### Changed
+- install.sh installs v3.2.0 binaries (diagnostics UI, AI Diagnosis,
+  `mz` alias).
+
+---
+
 ## [Unreleased]
 
 ### Added

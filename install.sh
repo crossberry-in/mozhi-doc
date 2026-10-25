@@ -8,6 +8,14 @@ set -e
 #
 # Installs the interpreter as `mozhi` (canonical command used by
 # all docs: mozhi run app.mz, mozhi new myapp, mozhi --version).
+# Also installs the short alias `mz` (identical behavior, same binary):
+#   mz run app.mz == mozhi run app.mz
+# If an unrelated `mz` executable already exists it is left untouched
+# and a warning is printed (never overwrite a foreign command).
+# Also installs the short alias `mz` (same binary, identical behavior):
+#   mz run app.mz == mozhi run app.mz
+# If an unrelated executable named `mz` already exists it is left
+# untouched (never overwrite a foreign command).
 # A `mozhi-interpreter` symlink is kept for backwards
 # compatibility with older installs.
 #
@@ -20,7 +28,8 @@ set -e
 REPO="crossberry-in/mozhi-doc"
 BINARY_NAME="mozhi"
 COMPAT_NAME="mozhi-interpreter"
-VERSION="v3.1.1"
+SHORT_NAME="mz"
+VERSION="v3.2.0"
 FALLBACK_VERSION="v2.5.0"
 
 info()    { printf "\033[1;34m[info]\033[0m  %s\n"  "$*" >&2; }
@@ -44,7 +53,7 @@ if [ "$is_termux" -eq 0 ] && ldd --version 2>&1 | grep -qi musl; then
     is_musl=1
 fi
 
-[ "$os" = "windows" ] && BINARY_NAME="mozhi.exe" && COMPAT_NAME="mozhi-interpreter.exe"
+[ "$os" = "windows" ] && BINARY_NAME="mozhi.exe" && COMPAT_NAME="mozhi-interpreter.exe" && SHORT_NAME="mz.exe"
 
 # ---------- asset candidates (tried in order) ----------
 # Flavor names: linux = glibc build, alpine = musl static build.
@@ -118,6 +127,23 @@ mv "$tmp_file" "$install_dir/$BINARY_NAME"
 # keep the legacy command name working (older docs/scripts used it)
 ln -sf "$BINARY_NAME" "$install_dir/$COMPAT_NAME" 2>/dev/null || true
 
+# ---------- short alias `mz` (identical behavior to `mozhi`) ----------
+short_status="installed"
+if [ -e "$install_dir/$SHORT_NAME" ] && [ "$(readlink "$install_dir/$SHORT_NAME" 2>/dev/null || true)" != "$BINARY_NAME" ]; then
+    if [ -L "$install_dir/$SHORT_NAME" ]; then
+        # an existing symlink pointing elsewhere: repoint it to our binary
+        ln -sf "$BINARY_NAME" "$install_dir/$SHORT_NAME" 2>/dev/null || short_status="failed"
+    else
+        # a real foreign executable named `mz`: never overwrite it
+        short_status="conflict"
+        warn "found an existing '$install_dir/$SHORT_NAME' executable -- leaving it untouched"
+        warn "the short 'mz' alias was NOT installed; remove/rename that file and re-run to enable it"
+    fi
+else
+    ln -sf "$BINARY_NAME" "$install_dir/$SHORT_NAME" 2>/dev/null || short_status="failed"
+fi
+[ "$short_status" = "failed" ] && warn "could not create the 'mz' alias symlink (non-fatal)"
+
 # ---------- verify ----------
 info "Verifying..."
 installed_version=""
@@ -149,6 +175,7 @@ printf '\n' >&2
 info "Get started:"
 info "  mozhi --version          show the interpreter version"
 info "  mozhi run app.mz         run a script (plain: mozhi app.mz)"
+info "  mz run app.mz            same thing — 'mz' is the short alias for 'mozhi'"
 info "  mozhi new myapp          scaffold a new project"
 success "Docs: https://crossberry-in.github.io/mozhi-doc/" >&2
 info "Libraries: just use 'import http from \"mozhi-http\"' — auto-downloads on first run" >&2

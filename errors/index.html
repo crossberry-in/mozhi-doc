@@ -1,60 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error Code Reference - Mozhi Programming Language</title>
-    <meta name="description" content="Complete reference for all Mozhi error codes.">
-    <link rel="stylesheet" href="../style.css">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text x='50' y='70' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
+    <title>Error reference — Mozhi Error Reference</title>
+    <meta name="description" content="All Mozhi error codes: lexer, parser, names, runtime, imports, standard library, CLI.">
+    <meta name="color-scheme" content="light dark">
+    <script>
+    (function(){try{var t=localStorage.getItem('md3-theme');document.documentElement.setAttribute('data-theme',t||'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block">
+    <link rel="stylesheet" href="../md3.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23415F91'/><stop offset='1' stop-color='%23705575'/></linearGradient></defs><rect width='100' height='100' rx='24' fill='url(%23g)'/><text x='50' y='71' font-size='58' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
     <style>
-        .severity-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .severity-error { background: #FEE2E2; color: #DC2626; }
-        .severity-warning { background: #FEF3C7; color: #D97706; }
-        .muted { color: var(--text-muted); font-weight: normal; }
+        .err-head { border-left: 4px solid var(--md-error, #B3261E); padding: 4px 0 4px 16px; margin: 18px 0; }
+        .err-code { font-family: 'Roboto Mono', monospace; font-size: 14px; opacity: .75; }
+        .err-title { font-size: 30px; font-weight: 700; margin: 2px 0; }
+        .sev { display:inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
+        .sev-error { background: #FDE7E5; color: #B3261E; } .sev-warning { background: #FFF0D2; color: #8A5A00; }
+        .sev-info { background: #DFF3FA; color: #00639B; } .sev-hint { background: #E8DEF8; color: #4A2F8F; }
+        h2 { font-size: 19px; margin: 30px 0 8px; }
+        .md-code { margin: 10px 0 18px; }
+        pre { margin: 0; padding: 14px 16px; overflow-x: auto; }
+        code { font-family: 'Roboto Mono', monospace; font-size: 13px; }
+        p code, li code, td code { background: rgba(127,127,127,.14); padding: 1px 5px; border-radius: 4px; }
+        .pill { display:inline-block; margin: 2px 4px 2px 0; padding: 3px 10px; border-radius: 999px;
+                 background: rgba(127,127,127,.12); font-family:'Roboto Mono',monospace; font-size:12px; }
+        .pill:hover { text-decoration: none; background: rgba(127,127,127,.22); }
+        .meta-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:999px;
+                      background: rgba(127,127,127,.1); margin-right:8px; font-size:13px; }
+        .callout { border-left: 3px solid rgba(127,127,127,.4); padding: 8px 14px; margin: 14px 0; opacity: .9; }
+        .crumb { font-size: 13px; margin-bottom: 6px; }
+        .crumb a { opacity: .7; }
+        table td, table th { padding: 8px 12px; border-bottom: 1px solid rgba(127,127,127,.18); }
     </style>
 </head>
 <body>
-    <div class="topbar">
-        <button class="topbar-toggle" onclick="toggleSidebar()">&#9776;</button>
-        <span class="topbar-title">Error Reference</span>
-    </div>
-    <div class="wrapper">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <a href="../index.html" class="sidebar-logo">
-                    <svg width="32" height="32" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#2563EB"/><text x="50" y="70" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="sans-serif">M</text></svg>
-                    Mozhi
-                </a>
-                <div class="sidebar-version">v2.0</div>
+    <header class="md-appbar" id="appbar">
+        <button class="md-iconbtn md-menu-btn" id="menuToggle" aria-label="Open navigation menu">
+            <span class="msym">menu</span>
+        </button>
+        <a href="../index.html" class="md-brand">
+            <span class="md-brand-badge">M</span>
+            Mozhi
+        </a>
+        <span class="md-version-chip">v3.2.0</span>
+        <span class="md-appbar-spacer"></span>
+        <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
+            <span class="msym">code</span>
+        </a>
+        <button class="md-iconbtn" id="themeToggle" aria-label="Toggle dark theme">
+            <span class="msym">dark_mode</span>
+        </button>
+    </header>
+
+    <aside class="md-drawer" id="drawer">
+        <div class="md-drawer-section">
+            <div class="md-drawer-heading">Getting started</div>
+            <a href="../index.html"><span class="msym">home</span>Overview</a>
+            <a href="../install.html"><span class="msym">download</span>Installation</a>
+            <a href="../quickstart.html"><span class="msym">rocket_launch</span>Quick start</a>
+            <a href="../examples.html"><span class="msym">code_blocks</span>Examples</a>
+        </div>
+        <div class="md-drawer-section">
+            <div class="md-drawer-heading">Errors</div>
+            <a href="index.html" class="active"><span class="msym">error</span>Error reference</a>
+            <a href="ai-diagnosis.html"><span class="msym">psychology</span>AI Diagnosis</a>
+        </div>
+        <div class="md-drawer-section">
+            <div class="md-drawer-heading">Categories</div>
+            <a href="lexer.html"><span class="msym">text_fields</span>Lexer</a>
+            <a href="parser.html"><span class="msym">schema</span>Parser</a>
+            <a href="names.html"><span class="msym">badge</span>Names</a>
+            <a href="runtime.html"><span class="msym">play_circle</span>Runtime</a>
+            <a href="imports.html"><span class="msym">package_2</span>Imports</a>
+            <a href="standard-library.html"><span class="msym">inventory_2</span>Standard library</a>
+            <a href="cli.html"><span class="msym">terminal</span>CLI</a>
+        </div>
+        <div class="md-drawer-section">
+            <div class="md-drawer-heading">Project</div>
+            <a href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener"><span class="msym">deployed_code</span>Source code</a>
+            <a href="https://github.com/crossberry-in/mozhi/blob/main/CHANGELOG.md" target="_blank" rel="noopener"><span class="msym">history</span>Changelog</a>
+        </div>
+    </aside>
+    <div class="md-scrim" id="scrim"></div>
+
+    <div class="md-content">
+        <main class="md-main-col">
+
+            <div class="err-head" style="border-color:rgba(127,127,127,.4)">
+                <h1 class="err-title">Mozhi error reference</h1>
             </div>
-            <nav class="sidebar-nav">
-                <div class="sidebar-section">
-                    <div class="sidebar-section-title">Navigation</div>
-                    <a href="../index.html">Home</a>
-                    <a href="index.html" class="active">Error Reference</a>
-                    <a href="../benchmark.html">Benchmarks</a>
-                    <a href="../spec.html">Specification</a>
-                </div>
-                <div class="sidebar-section">
-                    <div class="sidebar-section-title">Categories</div>
-                    <a href="#mz1xxx">Parse Errors</a>
-                    <a href="#mz2xxx">Type Errors</a>
-                    <a href="#mz3xxx">Runtime Errors</a>
-                    <a href="#mz4xxx">I/O Errors</a>
-                </div>
-            </nav>
-        </aside>
-        <main class="main">
-            <h1>Error Code Reference</h1>
-            <p>This page lists all error codes defined by the Mozhi specification. Click a code for detailed documentation including cause, examples, and fixes.</p>
-            <div class="note"><p><strong>URL format:</strong> <code>https://crossberry-in.github.io/mozhi-doc/errors/MZxxxx</code></p></div>
-            <h2 id="mz1xxx">Parse Errors <span class="muted">(MZ1xxx)</span></h2><table><thead><tr><th>Code</th><th>Error</th><th>Summary</th><th>Severity</th></tr></thead><tbody><tr><td><a href="MZ1001.html"><code>MZ1001</code></a></td><td>Unknown Variable</td><td>A variable was used before it was declared, or it does not exist in the current ...</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1002.html"><code>MZ1002</code></a></td><td>Unexpected Token</td><td>The parser encountered a token that does not fit the expected grammar at this po...</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1003.html"><code>MZ1003</code></a></td><td>Type Mismatch</td><td>The value assigned to a variable does not match the declared type.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1004.html"><code>MZ1004</code></a></td><td>Cannot Reassign Constant</td><td>An attempt was made to modify a value declared with the const keyword.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1005.html"><code>MZ1005</code></a></td><td>Break Outside Loop</td><td>The break statement was used outside of a loop construct.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1006.html"><code>MZ1006</code></a></td><td>Return Outside Function</td><td>The return statement was used outside of a function body.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1007.html"><code>MZ1007</code></a></td><td>Missing Semicolon</td><td>A semicolon was expected between statements in a for loop header.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1008.html"><code>MZ1008</code></a></td><td>Integer Overflow</td><td>An integer literal exceeds the range of the target integer type.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1009.html"><code>MZ1009</code></a></td><td>Invalid Escape Sequence</td><td>An unknown escape sequence was used in a string literal.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1010.html"><code>MZ1010</code></a></td><td>Unterminated String</td><td>A string literal was not closed with a matching double quote.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1011.html"><code>MZ1011</code></a></td><td>Unterminated Comment</td><td>A multi-line comment was opened but never closed.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1012.html"><code>MZ1012</code></a></td><td>Expected Opening Brace</td><td>An opening brace { was expected but not found.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1013.html"><code>MZ1013</code></a></td><td>Expected Closing Brace</td><td>A closing brace } was expected but not found.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1014.html"><code>MZ1014</code></a></td><td>Expected Opening Parenthesis</td><td>An opening parenthesis ( was expected but not found.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ1015.html"><code>MZ1015</code></a></td><td>Expected Closing Parenthesis</td><td>A closing parenthesis ) was expected but not found.</td><td><span class="severity-badge severity-error">error</span></td></tr></tbody></table><h2 id="mz2xxx">Type Errors <span class="muted">(MZ2xxx)</span></h2><table><thead><tr><th>Code</th><th>Error</th><th>Summary</th><th>Severity</th></tr></thead><tbody><tr><td><a href="MZ2001.html"><code>MZ2001</code></a></td><td>Type Inference Failure</td><td>The compiler could not infer the type of an expression from its context.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ2002.html"><code>MZ2002</code></a></td><td>Variable Shadowing</td><td>A variable was declared with the same name as an existing variable in the same s...</td><td><span class="severity-badge severity-warning">warning</span></td></tr><tr><td><a href="MZ2003.html"><code>MZ2003</code></a></td><td>Narrowing Cast</td><td>A type cast may lose data (e.g., int64 to int8, float to int).</td><td><span class="severity-badge severity-warning">warning</span></td></tr><tr><td><a href="MZ2004.html"><code>MZ2004</code></a></td><td>Non-Exhaustive Match</td><td>A match expression does not cover all possible values of the scrutinee type.</td><td><span class="severity-badge severity-warning">warning</span></td></tr><tr><td><a href="MZ2005.html"><code>MZ2005</code></a></td><td>Undefined Function</td><td>A function was called but has not been defined.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ2006.html"><code>MZ2006</code></a></td><td>Argument Count Mismatch</td><td>A function was called with the wrong number of arguments.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ2007.html"><code>MZ2007</code></a></td><td>Undefined Type</td><td>A type name was used that has not been defined.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ2008.html"><code>MZ2008</code></a></td><td>Undefined Trait</td><td>A trait name was used in an impl block but has not been defined.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ2009.html"><code>MZ2009</code></a></td><td>Trait Not Implemented</td><td>A type was used where a trait was expected, but the type does not implement that...</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ2010.html"><code>MZ2010</code></a></td><td>Field Not Found</td><td>A struct field was accessed that does not exist on the struct type.</td><td><span class="severity-badge severity-error">error</span></td></tr></tbody></table><h2 id="mz3xxx">Runtime Errors <span class="muted">(MZ3xxx)</span></h2><table><thead><tr><th>Code</th><th>Error</th><th>Summary</th><th>Severity</th></tr></thead><tbody><tr><td><a href="MZ3001.html"><code>MZ3001</code></a></td><td>Null Dereference</td><td>An attempt was made to access a member of a null value.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ3002.html"><code>MZ3002</code></a></td><td>Index Out of Bounds</td><td>An array index was accessed that is outside the valid range.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ3003.html"><code>MZ3003</code></a></td><td>Division by Zero</td><td>An integer division or modulo operation was performed with a divisor of zero.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ3004.html"><code>MZ3004</code></a></td><td>Stack Overflow</td><td>The call stack exceeded its maximum depth, usually due to unbounded recursion.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ3005.html"><code>MZ3005</code></a></td><td>Out of Memory</td><td>The runtime failed to allocate memory on the heap.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ3006.html"><code>MZ3006</code></a></td><td>Invalid Cast</td><td>A runtime type cast failed because the value was not of the expected type.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ3007.html"><code>MZ3007</code></a></td><td>Uncaught Error</td><td>An error was thrown but no catch block was found to handle it.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ3008.html"><code>MZ3008</code></a></td><td>Channel Closed</td><td>An attempt was made to send or receive on a closed channel.</td><td><span class="severity-badge severity-error">error</span></td></tr></tbody></table><h2 id="mz4xxx">I/O Errors <span class="muted">(MZ4xxx)</span></h2><table><thead><tr><th>Code</th><th>Error</th><th>Summary</th><th>Severity</th></tr></thead><tbody><tr><td><a href="MZ4001.html"><code>MZ4001</code></a></td><td>File Not Found</td><td>An attempt was made to open a file that does not exist.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ4002.html"><code>MZ4002</code></a></td><td>Permission Denied</td><td>The program does not have permission to access the specified file.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ4003.html"><code>MZ4003</code></a></td><td>Network Error</td><td>A network operation failed.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ4004.html"><code>MZ4004</code></a></td><td>Connection Refused</td><td>A connection attempt was rejected by the remote host.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ4005.html"><code>MZ4005</code></a></td><td>Timeout</td><td>An operation did not complete within the allowed time limit.</td><td><span class="severity-badge severity-error">error</span></td></tr><tr><td><a href="MZ4006.html"><code>MZ4006</code></a></td><td>Disk Full</td><td>A write operation failed because the disk has no available space.</td><td><span class="severity-badge severity-error">error</span></td></tr></tbody></table>
-            <div class="footer"><p>Copyright &copy; 2026 crossberry-in.</p></div>
+            <p>Every diagnostic produced by the Mozhi interpreter carries a stable code, a source span,
+            a suggested fix and a link to its page. These pages document the <strong>v3.2.0 central
+            diagnostics registry</strong> — the same table the interpreter's CLI is built from, and this
+            site is generated from that registry, so codes and docs cannot drift apart. For the legacy
+            v2.x <code>MZ1xxx–MZ4xxx</code> specification pages, see
+            <a href="mz-legacy-index.html">the archived MZ1xxx–MZ4xxx index</a> (all MZxxxx pages remain in place).</p>
+
+            <h2>Anatomy of a diagnostic</h2>
+            <div class="md-code"><pre><code>error[LEX001]: illegal character in source
+  --&gt; app.mz:1:16
+ 1 | echo(string(5 ^ 3))
+   |                ^
+   |
+reason: the character '^' is not part of the Mozhi language
+help:   exponentiation is written with '**' in Mozhi, e.g. 5 ** 3
+docs:   https://crossberry-in.github.io/mozhi-doc/errors/LEX001
+
+── AI Diagnosis ────────────────────────────
+ Replace `^` with `**`. For example, change `5 ^ 3` to `5 ** 3`.
+ Note: AI-generated suggestion — may be wrong; the local diagnosis above is authoritative.</code></pre></div>
+
+            <h2>Machine-readable output</h2>
+            <p>Run <code>mozhi --json run app.mz</code> — diagnostics are printed to stderr as JSON
+            (schema <code>mozhi.diagnostics.v1</code>) with fields
+            <code>code, severity, category, message, reason, help, file, line, column, endLine, endColumn,
+            documentation</code>. Coordinates are 1-based; a column counts Unicode code points and a tab
+            counts as one column. See the <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/CLI.md">CLI reference</a>.</p>
+
+            <h2>Free AI Diagnosis</h2>
+            <p>Interactive runs attach a free, anonymous explanation below the local diagnostics — no API
+            key, no account. Details and privacy notes: <a href="ai-diagnosis.html">AI Diagnosis</a>.</p>
+
+            <h2 id="lexer">Lexer diagnostics</h2><table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left">Code</th><th style="text-align:left">Title</th><th style="text-align:left">Severity</th></tr></thead><tbody><tr><td><a href="LEX001.html"><code>LEX001</code></a></td><td>illegal character in source</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="LEX002.html"><code>LEX002</code></a></td><td>unterminated string literal</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="LEX003.html"><code>LEX003</code></a></td><td>unknown escape sequence in string</td><td><span class="sev sev-warning">warning</span></td></tr>
+<tr><td><a href="LEX004.html"><code>LEX004</code></a></td><td>unterminated block comment</td><td><span class="sev sev-error">error</span></td></tr>
+</tbody></table><h2 id="parser">Parser diagnostics</h2><table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left">Code</th><th style="text-align:left">Title</th><th style="text-align:left">Severity</th></tr></thead><tbody><tr><td><a href="PARSE001.html"><code>PARSE001</code></a></td><td>unexpected token</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="PARSE002.html"><code>PARSE002</code></a></td><td>unbalanced delimiter</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="PARSE003.html"><code>PARSE003</code></a></td><td>invalid assignment target</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="PARSE004.html"><code>PARSE004</code></a></td><td>expected an expression</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="PARSE005.html"><code>PARSE005</code></a></td><td>unexpected end of input</td><td><span class="sev sev-error">error</span></td></tr>
+</tbody></table><h2 id="names">Name-resolution diagnostics</h2><table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left">Code</th><th style="text-align:left">Title</th><th style="text-align:left">Severity</th></tr></thead><tbody><tr><td><a href="NAME001.html"><code>NAME001</code></a></td><td>undefined variable</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="NAME002.html"><code>NAME002</code></a></td><td>undefined function</td><td><span class="sev sev-error">error</span></td></tr>
+</tbody></table><h2 id="runtime">Runtime diagnostics</h2><table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left">Code</th><th style="text-align:left">Title</th><th style="text-align:left">Severity</th></tr></thead><tbody><tr><td><a href="RUNTIME001.html"><code>RUNTIME001</code></a></td><td>type mismatch</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="RUNTIME002.html"><code>RUNTIME002</code></a></td><td>division by zero</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="RUNTIME003.html"><code>RUNTIME003</code></a></td><td>index out of range</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="RUNTIME004.html"><code>RUNTIME004</code></a></td><td>undefined method</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="RUNTIME006.html"><code>RUNTIME006</code></a></td><td>stack overflow</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="RUNTIME007.html"><code>RUNTIME007</code></a></td><td>value is not callable</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="RUNTIME009.html"><code>RUNTIME009</code></a></td><td>runtime error</td><td><span class="sev sev-error">error</span></td></tr>
+</tbody></table><h2 id="imports">Import diagnostics</h2><table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left">Code</th><th style="text-align:left">Title</th><th style="text-align:left">Severity</th></tr></thead><tbody><tr><td><a href="IMPORT001.html"><code>IMPORT001</code></a></td><td>module not found</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="IMPORT002.html"><code>IMPORT002</code></a></td><td>invalid import syntax</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="IMPORT003.html"><code>IMPORT003</code></a></td><td>imported module contains errors</td><td><span class="sev sev-error">error</span></td></tr>
+</tbody></table><h2 id="standard-library">Standard-library diagnostics</h2><table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left">Code</th><th style="text-align:left">Title</th><th style="text-align:left">Severity</th></tr></thead><tbody><tr><td><a href="STDLIB001.html"><code>STDLIB001</code></a></td><td>invalid argument to built-in function</td><td><span class="sev sev-error">error</span></td></tr>
+</tbody></table><h2 id="cli">CLI diagnostics</h2><table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left">Code</th><th style="text-align:left">Title</th><th style="text-align:left">Severity</th></tr></thead><tbody><tr><td><a href="CLI001.html"><code>CLI001</code></a></td><td>cannot open file</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="CLI002.html"><code>CLI002</code></a></td><td>unknown command</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="CLI003.html"><code>CLI003</code></a></td><td>missing required argument</td><td><span class="sev sev-error">error</span></td></tr>
+<tr><td><a href="CLI004.html"><code>CLI004</code></a></td><td>diagnostic output truncated</td><td><span class="sev sev-info">info</span></td></tr>
+</tbody></table>
+
         </main>
     </div>
-    <script>
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-    </script>
+    <script src="../md3.js"></script>
 </body>
 </html>

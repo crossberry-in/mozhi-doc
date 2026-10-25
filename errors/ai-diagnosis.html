@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Diagnosis — Mozhi Error Reference</title>
+    <meta name="description" content="Mozhi free AI Diagnosis: anonymous, keyless error explanations with strict privacy.">
+    <meta name="color-scheme" content="light dark">
+    <script>
+    (function(){try{var t=localStorage.getItem('md3-theme');document.documentElement.setAttribute('data-theme',t||'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block">
+    <link rel="stylesheet" href="../md3.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23415F91'/><stop offset='1' stop-color='%23705575'/></linearGradient></defs><rect width='100' height='100' rx='24' fill='url(%23g)'/><text x='50' y='71' font-size='58' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
+    <style>
+        .err-head { border-left: 4px solid var(--md-error, #B3261E); padding: 4px 0 4px 16px; margin: 18px 0; }
+        .err-code { font-family: 'Roboto Mono', monospace; font-size: 14px; opacity: .75; }
+        .err-title { font-size: 30px; font-weight: 700; margin: 2px 0; }
+        .sev { display:inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
+        .sev-error { background: #FDE7E5; color: #B3261E; } .sev-warning { background: #FFF0D2; color: #8A5A00; }
+        .sev-info { background: #DFF3FA; color: #00639B; } .sev-hint { background: #E8DEF8; color: #4A2F8F; }
+        h2 { font-size: 19px; margin: 30px 0 8px; }
+        .md-code { margin: 10px 0 18px; }
+        pre { margin: 0; padding: 14px 16px; overflow-x: auto; }
+        code { font-family: 'Roboto Mono', monospace; font-size: 13px; }
+        p code, li code, td code { background: rgba(127,127,127,.14); padding: 1px 5px; border-radius: 4px; }
+        .pill { display:inline-block; margin: 2px 4px 2px 0; padding: 3px 10px; border-radius: 999px;
+                 background: rgba(127,127,127,.12); font-family:'Roboto Mono',monospace; font-size:12px; }
+        .pill:hover { text-decoration: none; background: rgba(127,127,127,.22); }
+        .meta-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:999px;
+                      background: rgba(127,127,127,.1); margin-right:8px; font-size:13px; }
+        .callout { border-left: 3px solid rgba(127,127,127,.4); padding: 8px 14px; margin: 14px 0; opacity: .9; }
+        .crumb { font-size: 13px; margin-bottom: 6px; }
+        .crumb a { opacity: .7; }
+        table td, table th { padding: 8px 12px; border-bottom: 1px solid rgba(127,127,127,.18); }
+    </style>
+</head>
+<body>
+    <header class="md-appbar" id="appbar">
+        <button class="md-iconbtn md-menu-btn" id="menuToggle" aria-label="Open navigation menu">
+            <span class="msym">menu</span>
+        </button>
+        <a href="../index.html" class="md-brand">
+            <span class="md-brand-badge">M</span>
+            Mozhi
+        </a>
+        <span class="md-version-chip">v3.2.0</span>
+        <span class="md-appbar-spacer"></span>
+        <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
+            <span class="msym">code</span>
+        </a>
+        <button class="md-iconbtn" id="themeToggle" aria-label="Toggle dark theme">
+            <span class="msym">dark_mode</span>
+        </button>
+    </header>
+
+    <aside class="md-drawer" id="drawer">
+        <div class="md-drawer-section">
+            <div class="md-drawer-heading">Getting started</div>
+            <a href="../index.html"><span class="msym">home</span>Overview</a>
+            <a href="../install.html"><span class="msym">download</span>Installation</a>
+            <a href="../quickstart.html"><span class="msym">rocket_launch</span>Quick start</a>
+            <a href="../examples.html"><span class="msym">code_blocks</span>Examples</a>
+        </div>
+        <div class="md-drawer-section">
+            <div class="md-drawer-heading">Errors</div>
+            <a href="index.html"><span class="msym">error</span>Error reference</a>
+            <a href="ai-diagnosis.html" class="active"><span class="msym">psychology</span>AI Diagnosis</a>
+        </div>
+        <div class="md-drawer-section">
+            <div class="md-drawer-heading">Categories</div>
+            <a href="lexer.html"><span class="msym">text_fields</span>Lexer</a>
+            <a href="parser.html"><span class="msym">schema</span>Parser</a>
+            <a href="names.html"><span class="msym">badge</span>Names</a>
+            <a href="runtime.html"><span class="msym">play_circle</span>Runtime</a>
+            <a href="imports.html"><span class="msym">package_2</span>Imports</a>
+            <a href="standard-library.html"><span class="msym">inventory_2</span>Standard library</a>
+            <a href="cli.html"><span class="msym">terminal</span>CLI</a>
+        </div>
+        <div class="md-drawer-section">
+            <div class="md-drawer-heading">Project</div>
+            <a href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener"><span class="msym">deployed_code</span>Source code</a>
+            <a href="https://github.com/crossberry-in/mozhi/blob/main/CHANGELOG.md" target="_blank" rel="noopener"><span class="msym">history</span>Changelog</a>
+        </div>
+    </aside>
+    <div class="md-scrim" id="scrim"></div>
+
+    <div class="md-content">
+        <main class="md-main-col">
+
+            <p class="crumb"><a href="index.html">Error reference</a></p>
+            <div class="err-head" style="border-color:rgba(127,127,127,.4)">
+                <h1 class="err-title">AI Diagnosis</h1>
+            </div>
+            <p>Mozhi can attach a <strong>free AI explanation</strong> under the local error diagnostics —
+            the feature is named exactly <strong>AI Diagnosis</strong>. It requires no API key, no
+            account, no registration and no payment: the default service is an anonymous, keyless
+            HTTPS endpoint that was verified reachable before this release.</p>
+
+            <h2>How it works</h2>
+            <ol>
+                <li>The interpreter first prints its <strong>local</strong> diagnosis (codes, spans,
+                    suggested fixes) — that part is deterministic and authoritative.</li>
+                <li>When errors occurred and output is interactive, it collects a <strong>minimal
+                    context</strong>: up to 4 error entries (code, message, reason, position) plus at
+                    most ~1.2&nbsp;KB of the offending source lines. The whole project is never uploaded;
+                    no other files are read.</li>
+                <li>The context is sent over <strong>HTTPS</strong> with a bounded timeout (20&nbsp;s by
+                    default) and the reply is size-capped and validated before display.</li>
+                <li>The suggestion is shown in an <code>AI Diagnosis</code> block with a disclaimer:
+                    <em>AI-generated suggestion — may be wrong; the local diagnosis above is
+                    authoritative.</em> Suggestions are never executed and never modify files.</li>
+            </ol>
+
+            <h2>When it is off</h2>
+            <p>AI Diagnosis is <strong>off</strong> for non-interactive runs (piped output, CI) unless
+            you pass <code>--ai</code> or set <code>MOZHI_AI=1</code>, and <strong>always off</strong>
+            with <code>--no-ai</code> or <code>MOZHI_NO_AI=1</code>. If the service is unreachable,
+            rate-limited, slow, or returns garbage, you see one line
+            (<code>AI Diagnosis unavailable: …</code>) with a link to the error index — the exit code
+            and the local diagnosis are completely unaffected.</p>
+
+            <h2>Privacy</h2>
+            <ul>
+                <li>Only the minimal context above leaves the machine — never the project tree.</li>
+                <li>Anything that looks like a credential (<code>sk-…</code>, <code>ghp_…</code>,
+                    <code>npm_…</code>, AWS keys, <code>Bearer …</code>) is scrubbed to
+                    <code>[REDACTED]</code> before sending.</li>
+                <li>Transport is HTTPS; plain HTTP is only accepted for loopback endpoints (tests).</li>
+                <li>No API key exists, so nothing can leak a key.</li>
+                <li>The response is advisory text; it is never executed or written to disk.</li>
+            </ul>
+
+            <h2>Configuration</h2>
+            <div class="md-code"><pre><code>$ mozhi run app.mz                # interactive: AI Diagnosis attaches automatically
+$ mozhi --no-ai run app.mz        # skip it entirely
+$ MOZHI_NO_AI=1 mozhi run app.mz  # same via environment
+$ mozhi --ai --json run app.mz    # force in scripts; emits {"ai": ...} on stderr</code></pre></div>
+            <table style="width:100%;border-collapse:collapse">
+                <thead><tr><th style="text-align:left">Variable</th><th style="text-align:left">Meaning</th><th style="text-align:left">Default</th></tr></thead>
+                <tbody>
+                    <tr><td><code>MOZHI_NO_AI=1</code></td><td>disable AI Diagnosis</td><td>unset (enabled)</td></tr>
+                    <tr><td><code>MOZHI_AI=1</code></td><td>force-enable, also in scripts/JSON mode</td><td>unset</td></tr>
+                    <tr><td><code>MOZHI_AI_TIMEOUT_MS</code></td><td>request timeout (500–60000)</td><td>20000</td></tr>
+                    <tr><td><code>MOZHI_AI_ENDPOINT</code></td><td>replace the service (maintenance/testing)</td><td>built-in default</td></tr>
+                    <tr><td><code>MOZHI_AI_MAX_CONTEXT</code></td><td>max source-context bytes (200–8000)</td><td>1200</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Honest limits</h2>
+            <ul>
+                <li>The free service is rate-limited to roughly one request per 30&nbsp;s per IP; on a
+                    burst you get the rate-limit notice instead of a suggestion.</li>
+                <li>Suggestions can be wrong — the block always says so. Verified local facts (codes,
+                    spans, fixes) always come first.</li>
+                <li>Binaries built without TLS support (some release targets) report
+                    <code>AI Diagnosis unavailable</code> and fall back to local diagnosis.</li>
+            </ul>
+
+        </main>
+    </div>
+    <script src="../md3.js"></script>
+</body>
+</html>
