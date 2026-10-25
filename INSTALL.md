@@ -25,6 +25,14 @@ Mozhi runs on **Linux**, **macOS**, **Windows**, and **Termux** (Android). The i
 
 ## Quick Install
 
+### Via npm (Linux x86_64 / ARM64)
+
+```bash
+npm install -g @crossberryweb/mozhi
+```
+
+Installs the `mozhi` command from a prebuilt, fully static binary bundled inside the package (works on glibc distros, Alpine, and Termux-style chroots; no compilation, no postinstall downloads). The package version always matches the interpreter release. macOS/Windows users should use the installer script below.
+
 ### Linux / macOS / WSL / Termux
 
 ```bash

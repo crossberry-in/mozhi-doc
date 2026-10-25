@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes yet._
+### Added
+- **npm distribution channel**: `npm install -g @crossberryweb/mozhi`
+  installs the official `mozhi` command with the v3.1.1 static Linux
+  x86_64/arm64 binaries bundled (sha256-verified against the release;
+  LICENSE included for verbatim redistribution per §3c). The package
+  lives under `npm/` in this repository; its version tracks the
+  interpreter release.
 
 ---
 
@@ -68,11 +74,6 @@ _No unreleased changes yet._
   - Docs: `docs/mozhi-fast.md`; source: `crossberry-in/mozhi` → `mozhi-fast/`
 - **Documentation** for mozhi-fast in `docs/mozhi-fast.md`.
 
----
-
-## [Unreleased]
-
-_No unreleased changes yet._
 ---
 
 ## [v2.4.0] — 2026-08-02

@@ -6,7 +6,7 @@
 
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Termux-blue.svg)](#supported-platforms)
-[![Version: v3.0.0](https://img.shields.io/badge/Version-v3.0.0-green.svg)](https://github.com/crossberry-in/mozhi-doc/releases)
+[![Version: v3.1.1](https://img.shields.io/badge/Version-v3.1.1-green.svg)](https://github.com/crossberry-in/mozhi-doc/releases)
 
 </div>
 
@@ -121,7 +121,13 @@ Install with: `mozhi add mozhi-http` (or just use `import http from "mozhi-http"
 
 ### 1. Install
 
-**Linux / macOS / WSL / Termux** (auto-detects platform and architecture):
+**Option A — npm** (Linux x86_64 / ARM64 — bundles the official static binary, no postinstall downloads):
+
+```bash
+npm install -g @crossberryweb/mozhi
+```
+
+**Option B — install script** (Linux / macOS / WSL / Termux, auto-detects platform and architecture):
 
 ```bash
 curl -fsSL https://github.com/crossberry-in/mozhi-doc/raw/main/install.sh | bash

@@ -1,0 +1,40 @@
+{
+  "name": "@crossberryweb/mozhi",
+  "version": "3.1.1",
+  "description": "Mozhi programming language — official npm distribution. Fast, beginner-friendly scripting language with a native HTTP server, template engine, JSON stack, sandboxed filesystem and SQLite. Bundles the official static Linux x86_64/arm64 binaries and installs the `mozhi` command.",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "crossberry-in <crossberryweb@gmail.com> (https://github.com/crossberry-in)",
+  "bin": {
+    "mozhi": "bin/mozhi.js"
+  },
+  "files": [
+    "bin/",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "mozhi",
+    "language",
+    "interpreter",
+    "scripting",
+    "web",
+    "webserver",
+    "http",
+    "json",
+    "sqlite",
+    "templates",
+    "fullstack"
+  ],
+  "homepage": "https://crossberry-in.github.io/mozhi-doc/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crossberry-in/mozhi-doc.git",
+    "directory": "npm"
+  },
+  "bugs": {
+    "url": "https://github.com/crossberry-in/mozhi-doc/issues"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
