@@ -27,7 +27,7 @@
             <span class="md-brand-badge">M</span>
             Mozhi
         </a>
-        <span class="md-version-chip">v3.4.0</span>
+        <span class="md-version-chip">v3.5.1</span>
         <span class="md-appbar-spacer"></span>
         <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
             <span class="msym">code</span>
@@ -44,7 +44,8 @@
         <a href="install.html"><span class="msym">download</span>Installation</a>
         <a href="quickstart.html"><span class="msym">rocket_launch</span>Quick start</a>
         <a href="examples.html"><span class="msym">code_blocks</span>Examples</a>
-        <a href="packages.html" class="active"><span class="msym">packages</span>Packages</a>
+        <a href="packages.html"><span class="msym">packages</span>Packages</a>
+        <a href="v35.html" class="active"><span class="msym">auto_awesome</span>What's new in v3.5</a>
     </div>
     <div class="md-drawer-section">
         <div class="md-drawer-heading">Language</div>
@@ -118,6 +119,12 @@ mz uninstall strings</code></pre>
             working alongside them. Re-installing upgrades in place.</p>
 
             <h2 id="registry">The registry</h2>
+            <div class="md-callout"><span class="msym">refresh</span><div>
+            Registry fetches are cache-busted (<code>Cache-Control: no-cache</code> plus a unique
+            <code>nocache</code> query parameter) since v3.5 — newly added packages appear in
+            <code>mz search</code> immediately. Metadata freshness only; package integrity checks
+            are unaffected.
+            </div></div>
             <p><code>mz install &lt;name&gt;</code> looks names up in
             <a href="https://github.com/crossberry-in/mozhi-doc/blob/main/mozhi-registry.json" target="_blank" rel="noopener">mozhi-registry.json</a> —
             a version-controlled JSON file in the public mozhi-doc repository, so every

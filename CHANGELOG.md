@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.5.1] — 2026-10-26 — Runtime stability, networking & performance
+
+### Added (language)
+- Default parameter values and `...rest` variadic parameters
+  (semantics documented on the new `v35.html` page).
+- Safe navigation `?.` and lazy null coalescing `??`.
+- String method aliases: `to_lower`/`to_lowercase`, `to_upper`/`to_uppercase`,
+  `length`.
+- Error code `RUNTIME010` (wrong number of arguments) — `errors/` regenerated
+  (27 code pages).
+
+### Changed (runtime)
+- Integers are 64-bit; `+`/`-`/`*` overflow promotes to float; integral
+  floats print with an explicit `.0`.
+- `http.get/post/request` return the recoverable
+  `{ ok, status, error, body, headers }` schema; `method` defaults to
+  `GET`; `timeout` / `connect_timeout` options; 64 MB response cap.
+- Native HTTPS via OpenSSL on TLS-enabled builds (SNI, certificate chain
+  and hostname verification on, OS trust store). zig release binaries
+  remain TLS-less (recoverable error, documented).
+- Registry fetches send `Cache-Control: no-cache` + `nocache` query
+  parameter (`mz search`/`mz install` and the interpreter fallback).
+
+### Performance
+- Evaluator hot paths optimized (object shell pool, null/bool singletons,
+  shared immutable scalars, interned env names, pooled env shells):
+  1M-iteration float loop 1056 ms (task-start baseline) → ~104 ms;
+  ~2.4x faster than the 3.4.0 measurement of the same suite; faster
+  than Python 3.12 on 9 of 10 `bench/` workloads.
+
+### Docs
+- New `v35.html` page: every feature with runnable examples and the
+  benchmark table; chips swept to v3.5.1; drawer links on all pages.
+
+---
 ## [3.4.0] — 2026-10-26 — AI Diagnosis service switch
 
 ### Changed

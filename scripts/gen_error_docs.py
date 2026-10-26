@@ -15,7 +15,7 @@ every registered code has a page, every page has all 12 sections, and the
 index lists every code.
 
 The prose below documents ACTUAL, verified interpreter behavior (checked
-against the v3.4.0 binary) — nothing speculative.
+against the v3.5.1 binary) — nothing speculative.
 """
 import re
 import os
@@ -23,12 +23,12 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DOC_REPO = os.path.dirname(HERE)
-DEFAULT_REGISTRY = os.path.join(DOC_REPO, "..", "mozhi", "interpreter", "src", "mz_diag.c")
+DEFAULT_REGISTRY = os.environ.get("MZ_INTERPRETER_SRC", os.path.join(DOC_REPO, "..", "mozhi", "interpreter", "src", "mz_diag.c"))
 OUT_DIR = os.path.join(DOC_REPO, "errors")
 
 DOCS_BASE = "https://crossberry-in.github.io/mozhi-doc/errors"
 CLI_DOCS = "https://github.com/crossberry-in/mozhi/blob/main/docs/CLI.md"
-VERSION = "3.4.0"
+VERSION = "3.5.1"
 
 # ---------------------------------------------------------------- registry
 def parse_registry(path):
@@ -362,6 +362,32 @@ P["RUNTIME009"] = dict(
            "the generic code remains reserved for unmapped cases.",
 )
 
+P["RUNTIME010"] = dict(
+    trigger="A function is called with a number of arguments it does not accept: too few "
+            "required arguments, or too many arguments for a function without a `...rest` "
+            "parameter. Applies to declared functions, anonymous `fn` expressions, nested "
+            "and recursive calls, constructors, and module-member functions.",
+    cause="Before v3.5 the interpreter bound parameters without checking the argument count "
+          "and could read past the end of the argument array (measured with AddressSanitizer "
+          "as an 8-byte heap-buffer-overflow). Since v3.5 every call path shares one arity "
+          "model: required parameters must be present, defaulted parameters fill in when "
+          "omitted, and a trailing `...rest` collects surplus arguments.",
+    bad='fn add(a, b, c) {\n    return a + b + c\n}\nprint(add(1, 2))',
+    fix='fn add(a, b, c) {\n    return a + b + c\n}\nprint(add(1, 2, 3))',
+    fix_note="The error message always names the function and both counts, for example: "
+             "`function 'add' expects 3 arguments, got 2`. Functions with default values "
+             "report `expects at least N arguments`; functions with a rest parameter never "
+             "reject extra arguments.",
+    suggest="Count the arguments at the call site against the function's parameter list. If "
+            "the extra or missing arguments are intentional, declare a default value "
+            "(`b = 10`) or a rest parameter (`...rest`).",
+    related_syntax="Function declarations, default parameters, rest parameters",
+    related=["PARSE001", "RUNTIME007"],
+    limits="The diagnostic is emitted at the call site when one is available; calls made "
+           "through the native-module callback API report the error without a source span. "
+           "The arity check is exact (no implicit argument coercion).",
+)
+
 P["IMPORT001"] = dict(
     trigger="An import names a module that cannot be found: not a built-in module, not in "
             "`./.mozhi/libs/`, `~/.mozhi/libs/`, or the project tree.",
@@ -506,9 +532,11 @@ def drawer(active_suffix=""):
             <a href="../install.html"><span class="msym">download</span>Installation</a>
             <a href="../quickstart.html"><span class="msym">rocket_launch</span>Quick start</a>
             <a href="../examples.html"><span class="msym">code_blocks</span>Examples</a>
+            <a href="../packages.html"><span class="msym">packages</span>Packages</a>
         </div>
         <div class="md-drawer-section">
             <div class="md-drawer-heading">Errors</div>
+            <a href="../v35.html"><span class="msym">auto_awesome</span>What's new in v3.5</a>
             <a href="index.html"{marks['index']}><span class="msym">error</span>Error reference</a>
             <a href="ai-diagnosis.html"{marks['ai']}><span class="msym">psychology</span>AI Diagnosis</a>
         </div>

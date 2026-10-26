@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's new in v3.5.1 — Mozhi</title>
+    <meta name="description" content="Mozhi 3.5.1: safe function arity errors (RUNTIME010), default and rest parameters, safe navigation ?. and null coalescing ??, recoverable HTTP with native TLS, 64-bit integers, and a ~10x faster evaluator.">
+    <meta name="color-scheme" content="light dark">
+    <meta name="google-site-verification" content="JNO-V5ppCc6ne0IM7bPS9bfRnWuQ8LtmBHulqcz9FkE" />
+    <script>
+(function(){try{var t=localStorage.getItem('md3-theme');document.documentElement.setAttribute('data-theme',t||'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block">
+    <link rel="stylesheet" href="md3.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23415F91'/><stop offset='1' stop-color='%23705575'/></linearGradient></defs><rect width='100' height='100' rx='24' fill='url(%23g)'/><text x='50' y='71' font-size='58' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
+
+</head>
+<body>
+    <header class="md-appbar" id="appbar">
+        <button class="md-iconbtn md-menu-btn" id="menuToggle" aria-label="Open navigation menu">
+            <span class="msym">menu</span>
+        </button>
+        <a href="index.html" class="md-brand">
+            <span class="md-brand-badge">M</span>
+            Mozhi
+        </a>
+        <span class="md-version-chip">v3.5.1</span>
+        <span class="md-appbar-spacer"></span>
+        <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
+            <span class="msym">code</span>
+        </a>
+        <button class="md-iconbtn" id="themeToggle" aria-label="Toggle dark theme">
+            <span class="msym">dark_mode</span>
+        </button>
+    </header>
+
+    <aside class="md-drawer" id="drawer">
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Getting started</div>
+        <a href="index.html"><span class="msym">home</span>Overview</a>
+        <a href="install.html"><span class="msym">download</span>Installation</a>
+        <a href="quickstart.html"><span class="msym">rocket_launch</span>Quick start</a>
+        <a href="examples.html"><span class="msym">code_blocks</span>Examples</a>
+        <a href="packages.html"><span class="msym">packages</span>Packages</a>
+    </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Language</div>
+            <a href="v35.html" class="active"><span class="msym">auto_awesome</span>What's new in v3.5</a>
+            <a href="errors/index.html"><span class="msym">error</span>Error reference</a>
+        <a href="spec.html"><span class="msym">menu_book</span>Specification</a>
+        <a href="libs.html"><span class="msym">inventory_2</span>Standard library</a>
+        <a href="benchmark.html"><span class="msym">speed</span>Benchmarks</a>
+        <a href="roadmap.html"><span class="msym">map</span>Roadmap</a>
+    </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Guides</div>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/WEB_GUIDE.md" target="_blank" rel="noopener"><span class="msym">language</span>Web guide</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/TESTING.md" target="_blank" rel="noopener"><span class="msym">fact_check</span>Testing guide</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/CLI.md" target="_blank" rel="noopener"><span class="msym">terminal</span>CLI reference</a>
+    </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Project</div>
+        <a href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener"><span class="msym">deployed_code</span>Source code</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/CHANGELOG.md" target="_blank" rel="noopener"><span class="msym">history</span>Changelog</a>
+    </div>
+</aside>
+    <div class="md-scrim" id="scrim"></div>
+
+    <div class="md-content">
+        <main class="md-main-col">
+<main class="main">
+            <section class="md-hero">
+                <div class="md-hero-kicker">v3.5.1 — runtime stability, networking, performance</div>
+                <h1>What's new in v3.5</h1>
+                <p>Every feature on this page is implemented in the interpreter and covered by the
+                automated test suite — the examples below are executed by
+                <code>tests/lang_features_test.sh</code> and <code>tests/http_client_test.sh</code>
+                on every <code>make test</code> run.</p>
+            </section>
+
+            <h2 id="arity">Function arity is safe: RUNTIME010</h2>
+            <p>Calling a function with the wrong number of arguments used to read past the end of
+            the argument array (AddressSanitizer measured an 8-byte heap-buffer-overflow) and could
+            crash the interpreter. It is now a controlled diagnostic that names the function, both
+            counts, and the call site:</p>
+            <pre><code class="language-mozhi">fn add(a, b, c) {
+    return a + b + c
+}
+print(add(1, 2))</code></pre>
+            <pre><code>error[RUNTIME010]: wrong number of arguments
+  --> example.mz:4:11
+ 4 | print(add(1, 2))
+   |           ^
+   |
+reason: function 'add' expects 3 arguments, got 2
+docs:   https://crossberry-in.github.io/mozhi-doc/errors/RUNTIME010</code></pre>
+            <p>The same validation covers nested and recursive calls, anonymous
+            <code>fn</code> expressions, constructors, and module-member functions. Too many
+            arguments are rejected too (<code>expects at most 2 arguments, got 4</code>).</p>
+
+            <h2 id="defaults">Default parameter values</h2>
+            <pre><code class="language-mozhi">fn greet(name, greeting = "Hello") {
+    return greeting + " " + name
+}
+print(greet("Mozhi"))           <span style="opacity:.55"># Hello Mozhi</span>
+print(greet("Mozhi", "Welcome")) <span style="opacity:.55"># Welcome Mozhi</span></code></pre>
+            <p>Semantics, verified by tests:</p>
+            <ul>
+                <li>Defaults are evaluated once per invocation, in parameter order, inside the
+                call environment — so a default may reference earlier parameters:
+                <code>fn f(a, b = a * 2)</code> with <code>f(5)</code> returns <code>15</code>.</li>
+                <li>Array, map and call-expression defaults work:
+                <code>fn collect(vals = [1, 2], cfg = { mode: "fast" })</code>.</li>
+                <li>An omitted argument is distinct from an explicit <code>null</code> —
+                <code>g("M")</code> uses the default, <code>g("M", null)</code> binds
+                <code>null</code>.</li>
+                <li>A required parameter after a defaulted parameter is a parse error.</li>
+                <li>Missing required arguments remain a <a href="errors/RUNTIME010.html">RUNTIME010</a>
+                error.</li>
+            </ul>
+
+            <h2 id="rest">Variadic parameters: <code>...rest</code></h2>
+            <pre><code class="language-mozhi">fn log(level, ...items) {
+    print(level)
+    for item in items {
+        print(item)
+    }
+}
+log("INFO", "started", 10, true)
+log("EMPTY")                    <span style="opacity:.55"># zero collected arguments is fine</span></code></pre>
+            <p>The rest parameter collects surplus arguments into a standard Mozhi array, must be
+            the last parameter, and only one is allowed. It composes with default values:
+            <code>fn f(a, b = 2, ...rest)</code>.</p>
+
+            <h2 id="safe-nav">Safe navigation <code>?.</code> and null coalescing <code>??</code></h2>
+            <pre><code class="language-mozhi">let task = req_opts?.task
+let model = config?.provider?.model ?? "default-model"</code></pre>
+            <p>Defined semantics (all covered by regression tests):</p>
+            <ul>
+                <li><code>a?.b</code> returns <code>null</code> when <code>a</code> is
+                <code>null</code>; otherwise it behaves exactly like <code>a.b</code>.</li>
+                <li>A missing map key yields <code>null</code> (consistent with map indexing),
+                so <code>m?.missing</code> is <code>null</code> and
+                <code>cfg?.provider?.model</code> chains safely.</li>
+                <li><code>left ?? right</code> returns <code>left</code> unless it is
+                <code>null</code> — <code>false</code>, <code>0</code> and <code>""</code> are
+                <em>not</em> null and are returned as-is.</li>
+                <li>The right-hand side is lazy: it is evaluated only when the left side is
+                <code>null</code> (verified with a side-effecting function).</li>
+                <li><code>??</code> binds at the same precedence as <code>or</code>, left
+                associative; <code>?.</code> binds like <code>.</code> at call precedence. No
+                existing operator precedence changed.</li>
+                <li>Plain <code>.</code> on <code>null</code> still raises
+                <a href="errors/RUNTIME004.html">RUNTIME004</a> — safe access is opt-in.</li>
+                <li>A lone <code>?</code> produces a targeted illegal-character hint naming
+                <code>?.</code> and <code>??</code>.</li>
+            </ul>
+
+            <h2 id="aliases">String method aliases</h2>
+            <p>Backward-compatible aliases dispatch to the same implementation, so behavior and
+            error messages are identical:</p>
+            <pre><code class="language-mozhi">print("ABC".to_lower())      <span style="opacity:.55"># abc      (alias of lower())</span>
+print("abc".to_uppercase())  <span style="opacity:.55"># ABC      (alias of upper())</span>
+print("hello".length())      <span style="opacity:.55"># 5        (alias of len())</span></code></pre>
+            <table>
+                <tr><th>Canonical</th><th>Accepted aliases</th></tr>
+                <tr><td><code>lower()</code></td><td><code>to_lower()</code>, <code>to_lowercase()</code></td></tr>
+                <tr><td><code>upper()</code></td><td><code>to_upper()</code>, <code>to_uppercase()</code></td></tr>
+                <tr><td><code>len()</code></td><td><code>length()</code></td></tr>
+            </table>
+            <p>Casing is byte-wise (ASCII), matching the existing <code>upper()</code>/<code>lower()</code>
+            implementations; multi-byte UTF-8 letters pass through unchanged. Calling an alias on a
+            non-string receiver reports the same type error as the canonical method.</p>
+
+            <h2 id="int64">64-bit integers and numeric semantics</h2>
+            <p>Integers are now 64-bit signed. The classic accumulator sums are exact:</p>
+            <pre><code class="language-mozhi">total = 0
+i = 1
+while i <= 1000000 {
+    total = total + i
+    i = i + 1
+}
+print(total)                    <span style="opacity:.55"># 500000500000 (was 2147483647 on 32-bit builds)</span></code></pre>
+            <p>Rules (documented in the CHANGELOG and covered by tests):</p>
+            <ul>
+                <li>Integer arithmetic is exact within the signed 64-bit range
+                (−9,223,372,036,854,775,808 … 9,223,372,036,854,775,807).</li>
+                <li><code>+</code>, <code>-</code> and <code>*</code> results that exceed the
+                range promote to floating point (no silent wraparound).</li>
+                <li>Integer division by zero remains
+                <a href="errors/RUNTIME002.html">RUNTIME002</a>; the corner case
+                <code>INT64_MIN / -1</code> also promotes to float instead of trapping.</li>
+                <li>Integer literals beyond the range are a parse error; write
+                <code>-9223372036854775807 - 1</code> for the minimum.</li>
+                <li>Integral floats print with an explicit <code>.0</code>
+                (<code>500000500000.0</code>, Python-style) instead of <code>5e+11</code>;
+                non-integral floats keep the compact <code>%g</code> form.</li>
+            </ul>
+
+            <h2 id="http">Recoverable HTTP client</h2>
+            <p>Network failures no longer abort the program. Every
+            <code>http.get</code> / <code>http.post</code> / <code>http.request</code> returns
+            one consistent result shape:</p>
+            <pre><code class="language-mozhi">import http
+
+let res = http.request({
+    url: "http://127.0.0.1:8089",
+    timeout: 5,              <span style="opacity:.55"># total request timeout (seconds, default 15)</span>
+    connect_timeout: 3       <span style="opacity:.55"># TCP connect timeout (default 10)</span>
+})
+
+if res.ok {
+    print(res.body)
+} else {
+    print(res.error)         <span style="opacity:.55"># e.g. "Connection refused (connecting to 127.0.0.1:8089)"</span>
+}
+print("still running")       <span style="opacity:.55"># a failed request never stops execution</span></code></pre>
+            <p>The result map:</p>
+            <table>
+                <tr><th>key</th><th>success</th><th>transport failure</th><th>HTTP 404/500/…</th></tr>
+                <tr><td><code>ok</code></td><td><code>true</code> (status 200–299)</td><td><code>false</code></td><td><code>false</code></td></tr>
+                <tr><td><code>status</code></td><td>HTTP status</td><td><code>0</code></td><td>HTTP status</td></tr>
+                <tr><td><code>error</code></td><td><code>""</code></td><td>failure reason</td><td><code>""</code></td></tr>
+                <tr><td><code>body</code></td><td>response body</td><td><code>""</code></td><td>response body</td></tr>
+                <tr><td><code>headers</code></td><td>response headers map</td><td>empty map</td><td>response headers map</td></tr>
+            </table>
+            <p>DNS failure, refused connection, timeouts, unreachable hosts and TLS errors all
+            flow through this schema; a failed request does not affect later independent
+            requests. Non-2xx statuses are responses, not exceptions — <code>status</code>,
+            <code>body</code> and <code>headers</code> are filled. <code>method</code> is now
+            optional and defaults to <code>"GET"</code>. Responses are capped at 64 MB.</p>
+
+            <div class="md-callout"><span class="msym">security</span><div>
+            <strong>HTTPS is native TLS</strong> (when the binary was built with OpenSSL
+            available, the default for source builds): SNI, certificate chain and hostname
+            verification are always on, and trusted roots come from the operating system store.
+            Certificate or handshake failures return the same recoverable
+            <code>{ ok: false, ... }</code> result. The downloadable release binaries are built
+            with zig and have <em>no TLS stack</em> — there <code>https://</code> returns a
+            recoverable error telling you to use <code>http://</code> or a TLS-enabled build.
+            No <code>curl</code> subprocess fallback is used.
+            </div></div>
+
+            <h2 id="registry">Package registry freshness</h2>
+            <p><code>mz search</code> and <code>mz install</code> fetch the registry with
+            <code>Cache-Control: no-cache</code> plus a unique <code>nocache</code> query
+            parameter, so packages added to the registry are visible immediately instead of
+            waiting for CDN caches to expire. Registry fetches keep their 8-second timeout and
+            the remote → last-good-cache → bundled-snapshot fallback. This only affects
+            metadata freshness — package downloads and integrity checks are unchanged.</p>
+
+            <h2 id="perf">Performance</h2>
+            <p>The evaluator was optimized with measurable, behavior-preserving changes
+            (object shell pooling, immortal <code>null</code>/<code>true</code>/<code>false</code>
+            singletons, reference-shared immutable scalars, interned environment names). The
+            numbers below come from the shipped <code>bench/</code> suite — median of 7 runs,
+            warm cache, output verified before timing (x86_64 Linux, same algorithm in both
+            languages, Python 3.12.15 as reference):</p>
+            <table>
+                <tr><th>workload</th><th>v3.4 baseline</th><th>v3.5.1</th><th>speedup</th><th>vs python3</th></tr>
+                <tr><td>float loop, 1M iterations</td><td>252.2 ms</td><td>104.1 ms</td><td>2.4×</td><td>0.68× (faster)</td></tr>
+                <tr><td>integer sum, 1M iterations</td><td>218.7 ms</td><td>91.2 ms</td><td>2.4×</td><td>0.64× (faster)</td></tr>
+                <tr><td>counter loop, 1M iterations</td><td>215.2 ms</td><td>86.9 ms</td><td>2.5×</td><td>0.68× (faster)</td></tr>
+                <tr><td>function calls, 200k</td><td>89.8 ms</td><td>39.8 ms</td><td>2.3×</td><td>0.91× (faster)</td></tr>
+                <tr><td>recursion, fib(20)</td><td>9.9 ms</td><td>5.6 ms</td><td>1.8×</td><td>0.44× (faster)</td></tr>
+                <tr><td>arrays, 100k push+sum</td><td>43.2 ms</td><td>20.2 ms</td><td>2.1×</td><td>0.61× (faster)</td></tr>
+                <tr><td>string concat, 20k</td><td>24.6 ms</td><td>13.6 ms</td><td>1.8×</td><td>0.83× (faster)</td></tr>
+                <tr><td>hello world (startup)</td><td>2.9 ms</td><td>2.5 ms</td><td>1.2×</td><td>0.21× (faster)</td></tr>
+            </table>
+            <p>Against the 1056 ms one-million-iteration float-loop baseline measured at the
+            start of this release cycle, the same benchmark now runs in about 104 ms — roughly
+            <strong>10× faster</strong>. Reproduce with
+            <code>bash bench/run_bench.sh</code> from the source repository.</p>
+
+            <h2 id="limits">Known limitations</h2>
+            <ul>
+                <li><code>**</code> evaluates through double-precision math; the result stays an
+                integer while it fits in int64 and promotes to float beyond that.</li>
+                <li>String casing methods are byte-wise (ASCII); multi-byte UTF-8 letters are
+                passed through unchanged (unchanged behavior, now covered by tests).</li>
+                <li>DNS resolution has no portable timeout; a hung resolver can outlast the
+                configured <code>timeout</code> (TCP connect, TLS handshake, and reads all do
+                honor it).</li>
+                <li>Release (zig-built) binaries have no TLS; <code>https://</code> requests
+                there return a recoverable error. Source builds with OpenSSL have native TLS.</li>
+                <li>There is no bytecode VM yet — the interpreter remains a tree-walking
+                evaluator, now with allocation and lookup costs reduced. Startup, parse, and
+                evaluation remain on one execution path that is validated by the same test
+                suite as before.</li>
+            </ul>
+        </main>
+        </main>
+    </div>
+    <script src="md3.js"></script>
+</body>
+</html>
