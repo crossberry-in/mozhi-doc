@@ -254,7 +254,7 @@
     },
     {
       "name": "crawler",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "description": "Complete Multi-Agent LLM Research Engine, Web Spider, DOM Tree, CSS Selectors, Persistent Cache, and Link Graph for Mozhi",
       "author": "Mozhi Project",
       "license": "MIT",
@@ -278,7 +278,7 @@
     },
     {
       "name": "mozhi-crawler",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "description": "Complete Multi-Agent LLM Research Engine, Web Spider, DOM Tree, CSS Selectors, Persistent Cache, and Link Graph for Mozhi",
       "author": "Mozhi Project",
       "license": "MIT",
