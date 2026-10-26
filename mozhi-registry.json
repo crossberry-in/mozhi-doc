@@ -217,7 +217,7 @@
     {
       "name": "strings",
       "version": "1.0.0",
-      "description": "String manipulation — reverse, capitalize, snake_case, slugify, pad, truncate",
+      "description": "String manipulation \u2014 reverse, capitalize, snake_case, slugify, pad, truncate",
       "author": "Mozhi Project",
       "license": "MIT",
       "category": "text",
@@ -236,7 +236,7 @@
     {
       "name": "datetime",
       "version": "1.0.0",
-      "description": "Date and time helpers — now, today, format, day of week, timestamps",
+      "description": "Date and time helpers \u2014 now, today, format, day of week, timestamps",
       "author": "Mozhi Project",
       "license": "MIT",
       "category": "general",
@@ -250,6 +250,54 @@
       "dist": "releases",
       "asset": "datetime.mz.pkg.zip",
       "import_as": "datetime",
+      "official": true
+    },
+    {
+      "name": "crawler",
+      "version": "1.3.0",
+      "description": "Complete Multi-Agent LLM Research Engine, Web Spider, DOM Tree, CSS Selectors, Persistent Cache, and Link Graph for Mozhi",
+      "author": "Mozhi Project",
+      "license": "MIT",
+      "category": "web",
+      "keywords": [
+        "crawler",
+        "spider",
+        "research",
+        "llm",
+        "agent",
+        "blockrun",
+        "scraping",
+        "dom",
+        "crossberry-in/mozhi-crawler"
+      ],
+      "repo": "crossberry-in/mozhi-crawler",
+      "dist": "releases",
+      "asset": "crawler.mz.pkg.zip",
+      "import_as": "crawler",
+      "official": true
+    },
+    {
+      "name": "mozhi-crawler",
+      "version": "1.3.0",
+      "description": "Complete Multi-Agent LLM Research Engine, Web Spider, DOM Tree, CSS Selectors, Persistent Cache, and Link Graph for Mozhi",
+      "author": "Mozhi Project",
+      "license": "MIT",
+      "category": "web",
+      "keywords": [
+        "crawler",
+        "spider",
+        "research",
+        "llm",
+        "agent",
+        "blockrun",
+        "scraping",
+        "dom",
+        "crossberry-in/mozhi-crawler"
+      ],
+      "repo": "crossberry-in/mozhi-crawler",
+      "dist": "releases",
+      "asset": "crawler.mz.pkg.zip",
+      "import_as": "crawler",
       "official": true
     }
   ]
