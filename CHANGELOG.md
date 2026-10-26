@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [3.5.1] — 2026-10-26 — Runtime stability, networking & performance
+## [3.7.0] — 2026-10-26 — Runtime stability, networking & performance
 
 ### Added (language)
 - Default parameter values and `...rest` variadic parameters
@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Docs
 - New `v35.html` page: every feature with runnable examples and the
-  benchmark table; chips swept to v3.5.1; drawer links on all pages.
+  benchmark table; chips swept to v3.7.0; drawer links on all pages.
 
 ---
 ## [3.4.0] — 2026-10-26 — AI Diagnosis service switch

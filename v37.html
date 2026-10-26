@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>What's new in v3.5.1 — Mozhi</title>
-    <meta name="description" content="Mozhi 3.5.1: safe function arity errors (RUNTIME010), default and rest parameters, safe navigation ?. and null coalescing ??, recoverable HTTP with native TLS, 64-bit integers, and a ~10x faster evaluator.">
+    <title>What's new in v3.7.1 — Mozhi</title>
+    <meta name="description" content="Mozhi 3.7.0: safe function arity errors (RUNTIME010), default and rest parameters, safe navigation ?. and null coalescing ??, recoverable HTTP with native TLS, 64-bit integers, and a ~10x faster evaluator.">
     <meta name="color-scheme" content="light dark">
     <meta name="google-site-verification" content="JNO-V5ppCc6ne0IM7bPS9bfRnWuQ8LtmBHulqcz9FkE" />
     <script>
@@ -27,7 +27,7 @@
             <span class="md-brand-badge">M</span>
             Mozhi
         </a>
-        <span class="md-version-chip">v3.5.1</span>
+        <span class="md-version-chip">v3.7.0</span>
         <span class="md-appbar-spacer"></span>
         <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
             <span class="msym">code</span>
@@ -48,7 +48,7 @@
     </div>
     <div class="md-drawer-section">
         <div class="md-drawer-heading">Language</div>
-            <a href="v35.html" class="active"><span class="msym">auto_awesome</span>What's new in v3.5</a>
+            <a href="v37.html" class="active"><span class="msym">auto_awesome</span>What's new in v3.7</a>
             <a href="errors/index.html"><span class="msym">error</span>Error reference</a>
         <a href="spec.html"><span class="msym">menu_book</span>Specification</a>
         <a href="libs.html"><span class="msym">inventory_2</span>Standard library</a>
@@ -73,8 +73,8 @@
         <main class="md-main-col">
 <main class="main">
             <section class="md-hero">
-                <div class="md-hero-kicker">v3.5.1 — runtime stability, networking, performance</div>
-                <h1>What's new in v3.5</h1>
+                <div class="md-hero-kicker">v3.7.0 — runtime stability, networking, performance</div>
+                <h1>What's new in v3.7</h1>
                 <p>Every feature on this page is implemented in the interpreter and covered by the
                 automated test suite — the examples below are executed by
                 <code>tests/lang_features_test.sh</code> and <code>tests/http_client_test.sh</code>
@@ -260,20 +260,22 @@ print("still running")       <span style="opacity:.55"># a failed request never 
             warm cache, output verified before timing (x86_64 Linux, same algorithm in both
             languages, Python 3.12.15 as reference):</p>
             <table>
-                <tr><th>workload</th><th>v3.4 baseline</th><th>v3.5.1</th><th>speedup</th><th>vs python3</th></tr>
-                <tr><td>float loop, 1M iterations</td><td>252.2 ms</td><td>104.1 ms</td><td>2.4×</td><td>0.68× (faster)</td></tr>
-                <tr><td>integer sum, 1M iterations</td><td>218.7 ms</td><td>91.2 ms</td><td>2.4×</td><td>0.64× (faster)</td></tr>
-                <tr><td>counter loop, 1M iterations</td><td>215.2 ms</td><td>86.9 ms</td><td>2.5×</td><td>0.68× (faster)</td></tr>
-                <tr><td>function calls, 200k</td><td>89.8 ms</td><td>39.8 ms</td><td>2.3×</td><td>0.91× (faster)</td></tr>
-                <tr><td>recursion, fib(20)</td><td>9.9 ms</td><td>5.6 ms</td><td>1.8×</td><td>0.44× (faster)</td></tr>
-                <tr><td>arrays, 100k push+sum</td><td>43.2 ms</td><td>20.2 ms</td><td>2.1×</td><td>0.61× (faster)</td></tr>
-                <tr><td>string concat, 20k</td><td>24.6 ms</td><td>13.6 ms</td><td>1.8×</td><td>0.83× (faster)</td></tr>
-                <tr><td>hello world (startup)</td><td>2.9 ms</td><td>2.5 ms</td><td>1.2×</td><td>0.21× (faster)</td></tr>
+                <tr><th>workload</th><th>3.4 baseline</th><th>3.7.0</th><th>speedup</th><th>vs python3</th></tr>
+                <tr><td>float loop, 1M iterations</td><td>252.2 ms</td><td>122.4 ms</td><td>2.1×</td><td>0.79× (faster)</td></tr>
+                <tr><td>integer sum, 1M iterations</td><td>218.7 ms</td><td>109.4 ms</td><td>2.0×</td><td>0.69× (faster)</td></tr>
+                <tr><td>counter loop, 1M iterations</td><td>215.2 ms</td><td>106.2 ms</td><td>2.0×</td><td>0.84× (faster)</td></tr>
+                <tr><td>function calls, 200k</td><td>89.8 ms</td><td>45.2 ms</td><td>2.0×</td><td>1.02× (level)</td></tr>
+                <tr><td>recursion, fib(20)</td><td>9.9 ms</td><td>6.1 ms</td><td>1.6×</td><td>0.48× (faster)</td></tr>
+                <tr><td>arrays, 100k push+sum</td><td>43.2 ms</td><td>23.2 ms</td><td>1.9×</td><td>0.67× (faster)</td></tr>
+                <tr><td>string concat, 20k</td><td>24.6 ms</td><td>14.2 ms</td><td>1.7×</td><td>0.85× (faster)</td></tr>
+                <tr><td>hello world (startup)</td><td>2.9 ms</td><td>2.8 ms</td><td>1.0×</td><td>0.22× (faster)</td></tr>
             </table>
             <p>Against the 1056 ms one-million-iteration float-loop baseline measured at the
-            start of this release cycle, the same benchmark now runs in about 104 ms — roughly
-            <strong>10× faster</strong>. Reproduce with
-            <code>bash bench/run_bench.sh</code> from the source repository.</p>
+            start of this release cycle, the same benchmark now runs in about 122 ms — roughly
+            <strong>8.6× faster</strong>. (After-numbers are the final 3.7.0 tree, which also
+            carries the ecosystem work — reference-counted environments and by-reference
+            returns.) Reproduce with <code>bash bench/run_bench.sh</code> from the source
+            repository.</p>
 
             <h2 id="limits">Known limitations</h2>
             <ul>

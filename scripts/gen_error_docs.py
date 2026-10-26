@@ -15,7 +15,7 @@ every registered code has a page, every page has all 12 sections, and the
 index lists every code.
 
 The prose below documents ACTUAL, verified interpreter behavior (checked
-against the v3.5.1 binary) — nothing speculative.
+against the v3.7.0 binary) — nothing speculative.
 """
 import re
 import os
@@ -28,7 +28,7 @@ OUT_DIR = os.path.join(DOC_REPO, "errors")
 
 DOCS_BASE = "https://crossberry-in.github.io/mozhi-doc/errors"
 CLI_DOCS = "https://github.com/crossberry-in/mozhi/blob/main/docs/CLI.md"
-VERSION = "3.5.1"
+VERSION = "3.7.0"
 
 # ---------------------------------------------------------------- registry
 def parse_registry(path):
@@ -536,7 +536,7 @@ def drawer(active_suffix=""):
         </div>
         <div class="md-drawer-section">
             <div class="md-drawer-heading">Errors</div>
-            <a href="../v35.html"><span class="msym">auto_awesome</span>What's new in v3.5</a>
+            <a href="../v37.html"><span class="msym">auto_awesome</span>What's new in v3.5</a>
             <a href="index.html"{marks['index']}><span class="msym">error</span>Error reference</a>
             <a href="ai-diagnosis.html"{marks['ai']}><span class="msym">psychology</span>AI Diagnosis</a>
         </div>

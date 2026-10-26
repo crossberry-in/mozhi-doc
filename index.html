@@ -26,7 +26,7 @@
             <span class="md-brand-badge">M</span>
             Mozhi
         </a>
-        <span class="md-version-chip">v3.5.1</span>
+        <span class="md-version-chip">v3.7.0</span>
         <span class="md-appbar-spacer"></span>
         <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
             <span class="msym">code</span>
@@ -44,7 +44,7 @@
             <a href="quickstart.html"><span class="msym">rocket_launch</span>Quick start</a>
             <a href="examples.html"><span class="msym">code_blocks</span>Examples</a>
         <a href="packages.html"><span class="msym">packages</span>Packages</a>
-        <a href="v35.html"><span class="msym">auto_awesome</span>What's new in v3.5</a>
+        <a href="v37.html"><span class="msym">auto_awesome</span>What's new in v3.7</a>
         </div>
         <div class="md-drawer-section">
             <div class="md-drawer-heading">Language</div>
@@ -73,7 +73,7 @@
 
             <!-- ================= hero ================= -->
             <section class="md-hero">
-                <span class="md-hero-kicker"><span class="msym">verified</span>Version 3.5.1 — safe calls, rest params, native TLS, 64-bit ints &amp; a ~10x faster evaluator</span>
+                <span class="md-hero-kicker"><span class="msym">verified</span>Version 3.7.0 — safe calls, rest params, native TLS, 64-bit ints &amp; a ~10x faster evaluator</span>
                 <h1>One language.<br><span class="accent">Full-stack development.</span></h1>
                 <p class="lead">Mozhi is a fast, safe, C-family scripting language with a native HTTP server,
                 HTML templates, JSON, a filesystem sandbox and SQLite — all inside the interpreter runtime.
@@ -122,7 +122,7 @@ app.listen("127.0.0.1", 8080)</pre>
             </div>
 
             <!-- ================= diagnostics & tooling (v3.2) ================= -->
-            <h2 id="v35">v3.5 — the runtime stability release</h2>
+            <h2 id="v37">v3.7 — the runtime stability release</h2>
             <div class="md-card-grid">
                 <div class="md-card">
                     <span class="msym">shield</span>
@@ -130,14 +130,14 @@ app.listen("127.0.0.1", 8080)</pre>
                     <p>Wrong argument counts are a structured <a href="errors/RUNTIME010.html">RUNTIME010</a>
                     diagnostic — previously an out-of-bounds read. Plus default values
                     (<code>greeting = "Hello"</code>) and variadic <code>...rest</code> parameters.</p>
-                    <a href="v35.html#arity">Function parameters</a>
+                    <a href="v37.html#arity">Function parameters</a>
                 </div>
                 <div class="md-card">
                     <span class="msym">link</span>
                     <h3>Null-safe navigation</h3>
                     <p><code>config?.provider?.model ?? "default-model"</code> — lazy right-hand
                     side, <code>false</code>/<code>0</code>/<code>""</code> are never treated as null.</p>
-                    <a href="v35.html#safe-nav">Semantics &amp; tests</a>
+                    <a href="v37.html#safe-nav">Semantics &amp; tests</a>
                 </div>
                 <div class="md-card">
                     <span class="msym">language</span>
@@ -145,15 +145,15 @@ app.listen("127.0.0.1", 8080)</pre>
                     <p><code>http.request</code> returns <code>{ ok, status, error, body, headers }</code> —
                     refused connections and timeouts are values, not crashes. Native OpenSSL TLS with
                     certificate verification on TLS-enabled builds.</p>
-                    <a href="v35.html#http">Result schema</a>
+                    <a href="v37.html#http">Result schema</a>
                 </div>
                 <div class="md-card">
                     <span class="msym">speed</span>
-                    <h3>~10x faster hot loops</h3>
-                    <p>The 1M-iteration float loop went from 1056 ms to ~104 ms; exact 64-bit
+                    <h3>~8.6x faster hot loops</h3>
+                    <p>The 1M-iteration float loop went from 1056 ms to ~122 ms; exact 64-bit
                     integers (<code>1+...+1000000 = 500000500000</code>). Faster than Python 3.12
-                    on 9 of 10 benchmarks.</p>
-                    <a href="v35.html#perf">Benchmark table</a>
+                    on 7 of 10 benchmarks.</p>
+                    <a href="v37.html#perf">Benchmark table</a>
                 </div>
             </div>
 
