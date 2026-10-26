@@ -26,7 +26,7 @@
             <span class="md-brand-badge">M</span>
             Mozhi
         </a>
-        <span class="md-version-chip">v3.1.0</span>
+        <span class="md-version-chip">v3.2.0</span>
         <span class="md-appbar-spacer"></span>
         <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
             <span class="msym">code</span>
@@ -71,7 +71,7 @@
 
             <!-- ================= hero ================= -->
             <section class="md-hero">
-                <span class="md-hero-kicker"><span class="msym">verified</span>Version 3.1.0 — security hardened</span>
+                <span class="md-hero-kicker"><span class="msym">verified</span>Version 3.2.0 — diagnostics, AI Diagnosis &amp; npm install</span>
                 <h1>One language.<br><span class="accent">Full-stack development.</span></h1>
                 <p class="lead">Mozhi is a fast, safe, C-family scripting language with a native HTTP server,
                 HTML templates, JSON, a filesystem sandbox and SQLite — all inside the interpreter runtime.
@@ -84,6 +84,7 @@
                 <div class="md-hero-meta">
                     <span class="md-chip-static"><span class="msym">memory</span>C interpreter core</span>
                     <span class="md-chip-static"><span class="msym">bolt</span>Rust bytecode VM</span>
+                    <span class="md-chip-static"><span class="msym">inventory_2</span>npm: one-command install</span>
                     <span class="md-chip-static green"><span class="msym">verified_user</span>ASan + UBSan tested</span>
                     <span class="md-chip-static"><span class="msym">license</span>MIT licensed</span>
                 </div>
@@ -116,6 +117,47 @@ app.post("/api/calculate", fn(req, res) {
 })
 
 app.listen("127.0.0.1", 8080)</pre>
+            </div>
+
+            <!-- ================= diagnostics & tooling (v3.2) ================= -->
+            <h2>Errors that teach you the language</h2>
+            <p>v3.2 adds a central diagnostics engine shared by the lexer, parser, runtime, module
+            loader and CLI. Every failure carries a stable error code, the exact source span, a
+            suggested fix and a link to its documentation page — and, when you want it, a free AI
+            explanation. Install once with <code>npm install -g @crossberryweb/mozhi</code> and get
+            two commands: <code>mozhi</code> and <code>mz</code>.</p>
+            <div class="md-grid md-grid-2">
+                <div class="md-card">
+                    <div class="md-card-icon sec"><span class="msym">error</span></div>
+                    <h3>Precise error diagnostics</h3>
+                    <p>Stable codes (<code>LEX001</code>, <code>PARSE002</code>, <code>NAME001</code>&hellip;),
+                    a caret span under the exact token, matched-delimiter hints and suggested fixes.
+                    The full reference lives in the
+                    <a href="errors/index.html">error documentation</a> — one page per code.</p>
+                </div>
+                <div class="md-card">
+                    <div class="md-card-icon green"><span class="msym">psychology</span></div>
+                    <h3>Free AI Diagnosis</h3>
+                    <p>An anonymous, keyless service explains what went wrong — no API key, no account,
+                    no payment. Automatic in interactive terminals, opt-in for scripts with
+                    <code>--ai</code>, disable with <code>--no-ai</code> or <code>MOZHI_NO_AI=1</code>.
+                    If the service is unreachable, the local diagnosis and exit code are unaffected.</p>
+                </div>
+                <div class="md-card">
+                    <div class="md-card-icon"><span class="msym">data_object</span></div>
+                    <h3>Machine-readable output</h3>
+                    <p><code>mozhi --json run app.mz</code> emits the <code>mozhi.diagnostics.v1</code>
+                    schema to stderr — codes, spans, reasons, fixes and documentation URLs — ready
+                    for editors, CI pipelines and tooling.</p>
+                </div>
+                <div class="md-card">
+                    <div class="md-card-icon amber"><span class="msym">terminal</span></div>
+                    <h3>One install, two commands</h3>
+                    <p><code>npm install -g @crossberryweb/mozhi</code> requires Node.js &ge; 22 and
+                    bundles fully static Linux binaries — glibc distros, Alpine and Termux/Noxs.
+                    <code>mozhi</code> and <code>mz</code> always behave identically: same version,
+                    same flags, same exit codes.</p>
+                </div>
             </div>
 
             <!-- ================= features ================= -->
@@ -188,7 +230,8 @@ app.listen("127.0.0.1", 8080)</pre>
                     <h3>Real toolchain</h3>
                     <p><code>mozhi run</code>, <code>dev</code> with auto-reload, <code>serve</code>,
                     <code>test</code>, <code>fmt</code>, <code>lint</code> and <code>build</code> — plus
-                    <code>mozhi.toml</code> project configuration.</p>
+                    <code>mozhi.toml</code> project configuration. Every command works identically with
+                    the short alias <code>mz</code>.</p>
                 </div>
                 <div class="md-card">
                     <div class="md-card-icon green"><span class="msym">inventory_2</span></div>
@@ -201,7 +244,7 @@ app.listen("127.0.0.1", 8080)</pre>
             <!-- ================= CTA ================= -->
             <div class="md-callout tip" style="margin-top:34px">
                 <span class="msym">verified</span>
-                <p><strong>Every example on this site is executed against the v3.1 interpreter before it
+                <p><strong>Every example on this site is executed against the v3.2 interpreter before it
                 ships.</strong> The snippets you see run exactly as printed — start with the
                 <a href="examples.html" style="color:inherit;font-weight:600">examples gallery</a>.</p>
             </div>

@@ -31,7 +31,35 @@ Mozhi runs on **Linux**, **macOS**, **Windows**, and **Termux** (Android). The i
 npm install -g @crossberryweb/mozhi
 ```
 
-Installs the `mozhi` command from a prebuilt, fully static binary bundled inside the package (works on glibc distros, Alpine, and Termux-style chroots; no compilation, no postinstall downloads). The package version always matches the interpreter release. macOS/Windows users should use the installer script below.
+Installs **two equivalent commands** — `mozhi` (canonical) and the short alias `mz` — from fully
+static Linux binaries bundled inside the package (works on glibc distros, Alpine, and Termux-style
+chroots; no compilation, no postinstall downloads).
+
+Requirements:
+
+- **Node.js >= 22** — any supported release line (22.x Maintenance LTS, 24.x LTS, 26.x Current).
+  Node.js 14, 16, 18 and 20 have reached end of life; the launcher still runs on them but prints a
+  one-time end-of-life notice. Node.js only runs the launcher shim — the interpreter is a native
+  binary.
+- **npm** (ships with Node.js).
+
+Verify (both commands always behave identically — same version, same flags, same exit codes):
+
+```bash
+mozhi --version     # Mozhi 3.2.0
+mz --version        # identical output
+```
+
+Upgrade and uninstall:
+
+```bash
+npm install -g @crossberryweb/mozhi@latest   # upgrade
+npm uninstall -g @crossberryweb/mozhi        # removes both commands
+```
+
+> The npm package currently bundles Linux binaries only — macOS and Windows users should use the
+> installer script below. The npm package version can run slightly ahead of the interpreter version
+> for packaging-only fixes (e.g. npm 3.2.1 ships the v3.2.0 interpreter).
 
 ### Linux / macOS / WSL / Termux
 
@@ -91,7 +119,7 @@ benchmarks.
 
 The glibc Linux builds dynamically link against `libc` and `libm` (already present on every Linux distro). The Alpine, Termux, and Windows builds are statically linked — they have **no runtime dependencies**.
 
-> **Since v3.1.1**, the Linux `mozhi-interpreter-linux-*` binaries are themselves fully static (musl, SQLite vendored) — one binary works on glibc distros, Alpine, and Termux alike, with no runtime dependencies at all. macOS and Windows do not have v3.1.1 builds yet; the installers automatically fall back to the v2.5.0 assets for those platforms.
+> **Since v3.1.1**, the Linux `mozhi-interpreter-linux-*` binaries are themselves fully static (musl, SQLite vendored) — one binary works on glibc distros, Alpine, and Termux alike, with no runtime dependencies at all. **Since v3.2.0**, macOS builds (`mozhi-interpreter-macos-x86_64` / `-arm64`) are published alongside the Linux binaries; Windows has no v3.2.0 build — the installers automatically fall back to older assets for that platform.
 
 ---
 
@@ -273,8 +301,8 @@ Go to the [Releases page](https://github.com/crossberry-in/mozhi-doc/releases) a
 Or download from the command line:
 
 ```bash
-# Example: Linux x86_64
-curl -L -o mozhi https://github.com/crossberry-in/mozhi-doc/releases/download/v3.1.1/mozhi-interpreter-linux-x86_64
+# Example: Linux x86_64 (v3.2.0)
+curl -L -o mozhi https://github.com/crossberry-in/mozhi-doc/releases/download/v3.2.0/mozhi-interpreter-linux-x86_64
 ```
 
 ### Step 2 — Make it executable (Linux / macOS / Termux only)

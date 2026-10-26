@@ -27,7 +27,7 @@
             <span class="md-brand-badge">M</span>
             Mozhi
         </a>
-        <span class="md-version-chip">v3.1.0</span>
+        <span class="md-version-chip">v3.2.0</span>
         <span class="md-appbar-spacer"></span>
         <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
             <span class="msym">code</span>
@@ -73,6 +73,39 @@
             <h1>Installation</h1>
             <p>Mozhi runs on Linux, macOS, Windows, and Termux (Android). The installer auto-detects your platform and architecture, so in most cases you can install with a single command.</p>
 
+            <h2>Install with npm <span class="md-chip-static green" style="vertical-align:middle"><span class="msym">bolt</span>fastest on Linux</span></h2>
+            <p>The official npm package is the fastest way to get Mozhi on Linux (x86_64 or ARM64).
+            One command installs <strong>two equivalent commands</strong> — the canonical <code>mozhi</code>
+            and the short alias <code>mz</code> — from fully static binaries bundled inside the package
+            (works on glibc distros, Alpine and Termux/Noxs-style chroots; no compilation,
+            no postinstall downloads).</p>
+
+            <pre><code>npm install -g @crossberryweb/mozhi</code></pre>
+
+            <h3>npm requirements</h3>
+            <ul>
+                <li><strong>Node.js &ge; 22</strong> — any supported release line: 22.x (Maintenance LTS),
+                24.x (LTS) or 26.x (Current). Node.js 14, 16, 18 and 20 have reached end of life and are
+                no longer supported; on those lines the launcher still works but prints a one-time
+                end-of-life notice. Node.js only runs the tiny launcher shim — the interpreter itself
+                is a fully static native binary.</li>
+                <li><strong>npm</strong> (ships with Node.js)</li>
+            </ul>
+
+            <h3>Verify</h3>
+            <pre><code>mozhi --version     # Mozhi 3.2.0
+mz --version        # identical — mz and mozhi are the same interpreter</code></pre>
+
+            <p>Both commands always behave identically: same version, same flags, same exit codes.</p>
+
+            <h3>Upgrade / uninstall</h3>
+            <pre><code>npm install -g @crossberryweb/mozhi@latest   # upgrade
+npm uninstall -g @crossberryweb/mozhi        # removes both commands</code></pre>
+
+            <p><strong>macOS / Windows / WSL:</strong> the npm package currently bundles Linux binaries
+            only — use the installer script below on those platforms. It installs the same
+            <code>mozhi</code> command natively.</p>
+
             <h2>Quick Install</h2>
 
             <h3>Step 1: Install the Mozhi interpreter</h3>
@@ -116,7 +149,7 @@ mozhi doctor       # Should show all green checks</code></pre>
 
             <h2>Requirements</h2>
             <ul>
-                <li><strong>Interpreter:</strong> No dependencies — the v3.1.1 Linux builds are fully static binaries</li>
+                <li><strong>Interpreter:</strong> No dependencies — the v3.2 Linux builds (and the binaries bundled in the npm package) are fully static</li>
                 <li><strong>For C/C++/ASM FFI:</strong> <code>gcc</code> or <code>clang</code></li>
                 <li><strong>For Rust FFI:</strong> <code>rustc</code></li>
                 <li><strong>For GitHub dependencies:</strong> <code>git</code></li>
@@ -124,17 +157,19 @@ mozhi doctor       # Should show all green checks</code></pre>
 
             <h2>Manual Installation</h2>
             <p>If the installer doesn't work, you can install manually — the interpreter is a single fully static binary, no dispatcher or Python needed:</p>
-            <pre><code># Download the interpreter (v3.1.1, static — works on any Linux)
+            <pre><code># Download the interpreter (v3.2.0, static — works on any Linux)
 curl -fsSL -o /tmp/mozhi \\
-  https://github.com/crossberry-in/mozhi-doc/releases/download/v3.1.1/mozhi-interpreter-linux-arm64
+  https://github.com/crossberry-in/mozhi-doc/releases/download/v3.2.0/mozhi-interpreter-linux-arm64
 
-# Install as 'mozhi' (canonical) and keep the legacy name as a symlink
+# Install as 'mozhi' (canonical), the 'mz' short alias, and keep the legacy name as a symlink
 sudo mv /tmp/mozhi /usr/local/bin/mozhi
 sudo chmod +x /usr/local/bin/mozhi
+sudo ln -sf mozhi /usr/local/bin/mz
 sudo ln -sf mozhi /usr/local/bin/mozhi-interpreter
 
 # Verify
-mozhi --version</code></pre>
+mozhi --version
+mz --version</code></pre>
 
             <div class="footer">
                 <p>Copyright &copy; 2026 crossberry-in.</p>
