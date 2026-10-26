@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packages — Mozhi</title>
+    <meta name="description" content="The Mozhi package manager: install libraries with mz install, publish your own with tagged releases and auto-built .mz.pkg.zip assets.">
+    <meta name="color-scheme" content="light dark">
+    <meta name="google-site-verification" content="JNO-V5ppCc6ne0IM7bPS9bfRnWuQ8LtmBHulqcz9FkE" />
+    <script>
+(function(){try{var t=localStorage.getItem('md3-theme');document.documentElement.setAttribute('data-theme',t||'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block">
+    <link rel="stylesheet" href="md3.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23415F91'/><stop offset='1' stop-color='%23705575'/></linearGradient></defs><rect width='100' height='100' rx='24' fill='url(%23g)'/><text x='50' y='71' font-size='58' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>M</text></svg>">
+
+</head>
+<body>
+    <header class="md-appbar" id="appbar">
+        <button class="md-iconbtn md-menu-btn" id="menuToggle" aria-label="Open navigation menu">
+            <span class="msym">menu</span>
+        </button>
+        <a href="index.html" class="md-brand">
+            <span class="md-brand-badge">M</span>
+            Mozhi
+        </a>
+        <span class="md-version-chip">v3.3.0</span>
+        <span class="md-appbar-spacer"></span>
+        <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
+            <span class="msym">code</span>
+        </a>
+        <button class="md-iconbtn" id="themeToggle" aria-label="Toggle dark theme">
+            <span class="msym">dark_mode</span>
+        </button>
+    </header>
+
+    <aside class="md-drawer" id="drawer">
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Getting started</div>
+        <a href="index.html"><span class="msym">home</span>Overview</a>
+        <a href="install.html"><span class="msym">download</span>Installation</a>
+        <a href="quickstart.html"><span class="msym">rocket_launch</span>Quick start</a>
+        <a href="examples.html"><span class="msym">code_blocks</span>Examples</a>
+        <a href="packages.html" class="active"><span class="msym">packages</span>Packages</a>
+    </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Language</div>
+            <a href="errors/index.html"><span class="msym">error</span>Error reference</a>
+        <a href="spec.html"><span class="msym">menu_book</span>Specification</a>
+        <a href="libs.html"><span class="msym">inventory_2</span>Standard library</a>
+        <a href="benchmark.html"><span class="msym">speed</span>Benchmarks</a>
+        <a href="roadmap.html"><span class="msym">map</span>Roadmap</a>
+    </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Guides</div>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/WEB_GUIDE.md" target="_blank" rel="noopener"><span class="msym">language</span>Web guide</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/TESTING.md" target="_blank" rel="noopener"><span class="msym">fact_check</span>Testing guide</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/docs/CLI.md" target="_blank" rel="noopener"><span class="msym">terminal</span>CLI reference</a>
+    </div>
+    <div class="md-drawer-section">
+        <div class="md-drawer-heading">Project</div>
+        <a href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener"><span class="msym">deployed_code</span>Source code</a>
+        <a href="https://github.com/crossberry-in/mozhi/blob/main/CHANGELOG.md" target="_blank" rel="noopener"><span class="msym">history</span>Changelog</a>
+    </div>
+</aside>
+    <div class="md-scrim" id="scrim"></div>
+
+    <div class="md-content">
+        <main class="md-main-col">
+<main class="main">
+            <section class="md-hero">
+                <div class="md-hero-kicker">v3.3.0 — built into the launcher</div>
+                <h1>Packages</h1>
+                <p>Install libraries with <code>mz install</code>, import them like native modules,
+                and publish your own as tagged Git releases carrying a single
+                <code>&lt;name&gt;.mz.pkg.zip</code> asset.</p>
+                <div class="md-hero-actions">
+                    <a class="md-btn-filled" href="install.html"><span class="msym">download</span>Install Mozhi first</a>
+                    <a class="md-btn-outlined" href="https://github.com/crossberry-in/mozhi-strings" target="_blank" rel="noopener"><span class="msym">code</span>Example package repo</a>
+                </div>
+            </section>
+
+            <h2 id="quickstart">Install a package</h2>
+            <p>Packages install with one command and resolve automatically at <code>import</code>.
+            The installer only needs Node.js (it is part of the npm launcher) — packages
+            themselves are pure Mozhi source.</p>
+            <pre><code>mz install strings                      <span style="opacity:.55"># from the Mozhi registry</span>
+mz install datetime@v1.0.0              <span style="opacity:.55"># pin a release tag</span>
+mz install @user/repo                   <span style="opacity:.55"># any GitHub repo's latest release</span>
+mz install @user/repo@v0.2.0            <span style="opacity:.55"># ... pinned to a tag</span>
+mz install ./tool.mz.pkg.zip            <span style="opacity:.55"># manual / offline install from a zip</span>
+mz install ./mytool                     <span style="opacity:.55"># from a local package directory</span></code></pre>
+            <p>Then use it like a native module — installed packages bind with module
+            (namespace) semantics:</p>
+            <pre><code class="language-mozhi">import strings
+
+echo(strings.reverse("Mozhi"))              <span style="opacity:.55"># ihzoM</span>
+echo(strings.slugify("Hello Mozhi World")) <span style="opacity:.55"># hello-mozhi-world</span></code></pre>
+            <div class="md-callout"><span class="msym">info</span><div>
+            If you import something that is not installed, the interpreter tells you exactly
+            what to run: <code>package 'x' is not installed — install it with: mz install x</code>
+            (error code <a href="errors/IMPORT001">IMPORT001</a>). Built-in modules
+            (<code>math</code>, <code>json</code>, <code>web</code>, <code>http</code>,
+            <code>fs</code>, <code>db</code>, <code>template</code>) never need installing.
+            </div></div>
+
+            <h2 id="manage">Manage packages</h2>
+            <pre><code>mz list                    <span style="opacity:.55"># name, version, origin (repo@tag), path</span>
+mz search web              <span style="opacity:.55"># search the registry</span>
+mz uninstall strings</code></pre>
+            <p>Packages live in <code>~/.mozhi/pkg/&lt;name&gt;</code> (global — the default),
+            or <code>./.mozhi/pkg/&lt;name&gt;</code> with <code>mz install --local</code>.
+            The interpreter checks the project dir, then <code>$MZ_LIB/pkg/</code>, then the
+            global dir; legacy single-file libraries in <code>~/.mozhi/libs/</code> keep
+            working alongside them. Re-installing upgrades in place.</p>
+
+            <h2 id="registry">The registry</h2>
+            <p><code>mz install &lt;name&gt;</code> looks names up in
+            <a href="https://github.com/crossberry-in/mozhi-doc/blob/main/mozhi-registry.json" target="_blank" rel="noopener">mozhi-registry.json</a> —
+            a version-controlled JSON file in the public mozhi-doc repository, so every
+            registry change is auditable through git history. Registry entries point at a
+            Git repository:</p>
+            <pre><code>{
+  "name": "strings",
+  "repo": "crossberry-in/mozhi-strings",
+  "dist": "releases",
+  "asset": "strings.mz.pkg.zip",
+  "import_as": "strings",
+  "description": "String manipulation — reverse, capitalize, snake_case, ..."
+}</code></pre>
+            <p>The launcher fetches the registry live, and falls back to a cached copy and a
+            bundled snapshot when offline. Override with <code>MOZHI_REGISTRY_URL</code>
+            (also: <code>MOZHI_GH_API</code>, <code>MOZHI_LIBS_URL</code>).</p>
+
+            <h2 id="create">Create your own package</h2>
+            <p><code>mz pkg new</code> scaffolds everything — manifest, entry module, example,
+            test, README, MIT license and a GitHub Actions release workflow:</p>
+            <pre><code>mz pkg new mytool
+cd mytool
+mozhi test                <span style="opacity:.55"># the sample test passes out of the box</span>
+mz pkg check              <span style="opacity:.55"># verify package structure</span></code></pre>
+            <p>A package is a directory with a <code>package.toml</code> manifest:</p>
+            <pre><code>mytool/
+  package.toml            <span style="opacity:.55"># name, version, entry = "src/mod.mz"</span>
+  src/mod.mz              <span style="opacity:.55"># entry — everything here becomes the module</span>
+  examples/demo.mz        <span style="opacity:.55"># optional</span>
+  tests/mytool.test.mz    <span style="opacity:.55"># run with: mozhi test</span></code></pre>
+            <p>Build a zip locally any time with <code>mz pkg zip</code> — it produces
+            <code>mytool.mz.pkg.zip</code> with a single top-level directory named after
+            the package.</p>
+
+            <h2 id="publish">Publish (tag → release → installable)</h2>
+            <p>Push the repo to GitHub and tag a release — that is the whole process. The
+            scaffolded workflow (<code>.github/workflows/release.yml</code>) runs on
+            <code>v*</code> tags, builds the package zip with <code>git archive</code>
+            (CI files are excluded via <code>.gitattributes</code> export-ignore), and
+            attaches <code>&lt;name&gt;.mz.pkg.zip</code> to the auto-created release:</p>
+            <pre><code>git init &amp;&amp; git add -A &amp;&amp; git commit -m "initial import"
+git remote add origin git@github.com:&lt;you&gt;/mytool.git
+git push -u origin main
+git tag v0.1.0 &amp;&amp; git push origin v0.1.0</code></pre>
+            <p>Anyone can now install it directly — no registry listing required:</p>
+            <pre><code>mz install @&lt;you&gt;/mytool</code></pre>
+            <div class="md-callout"><span class="msym">verified_user</span><div>
+            <strong>What gets verified before an install.</strong> Downloads only ever come
+            from tagged releases — never arbitrary branches. The zip must contain a
+            <code>package.toml</code> (at the root or in a single top-level directory), the
+            manifest must declare a <code>name</code>, and the entry module must exist.
+            Extraction is traversal-safe (no <code>../</code> or absolute paths), CRC-checked
+            and size-capped. Failed verification leaves nothing behind.
+            </div></div>
+
+            <h2 id="official">Official packages</h2>
+            <div class="md-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+                <div class="md-card">
+                    <span class="md-card-icon"><span class="msym">text_fields</span></span>
+                    <h3 style="margin:.4rem 0 .2rem">strings</h3>
+                    <p style="margin:.2rem 0 .6rem">21 functions: reverse, capitalize,
+                    snake_case, camel_case, slugify, pad, truncate, count, starts_with, ends_with…</p>
+                    <pre><code>mz install strings</code></pre>
+                    <p style="margin:.4rem 0 0"><a href="https://github.com/crossberry-in/mozhi-strings" target="_blank" rel="noopener">crossberry-in/mozhi-strings</a></p>
+                </div>
+                <div class="md-card">
+                    <span class="md-card-icon"><span class="msym">schedule</span></span>
+                    <h3 style="margin:.4rem 0 .2rem">datetime</h3>
+                    <p style="margin:.2rem 0 .6rem">now, today, time_now, iso8601, format,
+                    day_of_week, month_name, year — formatting via the system date command.</p>
+                    <pre><code>mz install datetime</code></pre>
+                    <p style="margin:.4rem 0 0"><a href="https://github.com/crossberry-in/mozhi-datetime" target="_blank" rel="noopener">crossberry-in/mozhi-datetime</a></p>
+                </div>
+            </div>
+            <p>Single-file standard-library extensions (<code>mozhi-html</code>,
+            <code>mozhi-http</code>, <code>mozhi-json</code>, <code>mozhi-math-utils</code>)
+            are also installable — see the <a href="libs.html">standard library</a> page.</p>
+
+            <div class="md-footer">
+                <span>Mozhi — one language, full-stack development.</span>
+                <span class="md-spacer"></span>
+                <a href="https://github.com/crossberry-in" target="_blank" rel="noopener"><span class="msym">github</span>GitHub</a><a href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener"><span class="msym">code</span>mozhi</a><a href="https://github.com/crossberry-in/mozhi-doc" target="_blank" rel="noopener"><span class="msym">description</span>mozhi-doc</a>
+            </div>
+        </main>
+        </main>
+    </div>
+
+    <script src="md3.js"></script>
+</body>
+</html>

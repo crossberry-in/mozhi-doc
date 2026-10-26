@@ -26,7 +26,7 @@
             <span class="md-brand-badge">M</span>
             Mozhi
         </a>
-        <span class="md-version-chip">v3.2.0</span>
+        <span class="md-version-chip">v3.3.0</span>
         <span class="md-appbar-spacer"></span>
         <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
             <span class="msym">code</span>
@@ -43,6 +43,7 @@
             <a href="install.html"><span class="msym">download</span>Installation</a>
             <a href="quickstart.html"><span class="msym">rocket_launch</span>Quick start</a>
             <a href="examples.html"><span class="msym">code_blocks</span>Examples</a>
+        <a href="packages.html"><span class="msym">packages</span>Packages</a>
         </div>
         <div class="md-drawer-section">
             <div class="md-drawer-heading">Language</div>
@@ -71,7 +72,7 @@
 
             <!-- ================= hero ================= -->
             <section class="md-hero">
-                <span class="md-hero-kicker"><span class="msym">verified</span>Version 3.2.0 — diagnostics, AI Diagnosis &amp; npm install</span>
+                <span class="md-hero-kicker"><span class="msym">verified</span>Version 3.3.0 — packages, diagnostics, AI Diagnosis &amp; npm install</span>
                 <h1>One language.<br><span class="accent">Full-stack development.</span></h1>
                 <p class="lead">Mozhi is a fast, safe, C-family scripting language with a native HTTP server,
                 HTML templates, JSON, a filesystem sandbox and SQLite — all inside the interpreter runtime.
@@ -121,12 +122,23 @@ app.listen("127.0.0.1", 8080)</pre>
 
             <!-- ================= diagnostics & tooling (v3.2) ================= -->
             <h2>Errors that teach you the language</h2>
-            <p>v3.2 adds a central diagnostics engine shared by the lexer, parser, runtime, module
-            loader and CLI. Every failure carries a stable error code, the exact source span, a
-            suggested fix and a link to its documentation page — and, when you want it, a free AI
-            explanation. Install once with <code>npm install -g @crossberryweb/mozhi</code> and get
-            two commands: <code>mozhi</code> and <code>mz</code>.</p>
+            <p>v3.3 adds a package manager: <code>mz install</code> pulls verified libraries from
+            tagged Git releases, and unresolved imports tell you exactly how to install what is
+            missing. On top of that, v3.2's central diagnostics engine gives every failure a stable
+            error code, the exact source span, a suggested fix and a link to its documentation page —
+            and, when you want it, a free AI explanation. Install once with
+            <code>npm install -g @crossberryweb/mozhi</code> and get two commands:
+            <code>mozhi</code> and <code>mz</code>.</p>
             <div class="md-grid md-grid-2">
+                <div class="md-card">
+                    <div class="md-card-icon"><span class="msym">packages</span></div>
+                    <h3>Packages — <code>mz install</code></h3>
+                    <p>Install libraries from the version-controlled registry, from any Git repo's
+                    tagged releases, or from a local zip: <code>mz install strings</code>. Packages
+                    are structure-verified before they land and import like native modules.
+                    Scaffold your own with <code>mz pkg new</code> — pushing a <code>v*</code> tag
+                    auto-releases <code>&lt;name&gt;.mz.pkg.zip</code>. <a href="packages.html">Package guide</a>.</p>
+                </div>
                 <div class="md-card">
                     <div class="md-card-icon sec"><span class="msym">error</span></div>
                     <h3>Precise error diagnostics</h3>
