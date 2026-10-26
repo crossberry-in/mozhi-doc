@@ -5,7 +5,7 @@ single source of truth: the MZ_CODE_REGISTRY table in
 mozhi/interpreter/src/mz_diag.c.
 
 Outputs (into mozhi-doc/errors/):
-  index.html                  — all v3.2.0 codes by category (+ legacy MZxxxx index link)
+  index.html                  — all v3.4.0 codes by category (+ legacy MZxxxx index link)
   <CODE>.html                 — one page per code with the 12 required elements
   <category>.html             — per-category pages (lexer/parser/types/names/...)
   ai-diagnosis.html           — the free AI Diagnosis documentation
@@ -15,7 +15,7 @@ every registered code has a page, every page has all 12 sections, and the
 index lists every code.
 
 The prose below documents ACTUAL, verified interpreter behavior (checked
-against the v3.2.0 binary) — nothing speculative.
+against the v3.4.0 binary) — nothing speculative.
 """
 import re
 import os
@@ -28,7 +28,7 @@ OUT_DIR = os.path.join(DOC_REPO, "errors")
 
 DOCS_BASE = "https://crossberry-in.github.io/mozhi-doc/errors"
 CLI_DOCS = "https://github.com/crossberry-in/mozhi/blob/main/docs/CLI.md"
-VERSION = "3.2.0"
+VERSION = "3.4.0"
 
 # ---------------------------------------------------------------- registry
 def parse_registry(path):
@@ -642,7 +642,7 @@ def code_page(entry):
                 <span class="sev sev-{sev}">{sev}</span>
             </div>
 
-            <span class="meta-chip"><span class="msym" style="font-size:16px">verified</span>since v{VERSION}</span>
+            <span class="meta-chip"><span class="msym" style="font-size:16px">verified</span>verified on v{VERSION}</span>
             <span class="meta-chip"><span class="msym" style="font-size:16px">category</span>{entry['category']}</span>
             <span class="meta-chip"><span class="msym" style="font-size:16px">terminal</span>stable code</span>
 
@@ -849,14 +849,18 @@ def ai_page():
                     <tr><td><code>MOZHI_AI=1</code></td><td>force-enable, also in scripts/JSON mode</td><td>unset</td></tr>
                     <tr><td><code>MOZHI_AI_TIMEOUT_MS</code></td><td>request timeout (500–60000)</td><td>20000</td></tr>
                     <tr><td><code>MOZHI_AI_ENDPOINT</code></td><td>replace the service (maintenance/testing)</td><td>built-in default</td></tr>
+                    <tr><td><code>MOZHI_AI_MODEL</code></td><td>override the model id sent to the service</td><td>built-in default</td></tr>
                     <tr><td><code>MOZHI_AI_MAX_CONTEXT</code></td><td>max source-context bytes (200–8000)</td><td>1200</td></tr>
                 </tbody>
             </table>
 
             <h2>Honest limits</h2>
             <ul>
-                <li>The free service is rate-limited to roughly one request per 30&nbsp;s per IP; on a
-                    burst you get the rate-limit notice instead of a suggestion.</li>
+                <li>The default free service was verified keyless and anonymous on
+                    2026-10-26 (repeated back-to-back requests, no throttling observed),
+                    but it is still a courtesy service: if it is unreachable,
+                    rate-limited, slow, or returns garbage, you get the one-line
+                    notice instead of a suggestion.</li>
                 <li>Suggestions can be wrong — the block always says so. Verified local facts (codes,
                     spans, fixes) always come first.</li>
                 <li>Binaries built without TLS support (some release targets) report

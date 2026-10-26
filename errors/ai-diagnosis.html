@@ -47,7 +47,7 @@
             <span class="md-brand-badge">M</span>
             Mozhi
         </a>
-        <span class="md-version-chip">v3.2.0</span>
+        <span class="md-version-chip">v3.4.0</span>
         <span class="md-appbar-spacer"></span>
         <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
             <span class="msym">code</span>
@@ -146,14 +146,18 @@ $ mozhi --ai --json run app.mz    # force in scripts; emits {"ai": ...} on stder
                     <tr><td><code>MOZHI_AI=1</code></td><td>force-enable, also in scripts/JSON mode</td><td>unset</td></tr>
                     <tr><td><code>MOZHI_AI_TIMEOUT_MS</code></td><td>request timeout (500–60000)</td><td>20000</td></tr>
                     <tr><td><code>MOZHI_AI_ENDPOINT</code></td><td>replace the service (maintenance/testing)</td><td>built-in default</td></tr>
+                    <tr><td><code>MOZHI_AI_MODEL</code></td><td>override the model id sent to the service</td><td>built-in default</td></tr>
                     <tr><td><code>MOZHI_AI_MAX_CONTEXT</code></td><td>max source-context bytes (200–8000)</td><td>1200</td></tr>
                 </tbody>
             </table>
 
             <h2>Honest limits</h2>
             <ul>
-                <li>The free service is rate-limited to roughly one request per 30&nbsp;s per IP; on a
-                    burst you get the rate-limit notice instead of a suggestion.</li>
+                <li>The default free service was verified keyless and anonymous on
+                    2026-10-26 (repeated back-to-back requests, no throttling observed),
+                    but it is still a courtesy service: if it is unreachable,
+                    rate-limited, slow, or returns garbage, you get the one-line
+                    notice instead of a suggestion.</li>
                 <li>Suggestions can be wrong — the block always says so. Verified local facts (codes,
                     spans, fixes) always come first.</li>
                 <li>Binaries built without TLS support (some release targets) report

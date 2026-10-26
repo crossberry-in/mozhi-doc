@@ -27,7 +27,7 @@
             <span class="md-brand-badge">M</span>
             Mozhi
         </a>
-        <span class="md-version-chip">v3.3.0</span>
+        <span class="md-version-chip">v3.4.0</span>
         <span class="md-appbar-spacer"></span>
         <a class="md-iconbtn" href="https://github.com/crossberry-in/mozhi" target="_blank" rel="noopener" aria-label="GitHub repository">
             <span class="msym">code</span>
@@ -155,7 +155,7 @@ mozhi doctor       # Should show all green checks</code></pre>
 
             <h2>Requirements</h2>
             <ul>
-                <li><strong>Interpreter:</strong> No dependencies — the v3.2 Linux builds (and the binaries bundled in the npm package) are fully static</li>
+                <li><strong>Interpreter:</strong> No dependencies — the v3.4 Linux builds (and the binaries bundled in the npm package) are fully static</li>
                 <li><strong>For C/C++/ASM FFI:</strong> <code>gcc</code> or <code>clang</code></li>
                 <li><strong>For Rust FFI:</strong> <code>rustc</code></li>
                 <li><strong>For GitHub dependencies:</strong> <code>git</code></li>
@@ -163,9 +163,9 @@ mozhi doctor       # Should show all green checks</code></pre>
 
             <h2>Manual Installation</h2>
             <p>If the installer doesn't work, you can install manually — the interpreter is a single fully static binary, no dispatcher or Python needed:</p>
-            <pre><code># Download the interpreter (v3.2.0, static — works on any Linux)
+            <pre><code># Download the interpreter (v3.4.0, static — works on any Linux)
 curl -fsSL -o /tmp/mozhi \\
-  https://github.com/crossberry-in/mozhi-doc/releases/download/v3.2.0/mozhi-interpreter-linux-arm64
+  https://github.com/crossberry-in/mozhi-doc/releases/download/v3.4.0/mozhi-interpreter-linux-arm64
 
 # Install as 'mozhi' (canonical), the 'mz' short alias, and keep the legacy name as a symlink
 sudo mv /tmp/mozhi /usr/local/bin/mozhi

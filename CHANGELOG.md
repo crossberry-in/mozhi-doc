@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.4.0] — 2026-10-26 — AI Diagnosis service switch
+
+### Changed
+- AI Diagnosis default service is now `blockrun.ai/api/v1/chat/completions`
+  (model `nvidia/gpt-oss-20b`), verified anonymously reachable on
+  2026-10-26. The "one request per 30 s per IP" claim (old provider) is
+  removed from the docs; the limits section now describes the verified
+  behavior instead.
+- New `MOZHI_AI_MODEL` environment variable documented on
+  `errors/ai-diagnosis.html` (mirrors `MOZHI_AI_ENDPOINT`).
+- Version chips swept to v3.4.0; `errors/` regenerated from the
+  interpreter registry via `scripts/gen_error_docs.py` (the per-code
+  "since vX" chip is now an honest "verified on v3.4.0" chip).
+
+## [3.3.0] — 2026-10-26 — Package manager docs
+
+- New `packages.html`: install/manage/registry/create/publish guide with
+  verification callout and official package cards; Packages link added to
+  the drawer on all pages; v3.3.0 chip sweep; npm-package section on
+  `install.html`; feature card on `index.html`.
+
 ## [3.2.0] — 2026-10-25 — Error Reference, AI Diagnosis docs & `mz`
 
 ### Added
