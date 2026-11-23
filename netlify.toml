@@ -30,6 +30,12 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/api/registry"
+  to = "/.netlify/functions/registry-api"
+  status = 200
+  force = true
+
 [[headers]]
   for = "/install.sh"
   [headers.values]

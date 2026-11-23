@@ -5,11 +5,11 @@
 //   /api/docs?path=developers/01-install-mz → full markdown of one page
 //   /api/docs?guide=users          → list only one guide
 //
-// Data source: the NxDB database (mz_docs table) when NXDB_ID/NXDB_PASSWORD are
-// present in the environment; otherwise the bundled index generated at build
-// time. Page content (markdown) is always served from the bundled build — the
-// database stores the index, the site files store the content. No credentials
-// are exposed by this endpoint.
+// Data source: the NxDB database when NXDB_ID/NXDB_PASSWORD are present —
+// the docs index lives in mz_docs and the page CONTENT (markdown files) lives
+// in NxDB file storage (mz_doc_files → storage download). When the database is
+// unavailable the bundled build data is served instead, so the endpoint never
+// goes down. No credentials are exposed by this endpoint.
 import { DOCS } from "./_data/docs-data.mjs";
 
 const json = (status, body) => new Response(JSON.stringify(body, null, 2), {
@@ -23,6 +23,25 @@ function excerpt(text, query, radius = 120) {
   if (at === -1) return text.slice(0, radius) + (text.length > radius ? "…" : "");
   const start = Math.max(0, at - radius / 2);
   return (start > 0 ? "…" : "") + text.slice(start, at + query.length + radius / 2).replace(/\s+/g, " ") + "…";
+}
+
+// Docs file storage — resolve a page's markdown from NxDB file storage.
+async function contentFromDb(slug) {
+  const databaseId = process.env.NXDB_ID;
+  const password = process.env.NXDB_PASSWORD;
+  if (!databaseId || !password) return null;
+  try {
+    const NxDB = (await import("nxmirror-db")).default;
+    const db = await NxDB.connect({ databaseId, password });
+    const row = await db.query("SELECT file_id FROM mz_doc_files WHERE slug = ?", [slug]);
+    const fileId = row.rows?.[0]?.file_id;
+    if (!fileId) return null;
+    const buf = await db.storage.download(fileId);
+    const text = buf.toString("utf8");
+    return text.length > 0 ? text : null;
+  } catch {
+    return null;
+  }
 }
 
 export default async (req) => {
@@ -44,13 +63,15 @@ export default async (req) => {
     if (!found) {
       return json(404, { ok: false, error: "no docs page for path " + path, hint: "GET /api/docs for the list of slugs" });
     }
+    const fromDb = await contentFromDb(found.slug);
     return json(200, {
       ok: true,
       doc: {
         slug: found.slug, guide: found.guide, title: found.title,
         description: found.description, words: found.words,
         url: `https://mz.netlify.app/docs/${found.slug}/`,
-        content_markdown: found.content
+        source: fromDb ? "nxdb" : "bundled",
+        content_markdown: fromDb || found.content
       }
     });
   }
