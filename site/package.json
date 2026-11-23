@@ -1,0 +1,17 @@
+{
+  "name": "mz-docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mozhi (mz) documentation site — Next.js static export deployed on Netlify; hosts the manual mz installer, the NxDB-connected docs API and the release file index.",
+  "scripts": {
+    "sync": "node scripts/fetch-dist.mjs && node scripts/build-content.mjs && node scripts/seed-db.mjs",
+    "build": "npm run sync && next build",
+    "dev": "node scripts/build-content.mjs && next dev"
+  },
+  "dependencies": {
+    "next": "14.2.35",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "nxmirror-db": "^1.1.1"
+  }
+}

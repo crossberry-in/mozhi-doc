@@ -1,0 +1,42 @@
+# mz-docs — Netlify configuration for the Next.js docs site in site/.
+# The GitHub Pages static site at the repo root is untouched; Netlify builds
+# only the site/ directory.
+[build]
+  base = "site"
+  command = "npm run sync && npx next build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Serverless functions live in site/netlify/functions. Secrets (NXDB_ID,
+# NXDB_PASSWORD) go ONLY into Netlify environment variables — never into git.
+
+[[redirects]]
+  from = "/api/docs"
+  to = "/.netlify/functions/docs-api"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/releases"
+  to = "/.netlify/functions/releases-api"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/dist/*"
+  to = "/.netlify/functions/dist-proxy"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/install.sh"
+  [headers.values]
+    Content-Type = "text/x-shellscript; charset=utf-8"
+    Cache-Control = "public, max-age=300"
+
+[[headers]]
+  for = "/dist/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"

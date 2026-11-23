@@ -1,0 +1,10 @@
+node_modules/
+out/
+.next/
+.env
+.env.*
+public/dist/
+public/docs-content.json
+lib/content-index.json
+netlify/functions/_data/
+*.log
