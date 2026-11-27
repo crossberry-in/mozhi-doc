@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**A simple, Python-like scripting language implemented in C with a tree-walking interpreter.**
+**A simple, beginner-friendly programming language with a clean and expressive syntax.**
 
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Termux-blue.svg)](#supported-platforms)
@@ -14,7 +14,7 @@
 
 ## Overview
 
-**Mozhi** is a lightweight, beginner-friendly scripting language with its own unique syntax. It is implemented in C as a tree-walking interpreter, designed for learning, rapid prototyping, and embedding in larger applications. Mozhi supports variables, constants, functions, closures, classes, arrays, and a rich set of built-in functions.
+**Mozhi** is a lightweight, beginner-friendly scripting language with its own unique syntax. It is designed for learning, rapid prototyping, automation, and building applications. Mozhi supports variables, constants, functions, closures, classes, arrays, and a rich set of built-in functions.
 
 > **New in v3.0:** Mozhi is now a **full-stack language**. The interpreter ships a native HTTP server, HTML template engine, JSON stack, sandboxed filesystem module, and SQLite database — server-side web development in pure Mozhi with zero external runtimes. See the [Web Server Guide](docs/WEB_GUIDE.md).
 
@@ -30,31 +30,14 @@
 - **[Web Server Guide](docs/WEB_GUIDE.md)** — **NEW in v3.0:** native HTTP server, templates, JSON, fs, SQLite — full-stack development in pure Mozhi
 - **[Native Build Guide](docs/BUILD.md)** — Build standalone native executables with `mz build` and native package workflows
 - **[App Guide](docs/APP_GUIDE.md)** — Create, build, install, and open Mozhi app packages
-- **[mozhi-fast (Rust VM)](docs/mozhi-fast.md)** — The faster Rust bytecode-VM interpreter
 - **[Chart Gallery](docs/chart-gallery.html)** — 33 chart types of mozhi-mini vs mozhi-fast benchmarks
 - **[Packages](docs/packages.md)** — install packages from the registry, NxMirror, GitHub, or local archives
 - **[Native Build Guide](docs/BUILD.md)** — build standalone native executables and native packages
 - **[App Guide](docs/APP_GUIDE.md)** — create, build, install, and launch Mozhi app packages
 - **[Examples](examples/)** — Sample Mozhi programs to learn from
-- **[Changelog](CHANGELOG.md)** — Version history and changes
 - **[FAQ](FAQ.md)** — Frequently asked questions
 
 ---
-
-## What's New in v2.6.0
-
-### mozhi-fast — Rust bytecode VM
-A **faster Rust implementation** of the Mozhi interpreter. Compiles Mozhi
-source to bytecode and runs it on a stack-based VM — faster and memory-safe,
-with correct 64-bit arithmetic.
-
-```bash
-# build from source (see docs/mozhi-fast.md)
-cd mozhi-fast && cargo build --release
-./target/release/mozhi-fast file.mz
-```
-
-Full details: **[docs/mozhi-fast.md](docs/mozhi-fast.md)**
 
 ## What's New in v3.1.1
 
@@ -241,7 +224,7 @@ mz install ./calculator.mz.pkg.zip --local
 ```
 
 The executable is a standalone program artifact; it is not currently an
-importable Mozhi module. Native compilation supports a subset of the language.
+importable Mozhi module. Native builds may support a subset of the language.
 See the [Native Build Guide](docs/BUILD.md) for requirements and limitations.
 
 ## Mozhi App Workflow
@@ -272,7 +255,6 @@ See the [App Guide](docs/APP_GUIDE.md) for the complete workflow.
 - **Control Flow** — `if/elseif/else`, `while`, `for`, `for-in`, `match`
 - **Built-ins** — `echo`, `input`, `len`, `typeof`, `int`, `float`, `string`, `sqrt`, `abs`, `floor`, `ceil`, and more
 - **String Interpolation** — Embed expressions inside strings
-- **Lightweight** — Single static binary, no runtime dependencies (musl/static builds) or just `libc`+`libm` (glibc builds)
 - **Cross-Platform** — Runs on Linux (glibc and musl/Alpine), macOS (Intel and Apple Silicon), Windows (10/11 x86_64), and Termux on Android
 
 ---
@@ -297,15 +279,9 @@ The installer auto-detects your OS, architecture, and libc, then downloads the c
 >
 > **Note for Windows users:** You can run Mozhi natively (via `mozhi.exe` in PowerShell/CMD) or via WSL (using the Linux x86_64 build). Both work.
 >
-> **Building from source:** Source code is private. If you need a build for an unsupported platform (e.g., FreeBSD, OpenBSD, Linux 32-bit), please [open an issue](https://github.com/crossberry-in/mozhi-doc/issues) to request a binary.
+
 
 ---
-
-## License
-
-Mozhi is **proprietary software**. The binary is freely available for download and use, but the source code is closed and may not be redistributed.
-
-See [LICENSE](LICENSE) for full terms.
 
 ---
 
@@ -316,12 +292,6 @@ See [LICENSE](LICENSE) for full terms.
 - **Discussions:** [GitHub Discussions](https://github.com/crossberry-in/mozhi-doc/discussions)
 
 ---
-
-## Links
-
-- **Releases:** https://github.com/crossberry-in/mozhi-doc/releases
-- **Documentation:** This repository
-- **Author:** [crossberry-in](https://github.com/crossberry-in)
 
 ---
 
