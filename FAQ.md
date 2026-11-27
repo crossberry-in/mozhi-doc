@@ -10,7 +10,7 @@ Mozhi is a simple, Python-like scripting language designed as a lightweight prog
 
 ### Who created Mozhi?
 
-Mozhi is developed by [crossberry-in](https://github.com/crossberry-in).
+Mozhi is a programming language designed for clear, readable, and practical programs.
 
 ### Is Mozhi open source?
 
@@ -28,9 +28,6 @@ Yes, the Mozhi binary is free to download and use. See the [LICENSE](LICENSE) fi
 
 ## Technical
 
-### What language is Mozhi written in?
-
-Mozhi is designed around a clear syntax and consistent language features.
 
 ### What platforms does Mozhi support?
 
@@ -149,11 +146,6 @@ sudo rm /usr/local/bin/mozhi
 
 See [Uninstalling](INSTALL.md#uninstalling) for details.
 
-### Can I build Mozhi from source?
-
-The source code is **closed-source**, so public builds are not supported. If you need a build for a platform not listed under [Supported Platforms](README.md#supported-platforms), please [open an issue](https://github.com/crossberry-in/mozhi-doc/issues).
-
----
 
 ## Usage
 
