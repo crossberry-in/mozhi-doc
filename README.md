@@ -18,10 +18,6 @@
 
 > **New in v3.0:** Mozhi is now a **full-stack language**. The interpreter ships a native HTTP server, HTML template engine, JSON stack, sandboxed filesystem module, and SQLite database — server-side web development in pure Mozhi with zero external runtimes. See the [Web Server Guide](docs/WEB_GUIDE.md).
 
-> **Note:** The Mozhi source code is **closed-source and proprietary**. This repository contains only the **public documentation, installation guide, usage guide, and binary releases**. Source code is maintained privately by the project maintainers.
-
----
-
 ## Documentation
 
 - **[Installation Guide](INSTALL.md)** — How to install Mozhi on your system
