@@ -1,4 +1,4 @@
-# Packages — import & `mz add`
+# Packages — import & `mz install`
 
 Mozhi supports importing source libraries and installing packages with `mz install`.
 Packages can come from the existing registry, NxMirror, GitHub release packages,
@@ -62,7 +62,7 @@ a local package archive.
 
 ```bash
 # install the charts library
-mozhi-fast add charts
+mz install charts
 
 # use it
 cat > plot.mz <<'EOF'
@@ -77,7 +77,7 @@ mozhi-fast plot.mz
 ## Environment spaces (ens)
 
 Like a Python virtualenv, you can create an isolated environment where
-`import` and `mz add` work from any folder.
+`import` and `mz install` work from any folder.
 
 ```bash
 # create an environment (activates it in this shell)
@@ -96,7 +96,7 @@ mozhi-fast ens-list
 ```
 
 Environments live in `$HOME/.mozhi/ens/<name>/`. Activating sets `MZ_ENV` and
-`MZ_LIB` to the environment's `libs/` dir; `mz add` installs there and
+`MZ_LIB` to the environment's `libs/` dir; `mz install` installs there and
 `import` resolves from there (before project/global libs).
 
 ## Native package artifacts
