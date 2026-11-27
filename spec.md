@@ -1703,9 +1703,9 @@ Mozhi types are marshalled to and from native types at the FFI boundary. The fol
 | `byte` | `uint8_t` | Raw byte |
 | `pointer` | `void*` | Raw pointer (unsafe) |
 
-### 13.3 Supported Backend Languages
+### 13.3 supported interoperability options
 
-Mozhi's FFI supports the following backend languages. Each requires its respective compiler to be installed.
+Mozhi provides interoperability features for connecting compatible external libraries and tools.
 
 | Language | File Extension | Compiler | Notes |
 |----------|---------------|----------|-------|
@@ -1886,7 +1886,7 @@ Install Mozhi interpreters and tools globally to `~/.mzpkg/bin/`:
 
 ```bash
 mzpkg install -g interpreter-fast   # Mozhi fast interpreter (Rust VM)
-mzpkg install -g interpreter        # Mozhi C interpreter
+mzpkg install -g interpreter        # Mozhi Mozhi execution engine
 mzpkg install -g libs               # Standard libraries
 ```
 
