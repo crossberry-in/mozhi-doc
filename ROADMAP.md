@@ -168,8 +168,8 @@ A complete collections library is essential for productive programming.
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| Tree-walking Interpreter | ✅ Done | Current execution model (v2.0) |
-| Bytecode VM | Planned | Stack-based VM executing .sibc bytecode |
+| Mozhi execution engine | ✅ Done | Current execution model |
+| Optimized execution | Planned | Improved execution performance for Mozhi programs |
 | Garbage Collector | Planned | Mark-sweep GC with generational optimization |
 | JIT Compiler | Planned | Just-in-time compilation for hot paths |
 | Native Code Generator | Planned | LLVM backend for native executables |
@@ -271,7 +271,7 @@ These are ambitious goals that extend beyond the 12-phase roadmap.
 
 | Version | Target Date | Focus |
 |---------|------------|-------|
-| **v2.0** | ✅ Released | New syntax (braces, fn, const, match), C++/ASM/Rust backend |
+| **v2.0** | ✅ Released | New syntax (braces, fn, const, match) and language features |
 | **v2.1** | Q3 2026 | Language core: generics, traits, iterators, tuples, destructuring |
 | **v2.2** | Q4 2026 | Collections library + package manager improvements |
 | **v2.3** | Q1 2027 | Standard library + testing framework |
