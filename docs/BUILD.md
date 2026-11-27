@@ -31,11 +31,23 @@ release = true                  # false selects a debug build
 
 ## Build an executable
 
-From the project directory:
+From the project directory, use the configured mode and output:
 
 ```bash
 mz build
 ```
+
+You can override the project configuration for a single build:
+
+```bash
+mz build --mode native --debug -o debug/calculator
+mz build --mode interpreter -o dist/calculator.mz
+```
+
+- `--mode native` selects native executable generation.
+- `--mode interpreter` selects interpreter output.
+- `--debug` requests a debug build.
+- `-o <path>` overrides the output path.
 
 Run the generated program directly:
 
@@ -53,7 +65,7 @@ Use the project run command for the configured execution mode:
 mz run
 ```
 
-When `mode = "native"` is selected, the project uses its native build/run workflow. Use `mz build` when you specifically want to create the executable as a build artifact.
+When `mode = "native"` is selected, the project uses its native build/run workflow. Use `mz build` when you specifically want to create the executable as a build artifact. A native executable can then be launched directly, for example `./dist/release/calculator`.
 
 ## Native package builds
 
@@ -68,6 +80,16 @@ A package can declare its generated executable in package metadata:
 
 ```toml
 binary = "dist/release/myapp"
+```
+
+A package manifest can declare its entry point and generated executable:
+
+```toml
+[package]
+name = "calculator"
+version = "0.1.0"
+entry = "src/mod.mz"
+binary = "dist/release/calculator"
 ```
 
 The package may still include and expose its Mozhi source modules. Source modules remain imported as `.mz` modules. A generated executable is a standalone program artifact; it is **not** automatically an importable Mozhi module. Importing compiled binaries as modules would require a separate binary module format and loader.
@@ -113,3 +135,47 @@ Check the `output` value in `mozhi.toml` and confirm that the build completed su
 - [Usage Guide](../USAGE.md)
 - [Package Guide](packages.md)
 - [mozhi-fast bytecode VM](mozhi-fast.md)
+
+## Package installation and execution
+
+Install a locally built package archive:
+
+```bash
+mz install ./calculator.mz.pkg.zip --local
+```
+
+The installed package's executable is placed within the local package directory. For the example package above:
+
+```bash
+./.mozhi/pkg/calculator/dist/release/calculator
+```
+
+Package installation does not implicitly run the installed executable. Launch it explicitly when you intend to execute it.
+
+## Build and test from a source checkout
+
+The following commands are useful when working on the interpreter and Rust VM from a source checkout:
+
+```bash
+make -C interpreter
+./interpreter/build/mozhi run path/to/program.mz
+
+cargo build --release --manifest-path mozhi-fast/Cargo.toml
+export MOZHI_FAST_BIN="$PWD/mozhi-fast/target/release/mozhi-fast"
+```
+
+Build the native CLI example with the C CLI built above:
+
+```bash
+cd examples/native-cli
+../../interpreter/build/mozhi build
+./dist/release/native-demo
+```
+
+Run the relevant test suites:
+
+```bash
+make -C interpreter test
+cargo test --manifest-path mozhi-fast/Cargo.toml
+node --test tests/nxmirror.test.js tests/native_package.test.js
+```
