@@ -6,9 +6,14 @@
 - Native executable build documentation: `docs/BUILD.md` covers
   `mozhi.toml` build settings, `mz build`, `mz run`, supported native
   compiler features, and current limitations.
-- Native package build/publish documentation for `mz pkg build . --native`,
-  `mz pkg publish . --native`, and the package `binary` artifact field.
-- README and usage-guide links to the native build guide.
+- Native build documentation now covers mode overrides (`--mode`, `--debug`, `-o`),
+  package archive installation, installed binary paths, source-checkout builds,
+  and interpreter/Rust/package test commands.
+- Package manager documentation covers `mz install`, NxMirror version selection,
+  GitHub release packages, local archives/source directories, `mz list`, and
+  `mz uninstall`.
+- Added `docs/APP_GUIDE.md` for the `mz app new/build/install/open/home` lifecycle.
+- README links to the native build and app guides; usage guide links to native builds.
 
 ---
 
