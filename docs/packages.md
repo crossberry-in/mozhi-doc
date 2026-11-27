@@ -1,8 +1,8 @@
 # Packages — import & `mz add`
 
-mozhi-fast supports importing libraries and installing them with a small
-package manager. Packages are fetched from the **mozhi-doc package registry**
-(or from git / local files).
+Mozhi supports importing source libraries and installing packages with `mz install`.
+Packages can come from the existing registry, NxMirror, GitHub release packages,
+or local archives and source directories.
 
 ## Import
 
@@ -29,29 +29,34 @@ echo(math_utils.factorial(10))     # 3628800
 5. `$MZ_LIB` override
 6. **Auto-install** from the mozhi-doc registry, then re-resolve
 
-## `mz add` — package manager
+## `mz install` — package manager
 
-Install libraries manually:
+Install a package by name. Mozhi checks the existing registry first and can fall back to NxMirror when the package is absent:
 
 ```bash
-# from git
-mz add @user/repo
-mz add @user/repo:subpath
-
-# from a local file
-mz add /path/to/library.mz
-
-# from the mozhi-doc registry (e.g. charts, json, math_utils, mznn, ...)
-mz add charts
-mz add json
+mz install <name>                  # Existing registry, then NxMirror if absent
+mz install nx:<name>               # Explicitly select NxMirror
+mz install nx:<name>@1.2.0 --local  # Pin an exact NxMirror version
+mz install @owner/repo             # GitHub release package
+mz install ./tool.mz.pkg.zip       # Local package archive
+mz install ./package-directory    # Local source package
 ```
 
-`mozhi-fast add <spec>` is the same command.
+List installed packages and remove one:
+
+```bash
+mz list
+mz uninstall <name>
+```
+
+The `--local` option selects the local installation scope for the explicit NxMirror version in the example above. Package source archives and package directories are installed as package content; installation does not automatically execute a package binary.
 
 ### Auto-install on import
 
-If a package isn't found locally, `import` will automatically fetch it from the
-mozhi-doc registry and install it, then load it. No manual step needed.
+If a package isn't found locally, `import` can automatically fetch it from the
+configured registry flow and install it, then load it. Explicit `mz install`
+remains available when you want to choose a source such as NxMirror, GitHub, or
+a local package archive.
 
 ## Example
 
