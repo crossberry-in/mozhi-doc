@@ -91,7 +91,7 @@ The PowerShell installer:
 
 ---
 
-## mozhi-fast (Rust bytecode VM)
+## mozhi-fast (optimized execution mode)
 
 `mozhi-fast` is a faster Rust implementation of the interpreter. To install the
 pre-built binary:
