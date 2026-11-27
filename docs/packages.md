@@ -94,6 +94,31 @@ Environments live in `$HOME/.mozhi/ens/<name>/`. Activating sets `MZ_ENV` and
 `MZ_LIB` to the environment's `libs/` dir; `mz add` installs there and
 `import` resolves from there (before project/global libs).
 
+## Native package artifacts
+
+A package can optionally ship a standalone executable produced by the native
+build workflow. Build or publish with native output enabled:
+
+```bash
+mz pkg build . --native
+mz pkg publish . --native
+```
+
+Declare the executable path in the package metadata:
+
+```toml
+binary = "dist/release/myapp"
+```
+
+The package can still include its Mozhi source modules. Consumers import
+those modules from their `.mz` source files using the normal package import
+mechanism. The generated executable is a standalone program artifact; it
+cannot currently be imported as a Mozhi module. Binary-module imports require
+a separate module format and loader.
+
+For project-level native build configuration, compiler support, and
+troubleshooting, see the [Native Build Guide](BUILD.md).
+
 ## Notes & limitations
 
 - **Self-recursion** and **mutual recursion** between module functions both work
