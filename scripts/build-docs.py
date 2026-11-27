@@ -11,10 +11,10 @@ OUT = DOCS / "generated"
 OUT.mkdir(parents=True, exist_ok=True)
 
 def title_for(source: str, fallback: str) -> str:
-    match = re.search(r"^#\\s+(.+)$", source, re.MULTILINE)
+    match = re.search(r"^#\s+(.+)$", source, re.MULTILINE)
     return match.group(1).strip() if match else fallback.replace("-", " ").title()
 
-def page(title: str, body: str, active: str = "") -> str:
+def page(title: str, body: str) -> str:
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="{html.escape(title)} — Mozhi documentation">
@@ -38,13 +38,16 @@ for source in sources:
     raw = source.read_text(encoding="utf-8")
     title = title_for(raw, source.stem)
     rendered = markdown.markdown(raw, extensions=["fenced_code", "tables", "toc", "sane_lists"])
-    # Keep generated Markdown links within the generated documentation where possible.
-    rendered = re.sub(r'href="([^"]+)\\.md(#[^"]*)?"', lambda m: 'href="' + m.group(1).replace("/", "--") + '.html' + (m.group(2) or "") + '"', rendered)
+    rendered = re.sub(
+        r'href="([^"]+)\.md(#[^"]*)?"',
+        lambda m: 'href="' + m.group(1).replace("/", "--") + ".html" + (m.group(2) or "") + '"',
+        rendered,
+    )
     target = OUT / f"{slug}.html"
     target.write_text(page(title, rendered), encoding="utf-8")
     entries.append((title, rel.as_posix(), target.name))
 
-items = "\\n".join(
+items = "\n".join(
     f'<li><a href="{html.escape(filename)}">{html.escape(title)}</a> <span class="muted">— {html.escape(source)}</span></li>'
     for title, source, filename in entries
 )
