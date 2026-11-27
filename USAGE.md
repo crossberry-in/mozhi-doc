@@ -2,6 +2,8 @@
 
 This guide explains how to use the Mozhi interpreter, including the REPL, running scripts, working with files, and using built-in features.
 
+For standalone native executables, project build configuration, and native package workflows, see the [Native Build Guide](docs/BUILD.md).
+
 ---
 
 ## Table of Contents
