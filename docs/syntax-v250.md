@@ -1,7 +1,7 @@
 # Mozhi v2.5.0 — Array, Matrix & Math Upgrades
 
 This document describes the syntax and library upgrades shipped with the
-rebuilt Mozhi C interpreter (v2.5.0). These changes make Mozhi practical for
+rebuilt Mozhi Mozhi execution engine (v2.5.0). These changes make Mozhi practical for
 data and neural-network programming.
 
 All examples run with the bundled interpreter:
