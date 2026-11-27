@@ -2,7 +2,7 @@
 
 Mozhi can produce a standalone native executable from a supported `.mz` program. The native build uses the Rust compiler's C-generation path, then invokes a C compiler to produce a machine-code executable.
 
-This is a separate output mode from the normal interpreter and the `mozhi-fast` bytecode VM.
+This is a separate output mode from the normal interpreter and the `mozhi-fast` optimized execution mode.
 
 ## Requirements
 
@@ -103,7 +103,7 @@ The current native code-generation path supports a deliberately limited subset o
 - Loops.
 - Literal printing.
 
-Unsupported constructs, including imports and dynamic language features, are rejected rather than silently omitted. If a program uses unsupported features, use the interpreter or bytecode VM instead, or simplify the program to the supported native subset.
+Unsupported constructs, including imports and dynamic language features, are rejected rather than silently omitted. If a program uses unsupported features, use the interpreter or optimized execution mode instead, or simplify the program to the supported native subset.
 
 This feature is evolving. Do not assume that every valid Mozhi program can be compiled natively.
 
@@ -123,7 +123,7 @@ Install a supported C compiler for your platform and ensure its executable is av
 
 ### Program uses unsupported features
 
-The native compiler reports unsupported imports or dynamic constructs. Run the program with the interpreter/bytecode VM, or refactor it to use the currently supported native subset.
+The native compiler reports unsupported imports or dynamic constructs. Run the program with the interpreter/optimized execution mode, or refactor it to use the currently supported native subset.
 
 ### Executable path does not exist
 
@@ -134,7 +134,7 @@ Check the `output` value in `mozhi.toml` and confirm that the build completed su
 - [Installation Guide](../INSTALL.md)
 - [Usage Guide](../USAGE.md)
 - [Package Guide](packages.md)
-- [mozhi-fast bytecode VM](mozhi-fast.md)
+- [mozhi-fast optimized execution mode](mozhi-fast.md)
 
 ## Package installation and execution
 
@@ -157,7 +157,7 @@ Package installation does not implicitly run the installed executable. Launch it
 The following commands are useful when working on the interpreter and Rust VM from a source checkout:
 
 ```bash
-make -C interpreter
+make -Mozhi execution engine
 ./interpreter/build/mozhi run path/to/program.mz
 
 cargo build --release --manifest-path mozhi-fast/Cargo.toml
@@ -175,7 +175,7 @@ cd examples/native-cli
 Run the relevant test suites:
 
 ```bash
-make -C interpreter test
+make -Mozhi execution engine test
 cargo test --manifest-path mozhi-fast/Cargo.toml
 node --test tests/nxmirror.test.js tests/native_package.test.js
 ```
