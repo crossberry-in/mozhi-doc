@@ -172,7 +172,7 @@ A complete collections library is essential for productive programming.
 | Optimized execution | Planned | Improved execution performance for Mozhi programs |
 | Garbage Collector | Planned | Mark-sweep GC with generational optimization |
 | JIT Compiler | Planned | Just-in-time compilation for hot paths |
-| Native Code Generator | Planned | LLVM backend for native executables |
+| Native Code Generator | Planned | native execution improvements for native executables |
 | Dynamic Loader | Planned | Load .mzl packages at runtime |
 | Plugin System | Planned | Dynamically loadable modules with stable ABI |
 
@@ -277,7 +277,7 @@ These are ambitious goals that extend beyond the 12-phase roadmap.
 | **v2.3** | Q1 2027 | Standard library + testing framework |
 | **v2.4** | Q2 2027 | Networking library |
 | **v2.5** | Q3 2027 | Concurrency (threads, async/await, channels) |
-| **v3.0** | Q4 2027 | Compiler: bytecode VM + JIT + native codegen |
+| **v3.0** | Q4 2027 | Compiler: optimized execution mode + JIT + native codegen |
 | **v3.1** | Q1 2028 | Developer experience: LSP, debugger, profiler |
 | **v4.0** | Q4 2028 | Self-hosting compiler |
 
