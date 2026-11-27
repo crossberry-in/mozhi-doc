@@ -2,7 +2,7 @@
 
 **Benchmark Version:** 3.0.0  
 **Date:** 2026-08-01 16:15:18  
-**Mozhi Version:** Mozhi v2.0 (C++/ASM/Rust Implementation)  
+**Mozhi Version:** Mozhi v2.0  
 **Build Hash:** 37b0750b33b9d03b  
 **Git Commit:** cfd3754  
 **Build Mode:** Release (-O3 -march=native)  
