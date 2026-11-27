@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- Native executable build documentation: `docs/BUILD.md` covers
+  `mozhi.toml` build settings, `mz build`, `mz run`, supported native
+  compiler features, and current limitations.
+- Native package build/publish documentation for `mz pkg build . --native`,
+  `mz pkg publish . --native`, and the package `binary` artifact field.
+- README and usage-guide links to the native build guide.
+
+---
+
+
 All notable changes to the Mozhi programming language will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
