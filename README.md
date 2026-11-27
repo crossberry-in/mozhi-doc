@@ -29,6 +29,7 @@
 - **[Language Reference](LANGUAGE_REFERENCE.md)** — Complete language syntax and features
 - **[Web Server Guide](docs/WEB_GUIDE.md)** — **NEW in v3.0:** native HTTP server, templates, JSON, fs, SQLite — full-stack development in pure Mozhi
 - **[Native Build Guide](docs/BUILD.md)** — Build standalone native executables with `mz build` and native package workflows
+- **[App Guide](docs/APP_GUIDE.md)** — Create, build, install, and open Mozhi app packages
 - **[mozhi-fast (Rust VM)](docs/mozhi-fast.md)** — The faster Rust bytecode-VM interpreter
 - **[Chart Gallery](docs/chart-gallery.html)** — 33 chart types of mozhi-mini vs mozhi-fast benchmarks
 - **[Packages](docs/packages.md)** — import libraries & `mz add` package manager
