@@ -7,7 +7,7 @@ This is a separate output mode from the normal interpreter and the `mozhi-fast` 
 ## Requirements
 
 - A working Mozhi installation that includes the native build command.
-- Rust toolchain components required by the Mozhi compiler.
+- The Mozhi native compiler included with the build-capable distribution.
 - A C compiler available on `PATH` for the final compilation step.
 
 The exact compiler/toolchain requirements can vary by platform and release.
