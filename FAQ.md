@@ -8,17 +8,8 @@
 
 Mozhi is a simple, Python-like scripting language designed as a lightweight programming language. It is designed for learning, rapid prototyping, and embedding in larger applications.
 
-### Who created Mozhi?
 
-Mozhi is a programming language designed for clear, readable, and practical programs.
 
-### Is Mozhi open source?
-
-No. Mozhi is **closed-source and proprietary**. The binary is freely available for download and use, but the source code is private and not for redistribution.
-
-### Is Mozhi free to use?
-
-Yes, the Mozhi binary is free to download and use. See the [LICENSE](LICENSE) file for full terms.
 
 ### What does the name "Mozhi" mean?
 
