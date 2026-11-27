@@ -117,21 +117,18 @@
   - BR008 variable_access: Mean exceeded threshold (500 ms). Measured: 534.79 ms
 
 ### Optimization Suggestions
-- [Planned] Bytecode compilation (.sibc format) — estimated 3-5x speedup
-- [Planned] JIT compilation for hot-path functions
-- [Planned] Optimize array push() with pre-allocation strategy
-- [Planned] Use SIMD instructions for batch array operations
-- [Planned] Cache string length instead of recalculating
+- Improve variable and function access performance
+- Optimize collection operations
+- Improve compilation and startup times
 
 ### Known Issues
 - Integer overflow on large sums (32-bit int without overflow detection)
 - try/catch blocks are parsed but not fully evaluated
 
 ### Future Improvements
-- [Planned] Native code generation (LLVM backend) — target: near-C performance
-- [Planned] Incremental compilation for faster rebuilds
-- [Planned] Parallel garbage collection
-- [Planned] Async I/O for file and network operations
+- Improve execution speed for common language operations
+- Reduce memory use for large collections
+- Improve asynchronous I/O and application responsiveness
 
 ## Methodology
 
