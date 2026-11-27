@@ -32,7 +32,9 @@
 - **[App Guide](docs/APP_GUIDE.md)** — Create, build, install, and open Mozhi app packages
 - **[mozhi-fast (Rust VM)](docs/mozhi-fast.md)** — The faster Rust bytecode-VM interpreter
 - **[Chart Gallery](docs/chart-gallery.html)** — 33 chart types of mozhi-mini vs mozhi-fast benchmarks
-- **[Packages](docs/packages.md)** — import libraries & `mz add` package manager
+- **[Packages](docs/packages.md)** — install packages from the registry, NxMirror, GitHub, or local archives
+- **[Native Build Guide](docs/BUILD.md)** — build standalone native executables and native packages
+- **[App Guide](docs/APP_GUIDE.md)** — create, build, install, and launch Mozhi app packages
 - **[Examples](examples/)** — Sample Mozhi programs to learn from
 - **[Changelog](CHANGELOG.md)** — Version history and changes
 - **[FAQ](FAQ.md)** — Frequently asked questions
@@ -92,7 +94,7 @@ import html                        # wildcard (func() directly)
 import http from "mozhi-http"      # namespace (http.func())
 import my from "mylib.mz"          # file path (my.func())
 ```
-Libraries auto-download from GitHub on first use — no `mozhi add` needed!
+Libraries can be resolved automatically on import. For explicit package installation, use `mz install` (see the [Packages Guide](docs/packages.md)).
 
 ### HTTP Static File Serving
 ```mozhi
@@ -115,7 +117,7 @@ http.http_serve_loop(server, handler)
 - `mozhi-math-utils` — 24 math functions + PI, E
 - `mozhi-strings` — 21 string manipulation functions
 
-Install with: `mozhi add mozhi-http` (or just use `import http from "mozhi-http"`)
+Install with: `mz install mozhi-http` (or use `import http from "mozhi-http"` when automatic import resolution is available).
 
 ---
 
@@ -169,6 +171,93 @@ Output:
 ```
 Hello, World!
 ```
+
+---
+
+## Package Manager
+
+Install packages from the existing registry, with NxMirror fallback when a
+package is not found. You can also select NxMirror explicitly, install an
+exact version, use GitHub release packages, or install local package files.
+
+```bash
+mz install <name>                   # Existing registry, then NxMirror if absent
+mz install nx:<name>                # Explicitly select NxMirror
+mz install nx:<name>@1.2.0 --local  # Pin an exact NxMirror version
+mz install @owner/repo              # GitHub release package
+mz install ./tool.mz.pkg.zip        # Local package archive
+mz install ./package-directory     # Local source package
+
+mz list
+mz uninstall <name>
+```
+
+See the [Packages Guide](docs/packages.md) for package sources, version
+selection, local installation, and import behavior.
+
+## Native Build
+
+Mozhi projects can select a build mode and output path in `mozhi.toml`:
+
+```toml
+[build]
+mode = "native"                 # "native" or "interpreter"
+output = "dist/release/calculator"
+release = true
+```
+
+Build and run the configured project:
+
+```bash
+mz build
+./dist/release/calculator
+mz run
+```
+
+Override the build settings for an individual build:
+
+```bash
+mz build --mode native --debug -o debug/calculator
+mz build --mode interpreter -o dist/calculator.mz
+```
+
+Native package builds can include a declared executable:
+
+```toml
+[package]
+name = "calculator"
+version = "0.1.0"
+entry = "src/mod.mz"
+binary = "dist/release/calculator"
+```
+
+Build and publish using the native package workflow:
+
+```bash
+mz pkg build . --native
+mz pkg publish . --native
+mz install ./calculator.mz.pkg.zip --local
+./.mozhi/pkg/calculator/dist/release/calculator
+```
+
+The executable is a standalone program artifact; it is not currently an
+importable Mozhi module. Native compilation supports a subset of the language.
+See the [Native Build Guide](docs/BUILD.md) for requirements and limitations.
+
+## Mozhi App Workflow
+
+Create, build, install, and open an app package:
+
+```bash
+mz app new counter --id in.crossberry.counter --label Counter
+mz app build counter
+mz app install counter/dist/counter-0.1.0.pkg
+mz app open in.crossberry.counter
+mz app home
+```
+
+The package filename should match the artifact produced by the app build.
+See the [App Guide](docs/APP_GUIDE.md) for the complete workflow.
 
 ---
 
