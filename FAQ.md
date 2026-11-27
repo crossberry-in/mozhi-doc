@@ -6,7 +6,7 @@
 
 ### What is Mozhi?
 
-Mozhi is a simple, Python-like scripting language implemented in C with a tree-walking interpreter. It is designed for learning, rapid prototyping, and embedding in larger applications.
+Mozhi is a simple, Python-like scripting language designed as a lightweight programming language. It is designed for learning, rapid prototyping, and embedding in larger applications.
 
 ### Who created Mozhi?
 
@@ -30,7 +30,7 @@ Yes, the Mozhi binary is free to download and use. See the [LICENSE](LICENSE) fi
 
 ### What language is Mozhi written in?
 
-Mozhi is implemented in **C99**. The interpreter is a tree-walking interpreter that parses source code into an AST and evaluates it directly.
+Mozhi is designed around a clear syntax and consistent language features.
 
 ### What platforms does Mozhi support?
 
@@ -82,14 +82,14 @@ Yes. Both Intel Macs and Apple Silicon (M1/M2/M3/M4) are supported. The installe
 
 ### How fast is Mozhi?
 
-Mozhi is a tree-walking interpreter, so it is **not designed for high-performance computing**. It is suitable for:
+Mozhi is designed for scripting, learning, and application development; performance depends on the workload and execution mode.. It is suitable for:
 
 - Learning programming concepts
 - Prototyping algorithms
 - Writing simple scripts and automation
 - Embedding in larger applications as a scripting engine
 
-For CPU-intensive tasks, consider using a compiled language like C, Rust, or Go.
+For CPU-intensive workloads, benchmark your application and choose an execution mode that fits its requirements.
 
 ### Does Mozhi support multithreading?
 
@@ -181,7 +181,7 @@ Mozhi source files use the **`.mz`** extension. For example: `hello.mz`, `fibona
 
 Not in the current release. Command-line argument passing may be added in a future version.
 
-### Can I use Mozhi as an embedded scripting language in my C/C++ application?
+### Can I use Mozhi as an embedded scripting language in my native application?
 
 The source code is closed, so embedding is not publicly supported. If you are interested in embedding Mozhi, please [open an issue](https://github.com/crossberry-in/mozhi-doc/issues) to discuss licensing.
 
