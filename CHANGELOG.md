@@ -168,15 +168,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **mozhi-fast** — a faster Rust bytecode-VM implementation of the Mozhi
+- **mozhi-fast** — a faster optimized execution mode implementation of the Mozhi
   interpreter. Compiles Mozhi source to bytecode and executes it on a
   stack-based VM (memory-safe, 64-bit integers, ~1.3–1.6× faster than the C
-  tree-walking interpreter).
+  Mozhi execution engine).
   - Functions, recursion, closures, arrays (reference semantics), maps,
     `for-in`, `if`/`else`, `while`, c-style `for`, `match`
   - String/array methods and math builtins
   - Multi-line / trailing-comma array literals
-  - Docs: `docs/mozhi-fast.md`; source: `crossberry-in/mozhi` → `mozhi-fast/`
+  - Docs: `docs/mozhi-fast.md`; 
 - **Documentation** for mozhi-fast in `docs/mozhi-fast.md`.
 
 ---
@@ -238,7 +238,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`install.ps1` PowerShell installer** for native Windows 10/11 — installs to `%USERPROFILE%\.mozhi\bin\` and adds it to the user `PATH`.
 - **Lexer** supporting identifiers, integers, floats, strings, booleans, `null`, keywords, operators, and comments.
 - **Parser** producing an Abstract Syntax Tree (AST) for the entire language.
-- **Tree-walking interpreter** evaluating the AST directly.
+- **Mozhi execution engine** evaluating the AST directly.
 - **Variables**:
   - `var` — mutable variable declaration
   - `fix` — immutable constant declaration
